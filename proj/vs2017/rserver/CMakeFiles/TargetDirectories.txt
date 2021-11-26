@@ -1,0 +1,6 @@
+E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/ALL_BUILD.dir
+E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/ZERO_CHECK.dir
+E:/workspace/funra/proj/vs2017/rserver/commonsvr/CMakeFiles/commonsvr.dir
+E:/workspace/funra/proj/vs2017/rserver/commonsvr/CMakeFiles/ALL_BUILD.dir
+E:/workspace/funra/proj/vs2017/rserver/funrasvr/CMakeFiles/funrasvr.dir
+E:/workspace/funra/proj/vs2017/rserver/funrasvr/CMakeFiles/ALL_BUILD.dir

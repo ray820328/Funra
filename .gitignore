@@ -1,5 +1,8 @@
 bin
 
+# vs
+*.opendb
+
 # Prerequisites
 *.d
 

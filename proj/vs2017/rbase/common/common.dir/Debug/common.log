@@ -1,0 +1,11 @@
+﻿  Building Custom Rule E:/workspace/funra/source/rbase/common/CMakeLists.txt
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp is up-to-date.
+  dict.c
+  mt19937-64.c
+  siphash.c
+  rlist.c
+E:\workspace\funra\source\rbase\common\src\dict.c(528): warning C4311: “类型强制转换”: 从“dictEntry **”到“long”的指针截断
+  rtime.c
+E:\workspace\funra\source\rbase\common\src\dict.c(531): warning C4311: “类型强制转换”: 从“dictEntry **”到“long”的指针截断
+  rlog.c
+  common.vcxproj -> E:\workspace\funra\build\lib\Win_x64\commond.lib

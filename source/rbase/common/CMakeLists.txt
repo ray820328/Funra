@@ -1,0 +1,42 @@
+﻿CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
+
+PROJECT(common)
+
+#SET(EXECUTABLE_OUTPUT_PATH ${RBASE_BINARY_ROOT}) 
+
+INCLUDE_DIRECTORIES(include)
+
+SET(SRC_LIB
+        src/dict.c
+        src/mt19937-64.c
+        src/siphash.c
+        src/rlist.c
+        src/rtime.c
+        src/rlog.c
+        )
+
+ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})
+#ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRC_LIB})
+
+#SET(LIBRARY_OUTPUT_PATH ${RBASE_LIB_ROOT}) 
+
+MESSAGE(STATUS "Platform: ${CMAKE_HOST_SYSTEM_NAME} - ${CMAKE_CURRENT_SOURCE_DIR}")
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    LINK_DIRECTORIES(
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
+    )
+    
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME} legacy_stdio_definitions)
+else()
+    LINK_DIRECTORIES(
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
+    )
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME} dl m pthread)
+endif()
+
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
+

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\funra\proj\vs2017\rserver\CMakeFiles\f4c2a79508e79c307b18ff503ee5c613\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EBE5E17B-F8DD-3083-BF4A-B4E520B6F4CC}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+# CMake generation dependency list for this directory.
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeCInformation.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeCXXInformation.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeCommonLanguageInclude.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeGenericSystem.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeInitializeConfigs.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeLanguageInformation.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeRCInformation.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeSystemSpecificInformation.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeSystemSpecificInitialize.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Compiler/MSVC-C.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Compiler/MSVC-CXX.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Platform/Windows-MSVC-C.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Platform/Windows-MSVC-CXX.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Platform/Windows-MSVC.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Platform/Windows.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/Platform/WindowsPaths.cmake
+E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/3.13.4/CMakeCCompiler.cmake
+E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/3.13.4/CMakeCXXCompiler.cmake
+E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/3.13.4/CMakeRCCompiler.cmake
+E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/3.13.4/CMakeSystem.cmake
+E:/workspace/funra/source/funra.cmake
+E:/workspace/funra/source/rserver/CMakeLists.txt
