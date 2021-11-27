@@ -1,0 +1,196 @@
+# $Id: mk_modules,v 1.10 2010/05/27 08:35:12 tho Exp $
+
+#
+# --no_hmap
+#
+makl_args_def   \
+    "no_hmap"   \
+    "" ""       \
+    "disable hmap module"
+
+__makl_no_hmap () 
+{ 
+    makl_set_var "NO_HMAP" ; 
+}
+
+#
+# --no_config
+#
+makl_args_def   \
+    "no_config" \
+    "" ""       \
+    "disable config module"
+
+__makl_no_config () 
+{ 
+    makl_set_var "NO_CONFIG" ; 
+}
+
+#
+# --no_net
+#
+makl_args_def   \
+    "no_net"    \
+    "" ""       \
+    "disable net module"
+
+__makl_no_net () 
+{ 
+    makl_set_var "NO_NET" ; 
+}
+
+#
+# --no_env
+#
+makl_args_def   \
+    "no_env"    \
+    "" ""       \
+    "disable env module"
+
+__makl_no_env () 
+{ 
+    makl_set_var "NO_ENV" ; 
+}
+
+#
+# --no_fs
+#
+makl_args_def   \
+    "no_fs"     \
+    "" ""       \
+    "disable fs module"
+
+__makl_no_fs () 
+{ 
+    makl_set_var "NO_FS" ; 
+}
+
+#
+# --no_pwd
+#
+makl_args_def   \
+    "no_pwd"    \
+    "" ""       \
+    "disable pwd module"
+
+__makl_no_pwd () 
+{ 
+    makl_set_var "NO_PWD" ; 
+}
+
+#
+# --no_list
+#
+makl_args_def   \
+    "no_list"   \
+    "" ""       \
+    "disable list module"
+
+__makl_no_list () 
+{ 
+    makl_set_var "NO_LIST" ; 
+}
+
+#
+# --no_array
+#
+makl_args_def   \
+    "no_array"  \
+    "" ""       \
+    "disable array module"
+
+__makl_no_array () 
+{ 
+    makl_set_var "NO_ARRAY" ; 
+}
+
+#
+# --no_ringbuffer
+#
+makl_args_def       \
+    "no_ringbuffer" \
+    "" ""           \
+    "disable ring buffer module"
+
+__makl_no_ringbuffer () 
+{ 
+    makl_set_var "NO_RB" ;
+}
+
+#
+# --no_pqueue
+#
+makl_args_def   \
+    "no_pqueue" \
+    "" ""       \
+    "disable priority queue module"
+
+__makl_no_pqueue () 
+{ 
+    makl_set_var "NO_PQUEUE" ;
+}
+
+#
+# --no_bst
+#
+makl_args_def   \
+    "no_bst"    \
+    "" ""       \
+    "disable binary search tree module"
+
+__makl_no_bst () 
+{ 
+    makl_set_var "NO_BST" ;
+}
+
+#
+# --no_json
+#
+makl_args_def   \
+    "no_json"   \
+    "" ""       \
+    "disable JSON module"
+
+__makl_no_json () 
+{ 
+    makl_set_var "NO_JSON" ;
+}
+
+#
+# --no_test
+#
+makl_args_def   \
+    "no_test" \
+    "" ""       \
+    "disable unit test module"
+
+__makl_no_test () 
+{ 
+    makl_set_var "NO_TEST" ;
+}
+
+#
+# --no_docs
+#
+makl_args_def   \
+    "no_docs"   \
+    "" ""       \
+    "avoid documentation"
+
+__makl_no_docs () 
+{ 
+    makl_set_var "NO_DOCS" ; 
+}
+
+#
+# --do_test
+#
+makl_args_def   \
+    "do_test"   \
+    "" ""       \
+    "run unit test"
+
+__makl_do_test () 
+{
+    makl_set_var "DO_TEST" ; 
+}

@@ -1,0 +1,72 @@
+
+'MaKL' - a painless C project configuration tool
+
+Usage: ./CONFIGURE_SCRIPT [OPTION] ...
+
+OPTION can be defined as follows:
+
+--help              [-h] display this help
+--help_gen          [-g] generate new configure.help based on configuration
+--verbose           [-v] show verbose debugging output
+--version           [-V] display MaKL version
+--cross_compile     configure for cross-compilation (no execution tests)
+--noclean           do not clean cache at end of execution (testing only)
+--prefix=BASE       set BASE directory for installation [BASE=/usr/local]
+--dir-bin=BASE      set BASE directory for binaries [BASE=/usr/local/bin]
+--dir-sbin=BASE     set BASE directory for sys binaries [BASE=/usr/local/sbin]
+--dir-conf=BASE     set BASE directory for configuration [BASE=/usr/local/conf]
+--dir-inc=BASE      set BASE directory for includes [BASE=/usr/local/includes]
+--dir-lib=BASE      set BASE directory for libraries [BASE=/usr/local/lib]
+--dir-shlib=BASE    set BASE directory for shared libs [BASE=/usr/local/shlib]
+--dir-libex=BASE    set BASE directory for binaries executed by other programs
+                        [BASE=/usr/local/libexec]
+--dir-var=BASE      set BASE directory for multi-purpose (log, temp, spool) dir
+                        [BASE=/usr/local/var]
+--dir-share=BASE    set BASE directory for shared data [BASE=/usr/local/share]
+--dir-man=BASE      set BASE directory for man pages [BASE=/usr/local/share/man]
+--dir-doc=BASE      set BASE directory for docs [BASE=/usr/local/share/doc]
+
+--defown=USERID     set default file owner id
+--defgrp=GROUPID    set default file group id
+--defmode=MODE      set default mode for regular files
+--defbinmode=MODE   set default mode for binary files
+--lib-X=BASE        set libX to have BASE dir [BASE=/usr/local:/usr]
+--libs=BASE         set all libs to have BASE dir
+
+<?> --featx-doxygen=BASE    set file for execution feature []
+
+--enable-X=ID       enable feature of type X and id ID
+--disable-X=ID      disable feature of type X and id ID
+--enable_shared     enable shared library build
+--enable_profile    enables profiling via gprof (GCC only)
+--enable_warns      set CFLAGS for extra warnings
+--enable_debug      enable debugging support: carpal verbose output and CC 
+                    debug flags
+
+--no_hmap           disable hmap module
+--no_config         disable config module
+--no_net            disable net module
+--no_env            disable env module
+--no_fs             disable fs module
+--no_pwd            disable pwd module
+--no_list           disable list module
+--no_array          disable array module
+--no_ringbuffer     disable ring buffer module
+--no_pqueue         disable priority queue module
+--no_bst            disable binary search tree module
+--no_json           disable JSON module
+--no_test           disable unit test module
+--no_ipv6           disable IPv6 support
+--no_unixsock       disable Unix socket support
+--no_sctp           disable SCTP protocol support
+
+--no_docs           don't build/install documentation
+--do_test           build and run unit tests
+
+--compat_1X         enable compatibility with libu 1.X
+--enable_icc_warns  enable Intel CC warnings
+
+Legend:
+  <*>: required dependency
+  <?>: optional dependency
+

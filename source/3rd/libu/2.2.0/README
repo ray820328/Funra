@@ -1,0 +1,135 @@
+== MaKL is a Prerequisite ==
+
+LibU needs http://koanlogic.com/makl to configure and build. 
+
+The following commands should be sufficient to get MaKL installed on any Linux 
+flavour or Darwin/MacOSX:
+
+$ wget http://koanlogic.com/download/makl/makl-${VERSION}.tar.gz
+$ tar zxf makl-${VERSION}.tar.gz && cd makl-${VERSION}
+$ sh configure.sh
+$ su 
+Password: ****
+# make install
+
+Should your platform be one of Solaris, OpenSolaris, FreeBSD, PC-BSD, OpenBSD,
+NetBSD, DragonflyBSD, Minix or Windows (MinGW or Gygwin) take a look at the 
+INSTALL file in the top-level MaKL sources directory to track down specific 
+variations on the theme.
+
+== Download == 
+
+Once MaKL is there, you can start downloading the package (always check the 
+official http://koanlogic.com/libu page for the latest version and related 
+ChangeLog) and tailor it to your specific needs:
+
+$ wget http://koanlogic.com/download/libu/libu-${VERSION}.tar.gz
+$ tar zxf libu-${VERSION}.tar.gz && cd libu-${VERSION}
+
+
+== Configure ==
+
+E.g. should you need to change the default installation path (i.e. /usr/local),
+use:
+
+$ makl-conf --prefix="/my/install/base/dir"
+
+
+Debug symbols and warnings from the compiler can be switched on via
+--enable_debug and --enable_warns (use --enable_icc_warns instead when 
+working with the Intel C compiler):
+
+$ makl-conf --enable_debug --enable_warns
+
+
+Code profiling using gprof(1) can be activated via --enable_profile, and,
+more generally, any compiler flag can be passed to the build stage in the 
+following way:
+
+$ makl-conf --extra-cflags="-Wformat -Wno-format-extra-args -Wformat-security -Wformat-nonliteral -Wformat=2"
+
+The --extra-xxx="val" is indeed a powerful mechanism by which any Makefile 
+variable 'XXX' (uppercase!) can be given an additional value 'val': (ab)use 
+it to tweak LDFLAGS, SHLIB_LDFLAGS, etc. as needed.  Anyway if in doubt, 
+or in search for exotic features, type makl-conf -h to display the complete 
+list of options: it's likely that what you are trying to achieve is already 
+there.
+
+By default LibU is compiled as static library, to also enable shared library 
+build, supply the --enable_shared flag.
+
+== Pick Up What Needs to be Included ==
+
+The default is to build all the modules, but you can disable the 
+inclusion of specific bits selectively using the following switches:
+    - --no_hmap: to disable the hmap module
+    - --no_config: to disable the config module
+    - --no_net: to disable the net module
+    - --no_env: to disable the env module
+    - --no_fs: to disable the fs module
+    - --no_pwd: to disable the pwd module
+    - --no_list: to disable the list module
+    - --no_array: to disable the array module
+    - --no_ringbuffer: to disable the rb module
+    - --no_pqueue: to disable the pq module
+    - --no_json: to disable the json module
+    - --no_bst: to disable the bst module
+
+Also, some specific features regarding the networking code can be disabled
+at configuration:
+    - --no_ipv6: to disable IPv6 protocol support
+    - --no_sctp: to disable SCTP protocol support
+    - --no_unixsock: to disable UNIX IPC support
+
+If you need to enable compatibility with (some, not all) 1.X interfaces, 
+specify the --compat_1x command line switch.
+
+== Build, Test and Install ==
+
+When you are done with the configure step, you can build LibU bits and 
+optionally test them:
+
+$ makl
+$ makl -C test
+
+
+And finally install it:
+
+$ su
+Password: ****
+# makl install
+
+
+== Hello LibU ! ==
+
+You now are ready to play with your first LibU program:
+
+$ cat main.c
+#include <u/libu.h>
+
+int facility = LOG_LOCAL0;
+
+int main (void)
+{
+    u_con("Hello LibU world !");
+    return 0;
+}
+
+Write a Makefile like the following:
+
+$ cat Makefile
+include common.mk
+
+PROG = hellolibu
+SRCS = main.c
+
+LDADD += /path/to/install/prefix/lib/libu.a
+CFLAGS += -I/path/to/install/prefix/include
+
+include prog.mk
+
+Then type:
+
+$ makl && ./hellolibu
+
+and enjoy !

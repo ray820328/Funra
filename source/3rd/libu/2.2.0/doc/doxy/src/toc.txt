@@ -1,0 +1,40 @@
+/**
+ * \mainpage LibU
+
+LibU is a multiplatform C library which comes under a BSD-style license.  This 
+means that you are allowed unlimited redistribution for any purpose of LibU 
+bits (in source or binary form), as long as you retain the copyright notices 
+and the license's disclaimers of warranty:
+
+\code
+  LibU - Copyright (c) 2005-2012 by KoanLogic srl
+  All rights reserved.
+  ...
+\endcode
+
+That said, LibU includes many interdependent modules for accomplishing several 
+tasks: \ref alloc, \ref net and \ref uri parsing (as per RFC 3986), \ref json
+parsing (as per RFC 4627) \ref string manipulation, \ref carpal (with bundled 
+debugging and logging functionalities) of C/C++ programs in a very compact way,
+plus many other \ref misc tasks.  
+
+Also, it has built-in support for tree-structured \ref config files, or flat 
+configuration files which are supplied through the running process \ref env.
+
+\ref hmap s using separate (sorted) chaining or linear probing, linked \ref
+list, an efficient \ref rb implementation, \ref array, \ref bst and \ref pq are
+all provided as building blocks for your custom data structures.
+
+A complete framework for handling authentication via \ref pwd like files, data 
+\ref buf manipulation, a module for \ref test of C/C++ programs, and some
+commodity interfaces for playing safe with the \ref fs, completes the list of
+functionality.
+
+Also, a portability layer is included which gives replacement for functions
+that could be missing on some platforms, e.g. strlcat(3), strlcpy(3),
+gettimeofday(2), etc.; it provides uniform naming to absorb minor interface
+deltas between different platforms.
+
+Check the \ref install instructions and happy hacking !
+
+*/ 
