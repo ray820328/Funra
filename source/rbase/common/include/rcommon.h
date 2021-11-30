@@ -22,7 +22,15 @@ extern "C" {
 #include <inttypes.h>
 #include <stdbool.h>
 
-#ifdef WIN32
+//#define rassert(expr, rv) \
+//	if(!(expr)) { \
+//		rerror(#expr" is null or 0"); \
+//		return rv; \
+//	}
+
+#define UNUSED __attribute__(unused)
+
+#if defined(_WIN32) || defined(_WIN64)
 
 #pragma setlocale("chs")
 
@@ -37,7 +45,7 @@ extern "C" {
 #define get_filename(x) strrchr(x, '\\') ? strrchr(x, '\\') + 1 : x
 #define likely(x) x
 #define unlikely(x) x
-#define __attribute__(unused)
+#define __attribute__(unused) 
 
 #define access(param1, param2) _access(param1, param2)
 
@@ -58,11 +66,12 @@ extern "C" {
 #else //WIN32
 
 #include "execinfo.h"
+#include <sys/ioctl.h>
+#include <sys/syscall.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/ioctl.h>
 #include <netinet/tcp.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <libgen.h>
@@ -105,7 +114,7 @@ extern "C" {
 #define rarray_count(ptr, count) \
           do { \
             if (ptr) \
-                count = sizeof(ptr) / sizeof(ptr[0]) \
+                count = sizeof(ptr) / sizeof((ptr)[0]) \
             else \
                 count = 0; \
           } while(0)
@@ -138,6 +147,18 @@ extern "C" {
                 time_now_datas[0], time_now_datas[1], time_now_datas[2], time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
           } while(0)
 
+#define rassert(expr)                                     \
+ do {                                                     \
+  if (!(expr)) {                                          \
+    fprintf(stderr,                                       \
+            "Assertion failed in %s on line %d: %s\n",    \
+            __FILE__,                                     \
+            __LINE__,                                     \
+            #expr);                                       \
+    abort();                                              \
+  }                                                       \
+ } while (0)
+
 
 static inline size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest) {
     size_t position = strlen(dest);
@@ -167,13 +188,59 @@ static inline void rstr_free(const void *key) {
     rayfree((void*)key);
 }
 
+#if defined(_WIN32) || defined(_WIN64)
+#define rmutex_t_def CRITICAL_SECTION;
+#else
+#define rmutex_t_def pthread_mutex_t;
+#endif /* defined(_WIN32) || defined(_WIN64) */
+
+static inline void rmutex_init(void* ray_mutex)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    InitializeCriticalSection(ray_mutex);
+#else
+    pthread_mutex_init(ray_mutex, NULL);
+#endif /* defined(_WIN32) || defined(_WIN64) */
+}
+
+static inline void rmutex_lock(void* ray_mutex)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    EnterCriticalSection(ray_mutex);
+#else
+    pthread_mutex_lock(ray_mutex);
+#endif /* defined(_WIN32) || defined(_WIN64) */
+}
+
+static inline void rmutex_unlock(void* ray_mutex)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    LeaveCriticalSection(ray_mutex);
+#else
+    pthread_mutex_unlock(ray_mutex);
+#endif /* defined(_WIN32) || defined(_WIN64) */
+}
+
+static inline long get_cur_thread_id(void)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    return GetCurrentThreadId();
+#elif __linux__
+    return (long)syscall(SYS_gettid);
+#elif defined(__APPLE__) && defined(__MACH__)
+    return (long)syscall(SYS_thread_selfid);
+#else
+    return (long)pthread_self();
+#endif /* defined(_WIN32) || defined(_WIN64) */
+}
+
 static inline void wait_seconds(int seconds)
 {   // Pretty crossplatform, both ALL POSIX compliant systems AND Windows
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
     Sleep(1000 * seconds);
 #else
     sleep(seconds);
-#endif
+#endif /* defined(_WIN32) || defined(_WIN64) */
 }
 
 #ifdef __cplusplus

@@ -7,11 +7,6 @@
  * @author: Ray
  */
 
-#ifndef WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#endif //WIN32
-
 #include "stdlib.h"
 #include "string.h"
 
@@ -19,37 +14,49 @@
 #include "rtime.h"
 #include "rlog.h"
 
-__attribute__((unused)) static bool rlog_inited = false;
-__attribute__((unused)) static int64_t timeLast;
-__attribute__((unused)) static int64_t timeMax;
+UNUSED static volatile bool rlog_inited = false;
+UNUSED static volatile int64_t timeLast = 0;
+UNUSED static int64_t timeMax = 0;
+
+static rmutex_t_def rlog_mutex;
 
 static bool rlog_force_flush = false;//false启用日志buffer
 static int rlog_flush_max = 30000;//n秒刷一次缓存
-__attribute__((unused)) static int rlog_rollback_size = 0;//rolling文件大小
+UNUSED static int rlog_rollback_size = 0;//rolling文件大小
 
 static rlog_info_t* rlog_infos[RLOG_ALL];
 
 //"XXX_%s_%s.log"
 void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool seperateFile, const char* fileSuffix) {//字符长度都有保证
-	if (logLevel != RLOG_ALL && rlog_infos[logLevel]) {
+    if (rlog_inited) {
+        return;
+    }
+    rmutex_init(&rlog_mutex);
+    rlog_inited = true;
+
+    rmutex_lock(&rlog_mutex);
+
+    //char* filename[rlog_filename_length];
+    char timeStr[32];
+    int retCode = 1;
+
+    if (logLevel != RLOG_ALL && rlog_infos[logLevel]) {
 		printf("init_rlog already inited, level = %d.\n", logLevel);
-		return;
+		goto Exit0;
 	}
 
 	if (!logFilename || strlen(logFilename) > rlog_filename_length - 32) {
 		printf("init_rlog logFilename is too long.\n");
-		exit(1);
+        goto Exit1;
 	}
 
-	//char* filename[rlog_filename_length];
-	char time_str[32];
     if (!fileSuffix) {
-        rformat_time_s_yyyymmddhhMMss(time_str, 0);
+        rformat_time_s_yyyymmddhhMMss(timeStr, 0);
     }
     else {
-        if (sprintf(time_str, "%s", fileSuffix) >= (int)sizeof(time_str)) {
+        if (sprintf(timeStr, "%s", fileSuffix) >= (int)sizeof(timeStr)) {
             printf("init_rlog logFilename is too long.\n");
-            time_str[(int)sizeof(time_str) - 1] = '\0';
+            timeStr[(int)sizeof(timeStr) - 1] = '\0';
         }
     }
 	//strcpy(filename, time_str);
@@ -71,20 +78,20 @@ void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool 
 		rlog_infos[rLevel] = log;
 		log->level = rLevel;
 
-        size_t nSize = strlen(logFilename) + strlen(levelStr) + strlen(time_str);
+        size_t nSize = strlen(logFilename) + strlen(levelStr) + strlen(timeStr);
 		log->filename = raymalloc(nSize + 1);
 		if (!log->filename) {
 			printf("init_rlog init failed, %s.\n", levelStr);
-			exit(1);
+            goto Exit1;
 		}
 		if (seperateFile) {
 			//strcpy(log->filename, rlogStr);
    //         strcat(log->filename, filename);
-            sprintf(log->filename, logFilename, levelStr, time_str);
+            sprintf(log->filename, logFilename, levelStr, timeStr);
             //printf("init_rlog init, p = %p, len = %d. size = %d, filename = '%s'\n", log->filename, strlen(log->filename), nSize, log->filename);
 		}
 		else {
-            sprintf(log->filename, logFilename, "log", time_str);
+            sprintf(log->filename, logFilename, "log", timeStr);
         }
         //todo Ray ...
         log->logItemData = raymalloc(rlog_temp_data_size);
@@ -97,12 +104,20 @@ void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool 
 		log->file_ptr = fopen(log->filename, "a+");
 		if (!log->file_ptr) {
 			printf("Cannot open file [%s], check file is opening or not!\n", log->filename);
-			return;
+			goto Exit1;
 		}
-	}
+    }
 	
+Exit0:
+    retCode = 0;
+
     rayprintf(RLOG_INFO, "init rlog finished.\n");
-    return;
+Exit1:
+    if (retCode != 0) {
+        printf("init rlog failed. code = %d\n", retCode);
+    }
+
+    rmutex_unlock(&rlog_mutex);
 }
 void uninit_rlog() {
 	rayprintf(RLOG_INFO, "uninit rlog finished.\n");
