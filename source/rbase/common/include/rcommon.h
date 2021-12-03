@@ -22,6 +22,9 @@ extern "C" {
 #include <inttypes.h>
 #include <stdbool.h>
 
+#define   macro_print_macro_helper(x)   #x  
+#define   macro_print_macro(x)   #x"="macro_print_macro_helper(x)
+
 //#define rassert(expr, rv) \
 //	if(!(expr)) { \
 //		rerror(#expr" is null or 0"); \
@@ -31,6 +34,7 @@ extern "C" {
 #define UNUSED __attribute__(unused)
 
 #if defined(_WIN32) || defined(_WIN64)
+#pragma message("Platform info: "macro_print_macro(_WIN64))
 
 #pragma setlocale("chs")
 
