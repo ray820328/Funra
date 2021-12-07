@@ -1,7 +1,10 @@
-﻿  Building Custom Rule E:/workspace/funra/source/rserver/funrasvr/CMakeLists.txt
-  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/funrasvr/CMakeFiles/generate.stamp is up-to-date.
-  rtest.c
-  main.c
-E:\workspace\funra\source\rserver\funrasvr\src\main.c(145): warning C4312: “类型强制转换”: 从“long”转换到更大的“void *”
-E:\workspace\funra\source\rserver\funrasvr\src\main.c(202): warning C4312: “类型强制转换”: 从“long”转换到更大的“void *”
+﻿  main.c
+  Platform info: _WIN64=1
+E:\workspace\funra\source\rserver\funrasvr\src\main.c(17): warning C4013: “microsec_r”未定义；假设外部返回 int
+E:\workspace\funra\source\rserver\funrasvr\src\main.c(19): warning C4013: “millisec_r”未定义；假设外部返回 int
+E:\workspace\funra\source\rserver\funrasvr\src\main.c(19): warning C4477: “printf”: 格式字符串“%lld”需要类型“__int64”的参数，但可变参数 1 拥有了类型“int”
+  E:\workspace\funra\source\rserver\funrasvr\src\main.c(19): note: 请考虑在格式字符串中使用“%d”
+  E:\workspace\funra\source\rserver\funrasvr\src\main.c(19): note: 请考虑在格式字符串中使用“%I32d”
+E:\workspace\funra\source\rserver\funrasvr\src\main.c(21): warning C4013: “rdate_from_time_millis”未定义；假设外部返回 int
+E:\workspace\funra\source\rserver\funrasvr\src\main.c(21): warning C4047: “初始化”:“int *”与“int”的间接级别不同
   funrasvr.vcxproj -> E:\workspace\funra\build\bin\Win_x64\funrasvr.exe
