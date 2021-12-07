@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{97F6CADA-19C0-3FED-A988-87F17D33CFCB}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeConfigurableFile.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPack.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPackComponent.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCXXSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFileCXX.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckLibraryExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckStructHasMember.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckSymbolExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageHandleStandardArgs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageMessage.cmake;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\TestBigEndian.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;D:\tools\CMake\share\cmake-3.13\Templates\CPackConfig.cmake.in;E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CheckTypeSize\UINTPTR_T.c;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;E:\workspace\funra\source\3rd\cmocka\CPackConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CTestConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CompilerChecks.cmake;E:\workspace\funra\source\3rd\cmocka\ConfigureChecks.cmake;E:\workspace\funra\source\3rd\cmocka\DefineOptions.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCCompilerFlag.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCMockaTest.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\CheckCCompilerFlagSSP.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCMakeDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCompilerFlags.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefinePlatformDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\FindNSIS.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\MacroEnsureOutOfSourceBuild.cmake;E:\workspace\funra\source\3rd\cmocka\cmocka.pc.cmake;E:\workspace\funra\source\3rd\cmocka\config.h.cmake;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\proj\vs2017\3rd\cmocka\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeConfigurableFile.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPack.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPackComponent.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCXXSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFileCXX.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckLibraryExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckStructHasMember.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckSymbolExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageHandleStandardArgs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageMessage.cmake;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\TestBigEndian.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;D:\tools\CMake\share\cmake-3.13\Templates\CPackConfig.cmake.in;E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CheckTypeSize\UINTPTR_T.c;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;E:\workspace\funra\source\3rd\cmocka\CPackConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CTestConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CompilerChecks.cmake;E:\workspace\funra\source\3rd\cmocka\ConfigureChecks.cmake;E:\workspace\funra\source\3rd\cmocka\DefineOptions.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCCompilerFlag.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCMockaTest.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\CheckCCompilerFlagSSP.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCMakeDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCompilerFlags.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefinePlatformDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\FindNSIS.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\MacroEnsureOutOfSourceBuild.cmake;E:\workspace\funra\source\3rd\cmocka\cmocka.pc.cmake;E:\workspace\funra\source\3rd\cmocka\config.h.cmake;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\proj\vs2017\3rd\cmocka\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeConfigurableFile.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPack.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPackComponent.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCXXSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFileCXX.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckLibraryExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckStructHasMember.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckSymbolExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageHandleStandardArgs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageMessage.cmake;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\TestBigEndian.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;D:\tools\CMake\share\cmake-3.13\Templates\CPackConfig.cmake.in;E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CheckTypeSize\UINTPTR_T.c;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;E:\workspace\funra\source\3rd\cmocka\CPackConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CTestConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CompilerChecks.cmake;E:\workspace\funra\source\3rd\cmocka\ConfigureChecks.cmake;E:\workspace\funra\source\3rd\cmocka\DefineOptions.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCCompilerFlag.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCMockaTest.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\CheckCCompilerFlagSSP.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCMakeDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCompilerFlags.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefinePlatformDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\FindNSIS.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\MacroEnsureOutOfSourceBuild.cmake;E:\workspace\funra\source\3rd\cmocka\cmocka.pc.cmake;E:\workspace\funra\source\3rd\cmocka\config.h.cmake;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\proj\vs2017\3rd\cmocka\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/funra/source/3rd/cmocka/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeConfigurableFile.in;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPack.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CPackComponent.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCXXSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c;D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFile.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckIncludeFileCXX.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckLibraryExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckStructHasMember.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckSymbolExists.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.c.in;D:\tools\CMake\share\cmake-3.13\Modules\CheckTypeSize.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageHandleStandardArgs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\FindPackageMessage.cmake;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\TestBigEndian.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;D:\tools\CMake\share\cmake-3.13\Templates\CPackConfig.cmake.in;E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CheckTypeSize\UINTPTR_T.c;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;E:\workspace\funra\source\3rd\cmocka\CPackConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CTestConfig.cmake;E:\workspace\funra\source\3rd\cmocka\CompilerChecks.cmake;E:\workspace\funra\source\3rd\cmocka\ConfigureChecks.cmake;E:\workspace\funra\source\3rd\cmocka\DefineOptions.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCCompilerFlag.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\AddCMockaTest.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\CheckCCompilerFlagSSP.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCMakeDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefineCompilerFlags.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\DefinePlatformDefaults.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\FindNSIS.cmake;E:\workspace\funra\source\3rd\cmocka\cmake\Modules\MacroEnsureOutOfSourceBuild.cmake;E:\workspace\funra\source\3rd\cmocka\cmocka.pc.cmake;E:\workspace\funra\source\3rd\cmocka\config.h.cmake;E:\workspace\funra\source\3rd\cmocka\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\proj\vs2017\3rd\cmocka\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\ZERO_CHECK.vcxproj">
+      <Project>{7CD3528E-446A-3CF3-9C3A-E977A33619EB}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\example\allocate_module_test.vcxproj">
+      <Project>{6A900D6E-4A59-3CEA-89D7-104A6C5295E0}</Project>
+      <Name>allocate_module_test</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\example\assert_macro_test.vcxproj">
+      <Project>{95F0CBED-3FC0-3633-8DC0-95ACA4DD31A0}</Project>
+      <Name>assert_macro_test</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\example\assert_module_test.vcxproj">
+      <Project>{12D82540-F2C7-3605-A06E-C2256B5D38E0}</Project>
+      <Name>assert_module_test</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\src\cmocka.vcxproj">
+      <Project>{B084FF5E-7E85-38EA-B44E-AB1E719A5943}</Project>
+      <Name>cmocka</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\example\simple_test.vcxproj">
+      <Project>{7F65CD54-A471-3187-9BD8-0EA4FD5D7E0E}</Project>
+      <Name>simple_test</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

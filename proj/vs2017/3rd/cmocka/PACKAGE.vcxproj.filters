@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\6610387df7bfa0b36944a96cea1aeb14\PACKAGE_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D8845B12-CB35-3FA3-8C39-AB379FCA989A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

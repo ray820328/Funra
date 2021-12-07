@@ -75,7 +75,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CallingConvention>Cdecl</CallingConvention>
@@ -96,10 +96,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;CHECK_MEM_LEAK;OS_Windows;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
@@ -132,10 +132,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;OS_Windows;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -148,7 +148,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsC</CompileAs>
       <ExceptionHandling>
@@ -166,10 +166,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_Windows;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -182,7 +182,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsC</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -199,10 +199,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_Windows;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>

@@ -36,6 +36,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("E:/workspace/funra/proj/vs2017/rserver/commonsvr/cmake_install.cmake")
   include("E:/workspace/funra/proj/vs2017/rserver/funrasvr/cmake_install.cmake")
+  include("E:/workspace/funra/proj/vs2017/rserver/funrasvr/test/cmake_install.cmake")
 
 endif()
 

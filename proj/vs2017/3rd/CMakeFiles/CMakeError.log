@@ -1,0 +1,504 @@
+Determining if the include file strings.h exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_99427.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:27:41。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_99427.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_99427.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_99427.dir\Debug\cmTC_99427.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_99427.dir\Debug\cmTC_99427.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_99427.dir\Debug\\" /Fd"cmTC_99427.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_99427.dir\Debug\\" /Fd"cmTC_99427.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+  CheckIncludeFile.c
+  
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1): fatal error C1083: 无法打开包括文件: “strings.h”: No such file or directory [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_99427.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_99427.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_99427.vcxproj”(默认目标) (1) ->
+(ClCompile 目标) -> 
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1): fatal error C1083: 无法打开包括文件: “strings.h”: No such file or directory [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_99427.vcxproj]
+
+    0 个警告
+    1 个错误
+
+已用时间 00:00:00.57
+
+
+Determining if the include file unistd.h exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_781ba.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:27:47。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_781ba.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_781ba.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_781ba.dir\Debug\cmTC_781ba.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_781ba.dir\Debug\cmTC_781ba.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_781ba.dir\Debug\\" /Fd"cmTC_781ba.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_781ba.dir\Debug\\" /Fd"cmTC_781ba.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+  CheckIncludeFile.c
+  
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1): fatal error C1083: 无法打开包括文件: “unistd.h”: No such file or directory [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_781ba.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_781ba.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_781ba.vcxproj”(默认目标) (1) ->
+(ClCompile 目标) -> 
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1): fatal error C1083: 无法打开包括文件: “unistd.h”: No such file or directory [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_781ba.vcxproj]
+
+    0 个警告
+    1 个错误
+
+已用时间 00:00:00.53
+
+
+Determining if the function fprintf exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_4c2ba.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:27:54。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_4c2ba.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_4c2ba.dir\Debug\cmTC_4c2ba.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_4c2ba.dir\Debug\cmTC_4c2ba.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=fprintf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4c2ba.dir\Debug\\" /Fd"cmTC_4c2ba.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=fprintf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4c2ba.dir\Debug\\" /Fd"cmTC_4c2ba.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_4c2ba.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_4c2ba.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_4c2ba.lib" /MACHINE:X64  /machine:x64 cmTC_4c2ba.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 fprintf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_4c2ba.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 fprintf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_4c2ba.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_4c2ba.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.10
+
+
+Determining if the function siglongjmp exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_8c98d.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:27:59。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_8c98d.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_8c98d.dir\Debug\cmTC_8c98d.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_8c98d.dir\Debug\cmTC_8c98d.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=siglongjmp /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_8c98d.dir\Debug\\" /Fd"cmTC_8c98d.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=siglongjmp /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_8c98d.dir\Debug\\" /Fd"cmTC_8c98d.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_8c98d.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_8c98d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_8c98d.lib" /MACHINE:X64  /machine:x64 cmTC_8c98d.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 siglongjmp，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_8c98d.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 siglongjmp，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_8c98d.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_8c98d.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.14
+
+
+Determining if the function printf exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_d893e.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:05。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_d893e.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_d893e.dir\Debug\cmTC_d893e.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_d893e.dir\Debug\cmTC_d893e.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=printf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_d893e.dir\Debug\\" /Fd"cmTC_d893e.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=printf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_d893e.dir\Debug\\" /Fd"cmTC_d893e.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_d893e.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_d893e.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_d893e.lib" /MACHINE:X64  /machine:x64 cmTC_d893e.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 printf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_d893e.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 printf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_d893e.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_d893e.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.20
+
+
+Determining if the function strsignal exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_a78b2.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:10。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_a78b2.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_a78b2.dir\Debug\cmTC_a78b2.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_a78b2.dir\Debug\cmTC_a78b2.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=strsignal /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_a78b2.dir\Debug\\" /Fd"cmTC_a78b2.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=strsignal /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_a78b2.dir\Debug\\" /Fd"cmTC_a78b2.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_a78b2.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_a78b2.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_a78b2.lib" /MACHINE:X64  /machine:x64 cmTC_a78b2.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 strsignal，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_a78b2.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 strsignal，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_a78b2.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_a78b2.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.14
+
+
+Determining if the function clock_gettime exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_f4b93.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:13。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_f4b93.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_f4b93.dir\Debug\cmTC_f4b93.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_f4b93.dir\Debug\cmTC_f4b93.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=clock_gettime /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f4b93.dir\Debug\\" /Fd"cmTC_f4b93.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=clock_gettime /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f4b93.dir\Debug\\" /Fd"cmTC_f4b93.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_f4b93.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_f4b93.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_f4b93.lib" /MACHINE:X64  /machine:x64 cmTC_f4b93.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 clock_gettime，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_f4b93.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 clock_gettime，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_f4b93.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_f4b93.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.10
+
+
+Determining if the function _vsnprintf_s exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_52d11.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:14。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_52d11.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_52d11.dir\Debug\cmTC_52d11.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_52d11.dir\Debug\cmTC_52d11.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_vsnprintf_s /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_52d11.dir\Debug\\" /Fd"cmTC_52d11.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_vsnprintf_s /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_52d11.dir\Debug\\" /Fd"cmTC_52d11.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_52d11.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_52d11.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_52d11.lib" /MACHINE:X64  /machine:x64 cmTC_52d11.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _vsnprintf_s，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_52d11.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _vsnprintf_s，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_52d11.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_52d11.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.14
+
+
+Determining if the function _vsnprintf exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_25d4b.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:16。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_25d4b.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_25d4b.dir\Debug\cmTC_25d4b.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_25d4b.dir\Debug\cmTC_25d4b.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_vsnprintf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_25d4b.dir\Debug\\" /Fd"cmTC_25d4b.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_vsnprintf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_25d4b.dir\Debug\\" /Fd"cmTC_25d4b.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_25d4b.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_25d4b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_25d4b.lib" /MACHINE:X64  /machine:x64 cmTC_25d4b.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _vsnprintf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_25d4b.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _vsnprintf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_25d4b.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_25d4b.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.14
+
+
+Determining if the function _snprintf exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_6a984.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:17。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_6a984.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_6a984.dir\Debug\cmTC_6a984.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_6a984.dir\Debug\cmTC_6a984.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_snprintf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_6a984.dir\Debug\\" /Fd"cmTC_6a984.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_snprintf /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_6a984.dir\Debug\\" /Fd"cmTC_6a984.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_6a984.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_6a984.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_6a984.lib" /MACHINE:X64  /machine:x64 cmTC_6a984.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _snprintf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_6a984.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _snprintf，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_6a984.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_6a984.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.15
+
+
+Determining if the function _snprintf_s exists failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_143fa.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:19。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_143fa.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_143fa.dir\Debug\cmTC_143fa.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_143fa.dir\Debug\cmTC_143fa.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_snprintf_s /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_143fa.dir\Debug\\" /Fd"cmTC_143fa.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_snprintf_s /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_143fa.dir\Debug\\" /Fd"cmTC_143fa.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CheckFunctionExists.c"
+  CheckFunctionExists.c
+  
+Link:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_143fa.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_143fa.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp/Debug/cmTC_143fa.lib" /MACHINE:X64  /machine:x64 cmTC_143fa.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _snprintf_s，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_143fa.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _snprintf_s，该符号在函数 main 中被引用 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\cmTC_143fa.exe : fatal error LNK1120: 1 个无法解析的外部命令 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_143fa.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.18
+
+
+Performing C SOURCE FILE Test HAVE_GCC_THREAD_LOCAL_STORAGE failed with the following output:
+Change Dir: E:/workspace/funra/proj/vs2017/3rd/CMakeFiles/CMakeTmp
+
+Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_91890.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2021/12/6 19:28:24。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_91890.dir\Debug\”。
+  正在创建目录“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_91890.dir\Debug\cmTC_91890.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_91890.dir\Debug\cmTC_91890.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D HAVE_GCC_THREAD_LOCAL_STORAGE /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_91890.dir\Debug\\" /Fd"cmTC_91890.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c
+  用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D HAVE_GCC_THREAD_LOCAL_STORAGE /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_91890.dir\Debug\\" /Fd"cmTC_91890.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c
+  src.c
+  
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(2): error C2054: 在“__thread”之后应输入“(” [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(2): error C2085: “tls”: 不在形参表中 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(4): error C2085: “main”: 不在形参表中 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(4): error C2143: 语法错误: 缺少“;”(在“{”的前面) [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+已完成生成项目“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj”(默认目标) (1) ->
+(ClCompile 目标) -> 
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(2): error C2054: 在“__thread”之后应输入“(” [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(2): error C2085: “tls”: 不在形参表中 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(4): error C2085: “main”: 不在形参表中 [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+  E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\src.c(4): error C2143: 语法错误: 缺少“;”(在“{”的前面) [E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\CMakeTmp\cmTC_91890.vcxproj]
+
+    0 个警告
+    4 个错误
+
+已用时间 00:00:00.54
+
+Source file was:
+
+__thread int tls;
+
+int main(void) {
+    return 0;
+}

@@ -63,7 +63,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -83,7 +83,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>

@@ -63,7 +63,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -83,7 +83,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rserver\..;E:\workspace\funra\source\rserver\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rserver\..\rbase\common\include;E:\workspace\funra\source\rserver\..\rserver\commonsvr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -175,6 +175,12 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="E:\workspace\funra\proj\vs2017\rserver\funrasvr\funrasvr.vcxproj">
       <Project>{90D7E828-A649-3C94-AEE0-1F33F00FC87C}</Project>
       <Name>funrasvr</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\rserver\funrasvr\test\funratest.vcxproj">
+      <Project>{6A084806-356B-32FF-A37D-7507E0EDF9C2}</Project>
+      <Name>funratest</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>

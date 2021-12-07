@@ -195,6 +195,12 @@ funrasvr_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/rserver/funrasvr
 funrasvr_SOURCE_DIR:STATIC=E:/workspace/funra/source/rserver/funrasvr
 
 //Value Computed by CMake
+funratest_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/rserver/funrasvr/test
+
+//Value Computed by CMake
+funratest_SOURCE_DIR:STATIC=E:/workspace/funra/source/rserver/funrasvr/test
+
+//Value Computed by CMake
 rserver_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/rserver
 
 //Value Computed by CMake
@@ -281,7 +287,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RC_COMPILER
