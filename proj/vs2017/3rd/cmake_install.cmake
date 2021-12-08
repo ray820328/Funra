@@ -34,6 +34,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("E:/workspace/funra/proj/vs2017/3rd/libuv/1.42.0/cmake_install.cmake")
+  include("E:/workspace/funra/proj/vs2017/3rd/lua/5.4.3/cmake_install.cmake")
   include("E:/workspace/funra/proj/vs2017/3rd/cmocka/cmake_install.cmake")
 
 endif()

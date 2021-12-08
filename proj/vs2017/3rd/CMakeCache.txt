@@ -20,6 +20,9 @@
 //Value Computed by CMake
 3rd_SOURCE_DIR:STATIC=E:/workspace/funra/source/3rd
 
+//Enable AddressSanitizer (ASan)
+ASAN:BOOL=OFF
+
 //Build shared libraries
 BUILD_SHARED_LIBS:BOOL=ON
 
@@ -55,14 +58,14 @@ CMAKE_CXX_STANDARD_LIBRARIES:STRING=kernel32.lib user32.lib gdi32.lib winspool.l
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=/DWIN32 /D_WINDOWS /W3
 
-//Flags used by the C compiler during DEBUG builds.
-CMAKE_C_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /Od /RTC1
+//Set debug build flags
+CMAKE_C_FLAGS_DEBUG:STRING=-GF -MP -EHsc -Gd -W3 -D_CRT_SECURE_NO_WARNINGS -DLUA_COMPAT_BITLIB -DLUA_COMPAT_APIINTCASTS -DLUA_BUILD_AS_DLL -MDd -Ob0 -Od -RTC1 -D_DEBUG -DCHECK_MEM_LEAK
 
 //Flags used by the C compiler during MINSIZEREL builds.
 CMAKE_C_FLAGS_MINSIZEREL:STRING=/MD /O1 /Ob1 /DNDEBUG
 
-//Flags used by the C compiler during RELEASE builds.
-CMAKE_C_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /DNDEBUG
+//Set relese build flags
+CMAKE_C_FLAGS_RELEASE:STRING=-GF -MP -EHsc -Gd -W3 -D_CRT_SECURE_NO_WARNINGS -DLUA_COMPAT_BITLIB -DLUA_COMPAT_APIINTCASTS -DLUA_BUILD_AS_DLL -MD -Ob2 -O2 -DNDEBUG
 
 //Flags used by the C compiler during RELWITHDEBINFO builds.
 CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /DNDEBUG
@@ -70,7 +73,7 @@ CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /DNDEBUG
 //Libraries linked by default with all C applications.
 CMAKE_C_STANDARD_LIBRARIES:STRING=kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
 
-//Set debug librbased postfix
+//Set debug library postfix
 CMAKE_DEBUG_POSTFIX:STRING=d
 
 //Flags used by the linker during all build types.
@@ -204,7 +207,7 @@ CMAKE_RC_FLAGS_RELEASE:STRING=
 //Flags for Windows Resource Compiler during RELWITHDEBINFO builds.
 CMAKE_RC_FLAGS_RELWITHDEBINFO:STRING=
 
-//Set release librbase postfix
+//Set release library postfix
 CMAKE_RELEASE_POSTFIX:STRING=
 
 //Flags used by the linker during the creation of shared libraries
@@ -229,10 +232,10 @@ CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 
 //If set, runtime paths are not added when installing shared libraries,
 // but are added when building.
-CMAKE_SKIP_INSTALL_RPATH:BOOL=NO
+CMAKE_SKIP_INSTALL_RPATH:BOOL=OFF
 
 //If set, runtime paths are not added when using shared libraries.
-CMAKE_SKIP_RPATH:BOOL=NO
+CMAKE_SKIP_RPATH:BOOL=OFF
 
 //Flags used by the linker during the creation of static libraries
 // during all build types.
@@ -258,7 +261,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 // .SILENT directive, and all commands will be echoed to the console
 // during the make.  This is useful for debugging only. With Visual
 // Studio IDE projects all commands are done without /nologo.
-CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
+CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 
 //Path to include directory for cmocka_platform.h
 CMOCKA_PLATFORM_INCLUDE:PATH=
@@ -318,6 +321,9 @@ P4COMMAND:FILEPATH=P4COMMAND-NOTFOUND
 //Build with picky developer flags
 PICKY_DEVELOPER:BOOL=OFF
 
+//build for qemu
+QEMU:BOOL=OFF
+
 //Path to a library.
 RT_LIBRARY:FILEPATH=RT_LIBRARY-NOTFOUND
 
@@ -366,6 +372,27 @@ cmocka_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/3rd/cmocka
 
 //Value Computed by CMake
 cmocka_SOURCE_DIR:STATIC=E:/workspace/funra/source/3rd/cmocka
+
+//Value Computed by CMake
+libuv_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/3rd/libuv/1.42.0
+
+//Value Computed by CMake
+libuv_SOURCE_DIR:STATIC=E:/workspace/funra/source/3rd/libuv/1.42.0
+
+//Value Computed by CMake
+lua_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/3rd/lua/5.4.3
+
+//Dependencies for the target
+lua_LIB_DEPENDS:STATIC=general;legacy_stdio_definitions;general;ws2_32;
+
+//Value Computed by CMake
+lua_SOURCE_DIR:STATIC=E:/workspace/funra/source/3rd/lua/5.4.3
+
+//Dependencies for the target
+uv_LIB_DEPENDS:STATIC=general;psapi;general;user32;general;advapi32;general;iphlpapi;general;userenv;general;ws2_32;
+
+//Dependencies for the target
+uv_a_LIB_DEPENDS:STATIC=general;psapi;general;user32;general;advapi32;general;iphlpapi;general;userenv;general;ws2_32;
 
 
 ########################
@@ -484,7 +511,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RC_COMPILER
@@ -668,6 +695,42 @@ SLURM_SRUN_COMMAND-ADVANCED:INTERNAL=1
 SVNCOMMAND-ADVANCED:INTERNAL=1
 //CHECK_TYPE_SIZE: sizeof(uintptr_t)
 UINTPTR_T:INTERNAL=8
+//Test UV_F_STRICT_ALIASING
+UV_F_STRICT_ALIASING:INTERNAL=
+//Test UV_LINT_EXTRA
+UV_LINT_EXTRA:INTERNAL=
+//Test UV_LINT_NO_CONDITIONAL_ASSIGNMENT_MSVC
+UV_LINT_NO_CONDITIONAL_ASSIGNMENT_MSVC:INTERNAL=1
+//Test UV_LINT_NO_CONDITIONAL_CONSTANT_MSVC
+UV_LINT_NO_CONDITIONAL_CONSTANT_MSVC:INTERNAL=1
+//Test UV_LINT_NO_HIDES_GLOBAL
+UV_LINT_NO_HIDES_GLOBAL:INTERNAL=1
+//Test UV_LINT_NO_HIDES_LOCAL
+UV_LINT_NO_HIDES_LOCAL:INTERNAL=1
+//Test UV_LINT_NO_HIDES_PARAM
+UV_LINT_NO_HIDES_PARAM:INTERNAL=1
+//Test UV_LINT_NO_NONSTANDARD_EMPTY_TU_MSVC
+UV_LINT_NO_NONSTANDARD_EMPTY_TU_MSVC:INTERNAL=1
+//Test UV_LINT_NO_NONSTANDARD_FILE_SCOPE_MSVC
+UV_LINT_NO_NONSTANDARD_FILE_SCOPE_MSVC:INTERNAL=1
+//Test UV_LINT_NO_NONSTANDARD_MSVC
+UV_LINT_NO_NONSTANDARD_MSVC:INTERNAL=1
+//Test UV_LINT_NO_NONSTANDARD_NONSTATIC_DLIMPORT_MSVC
+UV_LINT_NO_NONSTANDARD_NONSTATIC_DLIMPORT_MSVC:INTERNAL=1
+//Test UV_LINT_NO_UNSAFE_MSVC
+UV_LINT_NO_UNSAFE_MSVC:INTERNAL=1
+//Test UV_LINT_NO_UNUSED_PARAMETER
+UV_LINT_NO_UNUSED_PARAMETER:INTERNAL=
+//Test UV_LINT_NO_UNUSED_PARAMETER_MSVC
+UV_LINT_NO_UNUSED_PARAMETER_MSVC:INTERNAL=1
+//Test UV_LINT_STRICT_PROTOTYPES
+UV_LINT_STRICT_PROTOTYPES:INTERNAL=
+//Test UV_LINT_UTF8_MSVC
+UV_LINT_UTF8_MSVC:INTERNAL=1
+//Test UV_LINT_W4
+UV_LINT_W4:INTERNAL=1
+//Test UV_LINT_WALL
+UV_LINT_WALL:INTERNAL=1
 //Test WITH_/D__CRT_NONSTDC_NO_WARNINGS_1_FLAG
 WITH_/D__CRT_NONSTDC_NO_WARNINGS_1_FLAG:INTERNAL=1
 //Test WITH_/D__CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_1_FLAG

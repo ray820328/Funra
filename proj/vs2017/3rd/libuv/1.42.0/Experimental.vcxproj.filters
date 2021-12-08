@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\funra\proj\vs2017\3rd\CMakeFiles\57bc7f79ab5abf0935bac23216be2c08\Experimental.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\workspace\funra\proj\vs2017\3rd\libuv\1.42.0\CMakeFiles\Experimental" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D8845B12-CB35-3FA3-8C39-AB379FCA989A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

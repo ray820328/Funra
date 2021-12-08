@@ -1,0 +1,13 @@
+# CMake generation dependency list for this directory.
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakeDependentOption.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CMakePackageConfigHelpers.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CTest.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CTestTargets.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CTestUseLaunchers.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CheckCCompilerFlag.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/CheckCSourceCompiles.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/DartConfiguration.tcl.in
+D:/tools/CMake/share/cmake-3.13/Modules/GNUInstallDirs.cmake
+D:/tools/CMake/share/cmake-3.13/Modules/WriteBasicConfigVersionFile.cmake
+E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt

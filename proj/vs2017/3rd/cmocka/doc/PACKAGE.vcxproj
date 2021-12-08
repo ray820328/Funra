@@ -228,7 +228,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\src\ALL_BUILD.vcxproj">
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\lua\5.4.3\ALL_BUILD.vcxproj">
       <Project>{97F6CADA-19C0-3FED-A988-87F17D33CFCB}</Project>
       <Name>ALL_BUILD</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -88,7 +88,15 @@ else()
         pthread
 		common${RBUILD_TYPE_POSTFIX}
     )
+    SET(PROJECT_LINK_OPTIONS
+        #-ljemalloc 
+        -lstdc++
+        -static-libgcc
+        -static-libstdc++
+    )
 endif()
+
+ADD_LINK_OPTIONS(${PROJECT_LINK_OPTIONS})
 
 SET(CMAKE_INSTALL_PREFIX					${RSERVER_BINARY_ROOT})
 

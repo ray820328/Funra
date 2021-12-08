@@ -15,7 +15,7 @@ SET(SRC_LIB
         src/rlog.c
         )
 
-LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)
+#LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})
 #ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRC_LIB})

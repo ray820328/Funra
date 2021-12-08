@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{923CC667-23B2-3363-A819-B8BAEBCAC768}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>lua</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lua.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">luad</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lua.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lua</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">lua.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">lua</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">lua.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">lua</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;_DEBUG;CHECK_MEM_LEAK;OS_WIN;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;CHECK_MEM_LEAK;OS_WIN;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;NDEBUG;OS_WIN;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;NDEBUG;OS_WIN;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\lua\5.4.3\src;E:\workspace\funra\source\3rd\lua\5.4.3\include;E:\workspace\funra\source\3rd\lua\5.4.3\src\luasocket;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/lua/5.4.3/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\proj\vs2017\3rd\lua\5.4.3\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/lua/5.4.3/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\proj\vs2017\3rd\lua\5.4.3\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/lua/5.4.3/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\proj\vs2017\3rd\lua\5.4.3\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/lua/5.4.3/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/funra/source/3rd/lua/5.4.3/CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;E:\workspace\funra\source\3rd\lua\5.4.3\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\proj\vs2017\3rd\lua\5.4.3\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lapi.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lcode.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lctype.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ldebug.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ldo.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ldump.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lfunc.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lgc.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\llex.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lmem.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lobject.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lopcodes.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lparser.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lstate.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lstring.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ltable.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ltm.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lundump.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lvm.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lzio.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lauxlib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lbaselib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lcorolib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ldblib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\liolib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lmathlib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\loslib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lstrlib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\ltablib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\lutf8lib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\loadlib.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\lua\5.4.3\src\linit.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\ZERO_CHECK.vcxproj">
+      <Project>{7CD3528E-446A-3CF3-9C3A-E977A33619EB}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

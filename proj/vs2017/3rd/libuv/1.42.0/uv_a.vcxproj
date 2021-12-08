@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{71AC9A2F-7742-3C45-82BD-ED604DB6BF22}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>uv_a</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">uv_a.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">uv_ad</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">uv_a.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">uv_a</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">uv_a.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">uv_a</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\build\lib\Win_x64\3rd\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">uv_a.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">uv_a</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4100;4127;4201;4206;4210;4232;4456;4457;4459;4706;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;_DEBUG;CHECK_MEM_LEAK;OS_WIN;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;CHECK_MEM_LEAK;OS_WIN;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4100;4127;4201;4206;4210;4232;4456;4457;4459;4706;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;NDEBUG;OS_WIN;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;NDEBUG;OS_WIN;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4100;4127;4201;4206;4210;4232;4456;4457;4459;4706;4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4100;4127;4201;4206;4210;4232;4456;4457;4459;4706;4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OS_WIN;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0602;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\3rd\libuv\1.42.0\include;E:\workspace\funra\source\3rd\libuv\1.42.0\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/libuv/1.42.0/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeDependentOption.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\proj\vs2017\3rd\libuv\1.42.0\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/libuv/1.42.0/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeDependentOption.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\proj\vs2017\3rd\libuv\1.42.0\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/libuv/1.42.0/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeDependentOption.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\proj\vs2017\3rd\libuv\1.42.0\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/libuv/1.42.0/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:/workspace/funra/source/3rd/libuv/1.42.0/CMakeLists.txt;D:\tools\CMake\share\cmake-3.13\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakeDependentOption.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CMakePackageConfigHelpers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTest.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestTargets.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CTestUseLaunchers.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCCompilerFlag.cmake;D:\tools\CMake\share\cmake-3.13\Modules\CheckCSourceCompiles.cmake;D:\tools\CMake\share\cmake-3.13\Modules\DartConfiguration.tcl.in;D:\tools\CMake\share\cmake-3.13\Modules\GNUInstallDirs.cmake;D:\tools\CMake\share\cmake-3.13\Modules\WriteBasicConfigVersionFile.cmake;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;E:\workspace\funra\source\3rd\libuv\1.42.0\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\proj\vs2017\3rd\libuv\1.42.0\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\fs-poll.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\idna.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\inet.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\random.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\strscpy.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\threadpool.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\timer.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\uv-common.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\uv-data-getter-setters.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\version.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\async.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\core.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\detect-wakeup.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\dl.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\error.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\fs.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\fs-event.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\getaddrinfo.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\getnameinfo.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\handle.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\loop-watcher.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\pipe.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\thread.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\poll.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\process.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\process-stdio.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\signal.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\snprintf.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\stream.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\tcp.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\tty.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\udp.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\util.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\winapi.c" />
+    <ClCompile Include="E:\workspace\funra\source\3rd\libuv\1.42.0\src\win\winsock.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\ZERO_CHECK.vcxproj">
+      <Project>{7CD3528E-446A-3CF3-9C3A-E977A33619EB}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
