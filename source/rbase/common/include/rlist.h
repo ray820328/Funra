@@ -95,8 +95,10 @@ void rlist_remove_alone(rlist_t *self, rlist_node_t *node);
 void rlist_destroy(rlist_t *self);
 
 #define rlist_free_node(self, node) \
-            if ((node) && (self)->free_node_val) (self)->free_node_val((node)->val); \
-            if ((node) && (self)->free_node) (self)->free_node((node))
+    do { \
+        if ((node) && (self)->free_node_val) (self)->free_node_val((node)->val); \
+        if ((node) && (self)->free_node) (self)->free_node((node)); \
+    } while(0)
 
 #define rlist_size(self) self->len
 
@@ -110,10 +112,15 @@ static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlis
 
 rlist_node_t* rlist_iterator_next(rlist_iterator_t *self);
 
-static inline void rlist_iterator_destroy(rlist_t *list, rlist_iterator_t *self) {
-    list->free_it(self);
-    self = NULL;
-}
+//static inline void rlist_iterator_destroy(rlist_t *list, rlist_iterator_t *self) {
+//    list->free_it(self);
+//    self = NULL;
+//}
+#define rlist_iterator_destroy(rlist_ptr, rlist_iterator_it_prt) \
+do { \
+    (rlist_ptr)->free_it((rlist_iterator_it_prt)); \
+    (rlist_iterator_it_prt) = NULL; \
+} while(0)
 
 #ifdef __cplusplus
 }

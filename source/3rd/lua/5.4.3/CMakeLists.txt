@@ -110,7 +110,7 @@ ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_CORE} ${SRC_LIB})
 ADD_EXECUTABLE(${PROJECT_NAME}_bin ${SRC_LIB} ${SRC_CORE} ${SRC_LUA})
 
 MESSAGE(STATUS "Platform: ${CMAKE_HOST_SYSTEM_NAME} - ${CMAKE_CURRENT_SOURCE_DIR} - ${R3RD_LIB_ROOT}")
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+IF(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     LINK_DIRECTORIES(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
     )
@@ -126,7 +126,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
         ws2_32 
         #${CMAKE_CURRENT_SOURCE_DIR}/lib/raylibcd.lib 
         ${EXTRA_LIBS})
-else()
+ELSE()
     LINK_DIRECTORIES(
          ${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
     )
@@ -146,5 +146,5 @@ else()
         ${EXTRA_LIBS}
 #        -Wl,--end-group
     )
-endif()
+ENDIF()
 

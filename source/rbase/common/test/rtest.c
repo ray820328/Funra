@@ -90,9 +90,9 @@ int run_rcommon_tests(int benchmark_output) {
   // 
   
   const struct CMUnitTest tests[] = {
-        cmocka_unit_test(rdict_test),
-        cmocka_unit_test(rlist_test),
-    };
+    cmocka_unit_test(rdict_test),
+    cmocka_unit_test(rlist_test),
+  };
   testResult = cmocka_run_group_tests(tests, NULL, NULL);
   
   if(testResult != 0){
@@ -115,22 +115,39 @@ static int run_test(const char* test,
   return status;
 }
 
+static int rlist_match_func(char* a, char* b) {
+    if (a == b) {
+        return 1;
+    }
+    if (a != NULL && b != NULL) {
+        if (strcmp(a, b) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 static void rlist_test(void **state) {
     (void) state;
     int count = 10;
-    count = count > 0 ? count : 1;
-    rlist_t *mylist = rlist_new(malloc);
-    //rlist_init(mylist);
-    mylist->malloc_node = malloc;
-    mylist->malloc_it = malloc;
-    mylist->free_node_val = free;
-    mylist->free_node = free;
-    mylist->free_self = free;
-    mylist->free_it = free;
+    count = count > 4 ? count : 5;
+    rlist_t *mylist = rlist_new(raymalloc);
+
+    assert_true(mylist != NULL);
+
+    rlist_init(mylist);
+    mylist->malloc_node = raymalloc;
+    mylist->malloc_it = raymalloc;
+    mylist->free_node_val = rayfree;
+    mylist->free_node = rayfree;
+    mylist->free_self = rayfree;
+    mylist->free_it = rayfree;
+    mylist->match = rlist_match_func;
+
+    assert_int_equal(mylist->len, 0);
 
     for (int i = 0; i < count; i++) {
-        char* value = malloc(50);
+        char* value = raymalloc(50);
         if (value) {
             sprintf(value, "listNode - %d", i);
 
@@ -142,23 +159,39 @@ static void rlist_test(void **state) {
         }
     }
 
-    rlist_node_t *nodeFind = rlist_find(mylist, "listNode - 3");
-    if (nodeFind) {
-        printf("rlist find: %s\n", (char*)nodeFind->val);
-        rlist_remove(mylist, nodeFind);
-    }
-    rlist_at(mylist, 0);  // first
-    rlist_at(mylist, 1);  // second
-    rlist_at(mylist, -1); // last
-    rlist_at(mylist, -3); // third last
+    assert_int_equal(mylist->len, count);
+
+    const char* nodeValue = "listNode - 3";
+    rlist_node_t *nodeFind = rlist_find(mylist, nodeValue);
+
+    assert_true(nodeFind);
+
+    assert_true(nodeFind->val);
+
+    assert_string_equal(nodeFind->val, nodeValue);
+
+    rlist_remove(mylist, nodeFind);
+
+    assert_int_equal(mylist->len, count - 1);
+    
+    assert_true(rlist_at(mylist, 0));  // first
+    assert_true(rlist_at(mylist, 1));  // second
+    assert_true(rlist_at(mylist, -1)); // last
+    assert_true(rlist_at(mylist, -3)); // third last
+    assert_false(rlist_at(mylist, count - 1));
 
     rlist_iterator_t *it = rlist_iterator_new(mylist, RLIST_HEAD);
     while ((nodeFind = rlist_iterator_next(it))) {
-        printf("rlist iter: %s\n", (char*)nodeFind->val);
+        assert_true(nodeFind);
+        assert_true(nodeFind->val);
     }
     rlist_iterator_destroy(mylist, it);
 
-    rlist_destroy(mylist);
+    assert_false(it);
+
+    rdestroy_object(mylist, rlist_destroy);
+
+    assert_false(mylist);
 }
 
 
@@ -167,7 +200,7 @@ static uint64_t dic_hash_callback(const void *key) {
 }
 static int dic_compare_callback(void *privdata, const void *key1, const void *key2) {
     int l1, l2;
-    DICT_NOTUSED(privdata);
+    runused(privdata);
 
     l1 = (int)strlen((char*)key1);
     l2 = (int)strlen((char*)key2);
@@ -175,7 +208,7 @@ static int dic_compare_callback(void *privdata, const void *key1, const void *ke
     return memcmp(key1, key2, l1) == 0;
 }
 static void dic_free_callback(void *privdata, void *val) {
-    DICT_NOTUSED(privdata);
+    runused(privdata);
 
     zfree(val);
 }
@@ -193,16 +226,13 @@ static char *dic_longlong_2string(long long value) {
 }
 
 
-#define start_benchmark() start = millisec_r()
-#define end_benchmark(msg) do { \
-    elapsed = millisec_r()-start; \
-    printf(msg ": %ld items in %lld ms\n", count, elapsed); \
-} while(0)
-
 static void rdict_test(void **state) {
     (void) state;
     int count = 10000;
     count = count > 0 ? count : 10000;
+    long j;
+
+    init_benchmark(1024, "test dict(%d)", count);
 
     dictType BenchmarkDictType = {
         dic_hash_callback,
@@ -214,15 +244,18 @@ static void rdict_test(void **state) {
         NULL
     };
 
-    long j;
-    long long start = 0, elapsed = 0;
+    start_benchmark(0);
     dict *dict = dictCreate(&BenchmarkDictType, NULL);
+    assert_true(dict);
+    end_benchmark("Linear access of existing elements (2nd round)");
 
+
+    start_benchmark(0);
     for (j = 0; j < count; j++) {
         int retval = dictAdd(dict, dic_longlong_2string(j), (void*)j);
-        assert(retval == DICT_OK);
+        assert_true(retval == DICT_OK);
     }
-    assert((long)dictSize(dict) == count);
+    assert_true((long)dictSize(dict) == count);
 
     /* Wait for rehashing. */
     while (dictIsRehashing(dict)) {
@@ -232,52 +265,52 @@ static void rdict_test(void **state) {
     for (j = 0; j < count; j++) {
         char *key = dic_longlong_2string(j);
         dictEntry *de = dictFind(dict, key);
-        assert(de != NULL);
+        assert_true(de != NULL);
         zfree(key);
     }
 
     for (j = 0; j < count; j++) {
         char *key = dic_longlong_2string(j);
         dictEntry *de = dictFind(dict, key);
-        assert(de != NULL);
+        assert_true(de != NULL);
         zfree(key);
     }
     end_benchmark("Linear access of existing elements (2nd round)");
 
-    start_benchmark();
+    start_benchmark(0);
     for (j = 0; j < count; j++) {
         char *key = dic_longlong_2string(rand() % count);
         dictEntry *de = dictFind(dict, key);
-        assert(de != NULL);
+        assert_true(de != NULL);
         zfree(key);
     }
     end_benchmark("Random access of existing elements");
 
-    start_benchmark();
+    start_benchmark(0);
     for (j = 0; j < count; j++) {
         dictEntry *de = dictGetRandomKey(dict);
-        assert(de != NULL);
+        assert_true(de != NULL);
     }
     end_benchmark("Accessing random keys");
 
-    start_benchmark();
+    start_benchmark(0);
     for (j = 0; j < count; j++) {
         char *key = dic_longlong_2string(rand() % count);
         key[0] = 'X';
         dictEntry *de = dictFind(dict, key);
-        assert(de == NULL);
+        assert_true(de == NULL);
         zfree(key);
     }
     end_benchmark("Accessing missing");
 
-    start_benchmark();
+    start_benchmark(0);
     for (j = 0; j < count; j++) {
         char *key = dic_longlong_2string(j);
         int retval = dictDelete(dict, key);
-        assert(retval == DICT_OK);
+        assert_true(retval == DICT_OK);
         key[0] += 17; /* Change first number to letter. */
         retval = dictAdd(dict, key, (void*)j);
-        assert(retval == DICT_OK);
+        assert_true(retval == DICT_OK);
     }
     end_benchmark("Removing and adding");
     dictRelease(dict);

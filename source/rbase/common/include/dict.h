@@ -44,10 +44,10 @@
 #define DICT_OK 0
 #define DICT_ERR 1
 
-#define zmalloc(size) malloc((size))
+#define zmalloc(size) raymalloc((size))
 #define zcalloc(size) calloc(1, (size))
 #define ztrycalloc(size) zcalloc((size))
-#define zfree(prt) free((prt))
+#define zfree(prt) rayfree((prt))
 
 #define random() rand()
 

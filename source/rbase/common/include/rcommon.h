@@ -50,6 +50,7 @@ extern "C" {
 #define likely(x) x
 #define unlikely(x) x
 #define __attribute__(unused) 
+#define runused(x) ((void) x)
 
 #define access(param1, param2) _access(param1, param2)
 
@@ -91,6 +92,21 @@ extern "C" {
 #define raymalloc malloc
 #define rayfree free
 
+#define fn_raymalloc(x) raymalloc((x))
+#define fn_rayfree(x) \
+    do { \
+        rayfree((x)); \
+        (x) = NULL; \
+    } while (0)
+
+//析构宏，二级指针难看
+#define rdestroy_object(obejectPrt, destroyFunc) \
+    if (obejectPrt) { \
+        destroyFunc(obejectPrt); \
+        obejectPrt = NULL; \
+    }
+
+
 #define RAY_USE_POOL
 
 #ifdef RAY_USE_POOL
@@ -115,7 +131,7 @@ extern "C" {
 #define rmin(a,b) ((a)<(b)?(a):(b))
 #define rmax(a, b) ((a)>(b)?(a):(b))
 
-#define rarray_count(ptr, count) \
+#define rcount_array(ptr, count) \
           do { \
             if (ptr) \
                 count = sizeof(ptr) / sizeof((ptr)[0]) \
@@ -131,24 +147,24 @@ extern "C" {
             retTempStr[lenNumStr] = '\0'; \
             (retNumStr) = retTempStr; \
           } while(0)
-#define rformat_s(str_buffer, fmt, ...) \
+#define rformat_s(strBuffer, fmt, ...) \
           do { \
-            if (sprintf(str_buffer, fmt, ##__VA_ARGS__) >= (int)sizeof(str_buffer)) { \
-                rayprintf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof(str_buffer)); \
-                str_buffer[(int)sizeof(str_buffer) - 1] = '\0'; \
+            if (sprintf(strBuffer, fmt, ##__VA_ARGS__) >= (int)sizeof(strBuffer)) { \
+                rayprintf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof(strBuffer)); \
+                strBuffer[(int)sizeof(strBuffer) - 1] = '\0'; \
             } \
           } while(0)
-#define rformat_time_s_full(time_str, time_val) \
+#define rformat_time_s_full(timeStr, timeValue) \
           do { \
-            int* time_now_datas = rdate_from_time_millis(time_val ? time_val : millisec_r()); \
-            rformat_s(time_str, "%.4d-%.2d-%.2d %.2d:%.2d:%.2d %.3d", \
-                time_now_datas[0], time_now_datas[1], time_now_datas[2], time_now_datas[3], time_now_datas[4], time_now_datas[5], time_now_datas[6]); \
+            int* timeNowDatas = rdate_from_time_millis(timeValue ? timeValue : millisec_r()); \
+            rformat_s(timeStr, "%.4d-%.2d-%.2d %.2d:%.2d:%.2d %.3d", \
+                timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5], timeNowDatas[6]); \
           } while(0)
-#define rformat_time_s_yyyymmddhhMMss(time_str, time_val) \
+#define rformat_time_s_yyyymmddhhMMss(timeStr, timeValue) \
           do { \
-            int* time_now_datas = rdate_from_time_millis(time_val ? time_val : millisec_r()); \
-            rformat_s(time_str, "%.4d%.2d%.2d%.2d%.2d%.2d", \
-                time_now_datas[0], time_now_datas[1], time_now_datas[2], time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
+            int* timeNowDatas = rdate_from_time_millis(timeValue ? timeValue : millisec_r()); \
+            rformat_s(timeStr, "%.4d%.2d%.2d%.2d%.2d%.2d", \
+                timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
           } while(0)
 
 #define rassert(expr)                                     \
@@ -198,30 +214,30 @@ static inline void rstr_free(const void *key) {
 #define rmutex_t_def pthread_mutex_t;
 #endif /* defined(_WIN32) || defined(_WIN64) */
 
-static inline void rmutex_init(void* ray_mutex)
+static inline void rmutex_init(void* rmutexObj)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    InitializeCriticalSection(ray_mutex);
+    InitializeCriticalSection(rmutexObj);
 #else
-    pthread_mutex_init(ray_mutex, NULL);
+    pthread_mutex_init(rmutexObj, NULL);
 #endif /* defined(_WIN32) || defined(_WIN64) */
 }
 
-static inline void rmutex_lock(void* ray_mutex)
+static inline void rmutex_lock(void* rmutexObj)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    EnterCriticalSection(ray_mutex);
+    EnterCriticalSection(rmutexObj);
 #else
-    pthread_mutex_lock(ray_mutex);
+    pthread_mutex_lock(rmutexObj);
 #endif /* defined(_WIN32) || defined(_WIN64) */
 }
 
-static inline void rmutex_unlock(void* ray_mutex)
+static inline void rmutex_unlock(void* rmutexObj)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    LeaveCriticalSection(ray_mutex);
+    LeaveCriticalSection(rmutexObj);
 #else
-    pthread_mutex_unlock(ray_mutex);
+    pthread_mutex_unlock(rmutexObj);
 #endif /* defined(_WIN32) || defined(_WIN64) */
 }
 
