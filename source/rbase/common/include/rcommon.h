@@ -133,8 +133,8 @@ extern "C" {
 
 #define rcount_array(ptr, count) \
           do { \
-            if (ptr) \
-                count = sizeof(ptr) / sizeof((ptr)[0]) \
+            if ((ptr)) \
+                count = sizeof((ptr)) / sizeof((ptr)[0]); \
             else \
                 count = 0; \
           } while(0)

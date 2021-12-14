@@ -27,8 +27,19 @@ int run_test(const char* test, int benchmark_output, int test_count);
 void rdict_test(void **state);
 void rlist_test(void **state);
 
+const static struct CMUnitTest tests[] = {
+  cmocka_unit_test(rdict_test),
+  cmocka_unit_test(rlist_test),
+};
+
 static int init() {
-    
+    int total;
+
+    rcount_array(tests, total);
+
+    fprintf(stdout, "total: %d\n", total);
+    fflush(stdout);
+
 	return 0;
 }
 
@@ -56,43 +67,13 @@ int run_rcommon_tests(int benchmark_output) {
   /* Count the number of tests. */
   actual = 0;
   total = 0;
-  // for (task = TASKS; task->main; task++, actual++) {
-  //   if (!task->is_helper) {
-  //     total++;
-  //   }
-  // }
-
-  /* Keep platform_output first. */
-  // skip = (actual > 0 && 0 == strcmp(TASKS[0].task_name, "platform_output"));
-  // qsort(TASKS + skip, actual - skip, sizeof(TASKS[0]), compare_task);
-
-  fprintf(stdout, "1..%d\n", total);
-  fflush(stdout);
 
   /* Run all tests. */
   passed = 0;
   failed = 0;
   skipped = 0;
   current = 1;
-  // for (task = TASKS; task->main; task++) {
-  //   if (task->is_helper) {
-  //     continue;
-  //   }
-
-  //   test_result = run_test(task->task_name, benchmark_output, current);
-  //   switch (test_result) {
-  //   case TEST_OK: passed++; break;
-  //   case TEST_SKIP: skipped++; break;
-  //   default: failed++;
-  //   }
-  //   current++;
-  // }
-  // 
   
-  const struct CMUnitTest tests[] = {
-    cmocka_unit_test(rdict_test),
-    cmocka_unit_test(rlist_test),
-  };
   testResult = cmocka_run_group_tests(tests, NULL, NULL);
   
   if(testResult != 0){

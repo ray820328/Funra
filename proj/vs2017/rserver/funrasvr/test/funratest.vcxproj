@@ -318,12 +318,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="E:\workspace\funra\source\rbase\common\test\rtest.c">
-      <ObjectFileName>$(IntDir)/E_/workspace/funra/source/rbase/common/test/rtest.c.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="E:\workspace\funra\source\rserver\funrasvr\test\rtest.c">
-      <ObjectFileName>$(IntDir)/rtest.c.obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\test\rtest_collections.c" />
+    <ClCompile Include="E:\workspace\funra\source\rserver\funrasvr\test\rtest.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="E:\workspace\funra\proj\vs2017\rserver\ZERO_CHECK.vcxproj">

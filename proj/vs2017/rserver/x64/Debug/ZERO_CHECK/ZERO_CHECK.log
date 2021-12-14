@@ -1,7 +1,10 @@
 ﻿  Checking Build System
-  CMake is re-running because E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/generate.stamp is out-of-date.
-    the file 'E:/workspace/funra/source/rserver/CMakeLists.txt'
-    is newer than 'E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/generate.stamp.depend'
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/commonsvr/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/funrasvr/CMakeFiles/generate.stamp is up-to-date.
+  CMake is re-running because E:/workspace/funra/proj/vs2017/rserver/funrasvr/test/CMakeFiles/generate.stamp is out-of-date.
+    the file 'E:/workspace/funra/source/rserver/funrasvr/test/CMakeLists.txt'
+    is newer than 'E:/workspace/funra/proj/vs2017/rserver/funrasvr/test/CMakeFiles/generate.stamp.depend'
     result='-1'
   -- Selecting Windows SDK version 10.0.17763.0 to target Windows 10.0.18363.
   -- Build as type [], set as Debug.

@@ -3,7 +3,7 @@
 PROJECT(funratest)
 
 SET(SRC_BIN
-    ${RPROJECT_ROOT}/rbase/common/test/rtest.c
+    ${RPROJECT_ROOT}/rbase/common/test/rtest_collections.c
     rtest.c
     )
 
