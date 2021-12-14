@@ -41,6 +41,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "rbase.h"
+
 #define DICT_OK 0
 #define DICT_ERR 1
 

@@ -56,25 +56,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\build\bin\Win_x64\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\build\bin\Windows_AMD64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cmocka.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cmockad</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\build\bin\Win_x64\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\build\bin\Windows_AMD64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cmocka.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cmocka</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\build\bin\Win_x64\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\workspace\funra\build\bin\Windows_AMD64\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">cmocka.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">cmocka</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\build\bin\Win_x64\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\workspace\funra\build\bin\Windows_AMD64\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">cmocka.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">cmocka</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
@@ -120,9 +120,9 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/funra/build/lib/Win_x64/3rd/cmockad.lib</ImportLibrary>
+      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/3rd/cmockad.lib</ImportLibrary>
       <ModuleDefinitionFile>E:/workspace/funra/source/3rd/cmocka/src/cmocka.def</ModuleDefinitionFile>
-      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Win_x64/cmockad.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/cmockad.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -167,9 +167,9 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/funra/build/lib/Win_x64/3rd/Release/cmocka.lib</ImportLibrary>
+      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/3rd/Release/cmocka.lib</ImportLibrary>
       <ModuleDefinitionFile>E:/workspace/funra/source/3rd/cmocka/src/cmocka.def</ModuleDefinitionFile>
-      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Win_x64/cmocka.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/cmocka.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -212,9 +212,9 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/funra/build/lib/Win_x64/3rd/MinSizeRel/cmocka.lib</ImportLibrary>
+      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/3rd/MinSizeRel/cmocka.lib</ImportLibrary>
       <ModuleDefinitionFile>E:/workspace/funra/source/3rd/cmocka/src/cmocka.def</ModuleDefinitionFile>
-      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Win_x64/MinSizeRel/cmocka.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/MinSizeRel/cmocka.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -256,9 +256,9 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/funra/build/lib/Win_x64/3rd/RelWithDebInfo/cmocka.lib</ImportLibrary>
+      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/3rd/RelWithDebInfo/cmocka.lib</ImportLibrary>
       <ModuleDefinitionFile>E:/workspace/funra/source/3rd/cmocka/src/cmocka.def</ModuleDefinitionFile>
-      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Win_x64/RelWithDebInfo/cmocka.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/RelWithDebInfo/cmocka.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>

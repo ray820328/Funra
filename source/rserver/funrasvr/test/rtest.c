@@ -7,40 +7,42 @@
  * @author: Ray
  */
 
+#include <string.h>
+
 #include "rbase/common/test/rtest.h"
 
 int init_platform();
 int run_tests(int benchmarkOutput);
 
 static int init_platform() {
-    
-	return 0;
+
+    return 0;
 }
 
 int main(int argc, char **argv) {
-  init_platform();
+    init_platform();
 
-  run_tests(0);
-  // switch (argc) {
-  // case 1: return run_tests(0);
-  // default:
-  //   fprintf(stderr, "Too many arguments.\n");
-  //   fflush(stderr);
-  //   return 1;
-  // }
+    run_tests(0);
+    // switch (argc) {
+    // case 1: return run_tests(0);
+    // default:
+    //   fprintf(stderr, "Too many arguments.\n");
+    //   fflush(stderr);
+    //   return 1;
+    // }
 
 #ifndef __SUNPRO_C
-  return 0;
+    return 0;
 #endif
 }
 
 static int run_tests(int benchmarkOutput) {
-  int testResult;
+    int testResult;
 
-  testResult = 0;
+    testResult = 0;
 
-  testResult = run_rcommon_tests(benchmarkOutput);
+    testResult = run_rcommon_tests(benchmarkOutput);
 
-  return testResult;
+    return testResult;
 }
 

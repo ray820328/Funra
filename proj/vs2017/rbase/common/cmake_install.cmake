@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "E:/workspace/funra/source/rbase/../../build/bin/Win_x64")
+  set(CMAKE_INSTALL_PREFIX "E:/workspace/funra/source/rbase/../../build/bin/Windows_AMD64")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

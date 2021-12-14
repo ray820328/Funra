@@ -388,6 +388,12 @@ lua_LIB_DEPENDS:STATIC=general;legacy_stdio_definitions;general;ws2_32;
 //Value Computed by CMake
 lua_SOURCE_DIR:STATIC=E:/workspace/funra/source/3rd/lua/5.4.3
 
+//Value Computed by CMake
+tests_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/3rd/cmocka/tests
+
+//Value Computed by CMake
+tests_SOURCE_DIR:STATIC=E:/workspace/funra/source/3rd/cmocka/tests
+
 //Dependencies for the target
 uv_LIB_DEPENDS:STATIC=general;psapi;general;user32;general;advapi32;general;iphlpapi;general;userenv;general;ws2_32;
 

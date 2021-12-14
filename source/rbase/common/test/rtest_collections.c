@@ -9,15 +9,14 @@
 
 #pragma warning(disable : 4819)
 
+#include <string.h>
+
 #include "rcommon.h"
 #include "rtime.h"
 #include "rlist.h"
 #include "dict.h"
 
 #include "rbase/common/test/rtest.h"
-
-#include "3rd/cmocka/include/cmocka.h"
-#include "3rd/cmocka/include/cmocka_pbc.h"
 
 int init();
 int uninit();
@@ -28,8 +27,8 @@ void rdict_test(void **state);
 void rlist_test(void **state);
 
 const static struct CMUnitTest tests[] = {
-  cmocka_unit_test(rdict_test),
-  cmocka_unit_test(rlist_test),
+    cmocka_unit_test(rdict_test),
+    cmocka_unit_test(rlist_test),
 };
 
 static int init() {
@@ -40,60 +39,58 @@ static int init() {
     fprintf(stdout, "total: %d\n", total);
     fflush(stdout);
 
-	return 0;
+    return 0;
 }
 
 static int uninit() {
-    
-  return 0;
+
+    return 0;
 }
 
 int run_rcommon_tests(int benchmark_output) {
-  int actual;
-  int total;
-  int passed;
-  int failed;
-  int skipped;
-  int current;
-  int testResult;
-  // int skip;
-  // task_entry_t* task;
-  
-  testResult = init();
-  if(testResult != 0){
-    return -1;
-  }
+    int actual;
+    int total;
+    int passed;
+    int failed;
+    int skipped;
+    int current;
+    int testResult;
+    // int skip;
+    // task_entry_t* task;
 
-  /* Count the number of tests. */
-  actual = 0;
-  total = 0;
+    testResult = init();
+    if (testResult != 0) {
+        return -1;
+    }
 
-  /* Run all tests. */
-  passed = 0;
-  failed = 0;
-  skipped = 0;
-  current = 1;
-  
-  testResult = cmocka_run_group_tests(tests, NULL, NULL);
-  
-  if(testResult != 0){
-    return testResult;
-  }
+    /* Count the number of tests. */
+    actual = 0;
+    total = 0;
 
-  testResult = uninit();
-  if(testResult != 0){
-    return -2;
-  }
+    /* Run all tests. */
+    passed = 0;
+    failed = 0;
+    skipped = 0;
+    current = 1;
 
-  return failed;
+    testResult = cmocka_run_group_tests(tests, NULL, NULL);
+
+    if (testResult != 0) {
+        return testResult;
+    }
+
+    testResult = uninit();
+    if (testResult != 0) {
+        return -2;
+    }
+
+    return failed;
 }
 
-static int run_test(const char* test,
-             int benchmark_output,
-             int test_count) {
-  int status = 0;
+static int run_test(const char* test, int benchmark_output, int test_count) {
+    int status = 0;
 
-  return status;
+    return status;
 }
 
 static int rlist_match_func(char* a, char* b) {
@@ -109,7 +106,7 @@ static int rlist_match_func(char* a, char* b) {
 }
 
 static void rlist_test(void **state) {
-    (void) state;
+    (void)state;
     int count = 10;
     count = count > 4 ? count : 5;
     rlist_t *mylist = rlist_new(raymalloc);
@@ -154,7 +151,7 @@ static void rlist_test(void **state) {
     rlist_remove(mylist, nodeFind);
 
     assert_int_equal(mylist->len, count - 1);
-    
+
     assert_true(rlist_at(mylist, 0));  // first
     assert_true(rlist_at(mylist, 1));  // second
     assert_true(rlist_at(mylist, -1)); // last
@@ -208,7 +205,7 @@ static char *dic_longlong_2string(long long value) {
 
 
 static void rdict_test(void **state) {
-    (void) state;
+    (void)state;
     int count = 10000;
     count = count > 0 ? count : 10000;
     long j;

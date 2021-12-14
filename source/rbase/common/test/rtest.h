@@ -28,6 +28,9 @@
 #include <setjmp.h>
 #include <stdint.h>
 
+#include "3rd/cmocka/include/cmocka.h"
+#include "3rd/cmocka/include/cmocka_pbc.h"
+
 #define init_benchmark(bufferSize, fmtStr, ...) \
     char* benchmarkTitle = raymalloc(bufferSize); \
     assert_true(sprintf(benchmarkTitle, fmtStr, ##__VA_ARGS__) < bufferSize); \

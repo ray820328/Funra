@@ -1,8 +1,4 @@
-﻿  rtest_collections.c
-  rtest.c
+﻿  rtest.c
   Platform info: _WIN64=1
-  Platform info: _WIN64=1
-E:\workspace\funra\source\rbase\common\test\rtest_collections.c(146): warning C4090: “函数”: 不同的“const”限定符
-E:\workspace\funra\source\rbase\common\test\rtest_collections.c(236): warning C4312: “类型强制转换”: 从“long”转换到更大的“void *”
-E:\workspace\funra\source\rbase\common\test\rtest_collections.c(293): warning C4312: “类型强制转换”: 从“long”转换到更大的“void *”
-  funratest.vcxproj -> E:\workspace\funra\build\bin\Win_x64\funratest.exe
+E:\workspace\funra\source\rserver\..\3rd/cmocka/include/cmocka.h(1812): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  funratest.vcxproj -> E:\workspace\funra\build\bin\Windows_AMD64\funratest.exe

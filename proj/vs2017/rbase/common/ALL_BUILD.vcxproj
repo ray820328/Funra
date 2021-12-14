@@ -166,9 +166,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="E:\workspace\funra\proj\vs2017\rbase\common\common.vcxproj">
-      <Project>{257673BD-7F94-3BCA-A340-C71441DDB6D6}</Project>
-      <Name>common</Name>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\rbase\common\rcommon.vcxproj">
+      <Project>{259915A6-752E-3C73-B8AA-7A0CA8F30BD5}</Project>
+      <Name>rcommon</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>

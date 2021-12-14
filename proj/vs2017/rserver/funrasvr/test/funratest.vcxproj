@@ -56,13 +56,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\build\bin\Win_x64\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\workspace\funra\build\bin\Windows_AMD64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">funratest.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">funratest</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\build\bin\Win_x64\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\workspace\funra\build\bin\Windows_AMD64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">funratest.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">funratest</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
@@ -115,13 +115,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;commond.lib;3rd/cmockad.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Win_x64;E:/workspace/funra/source/rserver/../../build/lib/Win_x64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64;E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/funra/build/lib/Win_x64/funratest.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Win_x64/funratest.pdb</ProgramDataBaseFile>
+      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/funratest.lib</ImportLibrary>
+      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/funratest.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -161,13 +161,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;commond.lib;3rd/cmockad.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Win_x64;E:/workspace/funra/source/rserver/../../build/lib/Win_x64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64;E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>E:/workspace/funra/proj/vs2017/rserver/funrasvr/test/Release/funratest.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Win_x64/funratest.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/funratest.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -205,8 +205,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;commond.lib;3rd/cmockad.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Win_x64;E:/workspace/funra/source/rserver/../../build/lib/Win_x64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64;E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -248,8 +248,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;commond.lib;3rd/cmockad.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Win_x64;E:/workspace/funra/source/rserver/../../build/lib/Win_x64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;3rd/cmockad.lib;3rd/luad.lib;3rd/uv_ad.lib;rcommond.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64;E:/workspace/funra/source/rserver/../../build/lib/Windows_AMD64/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

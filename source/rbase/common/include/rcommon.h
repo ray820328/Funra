@@ -22,6 +22,8 @@ extern "C" {
 #include <inttypes.h>
 #include <stdbool.h>
 
+#include "rbase.h"
+
 #define   macro_print_macro_helper(x)   #x  
 #define   macro_print_macro(x)   #x"="macro_print_macro_helper(x)
 
@@ -88,16 +90,6 @@ extern "C" {
 #define R_API		extern
 
 #endif //WIN32
-
-#define raymalloc malloc
-#define rayfree free
-
-#define fn_raymalloc(x) raymalloc((x))
-#define fn_rayfree(x) \
-    do { \
-        rayfree((x)); \
-        (x) = NULL; \
-    } while (0)
 
 //析构宏，二级指针难看
 #define rdestroy_object(obejectPrt, destroyFunc) \

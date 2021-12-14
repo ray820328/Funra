@@ -55,13 +55,13 @@ ENDIF()
 
 IF (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     SET(PROJECT_DEFINES "-DOS_LINUX -DLUA_USE_POSIX")
-    SET(DIR_PLATFORM Linux_x86_${ARCH_TYPE})
+    SET(DIR_PLATFORM Linux_${CMAKE_SYSTEM_PROCESSOR})
 ELSEIF (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     SET(PROJECT_DEFINES "-DWIN32 -DOS_Windows")
-    SET(DIR_PLATFORM Win_x${ARCH_TYPE})
+    SET(DIR_PLATFORM Windows_${CMAKE_SYSTEM_PROCESSOR})
 ELSE()
     SET(PROJECT_DEFINES)
-    SET(DIR_PLATFORM Others)
+    SET(DIR_PLATFORM ${CMAKE_HOST_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR})
 ENDIF ()
 ADD_DEFINITIONS(${PROJECT_DEFINES})
 
@@ -76,7 +76,10 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     
     SET(LINK_LIBS 
 		legacy_stdio_definitions
-		common${RBUILD_TYPE_POSTFIX} 
+		3rd/cmocka${RBUILD_TYPE_POSTFIX}
+        3rd/lua${RBUILD_TYPE_POSTFIX} 
+        3rd/uv_a${RBUILD_TYPE_POSTFIX} 
+        rcommon${RBUILD_TYPE_POSTFIX}  
 	)
 else()
     LINK_DIRECTORIES(
@@ -86,7 +89,11 @@ else()
         dl 
         m 
         pthread
-		common${RBUILD_TYPE_POSTFIX}
+        legacy_stdio_definitions
+        3rd/cmocka${RBUILD_TYPE_POSTFIX}
+        3rd/lua${RBUILD_TYPE_POSTFIX} 
+        3rd/uv_a${RBUILD_TYPE_POSTFIX} 
+        rcommon${RBUILD_TYPE_POSTFIX}  
     )
     SET(PROJECT_LINK_OPTIONS
         #-ljemalloc 

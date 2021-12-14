@@ -185,9 +185,6 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 //Value Computed by CMake
 common_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/rbase/common
 
-//Dependencies for the target
-common_LIB_DEPENDS:STATIC=general;legacy_stdio_definitions;
-
 //Value Computed by CMake
 common_SOURCE_DIR:STATIC=E:/workspace/funra/source/rbase/common
 
@@ -196,6 +193,12 @@ rbase_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/rbase
 
 //Value Computed by CMake
 rbase_SOURCE_DIR:STATIC=E:/workspace/funra/source/rbase
+
+//Value Computed by CMake
+rcommon_BINARY_DIR:STATIC=E:/workspace/funra/proj/vs2017/rbase/common
+
+//Value Computed by CMake
+rcommon_SOURCE_DIR:STATIC=E:/workspace/funra/source/rbase/common
 
 
 ########################
