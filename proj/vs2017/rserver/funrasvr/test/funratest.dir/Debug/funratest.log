@@ -1,4 +1,11 @@
-﻿  rtest.c
+﻿  Building Custom Rule E:/workspace/funra/source/rserver/funrasvr/test/CMakeLists.txt
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/funrasvr/test/CMakeFiles/generate.stamp is up-to-date.
+  rtest_collections.c
+  rtest.c
   Platform info: _WIN64=1
-E:\workspace\funra\source\rserver\..\3rd/cmocka/include/cmocka.h(1812): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  Platform info: _WIN64=1
+E:\workspace\funra\source\rbase\common\test\rtest_collections.c(143): warning C4090: “函数”: 不同的“const”限定符
+E:\workspace\funra\source\rbase\common\test\rtest_collections.c(233): warning C4312: “类型强制转换”: 从“long”转换到更大的“void *”
+E:\workspace\funra\source\rbase\common\test\rtest_collections.c(290): warning C4312: “类型强制转换”: 从“long”转换到更大的“void *”
+E:\workspace\funra\source\rserver\..\3rd/cmocka/include/cmocka.h(1812): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失 (编译源文件 E:\workspace\funra\source\rserver\funrasvr\test\rtest.c)
   funratest.vcxproj -> E:\workspace\funra\build\bin\Windows_AMD64\funratest.exe

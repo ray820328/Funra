@@ -33,7 +33,7 @@ extern "C" {
 //		return rv; \
 //	}
 
-#define UNUSED __attribute__(unused)
+#define UNUSED __attribute__((unused))
 
 #if defined(_WIN32) || defined(_WIN64)
 #pragma message("Platform info: "macro_print_macro(_WIN64))

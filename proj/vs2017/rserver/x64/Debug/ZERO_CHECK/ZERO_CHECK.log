@@ -1,1 +1,5 @@
-﻿
+﻿  Checking Build System
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/commonsvr/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/funrasvr/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rserver/funrasvr/test/CMakeFiles/generate.stamp is up-to-date.

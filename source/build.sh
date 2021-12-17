@@ -42,12 +42,12 @@ build()
 
 	sleep 1
 
-	# cd ${ROOT_PATH}
-	# cd ${FUNRA_SERVER_ROOT_BASE}
-	# chmod 777 $SCRIPT_FILE
-	# if [ ${BUILD_LEVEL} -gt 0 ]; then
-	# 	yes|./$SCRIPT_FILE
-	# fi
+	cd ${ROOT_PATH}
+	cd ${FUNRA_SERVER_ROOT_BASE}
+	chmod 777 $SCRIPT_FILE
+	if [ ${BUILD_LEVEL} -gt 0 ]; then
+		yes|./$SCRIPT_FILE
+	fi
 
 	# sleep 1
 
