@@ -10,8 +10,10 @@
 优化阶段根据实际需要，封装mmap或共享内存实现，优化同一VM环境下部署的多进程之间的通信效率；
 * 关于分布式数据存储，暂不涉及分布式算法实现，间接使用第三方服务实现AP和最终一致性，
 服务发现和Meta分布式数据管理采用Consul，业务数据存储采用MongoDB分片副本集集群；
-* 关于语言，为了与工作剥离，以c为主，脚本以lua为主；
-* 关于跨平台，因时间有限目前仅准备提供x86-64 & Linux版本（CentOS 7）；
+* 关于语言，为了与工作剥离，以c为主，脚本以lua为主，编译脚本以cmake为主，并只做简单流程处理；
+* 关于跨平台，因时间有限目前仅准备提供x86-64 & Linux版本（编译环境仅CentOS 7）；
+* 开发IDE为VS2017，并附上工程文件在proj目录（直接cmake生成，暂时不做文件和目录抽离以及维护）；
+* 可使用build目录内的第三方静态库直接编译，ld版本为： GNU ld version 2.25.1；
 
 因为时间和精力有限，纰漏和错误之处在所难免，希望不吝赐教，再此提前感谢。
 
@@ -49,6 +51,19 @@
 # 问题和解决
 - 因Funra用到多线程和lua脚本，曾经项目中重度lua逻辑，heap内存使用ptmalloc分配，
 sbrk高并发环境下导致top chunk激增，内存碎片引起rss不能释放问题，本框架生产环境直接使用jemalloc，后续不做过多解释；
+- libunwind如果是直接从git下载的版本（Funra已修改），在某些机器下如果编译失败（亲测1.6.2版本在x86-64 Centos7下），需要做如下修改，
+ - 修改文件：configure.ac
+    AM_INIT_AUTOMAKE([1.6 subdir-objects])
+    AC_CONFIG_MACRO_DIR([m4])
+ - configure带上参数
+    autoreconf -i
+    ./configure ACLOCAL_AMFLAGS="-I m4"
+
+# 工具
+- 考虑多线程和压测，性能分析采用gperftools以侵入式动态采样的方式进行profile，配合QCachegrind查看分析数据；
+- 64位服务器环境gperftools需安装新版的libunwind配合进行backtrace，否则实测会产生core；
+- 日常开发检测valgrind；
+- 压测Locust；
 
 # 后记
 留空，希望以后能开心的来写这里。
