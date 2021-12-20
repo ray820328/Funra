@@ -18,13 +18,13 @@
 
 #include "rbase/common/test/rtest.h"
 
-int init();
-int uninit();
+static int init();
+static int uninit();
 // int run_tests(int benchmark_output);
-int run_test(const char* test, int benchmark_output, int test_count);
+rattribute_unused(static int run_test(const char* test, int benchmark_output, int test_count));
 
-void rdict_test(void **state);
-void rlist_test(void **state);
+static void rdict_test(void **state);
+static void rlist_test(void **state);
 
 const static struct CMUnitTest tests[] = {
     cmocka_unit_test(rdict_test),
@@ -48,12 +48,12 @@ static int uninit() {
 }
 
 int run_rcommon_tests(int benchmark_output) {
-    int actual;
-    int total;
-    int passed;
+    // int actual;
+    // int total;
+    // int passed;
     int failed;
-    int skipped;
-    int current;
+    // int skipped;
+    // int current;
     int testResult;
     // int skip;
     // task_entry_t* task;
@@ -64,14 +64,14 @@ int run_rcommon_tests(int benchmark_output) {
     }
 
     /* Count the number of tests. */
-    actual = 0;
-    total = 0;
+    // actual = 0;
+    // total = 0;
 
     /* Run all tests. */
-    passed = 0;
+    // passed = 0;
     failed = 0;
-    skipped = 0;
-    current = 1;
+    // skipped = 0;
+    // current = 1;
 
     testResult = cmocka_run_group_tests(tests, NULL, NULL);
 
@@ -178,7 +178,7 @@ static uint64_t dic_hash_callback(const void *key) {
 }
 static int dic_compare_callback(void *privdata, const void *key1, const void *key2) {
     int l1, l2;
-    runused(privdata);
+    rvoid(privdata);
 
     l1 = (int)strlen((char*)key1);
     l2 = (int)strlen((char*)key2);
@@ -186,7 +186,7 @@ static int dic_compare_callback(void *privdata, const void *key1, const void *ke
     return memcmp(key1, key2, l1) == 0;
 }
 static void dic_free_callback(void *privdata, void *val) {
-    runused(privdata);
+    rvoid(privdata);
 
     zfree(val);
 }

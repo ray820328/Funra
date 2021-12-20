@@ -106,7 +106,7 @@ void rlist_destroy(rlist_t *self);
 
 rlist_iterator_t* rlist_iterator_new(rlist_t *list, rlist_direction_t direction);
 
-static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction);
+rattribute_unused(static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction));
 
 //inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction);
 

@@ -6,8 +6,10 @@ FUNRA_SERVER_ROOT_3RD=3rd
 FUNRA_SERVER_ROOT_BASE=rbase
 FUNRA_SERVER_ROOT_SERVER=rserver
 SCRIPT_FILE="make.sh"
+BUILD_ACTION=$1
 BUILD_LEVEL=$2
-FUNRA_SERVER_OUTPUT_PATH=${ROOT_PATH}/../build
+BUILD_PACKAGE_TYPE=$3
+FUNRA_SERVER_OUTPUT_PATH=${ROOT_PATH}/../build/bin
 FUNRA_SERVER_OUTPUT_NAME=funsvr
 
 check_out()
@@ -33,6 +35,8 @@ backup()
 
 build()
 {
+	export BUILD_PACKAGE_TYPE="${BUILD_PACKAGE_TYPE}"
+
 	cd ${ROOT_PATH}
 	cd ${FUNRA_SERVER_ROOT_3RD}
 	chmod 777 $SCRIPT_FILE
@@ -49,12 +53,12 @@ build()
 		yes|./$SCRIPT_FILE
 	fi
 
-	# sleep 1
+	sleep 1
 
-	# cd ${ROOT_PATH}
-	# cd ${FUNRA_SERVER_ROOT_SERVER}
-	# chmod 777 $SCRIPT_FILE
-	# yes|./$SCRIPT_FILE
+	cd ${ROOT_PATH}
+	cd ${FUNRA_SERVER_ROOT_SERVER}
+	chmod 777 $SCRIPT_FILE
+	yes|./$SCRIPT_FILE
 
 	cd ${ROOT_PATH}
 
@@ -93,10 +97,10 @@ if [ $# -lt 2 ];then
     BUILD_LEVEL=0
 fi
 
-if [ "$1" = "backup" ];then
+if [ ${BUILD_ACTION} = "backup" ];then
     backup
 
-elif [ "$1" = "build" ];then
+elif [ ${BUILD_ACTION} = "build" ];then
 	clean
     build
     #upload_dist
@@ -106,7 +110,7 @@ elif [ "$1" = "build" ];then
 		exit 1
 	fi
 
-elif [ "$1" = "clean" ];then
+elif [ ${BUILD_ACTION} = "clean" ];then
     clean
 
 else

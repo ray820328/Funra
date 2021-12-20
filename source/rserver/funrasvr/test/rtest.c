@@ -11,8 +11,8 @@
 
 #include "rbase/common/test/rtest.h"
 
-int init_platform();
-int run_tests(int benchmarkOutput);
+static int init_platform();
+static int run_tests(int benchmarkOutput);
 
 static int init_platform() {
 

@@ -24,8 +24,10 @@ extern "C" {
 
 #include "rbase.h"
 
-#define   macro_print_macro_helper(x)   #x  
-#define   macro_print_macro(x)   #x"="macro_print_macro_helper(x)
+#define macro_print_macro_helper(x)   #x  
+#define macro_print_macro(x)          #x"="macro_print_macro_helper(x)
+
+#define rvoid(x) (void)(x)
 
 //#define rassert(expr, rv) \
 //	if(!(expr)) { \
@@ -33,10 +35,10 @@ extern "C" {
 //		return rv; \
 //	}
 
-#define UNUSED __attribute__((unused))
-
 #if defined(_WIN32) || defined(_WIN64)
 #pragma message("Platform info: "macro_print_macro(_WIN64))
+
+#define rattribute_unused(declaration) declaration
 
 #pragma setlocale("chs")
 
@@ -51,8 +53,6 @@ extern "C" {
 #define get_filename(x) strrchr(x, '\\') ? strrchr(x, '\\') + 1 : x
 #define likely(x) x
 #define unlikely(x) x
-#define __attribute__(unused) 
-#define runused(x) ((void) x)
 
 #define access(param1, param2) _access(param1, param2)
 
@@ -82,6 +82,8 @@ extern "C" {
 #include <unistd.h>
 #include <pthread.h>
 #include <libgen.h>
+
+#define rattribute_unused(declaration) __attribute__((unused)) declaration
 
 #define get_filename(x) basename(x)
 #define likely(x) __builtin_expect(!!(x), 1)

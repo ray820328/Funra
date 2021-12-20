@@ -3,8 +3,8 @@
 PROJECT(funrasvr)
 
 SET(SRC_BIN
-        src/main.c
-        )
+    src/main.c
+    )
 
 MESSAGE(STATUS "Platform: ${CMAKE_HOST_SYSTEM_NAME} - ${CMAKE_CURRENT_SOURCE_DIR}")
 
