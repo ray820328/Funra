@@ -278,14 +278,14 @@ extern rpool_chain_node_t* rpool_chain;
     } \
     return true; \
   } \
-  __attribute__((unused)) static TYPE* malloc_##TYPE##_data (size_t size) \
+  rattribute_unused(static TYPE* malloc_##TYPE##_data (size_t size) \
   { \
     return rnew_data(TYPE); \
-  } \
-  __attribute__((unused)) static void free_##TYPE##_data (TYPE* data) \
+  }) \
+  rattribute_unused(static void free_##TYPE##_data (TYPE* data) \
   { \
     rfree_data(TYPE, data); \
-  }
+  })
 
 
 #define POOL_BLOCK_ITEM_COUNT 64

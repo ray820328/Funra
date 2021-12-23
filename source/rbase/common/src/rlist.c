@@ -44,22 +44,44 @@ rlist_t* rlist_init(rlist_t* self) {
  * Free the list.
  */
 
+void rlist_clear(rlist_t *self) {
+    if (!self || self->len <= 0) {
+        return;
+    }
+    unsigned int len = self->len;
+    rlist_node_t *next;
+    rlist_node_t *curr = self->head;
+
+    while (len--) {
+        next = curr->next;
+        if (self->free_node_val) self->free_node_val(curr->val);
+        if (self->free_node)
+            self->free_node(curr);
+        else
+            assert(self->free_node != NULL);
+        curr = next;
+    }
+
+    self->tail = self->head = NULL;
+    self->len = 0;
+}
+
 void rlist_destroy(rlist_t *self) {
-  unsigned int len = self->len;
-  rlist_node_t *next;
-  rlist_node_t *curr = self->head;
+    unsigned int len = self->len;
+    rlist_node_t *next;
+    rlist_node_t *curr = self->head;
 
-  while (len--) {
-    next = curr->next;
-    if (self->free_node_val) self->free_node_val(curr->val);
-    if (self->free_node)
-        self->free_node(curr);
-    else
-        assert(self->free_node != NULL);
-    curr = next;
-  }
+    while (len--) {
+        next = curr->next;
+        if (self->free_node_val) self->free_node_val(curr->val);
+        if (self->free_node)
+            self->free_node(curr);
+        else
+            assert(self->free_node != NULL);
+        curr = next;
+    }
 
-  if(self->free_self) self->free_self(self);
+    if (self->free_self) self->free_self(self);
 }
 
 /*
@@ -233,13 +255,6 @@ void rlist_remove_alone(rlist_t *self, rlist_node_t *node) {
     if (self->free_node) self->free_node(node);
 }
 
-rlist_iterator_t* rlist_iterator_new(rlist_t *list, rlist_direction_t direction) {
-    rlist_node_t *node = direction == RLIST_HEAD
-        ? list->head
-        : list->tail;
-    return rlist_iterator_new_from_node(list, node, direction);
-}
-
 static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction) {
     rlist_iterator_t *self;
     if (!(self = list->malloc_it(sizeof(rlist_iterator_t))))
@@ -247,6 +262,13 @@ static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlis
     self->next = node;
     self->direction = direction;
     return self;
+}
+
+rlist_iterator_t* rlist_iterator_new(rlist_t *list, rlist_direction_t direction) {
+    rlist_node_t *node = direction == RLIST_HEAD
+        ? list->head
+        : list->tail;
+    return rlist_iterator_new_from_node(list, node, direction);
 }
 
 rlist_node_t* rlist_iterator_next(rlist_iterator_t *self) {

@@ -92,6 +92,8 @@ rlist_node_t* rlist_lpop(rlist_t *self);
 void rlist_remove(rlist_t *self, rlist_node_t *node);
 void rlist_remove_alone(rlist_t *self, rlist_node_t *node);
 
+void rlist_clear(rlist_t *self);
+
 void rlist_destroy(rlist_t *self);
 
 #define rlist_free_node(self, node) \
@@ -102,13 +104,15 @@ void rlist_destroy(rlist_t *self);
 
 #define rlist_size(self) self->len
 
-// list_t iterator prototypes.
+#define rlist_destroy_self(rlist_ptr) \
+do { \
+    rlist_destroy((rlist_ptr)); \
+    (rlist_ptr) = NULL; \
+} while(0)
 
 rlist_iterator_t* rlist_iterator_new(rlist_t *list, rlist_direction_t direction);
 
-rattribute_unused(static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction));
-
-//inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction);
+//rattribute_unused(static) rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction);
 
 rlist_node_t* rlist_iterator_next(rlist_iterator_t *self);
 

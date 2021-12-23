@@ -14,15 +14,15 @@
 #include "rtime.h"
 #include "rlog.h"
 
-UNUSED static volatile bool rlog_inited = false;
-UNUSED static volatile int64_t timeLast = 0;
-UNUSED static int64_t timeMax = 0;
+rattribute_unused(static volatile bool rlog_inited = false);
+rattribute_unused(static volatile int64_t timeLast = 0);
+rattribute_unused(static int64_t timeMax = 0);
 
 static rmutex_t_def rlog_mutex;
 
 static bool rlog_force_flush = false;//false启用日志buffer
 static int rlog_flush_max = 30000;//n秒刷一次缓存
-UNUSED static int rlog_rollback_size = 0;//rolling文件大小
+rattribute_unused(static int rlog_rollback_size = 0);//rolling文件大小
 
 static rlog_info_t* rlog_infos[RLOG_ALL];
 

@@ -42,6 +42,21 @@
 - 未统一部分在合适的时候可能会做调整；
 - 编码质量控制，后期Coverity做静态代码检测，集成测试尽量多跑Valgrind；
 
+# 编译和运行
+支持Windows环境和Linux环境，编译后可执行文件位于目录 build/bin 下
+## Windows（测试环境为Win 10）
+- vs2017
+- 工程位于目录 proj\vs2017 下
+- lib位于目录 build\lib\Windows_AMD64 下（可直接使用或重新编译各模块，cmocka建议本地重新编译一次）
+
+## Linux（测试环境为CentOS 7）
+- gcc 4.6+
+- cmake 3.10+
+- 重新编译（脚本位于目录 source 下）
+./build.sh build [level] [Debug/Release/All]
+level: 2（重新编译全部，第一次编译建议使用此值）
+level: 0（仅rserver）
+
 # 关于测试
 - 有限的单元和性能测试；
 - 单元测试可能会延迟维护；
@@ -51,7 +66,7 @@
 # 问题和解决
 - 因Funra用到多线程和lua脚本，曾经项目中重度lua逻辑，heap内存使用ptmalloc分配，
 sbrk高并发环境下导致top chunk激增，内存碎片引起rss不能释放问题，本框架生产环境直接使用jemalloc，后续不做过多解释；
-- libunwind如果是直接从git下载的版本（Funra已修改），在某些机器下如果编译失败（亲测1.6.2版本在x86-64 Centos7下），需要做如下修改，
+- libunwind如果是直接从git下载的版本（Funra已修改），在某些机器下如果编译失败（亲测1.6.2版本在 x86-64 CentOS 7 下），需要做如下修改，
  - 修改文件：configure.ac
     AM_INIT_AUTOMAKE([1.6 subdir-objects])
     AC_CONFIG_MACRO_DIR([m4])

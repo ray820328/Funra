@@ -29,10 +29,10 @@ extern "C" {
 
 #define rvoid(x) (void)(x)
 
-//#define rassert(expr, rv) \
-//	if(!(expr)) { \
-//		rerror(#expr" is null or 0"); \
-//		return rv; \
+//#define rassert(expr, rv) 
+//	if(!(expr)) { 
+//		rerror(#expr" is null or 0"); 
+//		return rv; 
 //	}
 
 #if defined(_WIN32) || defined(_WIN64)
