@@ -73,7 +73,11 @@ int run_rcommon_tests(int benchmark_output) {
     // skipped = 0;
     // current = 1;
 
+    int64_t timeNow = nanosec_r();
+
     testResult = cmocka_run_group_tests(tests, NULL, NULL);
+
+    printf("run_rcommon_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
 
     if (testResult != 0) {
         return testResult;

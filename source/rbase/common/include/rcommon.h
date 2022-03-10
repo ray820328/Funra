@@ -24,16 +24,19 @@ extern "C" {
 
 #include "rbase.h"
 
+#define sizeptr 8
+#define LPRId64 L"lld"
+
 #define macro_print_macro_helper(x)   #x  
 #define macro_print_macro(x)          #x"="macro_print_macro_helper(x)
 
 #define rvoid(x) (void)(x)
 
-//#define rassert(expr, rv) 
-//	if(!(expr)) { 
-//		rerror(#expr" is null or 0"); 
-//		return rv; 
-//	}
+    //#define rassert(expr, rv) 
+    //	if(!(expr)) { 
+    //		rerror(#expr" is null or 0"); 
+    //		return rv; 
+    //	}
 
 #if defined(_WIN32) || defined(_WIN64)
 #pragma message("Platform info: "macro_print_macro(_WIN64))
@@ -161,46 +164,105 @@ extern "C" {
                 timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
           } while(0)
 
-#define rassert(expr)                                     \
+#define rassert(expr, msg)                                \
  do {                                                     \
   if (!(expr)) {                                          \
     fprintf(stderr,                                       \
-            "Assertion failed in %s on line %d: %s\n",    \
+            "Assertion failed in [ %s:%d (%s) ], [ %s ]\n", \
             __FILE__,                                     \
             __LINE__,                                     \
-            #expr);                                       \
+            #expr,                                        \
+            msg);                                         \
     abort();                                              \
   }                                                       \
  } while (0)
 
+#define rstr_null "NULL"
+#define rstr_empty ""
+#define rstr_end '\0';
 
-static inline size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest) {
-    size_t position = strlen(dest);
-    size_t srcLen = strlen(src);
-    size_t copyLen = rmin(srcLen, sizeofDest - strlen(dest) - 1);
-    memcpy(dest + position, src, copyLen);
-    position += copyLen;
+    static inline size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest) {
+        size_t position = strlen(dest);
+        size_t srcLen = strlen(src);
+        size_t copyLen = rmin(srcLen, sizeofDest - strlen(dest) - 1);
+        memcpy(dest + position, src, copyLen);
+        position += copyLen;
 
-    dest[position] = '\0';
-    return copyLen - srcLen;
-}
-
-static inline char* rstr_cpy(const void *key) {
-    if (!key) {
-        return NULL;
+        dest[position] = '\0';
+        return copyLen - srcLen;
     }
-    unsigned int keyLen = (unsigned int)strlen((char*)key);
-    char* keyCopy = raymalloc((int64_t)(keyLen + 1u));
-    if (!keyCopy) {
-        return NULL;
+    static inline char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...) {
+        if (!dest || !fmt) {
+            return NULL;
+        }
+        //char* dest = raymalloc((int64_t)(maxLen + 1u));
+        //if (!dest) {
+        //    return NULL;
+        //}
+        va_list ap;
+        va_start(ap, maxLen);
+        int writeLen = vsnprintf(dest, maxLen, fmt, ap);
+        va_end(ap);
+        if (writeLen < 0) {
+            //    rayfree((void*)dest);
+            dest[0] = rstr_end;
+            return NULL;
+        }
+        return dest;
     }
-    memcpy(keyCopy, key, keyLen);
-    keyCopy[keyLen] = '\0';
-    return keyCopy;
-}
-static inline void rstr_free(const void *key) {
-    rayfree((void*)key);
-}
+    static inline char* rstr_cpy(const void *key) {//, int maxLen){
+        if (!key) {
+            return NULL;
+        }
+        unsigned int keyLen = (unsigned int)strlen((char*)key);
+        char* keyCopy = raymalloc((int64_t)(keyLen + 1u));
+        if (!keyCopy) {
+            return NULL;
+        }
+        memcpy(keyCopy, key, keyLen);
+        keyCopy[keyLen] = rstr_end;
+        return keyCopy;
+    }
+    //有中文截断危险
+    static char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr) {
+        if (!newStr || !destStr) {
+            return src;
+        }
+
+        const int strLen = strlen(src);
+        const int oldLen = strlen(oldStr);
+        const int newLen = strlen(oldStr);
+        //char bstr[strLen];//转换缓冲区
+        //memset(bstr, 0, sizeof(bstr));
+
+        destStr[0] = rstr_end;
+
+        for (int i = 0; i < strLen; i++) {
+            if (!strncmp(src + i, oldStr, oldLen)) {//查找目标字符串
+                if (strlen(destStr) + newLen >= destLen) {
+                    destStr[strlen(destStr)] = rstr_end;
+                    break;
+                }
+
+                strcat(destStr, newStr);
+                i += oldLen - 1;
+            }
+            else {
+                if (strlen(destStr) + 1 >= destLen) {
+                    destStr[strlen(destStr)] = rstr_end;
+                    break;
+                }
+
+                strncat(destStr, src + i, 1);//保存一字节进缓冲区
+            }
+        }
+        //strcpy(src, bstr);
+
+        return destStr;
+    }
+    static inline void rstr_free(const void *key) {
+        rayfree((void*)key);
+    }
 
 #if defined(_WIN32) || defined(_WIN64)
 #define rmutex_t_def CRITICAL_SECTION;
@@ -208,54 +270,54 @@ static inline void rstr_free(const void *key) {
 #define rmutex_t_def pthread_mutex_t;
 #endif /* defined(_WIN32) || defined(_WIN64) */
 
-static inline void rmutex_init(void* rmutexObj)
-{
+    static inline void rmutex_init(void* rmutexObj)
+    {
 #if defined(_WIN32) || defined(_WIN64)
-    InitializeCriticalSection(rmutexObj);
+        InitializeCriticalSection(rmutexObj);
 #else
-    pthread_mutex_init(rmutexObj, NULL);
+        pthread_mutex_init(rmutexObj, NULL);
 #endif /* defined(_WIN32) || defined(_WIN64) */
-}
+    }
 
-static inline void rmutex_lock(void* rmutexObj)
-{
+    static inline void rmutex_lock(void* rmutexObj)
+    {
 #if defined(_WIN32) || defined(_WIN64)
-    EnterCriticalSection(rmutexObj);
+        EnterCriticalSection(rmutexObj);
 #else
-    pthread_mutex_lock(rmutexObj);
+        pthread_mutex_lock(rmutexObj);
 #endif /* defined(_WIN32) || defined(_WIN64) */
-}
+    }
 
-static inline void rmutex_unlock(void* rmutexObj)
-{
+    static inline void rmutex_unlock(void* rmutexObj)
+    {
 #if defined(_WIN32) || defined(_WIN64)
-    LeaveCriticalSection(rmutexObj);
+        LeaveCriticalSection(rmutexObj);
 #else
-    pthread_mutex_unlock(rmutexObj);
+        pthread_mutex_unlock(rmutexObj);
 #endif /* defined(_WIN32) || defined(_WIN64) */
-}
+    }
 
-static inline long get_cur_thread_id(void)
-{
+    static inline long get_cur_thread_id(void)
+    {
 #if defined(_WIN32) || defined(_WIN64)
-    return GetCurrentThreadId();
+        return GetCurrentThreadId();
 #elif __linux__
-    return (long)syscall(SYS_gettid);
+        return (long)syscall(SYS_gettid);
 #elif defined(__APPLE__) && defined(__MACH__)
-    return (long)syscall(SYS_thread_selfid);
+        return (long)syscall(SYS_thread_selfid);
 #else
-    return (long)pthread_self();
+        return (long)pthread_self();
 #endif /* defined(_WIN32) || defined(_WIN64) */
-}
+    }
 
-static inline void wait_seconds(int seconds)
-{   // Pretty crossplatform, both ALL POSIX compliant systems AND Windows
+    static inline void wait_seconds(int seconds)
+    {   // Pretty crossplatform, both ALL POSIX compliant systems AND Windows
 #if defined(_WIN32) || defined(_WIN64)
-    Sleep(1000 * seconds);
+        Sleep(1000 * seconds);
 #else
-    sleep(seconds);
+        sleep(seconds);
 #endif /* defined(_WIN32) || defined(_WIN64) */
-}
+    }
 
 #ifdef __cplusplus
 }

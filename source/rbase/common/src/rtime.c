@@ -10,6 +10,9 @@
 #pragma warning(push)
 #pragma warning(disable: 4819)
 
+static const long long NANOSECOND_PER_SECOND = 1000000000LL;
+//static const long long NANOSECOND_PER_MILLISECOND = 1000000LL;
+
 #define UTC_BASE_YEAR   1970
 #define MONTH_PER_YEAR  12
 #define DAY_PER_YEAR    365
@@ -81,6 +84,26 @@ int gettimeofdayfix(struct timeval * tp, struct timezone * tzp)
     return 0;
 }
 #endif
+
+// 获取纳秒值，windows只能取到相对值，只能做比较不能转毫秒等
+int64_t nanosec_r() {
+#ifdef WIN32
+    static LARGE_INTEGER frequency = {0};
+    if (frequency.QuadPart == 0) {
+        QueryPerformanceFrequency(&frequency);
+        //rassert(frequency.QuadPart != 0);
+    }
+
+    LARGE_INTEGER time_now;
+    QueryPerformanceCounter(&time_now);
+    return time_now.QuadPart * NANOSECOND_PER_SECOND / frequency.QuadPart;
+#else
+    //本身消耗较大，和一次系统调用差不多，i5 300nm左右
+    struct timespec time_now = { 0, 0 };
+    clock_gettime(CLOCK_REALTIME, &time_now); //CLOCK_REALTIME-实际系统时间；CLOCK_MONOTONIC-调时间无效；PROCESS/THREAD
+    return time_now.tv_sec * NANOSECOND_PER_SECOND + time_now.tv_nsec; //.tv_sec
+#endif
+}
 
 static struct timezone* rtime_zone = NULL;
 // 获取微秒值，注意不是时间戳

@@ -12,15 +12,19 @@
 #include "rcommon.h"
 
 int main(int argc, char **argv) {
-  printf("starting rserver...\n");
+    printf("starting rserver...\n");
 
-  int64_t timeNow = microsec_r();
+    int64_t timeNowNano = nanosec_r();
+    int64_t timeNowMicro = microsec_r();
+    int64_t timeNowMill = millisec_r();
+    wait_seconds(1);
 
-  printf("timeNow: %lld 毫秒, %lld 微秒, %lld 耗时微秒\n", millisec_r(), timeNow, (microsec_r() - timeNow));
+    printf("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us\n", 
+        (millisec_r() - timeNowMill), (microsec_r() - timeNowMicro), (nanosec_r() - timeNowNano), timeNowNano);
 
-  //char* dataStr = char[64];
-  //rformat_time_s_full(dataStr, timeNow);
-  //printf("dataStr: %s\n\n", dataStr);
+    //char* dataStr = char[64];
+    //rformat_time_s_full(dataStr, timeNow);
+    //printf("dataStr: %s\n\n", dataStr);
 
   return 1;
 }

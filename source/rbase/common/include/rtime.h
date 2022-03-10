@@ -18,8 +18,8 @@ extern "C" {
     int gettimeofdayfix(struct timeval *tp, void *tzp);
 #endif
 
+    extern int64_t nanosec_r();
     extern int64_t microsec_r();
-
     extern int64_t millisec_r();
 
     extern void rdate_set_time_zone(int timeZone);

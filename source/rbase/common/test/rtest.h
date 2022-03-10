@@ -43,7 +43,7 @@
 
 #define end_benchmark(benchmarkMsgSuffix) do { \
     benchmarkElapsed = millisec_r() - benchmarkStart; \
-    printf("%s: elapsed %lld ms, " benchmarkMsgSuffix "\n", benchmarkTitle, benchmarkElapsed); \
+    printf("%s: elapsed %"PRId64" ms, " benchmarkMsgSuffix "\n", benchmarkTitle, benchmarkElapsed); \
 } while(0)
 
 
