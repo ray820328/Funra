@@ -63,11 +63,6 @@ extern "C" {
     R_API int rayprintf(rlog_level_t logLevel, const char* fmtStr, ...);
     R_API int flush_rlog_file();
 
-#pragma region "其他"
-
-
-#pragma endregion "其他"
-
 
 #ifdef __cplusplus
 }

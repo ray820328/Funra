@@ -34,7 +34,7 @@
 #define init_benchmark(bufferSize, fmtStr, ...) \
     char* benchmarkTitle = raymalloc(bufferSize); \
     assert_true(sprintf(benchmarkTitle, fmtStr, ##__VA_ARGS__) < bufferSize); \
-    long long benchmarkStart = 0, benchmarkElapsed = 0
+    int64_t benchmarkStart = 0, benchmarkElapsed = 0
 
 #define start_benchmark(benchmarkMsgTitle) do { \
     benchmarkStart = millisec_r(); \

@@ -7,9 +7,18 @@
  * @author: Ray
  */
 
-#pragma warning(disable : 4819)
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4319 4819)
+#endif
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif
+
 
 #include "rcommon.h"
+#include "rtime.h"
 
 int main(int argc, char **argv) {
     printf("starting rserver...\n");
@@ -17,7 +26,7 @@ int main(int argc, char **argv) {
     int64_t timeNowNano = nanosec_r();
     int64_t timeNowMicro = microsec_r();
     int64_t timeNowMill = millisec_r();
-    wait_seconds(1);
+    wait_millsec(500);
 
     printf("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us\n", 
         (millisec_r() - timeNowMill), (microsec_r() - timeNowMicro), (nanosec_r() - timeNowNano), timeNowNano);
@@ -28,3 +37,11 @@ int main(int argc, char **argv) {
 
   return 1;
 }
+
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

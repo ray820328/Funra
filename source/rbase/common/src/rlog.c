@@ -14,6 +14,11 @@
 #include "rtime.h"
 #include "rlog.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif //__GNUC__
+
 rattribute_unused(static volatile bool rlog_inited = false);
 rattribute_unused(static volatile int64_t timeLast = 0);
 rattribute_unused(static int64_t timeMax = 0);
@@ -268,6 +273,6 @@ int rayprintf(rlog_level_t logLevel, const char* fmt, ...) {
 //}
 /**/
 
-#ifndef WIN32
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
-#endif //WIN32
+#endif //__GNUC__

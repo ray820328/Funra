@@ -4,11 +4,8 @@
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the MIT license. See LICENSE for details.
  *
- * @author: liuzuhua
+ * @author: Ray
  */
-
-#pragma warning(push)
-#pragma warning(disable: 4819)
 
 static const long long NANOSECOND_PER_SECOND = 1000000000LL;
 //static const long long NANOSECOND_PER_MILLISECOND = 1000000LL;
@@ -323,5 +320,3 @@ extern int* rdate_from_time_millis(int64_t timeMillis) {
 //     luaL_newlib(L, rtime_lib);
 //     return 1;
 // }
-
-#pragma warning(pop)

@@ -7,8 +7,6 @@
  * @author: Ray
  */
 
-#pragma warning(disable : 4819)
-
 #include <string.h>
 
 #include "rcommon.h"
@@ -97,12 +95,12 @@ static int run_test(const char* test, int benchmark_output, int test_count) {
     return status;
 }
 
-static int rlist_match_func(char* a, char* b) {
+static int rlist_match_func(void* a, void* b) {
     if (a == b) {
         return 1;
     }
     if (a != NULL && b != NULL) {
-        if (strcmp(a, b) == 0) {
+        if (strcmp((char*)a, (char*)b) == 0) {
             return 1;
         }
     }
@@ -143,7 +141,7 @@ static void rlist_test(void **state) {
 
     assert_int_equal(mylist->len, count);
 
-    const char* nodeValue = "listNode - 3";
+    char* nodeValue = "listNode - 3";
     rlist_node_t *nodeFind = rlist_find(mylist, nodeValue);
 
     assert_true(nodeFind);
