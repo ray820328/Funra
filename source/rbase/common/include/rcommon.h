@@ -78,7 +78,7 @@ extern "C" {
 
 #else //RAY_BUILD_AS_DLL
 
-#define R_API		extern
+#define R_API extern
 
 #endif //RAY_BUILD_AS_DLL
 
@@ -101,7 +101,7 @@ extern "C" {
 #define likely(x) __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
 
-#define R_API		extern
+#define R_API extern
 
 #endif //WIN32
 

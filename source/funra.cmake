@@ -7,5 +7,6 @@ INCLUDE_DIRECTORIES(
     ../
     ../3rd/lua/5.4.3/src
     ../rbase/common/include
+    ../rbase/ipc/include
     ../rserver/commonsvr/include
 )

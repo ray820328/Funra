@@ -16,19 +16,26 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #endif
 
-
 #include "rcommon.h"
 #include "rtime.h"
+#include "ripc.h"
+#include "rlog.h"
 
 int main(int argc, char **argv) {
-    printf("starting rserver...\n");
+    init_rlog("rserver_%s_%s.log", RLOG_ALL, false, "all");// NULL);// 
+    printdbgr("starting rserver...\n");
 
     int64_t timeNowNano = nanosec_r();
     int64_t timeNowMicro = microsec_r();
     int64_t timeNowMill = millisec_r();
-    wait_millsec(500);
 
-    printf("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us\n", 
+    ripc_init(NULL);
+
+    while (true) {
+        wait_millsec(50);
+
+    }
+    printdbgr("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us\n",
         (millisec_r() - timeNowMill), (microsec_r() - timeNowMicro), (nanosec_r() - timeNowNano), timeNowNano);
 
     //char* dataStr = char[64];

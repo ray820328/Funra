@@ -14,6 +14,13 @@
 extern "C" {
 #endif
 
+#define print2file
+#ifdef print2file
+#undef print2file
+#endif
+
+#define printdbgr(format, ...) rayprintf(RLOG_DEBUG, "%s:%s:%d "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+    
 #define raymalloc malloc
 #define rayfree free
 

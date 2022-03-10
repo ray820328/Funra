@@ -78,8 +78,10 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
 		legacy_stdio_definitions
 		3rd/cmocka${RBUILD_TYPE_POSTFIX}
         3rd/lua${RBUILD_TYPE_POSTFIX} 
+        3rd/uv${RBUILD_TYPE_POSTFIX}
         3rd/uv_a${RBUILD_TYPE_POSTFIX} 
-        rcommon${RBUILD_TYPE_POSTFIX}  
+        rcommon${RBUILD_TYPE_POSTFIX} 
+        ripc${RBUILD_TYPE_POSTFIX}  
 	)
 else()
     LINK_DIRECTORIES(
@@ -92,8 +94,10 @@ else()
         m 
         pthread
         liblua${RBUILD_TYPE_POSTFIX}.a 
+        libuv${RBUILD_TYPE_POSTFIX}.a 
         libuv_a${RBUILD_TYPE_POSTFIX}.a 
-        librcommon${RBUILD_TYPE_POSTFIX}.a  
+        librcommon${RBUILD_TYPE_POSTFIX}.a
+        libripc${RBUILD_TYPE_POSTFIX}.a    
     )
     SET(PROJECT_LINK_OPTIONS
         #-ljemalloc 
