@@ -1,0 +1,4549 @@
+2005-12-02  yjung
+
+	* usable now
+	* first usable version
+	* added test for IQE
+	* added cpl_image_iqe module
+	* *** empty log message ***
+	* added cpl_imagelist_collapse_sigclip_create() (DFS02662)
+
+2005-11-28  yjung
+
+	* return an error if the labelised image miss a value (DFS02616)
+	* added a test to catch a pb with the labelised image (DFS02616)
+
+2005-11-24  yjung
+
+	* added doc for the cpl_fft()
+
+2005-11-23  yjung
+
+	* DFS02447 : expects file with 2 columns for cpl_bivector_load()
+	* added tests for new functions
+	* added doc for collapse func.
+	* Test if a column of bad pixels can be collapsed...
+	* *** empty log message ***
+
+2005-11-22  yjung
+
+	* Replaced the internal image badpixel map type from sparseimage to
+	  cpl_mask. cpl_sparseimage is no longer existing. New functions
+	  had to be
+	  added to the cpl_mask module to replace the sparse image
+	  functionalities.
+	  
+	  Removed public functions:
+	  - cpl_mask_new_from_rejected()
+	  - cpl_mask_new_from_rejected_window()
+	  
+	  Removed private function:
+	  - cpl_sparseimage_new()
+	  - cpl_sparseimage_delete()
+	  - cpl_sparseimage_get_size()
+	  - cpl_sparseimage_get_data()
+	  - cpl_sparseimage_contains()
+	  - cpl_sparseimage_duplicate()
+	  - cpl_sparseimage_or_create()
+	  - cpl_sparseimage_extract()
+	  - cpl_sparseimage_turn()
+	  - cpl_sparseimage_shift()
+	  - cpl_sparseimage_flip()
+	  - cpl_sparseimage_move()
+	  - cpl_sparseimage_collapse_create()
+	  - cpl_sparseimage_or()
+	  - cpl_sparseimage_insert()
+	  - cpl_sparseimage_erase()
+	  - cpl_sparseimage_subsample()
+	  - cpl_sparseimage_copy()
+	  - cpl_sparseimage_dump()
+	  - cpl_sparseimage_extract_mask()
+	  
+	  New functions:
+	  - cpl_image_get_bpm()
+	  - cpl_mask_collapse_create()
+	  - cpl_mask_extract()
+	  - cpl_mask_turn()
+	  - cpl_mask_shift()
+	  - cpl_mask_copy()
+	  - cpl_mask_flip()
+	  - cpl_mask_move()
+	  - cpl_mask_extract_subsample()
+	  
+	  Modified API:
+	  - cpl_image_extract_subsample()
+	  
+	  DFS ticket : DFS02652
+
+2005-11-21  yjung
+
+	* removed the COMPLEX type support in images (DFS02659 / part2)
+	* Changed cpl_image_fft() API to use a real and an imaginary part
+	  image,
+	  and not the COMPLEX type any more (DFS02659 / part1)
+
+2005-11-14  cizzo
+
+	* Fix bug in cpl_table_duplicate_column() that allowed copying
+	  columns between tables of different sizes
+
+2005-10-25  yjung
+
+	* corrected bug
+	* *** empty log message ***
+	* added includes
+	* *** empty log message ***
+	* removed internal members nx, ny, type
+	* removed includes to cpl_image_defs.h cpl_imagelist_defs.h
+	  cpl_memory_impl.h and any access to the internal objects
+	  structures.
+
+2005-10-13  yjung
+
+	* added doc (DFS02570)
+
+2005-10-12  llundin
+
+	* Added cpl_tools_add_flops() etc. Changed 2D-poly test back to
+	  POLY_SIZE
+	* Added cpl_tools_add_flops() etc.
+
+2005-10-10  llundin
+
+	* Add several failure checks. Add some normal checks. Add check for
+	  memory leaks. Reduce size of test image. Add timing. Detect
+	  multiple failures
+	* cpl_imagelist_save(): Fix memory leak on write failure.
+	  cpl_imagelist_set(): Check uniformity also when pos=0
+	* cpl_imagelist_load{,_window}(): Detect negative
+	  qfits_query_n_ext()
+
+2005-10-06  llundin
+
+	* cpl_end(): Added reset of state of cpl_tools_get_cputime()
+	* cpl_tools_get_cputime(): Added reset mode of internal state
+
+2005-09-29  yjung
+
+	* new doc on error codes for loading functions (DFS02560)
+	* corrected error code in case of failure while loading an image
+	  (DFS02560)
+
+2005-09-21  yjung
+
+	* corrected bug
+	* moved cpl_image_labelise_create_mask() from cpl_mask to
+	  cpl_image_io
+	* added cpl_mask_get() cpl_mask_set() and cpl_mask_duplicate as
+	  well as
+	  some documentation on CPL_BINARY_0 and CPL_BINARY_1 (DFS02543).
+
+2005-09-19  llundin
+
+	* Higher round-off on AMD-64
+	* Moved common (numerical) test-code to cpl_tools.h and stop use of
+	  assert() for tests
+
+2005-09-15  yjung
+
+	* Solved DFS02537 : ORIGIN and DATE-OBS keys missing in products
+	* removed a printf()
+
+2005-09-06  cizzo
+
+	* Use PACKAGE and PACKAGE_VERSION for the content of
+	  PRO.REC1.DRS.ID
+	* Change CPL version string
+
+2005-08-22  yjung
+
+	* added cpl_imagelist_load_window() and its tests (DFS02372)
+	* added cpl_image_load_window()
+
+2005-08-17  cizzo
+
+	* Remove 'inline' specifier on function definition
+
+2005-08-11  cizzo
+
+	* Upgrade CPL package version
+
+2005-08-10  yjung
+
+	* cpl_msg_warning -> cpl_msg_debug
+
+2005-08-05  llundin
+
+	* Updated URL in comment
+
+2005-08-04  yjung
+
+	* increased the allowed kernel size for dilation ant erosion
+
+2005-08-04  llundin
+
+	* cpl_image_accept() and cpl_sparseimage_erase(): Corrected bug on
+	  last rejected pixel
+
+2005-08-02  yjung
+
+	* ticket DFS02163 - allow bigger kernels for the linear filtering
+
+2005-07-29  cplmgr
+
+	* Library version fixed again.
+	* Library version fixed.
+
+2005-07-29  cizzo
+
+	* cpl_dfs_setup_pro_header(): write to header keywords true and
+	  false instead of 1 and 0, in case of boolean parameters
+
+2005-07-28  rpalsa
+
+	* cpl_frameset_insert(): Add a check verifying that the frame to
+	  insert has a valid tag, otherwise return an error
+
+2005-07-22  cplmgr
+
+	* Updated.
+
+2005-07-22  rpalsa
+
+	* In cpl_property_get_size(): Documentation fixed with respect to
+	  the size returned for a string property.
+
+2005-07-22  cplmgr
+
+	* Updated.
+	* Package version updated.
+
+2005-07-18  yjung
+
+	* removed an useless zero-padding
+
+2005-07-14  llundin
+
+	* cpl_assure(): Explicit cast (void)cpl_error_set_code()
+
+2005-07-13  cizzo
+
+	* Go to nearest integer in result of cpl_column_pow_int()
+	* Implement tests for cpl_table_power_column(),
+	  cpl_table_logarithm_column(), and cpl_table_exponential_column()
+	* Compute integer powers using cpl_tools_ipow() instead of pow()
+
+2005-07-13  llundin
+
+	* cpl_msg_progress(): test + fix for DFS02166
+
+2005-07-13  cizzo
+
+	* Add const qualifier to indicate non-modified arguments in
+	  cpl_table_sort() and cpl_table_save() functions
+	* Implement safe declaration of functions with variable argument
+	  list, in case the compiler is gcc
+
+2005-07-12  llundin
+
+	* Added cpl_tools_ipow()
+
+2005-07-08  cizzo
+
+	* Correct bug in msg_init counter
+	* Keep backward compatibility with CPL2.0 of cpl_msg_init()
+
+2005-07-08  llundin
+
+	* Improved documentation
+	* Solved performance problem related to pow()
+
+2005-07-07  llundin
+
+	* Revoked 1.6 which was done in error
+	* Removed/recoded arbitrary constants (DFS 2319)
+	* Treshold test image at 1. Use cpl_msg_set_level_from_env() and no
+	  output as default
+
+2005-07-06  yjung
+
+	* Package version updated 2.1a -> 2.1b
+
+2005-07-05  cizzo
+
+	* Add warning to cpl_table_save() documentation
+
+2005-07-04  yjung
+
+	* added doc refering to DFS01883
+
+2005-07-04  cplmgr
+
+	* Package version updated.
+
+2005-07-04  cizzo
+
+	* explicit braces to avoid ambiguous 'else' in
+	  cpl_column_duplicate()
+
+2005-07-01  llundin
+
+	* Added cpl_msg_set_level_from_env()
+	* Corrected bug: CPL_TRUE => CPL_GEOM_UNION
+
+2005-07-01  cizzo
+
+	* Remove useless extra parameter to cpl_msg_warning() call
+
+2005-06-29  llundin
+
+	* Function cpl_parameterlist_get_size(): const modifier added
+
+2005-06-28  llundin
+
+	* cpl_end(): Call qfits_cache_purge()
+
+2005-06-28  cizzo
+
+	* Correct warning messages for uninitialised system
+	* Extend doc of cpl_init()
+	* Add test for cpl_table_unwrap()
+	* Add function cpl_table_unwrap()
+	* Change API to cpl_column_unwrap(): now returns the pointer to the
+	  internal data buffer
+
+2005-06-28  llundin
+
+	* Removed debugging line
+
+2005-06-28  cizzo
+
+	* New usage of cpl_init() and cpl_end()
+
+2005-06-27  cizzo
+
+	* Add function cpl_end()
+	* Deprecate cpl_msg_init() and cpl_msg_stop()
+	* Add a note about NaN contained in solutions based on nearly
+	  singular matrices
+
+2005-06-22  yjung
+
+	* added CPL_GEOM_FIRST
+
+2005-06-16  llundin
+
+	* cpl_vector_product()
+
+2005-06-14  llundin
+
+	* Adapt accuracy limit to non-debug mode
+
+2005-06-14  yjung
+
+	* moved cpl_imagelist_fit_polynomial() from cpldrs to cplcore
+
+2005-06-14  cizzo
+
+	* Fix typo: choosen chosen
+
+2005-06-13  llundin
+
+	* cpl_image_warp_polynomial(): Fix for identity transform.
+	  cpl_image_get_interpolated() brought up to specs
+	* Generalized radius from 2 in cpl_vector_fill_alpha_kernel() and
+	  other modes in cpl_vector_fill_kernel_profile()
+
+2005-06-09  llundin
+
+	* Generalized radius and resolution of pixel interpolation
+
+2005-06-08  llundin
+
+	* Fixed #ifdef
+
+2005-06-08  cizzo
+
+	* Improve portability in using ioctl() and stream descriptors
+	  handling functions
+
+2005-06-03  rpalsa
+
+	* Added.
+	* Test module cpl_parameter-test added.
+	* Function _cpl_parameter_set_data(): In order to correctly set a
+	  string value in case the original value is not a plain type, but
+	  a cpl_parameter_data, the function must treat the passed pointer
+	  in the same way as for the built-in types, i.e. treat it as a
+	  pointer to pointer to char.
+
+2005-06-03  cizzo
+
+	* cpl_column_divide(): fix bug in dividing a double column by a
+	  column of different type
+	* Add test related to a bug in dividing a double column by a column
+	  of different type
+
+2005-05-23  llundin
+
+	* Let cpl_bivector_delete() (silently) accept a corrupted object
+	  for deletion
+
+2005-05-20  llundin
+
+	* Added test of cpl_bivector_duplicate(), and some more tests of
+	  cpl_bivector_<dump,load>().
+	* Fixed cpl_bivector_load() empty file bug. Added const modifiers.
+	  void cpl_bivector_dump() acts like other cpl_<*>_dump() functions
+	  (does not set CPL error code, etc). cpl_bivector_load() does not
+	  hang on FIFO.
+	* Extra test of 0-degree + memory leak
+	* Abolish stdev-scaling in polynomial-fitting
+	* cpl_tools_get_variance_double() needed to solve 0-degree
+	  inconsistencies in polynomial module
+
+2005-05-20  yjung
+
+	* typo
+	* DFS02342
+
+2005-05-20  llundin
+
+	* Improved tests of 0-degree polynomials
+	* Solved 0-degree inconsistencies
+
+2005-05-18  cizzo
+
+	* Improve documentation of cpl_def_setup_product_header()
+
+2005-05-18  yjung
+
+	* unused variable removed
+
+2005-05-17  yjung
+
+	* improved error checking
+	* make use of cpl_tools_gen_valid_header()
+	* uses cpl_tools_gen_valid_header() to properly handle the files
+	  creation.
+	* added cpl_tools_gen_valid_header()
+
+2005-05-17  cizzo
+
+	* Eliminate a memory leak and complete documentation of
+	  cpl_matrix_solve_normal()
+
+2005-05-12  llundin
+
+	* typo
+
+2005-05-11  llundin
+
+	* Added P0-check for cpl_polynomial_fit_1d_create(). Adjust limits
+	  to HP-UX and SunOS. Added test of cpl_polynomial_fit_2d_create().
+	  Added a (temporary?) genccd test
+	* Improved documentation. cpl_polynomial_fit_{1,2}d_create():
+	  Prepared stdev transform. cpl_polynomial_fit_{1,2}d_create():
+	  transform eval-points by mean. Prevent print of zero-valued
+	  coeffs in cpl_polynomial_dump(). cpl_polynomial_fit_2d_create():
+	  set CPL_ERROR_DIVISION_BY_ZERO if all data-points have same
+	  value, do not use pow(), avoid lookup-table
+	* Fixed some errors in documention. cpl_vector_dump() compatible
+	  with cpl_matrix_dump(). cpl_vector_load(): Solved rewind()
+	  problem and extended error checking. Reduced round-off in
+	  cpl_vector_get_mean(). Use memcpy() in cpl_vector_get_median()
+	* cpl_msg_set_level_from_env(). Some more tests of
+	  cpl_vector_load()
+
+2005-05-11  yjung
+
+	* doc
+	* added cpl_imagelist_collapse_minmax_create()
+
+2005-05-09  llundin
+
+	* cpl_msg_set_level_from_env(). Some tests of
+	  cpl_polynomial_fit_1d_create() and a call to
+	  cpl_polynomial_fit_2d_create()
+	* Fixed some errors in documention. Use CPL_ERROR_DATA_NOT_FOUND
+	  for empty polynomials and CPL_ERROR_INVALID_TYPE for wrong
+	  dimension. Use CPL_ERROR_INCOMPATIBLE_INPUT when appropriate.
+	  Require non-empty input-polynomial in cpl_polynomial_copy(). Use
+	  realloc in cpl_polynomial_copy() for identical dims. Use assert()
+	  to expose internal bugs. cpl_polynomial_fit_1d_create(): Require
+	  at least at many data-points as the polynomial coefficients, set
+	  CPL_ERROR_DIVISION_BY_ZERO if all data-points have same x-value,
+	  do not use pow(), set CPL_ERROR_SINGULAR_MATRIX when appropriate,
+	  transform x-values by mean and stdev, extend documentation, use
+	  cpl_matrix_wrap() for RHS. cpl_polynomial_fit_2d_create():
+	  Require at least at many data-points as the polynomial
+	  coefficients, set CPL_ERROR_SINGULAR_MATRIX when appropriate, use
+	  cpl_matrix_wrap() for RHS
+
+2005-05-06  llundin
+
+	* Avoid bitmasks with value 1 (to detect use of logical or on
+	  bitmasks)
+	* Fixed wrong cpl_error code in cpl_vector_divide_scalar()
+	* Remove memory-leak on rejected pixel in cpl_image_get_fwhm()
+	  (DFS02318)
+
+2005-05-04  llundin
+
+	* Removed redundant initialization
+	* Ensure return of -1 on error in cpl_image_get_fwhm() (DFS02317)
+
+2005-04-27  cizzo
+
+	* Remove HIERARCH prefix from property names
+
+2005-04-15  llundin
+
+	* assert_cpl(). test_leq(). error_margin = 2. Default is no output
+	* Accuracy checks ported to alpha, sun4u, 9000/785
+	* Reduced POLY_SIZE to 20 due to SIGFPE on alphaev56
+
+2005-04-14  cizzo
+
+	* Fix bug on cpl_table_and/or_selected_invalid
+	* Use a more portable definition of MAX_PLENGTH
+
+2005-04-13  llundin
+
+	* Higher round-off on cpl_vector_correlate() (commutative test)
+
+2005-04-12  cizzo
+
+	* Do not stop on headerless input files
+
+2005-04-12  yjung
+
+	* corrected a bug in cpl_imagelist_delete()
+
+2005-04-12  llundin
+
+	* Added missing do to macro
+
+2005-04-12  cizzo
+
+	* Add missing error checking when loading a header from a specified
+	  file
+
+2005-04-08  cizzo
+
+	* Implementation (by Klaus Banse)
+
+2005-04-07  rpalsa
+
+	* Really disable LaTeX documnetation.
+
+2005-04-07  llundin
+
+	* Included cxtypes.h
+	* Replaced M_PI with CX_PI (from libcext)
+	* Removed Carriage Return
+
+2005-04-07  cizzo
+
+	* Add header file for snprintf()...
+
+2005-04-06  cplmgr
+
+	* Updated.
+
+2005-04-06  cizzo
+
+	* Draft for 2.0 release - please check
+
+2005-04-06  rpalsa
+
+	* Function cpl_parameterlist_get_next(): Move argument check after
+	  variable declarations.
+
+2005-04-01  yjung
+
+	* *** empty log message ***
+	* update to 2.0
+
+2005-03-31  cizzo
+
+	* Associate a message to CPL_ERROR_INVALID_TYPE
+
+2005-03-30  cizzo
+
+	* Fix bug: attempt to duplicate null string was not caught
+
+2005-03-24  yjung
+
+	* check to avoid division by zero
+
+2005-03-23  cplmgr
+
+	* Updated.
+	* Package version updated.
+
+2005-03-22  cizzo
+
+	* Make MAX_NAME_LENGTH compatible with the value of
+	  CPL_MAX_FUNCTION_NAME
+	* Correct delete of DPR keywords
+
+2005-03-21  llundin
+
+	* Removed const modifier from arguments passed by value
+
+2005-03-18  yjung
+
+	* added include for cpl_error_push()
+
+2005-03-18  llundin
+
+	* Added TODO comment
+
+2005-03-18  cizzo
+
+	* Add const qualifier where appropriate
+	* Add const qualifier where appropriate
+
+2005-03-17  cizzo
+
+	* Avoid duplicate definition of PRO_DID
+
+2005-03-15  yjung
+
+	* added some documentation
+
+2005-03-11  cizzo
+
+	* Add separators for component
+	* Ugly indentation eliminated
+
+2005-03-10  rpalsa
+
+	* Function cpl_parameter_set_tag(): Deallocate previous usertag
+	  before setting the new one.
+
+2005-03-10  yjung
+
+	* changed circa to something else
+
+2005-03-09  rpalsa
+
+	* Definition of enum _cpl_parameter_mode_: trailing comma removed.
+
+2005-03-08  yjung
+
+	* iset-> ilist
+	* iset -> ilist
+	* bug correction on centroid computation
+
+2005-03-07  yjung
+
+	* offered cpl_imagelist_is_uniform()
+	* iset -> ilist
+
+2005-03-02  yjung
+
+	* added #include cpl_error.h
+
+2005-03-02  cplmgr
+
+	* Package version updated.
+
+2005-03-02  rpalsa
+
+	* Include cpl_memory_impl.h instead of cpl_memory.h
+
+2005-03-02  cizzo
+
+	* Add PRO TYPE keyword
+
+2005-03-02  yjung
+
+	* added CPL_FRAME_TYPE_ANY in cpl_frame types
+	* error handling changed
+
+2005-03-01  yjung
+
+	* added doc on returned error codes
+	* added defgroup for this one
+	* added doc
+	* remove cpl_tools.c from doc
+	* updated documentation
+
+2005-02-28  yjung
+
+	* added doc on returned error codes
+	* added documentation on returned error codes
+	* added doc on retured errors
+	* added doc on returned error codes
+	* add the doc on the error codes
+	* added doc on returned error codes
+	* added doc for the returned errors
+	* added doc for the returned error codes (doxygen)
+	* *** empty log message ***
+	* added doc for the returned error codes
+	* documentation for returned error codes (doxygen)
+
+2005-02-28  llundin
+
+	* Added const modifier to parlist
+
+2005-02-28  yjung
+
+	* not mmapp
+
+2005-02-28  llundin
+
+	* Revert image creation in cpl_imagelist_load() to cpl_image_load()
+	* Removed need for cpl_image_defs.h
+	* Removed need for cpl_image_defs.h. Replaced
+	  CPL_ERROR_ILLEGAL_OUTPUT. Corrected error checking with
+	  cpl_imagelist_is_uniform()
+	* Removed unneeded #include
+	* Removed need for cpl_image_defs.h. Simplified calling sequence
+	  for cpl_apertures_extract{,_window}()
+	* Removed need for cpl_image_defs.h
+	* Fixed memory leak in cpl_geom_img_offset_combine()
+
+2005-02-26  cizzo
+
+	* Minor correction to the documentation
+	* Reformatting of error description
+	* Reformatting of error description
+	* Fix some mistakes in the reformatted error description
+	* Completed reformatting of error description
+
+2005-02-25  cizzo
+
+	* Further reformatting of error description
+
+2005-02-25  yjung
+
+	* doxygen
+	* updated the returned error codes doc (doxygen)
+	* updated doc on returned error codes (doxygen)
+	* updated documentation on error codes (doxygen)
+	* added error description (doxygen)
+
+2005-02-25  llundin
+
+	* Added 2 const modifiers to cpl_dfs_setup_product_header()
+
+2005-02-25  cizzo
+
+	* Partial reformatting of error description
+
+2005-02-24  yjung
+
+	* load the whole extenxion in one go (all the planes
+	* do not map the files any more !!!!!!! problems with huge files
+
+2005-02-24  cplmgr
+
+	* Package version updated.
+
+2005-02-23  llundin
+
+	* Cleaned up division
+	* 4 X 4 Caveat for pixel-interpolation
+	* Commented out currently unused variable
+
+2005-02-23  cizzo
+
+	* Add cpl_table_get_column_stdev()
+	* Add test for cpl_table_get_column_mean(), _median(), and _stdev()
+
+2005-02-23  yjung
+
+	* cpl_vector_get_median used to modify the input vector - corrected
+
+2005-02-22  llundin
+
+	* cpl_assure{,_code}() will at least set CPL_ERROR_UNSPECIFIED
+
+2005-02-21  cizzo
+
+	* Fix wrong check in cpl_dfs_setup_product_header()
+
+2005-02-21  yjung
+
+	* doxygen
+	* updated doxygen comments
+	* added cpldfs
+	* doxygen
+	* doxygen change
+
+2005-02-18  cizzo
+
+	* Fix typo
+
+2005-02-18  yjung
+
+	* bug in the test
+
+2005-02-18  llundin
+
+	* Moved _cpl_msg_init("cpl_msg_progress") to follow declarations
+
+2005-02-18  cplmgr
+
+	* Package version updated
+
+2005-02-17  yjung
+
+	* centroid computation: subtract the min if there are <0 values
+	* solved centroid pb
+	* support 1 pixel image
+
+2005-02-17  rpalsa
+
+	* Function cpl_plugin_dump(): Use correct format when printing
+	  plugin type and version.
+
+2005-02-16  yjung
+
+	* created the cpl_image_stats module from functions in cpl_stats
+	* new removal of _remove() functions
+	* removed _remove() functions
+	* removed _remove() functions
+
+2005-02-16  llundin
+
+	* Disabled centroiding
+
+2005-02-14  rpalsa
+
+	* Functions cpl_frame_set_filename() and cpl_frame_set_tag():
+	  Simplify code for resetting the filename and the tag.
+
+2005-02-14  cizzo
+
+	* Correct documentation for cpl_table_erase_selected()
+	* Correct doc of cpl_msg_stop_log()
+	* Correct name for cpl_matrix_get_mean(), _median(), _stdev()
+	* Improve doc of cpl_table_load() and cpl_table_save(), and
+	  differentiate between illegal FITS files and specifying an
+	  extension not containing a table
+
+2005-02-11  yjung
+
+	* added cpl_frame_get_nextensions
+	* raise an error if the centroid cannot be computed
+
+2005-02-11  rpalsa
+
+	* Use cpl_error_push() and cpl_error_pop()
+	* Functions cpl_error_push() and cpl_error_pop() added.
+	* Function cpl_parameterlist_dump(): Implementation added.
+	* Function cpl_parameter_dump(): Implementation added.
+
+2005-02-11  cizzo
+
+	* Correct array sizes
+
+2005-02-10  rpalsa
+
+	* Function cpl_parameter_dump() resurrected (stubs only).
+	* Function cpl_parameterlist_dump() resurrected (stubs only).
+	* Function cpl_pluginlist_dump() resurrected.
+	* Function cpl_plugin_copy(): Documentation updated. Function
+	  cpl_plugin_dump() resurrected.
+
+2005-02-10  yjung
+
+	* removed remaining _remove() functions
+
+2005-02-10  rpalsa
+
+	* Function cpl_parameter_set_tag(): Added.
+
+2005-02-09  llundin
+
+	* Raised bar on Commutativity test
+	* Fixed remaining sign bugs
+
+2005-02-09  yjung
+
+	* Fixed sign bug
+	* typo
+
+2005-02-09  cizzo
+
+	* Fix bug in error handling
+
+2005-02-09  rpalsa
+
+	* Function cpl_parameter_set_alias(), cpl_parameter_get_alias():
+	  Documentation updated.
+
+2005-02-09  cizzo
+
+	* Hardcoded CPL version
+
+2005-02-09  rpalsa
+
+	* Documentation for enum _cpl_parameter_mode_ added.
+
+2005-02-09  cizzo
+
+	* Input primary FITS keywords no longer mandatory, and other minor
+	  changes of behaviour
+
+2005-02-09  llundin
+
+	* Removed unused variable
+
+2005-02-08  cizzo
+
+	* Fix two or three bugs (Yves' test)
+	* cpl_error_reset() also resets the file and the line fields
+
+2005-02-08  yjung
+
+	* moved defines in cpl_dfs.c
+	* little changes
+
+2005-02-07  yjung
+
+	* added cpl_dfs.h in cpl.h
+	* obsolete
+
+2005-02-07  cizzo
+
+	* Avoid setting CPL_ERROR_UNSPECIFIED if no error is set at
+	  cpl_set_where() call
+
+2005-02-07  llundin
+
+	* Removed cpl_tools.h from public .h files. typedef enum
+	  cpl_lowpass
+
+2005-02-07  yjung
+
+	* removed functions
+
+2005-02-07  cizzo
+
+	* Support cpl_dfs.c.h
+	* Implementation of cpl_dfs_setup_product_header() - NOT TESTED
+
+2005-02-07  rpalsa
+
+	* Convenience functions to update and copy properties added.
+
+2005-02-04  cizzo
+
+	* Add necessary FILE definition
+
+2005-02-04  rpalsa
+
+	* Function cpl_plugin_copy(): More typos fixed in the
+	  documentation.
+	* Function cpl_plugin_copy(): Typo in documentation fixed.
+
+2005-02-02  yjung
+
+	* ...
+
+2005-02-02  cplmgr
+
+	* Package version updated.
+
+2005-02-02  rpalsa
+
+	* Hide documentation of internal functions.
+
+2005-02-02  cizzo
+
+	* Move cpl_error_set_code() to cpl_error_impl.h
+	* Move cpl_error_set_code() to cpl_error_impl.h
+	* Implementation
+
+2005-02-01  cizzo
+
+	* Include cpl_propertylist_impl.h
+
+2005-02-01  yjung
+
+	* no qfits use any more
+	* added some missing includes
+
+2005-02-01  rpalsa
+
+	* Added.
+	* Updated.
+	* Adapted to API changes.
+	* API changes.
+
+2005-02-01  llundin
+
+	* Raised round-off limit for cpl_image_fft()
+	* Raised round-off limit cpl_image_logarithm()
+
+2005-01-31  cizzo
+
+	* Apply better solution to the previous delta (following Lars'
+	  suggestion)
+
+2005-01-31  llundin
+
+	* cpl_tools.h is not distributed
+	* Needs private cpl_imagelist_is_uniform()
+	* cpl_image_fft(): Normalize on inverse transform
+
+2005-01-30  cizzo
+
+	* Increase the value of MAX_FUNCTION_NAME
+	* Move the definition of the constants MAX_MSG_LENGTH,
+	  MAX_FUNCTION_NAME, MAX_DOMAIN_NAME, MAX_LOGFILE_NAME from .c to
+	  .h
+
+2005-01-29  cizzo
+
+	* Preliminary step before making cpl_error_set_code() private
+	* Avoid cpl_error_set_code() calls
+	* Avoid cpl_error_set_code() calls, and reintroduce the _mean(),
+	  _median(), _stdev()
+	* Avoid cpl_error_set_code() calls
+
+2005-01-28  llundin
+
+	* #include <cpl_macros.h>
+	* Privatized cpl_image members. cpl_geom_combine. pisigma optional
+
+2005-01-28  cizzo
+
+	* Avoid cpl_error_set_code() call, and move the cpl_column.h
+	  include from the .h to the .c module
+	* Avoid cpl_error_set_code() call
+
+2005-01-28  yjung
+
+	* ui-> io
+	* small crrection
+	* ui-> io
+	* ui -> io
+	* _ui renamed in _io
+
+2005-01-28  rpalsa
+
+	* Added.
+
+2005-01-28  yjung
+
+	* added cpl_frameset_ui.h
+	* added cpl_frameset_ui
+
+2005-01-28  rpalsa
+
+	* Updated.
+
+2005-01-28  llundin
+
+	* Redeclare aperture sorting routines to not modify object pointer
+	* Added sigmas to cpl_geom_img_offset_combine()
+
+2005-01-28  cizzo
+
+	* Change of API: the append flag in cpl_table_save is now unsigned
+	  int to accomodate the new output modes
+
+2005-01-27  cizzo
+
+	* Change of API: the append flag in cpl_table_save is now unsigned
+	  int to accomodate the new output modes
+	* Adapt to cpl_matrix_wrap() API change
+	* Make _unwrap() to return void *, and change the _wrap() API
+
+2005-01-27  llundin
+
+	* Added sigmas to cpl_apertures_extract_window()
+
+2005-01-27  cizzo
+
+	* Wrong error code setting in functions _selected_invalid()
+
+2005-01-27  llundin
+
+	* loop over sigmas in cpl_apertures_extract_window()
+	* Redeclared cpl_{vector,image}_unwrap() to void *
+	* Aligned API of cpl_vector_wrap() with that of cpl_image_wrap_*()
+
+2005-01-26  llundin
+
+	* Removed redundant cpl_imagelist_get_*()
+	* cpl_imagelist_is_uniform() is private
+
+2005-01-26  cizzo
+
+	* Fix error setting in cpl_table_delete
+
+2005-01-25  llundin
+
+	* Added istep to cpl_vector_extract()
+	* cpl_image_extract_subsample() generalized
+	* Removed private sparseimage.h and column.h
+	* cpl_image_warp_polynomial() API change: radius + profile
+	* cpl_image_save(). CPL_IO_DEFAULT
+	* CPL_FFT_EOL => CPL_FFT_MAX
+	* cpl_imagelist_load()
+	* defgroup renaming
+
+2005-01-24  llundin
+
+	* Redeclared cpl_imagelist_new()
+	* Removed direct access of ->ni
+	* fixed cpl_imagelist_set() bug
+
+2005-01-21  cizzo
+
+	* Fix rounding problem
+	* Avoid warning message
+
+2005-01-21  llundin
+
+	* Redeclare cpl_imagelist_erase() and
+	  cpl_geom_img_offset_combine(). cpl_imagelist_check() redeclared
+	  to cpl_imagelist_is_uniform(). Remove direct imagelist access.
+	  Added checks in cpl_imagelist_set()
+	* Removed unnecessary comma
+
+2005-01-20  llundin
+
+	* -DCPL_DEBUG
+	* Removed _cpl_type_bpp_ and the references to qfits and changed
+	  CPL_BPP_DEFAULT to a macro
+
+2005-01-17  cizzo
+
+	* Add function cpl_msg_set_log_name()
+
+2005-01-17  llundin
+
+	* Members of cpl_imagelist made private
+
+2005-01-13  llundin
+
+	* Redeclaration of some functions from int to cpl_error_code.
+	  Replacement of some cx_assert() with cpl_assure_code()
+	* set CPL_ERROR_UNSPECIFIED to 1 while verifying redeclation of
+	  functions from int to cpl_error_code
+	* unused variable
+
+2005-01-12  llundin
+
+	* include stdlib.h (for getenv())
+	* include cpl_error.h
+	* Renamed plist to propertylist
+	* Include most basic modules first
+	* cpl_frameset_labelise() stays in CPL
+
+2005-01-11  llundin
+
+	* Use cpl_vector_fill_kernel_profile()
+	* cpl_image_get_interpolated() confidence is negative on error
+	* Redeclared cpl_vector_get_stdev()
+	* Added cpl_io.h
+
+2005-01-10  cizzo
+
+	* Add const qualifier to function arguments declaration where
+	  appropriate
+
+2005-01-10  llundin
+
+	* CPL_FFT_SWAP_HALVES. Support for CPL_TYPE_COMPLEX in
+	  cpl_image_move()
+	* my_assert()
+	* Added cpl_assure()
+	* Removed assert() from cpl_image_delete_imaginary()
+
+2005-01-09  llundin
+
+	* Fixed doxygen warnings
+	* CPL_TYPE_COMPLEX supported by cpl_image_copy()
+
+2005-01-08  llundin
+
+	* Documentation of FFT modes
+	* CPL_FFT_UNNORMALIZED and CPL_FFT_TO_REAL. cpl_image_divide() &&
+	  cpl_image_abs() test
+	* cpl_image_fft()
+	* CPL_TYPE_COMPLEX
+
+2005-01-05  llundin
+
+	* Changed API of cpl_vector_correlate(). cpl_vector_set_size()
+	* Removed unused static function
+
+2005-01-04  cizzo
+
+	* Eliminate asserts; add option to avoid output lines of text to be
+	  splitted; output lines of text are never splitted in logfiles
+
+2005-01-04  llundin
+
+	* cpl_polynomial_shift() => cpl_polynomial_shift_1d
+	* API change of cpl_polynomial_solve_1d
+
+2005-01-03  llundin
+
+	* cpl_tools_{kth,median}_*() => cpl_tools_get_{kth,median}_*().
+	  cpl_column_mean() => cpl_column_get_mean() etc.
+	* #include "cpl_image_bpm.h"
+	* Commented out cpl_imagelist_compare()
+	* Removed #include "cpl_image_bpm.h"
+	* #include "cpl_image_bpm.h"
+
+2005-01-03  cizzo
+
+	* Make some returned check values -1 in case of error
+
+2005-01-03  llundin
+
+	* Removed _remove from cpl_tools_kth_{double,float,int}_remove()
+	  and cpl_tools_median_{double,float}_remove()
+
+2005-01-03  cizzo
+
+	* Function renaming, API changes, eliminate asserts
+
+2005-01-03  llundin
+
+	* Added CPL FITS IO modes
+
+2004-12-30  llundin
+
+	* cpl_image_warp_polynomial(). Use direct buffer access in
+	  cpl_image_get_interpolated()
+	* Unused variable
+	* Fixed cpl_image index + 1 bug
+	* Added int * is_rejected to cpl_image_get()
+	* cpl_boolean
+
+2004-12-29  llundin
+
+	* cpl_image_get_interpolated(). cpl_vector_fill_kernel_profile()
+	* man typo
+	* cpl_clock, cpl_kernel enum. Prepend CPL_ to #define
+	* enum cpl_norm in cpl_imagelist_normalise(). Propagate error code
+	* Removed bpm-pointer from cpl_image_wrap_*()
+	* cpl_image_wrap_*() requires non-NULL pixel pointer
+	* cpl_image_wrap_*(,NULL,NULL) => cpl_image_new()
+	* cpl_image_new() bis
+	* Minor comments
+	* cpl_image_new()
+	* Removed cpl_image_get_mean(), cpl_image_subtract_scalar() and
+	  cpl_image_move() from cpl_geom_img_offset_coarse()
+
+2004-12-28  llundin
+
+	* CPL_STAT_* => CPL_STATS_*. Add stream parameter to
+	  cpl_stats_dump(). cpl_image_get_sqflux()
+	* cpl_image_normalise()
+	* cpl_image_get() and cpl_image_set()
+	* Replacement of cpl_*_op_scalar*()
+
+2004-12-23  llundin
+
+	* Replacements for cpl_imagelist_op_scalar(). iset => imlist
+	* iset => imlist. Individual checks in cpl_imagelist_check()
+	* argument renaming. cpl_image_op_scalar() =>
+	  cpl_image_divide_scalar()
+
+2004-12-22  llundin
+
+	* cpl_image_logarithm()
+	* cpl_image_<op>_scalar(), cpl_image_exponential(),
+	  cpl_vector_pow() checks
+	* more cpl_vector_pow() checks
+	* Fixed CPL_OPERATION bug. Really
+	* Fixed CPL_OPERATION bug
+	* Domain check in CPL_IMAGE_LOGASSIGN(). FIXME
+	* cpl_vector_delete(error). more cpl_vector_power()
+	* cpl_vector_power()
+	* Recoded som assert()s to be side-effect-free
+
+2004-12-21  llundin
+
+	* cpl_image_op_scalar() => cpl_image_<op>_scalar()
+	* Added cpl_image_{add,subtract,multiply,divide}_scalar(),
+	  cpl_image_{power,exponential,logarithm}()
+
+2004-12-21  cizzo
+
+	* Adapt to the few API changes planned for cpl version 2.0
+	* Eliminate all assertions, and add few API changes planned for cpl
+	  version 2.0
+
+2004-12-21  llundin
+
+	* A few more tests
+	* Removed cpl_vector_op_scalar(). Added some tests of
+	  cpl_vector_add_scalar() etc.
+
+2004-12-20  llundin
+
+	* cpl_vector_{add,subtract,multiply,divide}_scalar(),
+	  cpl_vector_{logarithm,exponential,power}()
+	* cpl_type_bpp
+	* cpl_image_fill_test_create(), cpl_polynomial_fit_1d_create() and
+	  cpl_polynomial_fit_2d_create()
+
+2004-12-16  cizzo
+
+	* Avoid cpl_matrix_new_constant(), now deprecated
+
+2004-12-16  yjung
+
+	* added CPLDFS libraru
+	* added cpldfs library
+	* new test file
+	* new file
+	* added cpl_prokeys
+	* new file
+	* new
+	* cpl_tools still distyributed for the moment
+	* do not install cpl_tools any more
+	* added cpl.h in the distribution
+	* added the cpl.h file
+
+2004-12-15  llundin
+
+	* Renaming according to naming convention
+	* Renaming according to naming convention
+	* Renaming (renamed cpldrs/cpl_geom/cpl_geom_ima_body.h to
+	  cpldrs/cpl_geom/cpl_geom_img_body.h)
+	* Renaming (renamed cpldrs/cpl_geom/cpl_geom_ima.h to
+	  cpldrs/cpl_geom/cpl_geom_img.h)
+	* Renaming (renamed cpldrs/cpl_geom/cpl_geom_ima.c to
+	  cpldrs/cpl_geom/cpl_geom_img.c)
+	* Renaming (renamed cpldrs/cpl_det/cpl_det_body.h to
+	  cpldrs/cpl_det/cpl_detector_body.h)
+	* Renaming (renamed cpldrs/cpl_det/cpl_det.h to
+	  cpldrs/cpl_det/cpl_detector.h)
+	* Renaming (renamed cpldrs/cpl_det/cpl_det.c to
+	  cpldrs/cpl_det/cpl_detector.c)
+	* Renaming (renamed cpldrs/cpl_phot/cpl_phot.h to
+	  cpldrs/cpl_phot/cpl_photom.h)
+	* Renaming (renamed cpldrs/cpl_phot/cpl_phot.c to
+	  cpldrs/cpl_phot/cpl_photom.c)
+	* Renaming (renamed cpldrs/cpl_apert/cpl_apert_ima.h to
+	  cpldrs/cpl_apert/cpl_apertures_img.h)
+	* Renaming (renamed cpldrs/cpl_apert/cpl_apert.h to
+	  cpldrs/cpl_apert/cpl_apertures.h)
+	* Renaming (renamed cpldrs/cpl_apert/cpl_apert_ima.c to
+	  cpldrs/cpl_apert/cpl_apertures_img.c)
+	* Renaming (renamed cpldrs/cpl_apert/cpl_apert.c to
+	  cpldrs/cpl_apert/cpl_apertures.c)
+	* Renaming (renamed cpldrs/tests/cpl_phot-test.c to
+	  cpldrs/tests/cpl_photom-test.c)
+	* Renaming (renamed cpldrs/tests/cpl_det-test.c to
+	  cpldrs/tests/cpl_detector-test.c)
+	* Renaming (renamed cpldrs/tests/cpl_geom_ima-test.c to
+	  cpldrs/tests/cpl_geom_img-test.c)
+	* Renaming (renamed cpldrs/tests/cpl_apert_ima-test.c to
+	  cpldrs/tests/cpl_apertures_img-test.c)
+	* Renaming (renamed cpldrs/tests/cpl_apert-test.c to
+	  cpldrs/tests/cpl_apertures-test.c)
+	* Renaming (renamed cplcore/tests/cpl_imset_io-test.c to
+	  cplcore/tests/cpl_imagelist_io-test.c)
+	* Renaming (renamed cplcore/tests/cpl_imset_basic-test.c to
+	  cplcore/tests/cpl_imagelist_basic-test.c)
+	* Renaming (renamed cplcore/tests/cpl_imset_complex-test.c to
+	  cplcore/tests/cpl_imagelist_complex-test.c)
+	* Renaming (renamed cplcore/cpl_imset_io_body.h to
+	  cplcore/cpl_imagelist_io_body.h)
+	* Renaming (renamed cplcore/cpl_imset_basic_body.h to
+	  cplcore/cpl_imagelist_basic_body.h)
+	* Renaming (renamed cplcore/cpl_imset_complex_body.h to
+	  cplcore/cpl_imagelist_complex_body.h)
+	* Renaming (renamed cplcore/cpl_image_stats_body.h to
+	  cplcore/cpl_stats_body.h)
+	* Renaming (renamed cplcore/cpl_imset_io.h to
+	  cplcore/cpl_imagelist_io.h)
+	* Renaming (renamed cplcore/cpl_imset_basic.h to
+	  cplcore/cpl_imagelist_basic.h)
+	* Renaming (renamed cplcore/cpl_messaging.h to cplcore/cpl_msg.h)
+	* Renaming (renamed cplcore/cpl_imset_complex.h to
+	  cplcore/cpl_imagelist_complex.h)
+	* Renaming (renamed cplcore/cpl_imset_defs.h to
+	  cplcore/cpl_imagelist_defs.h)
+	* Renaming (renamed cplcore/cpl_types.h to cplcore/cpl_type.h)
+	* Renaming (renamed cplcore/cpl_imset_io.c to
+	  cplcore/cpl_imagelist_io.c)
+	* Renaming (renamed cplcore/cpl_imset_basic.c to
+	  cplcore/cpl_imagelist_basic.c)
+	* Renaming (renamed cplcore/cpl_messaging.c to cplcore/cpl_msg.c)
+	* Renaming (renamed cplcore/cpl_imset_complex.c to
+	  cplcore/cpl_imagelist_complex.c)
+	* Renaming (renamed cplcore/cpl_types.c to cplcore/cpl_type.c)
+	* Define BPP_* within CPL (for renaming)
+
+2004-12-15  rpalsa
+
+	* Package version updated.
+
+2004-12-07  yjung
+
+	* doc
+	* replaced binary images by cpl_mask
+	* cpl_mask_new creates an initialized mask
+	* ...
+	* corrected from image bnary
+	* replace image binary by mask
+	* removed cpl_image_copy_from_fits()
+	* removed cpl_image_new_empty()
+	* replaced image-binary by mask
+	* removed image-binary / added cpl_mask
+	* use cpl_mask inst of cpl_image_binary
+	* removed include cpl_image_binary.h
+	* replaced binary images by cpl_mask
+	* compiles now properly after having replaced the binary image by
+	  cpl_mask
+	* added an include
+	* added cpl_image_new_from_mask()
+
+2004-12-06  yjung
+
+	* removed direct access to cpl_mask
+	* wrong function name
+	* removed direct access to cpl_mask struct
+	* undo
+	* cpl_sparseimage_extract_mask(const cpl_mask * map) made public
+	  again
+	* use accessor funct for cpl_mask
+	* added cpl_mask_new_from_rejected_window() and
+	  cpl_mask_new_from_rejected()
+	* moved cpl_image_bpm_from_image and cpl_image_bpm_from_image_subw
+	  to
+	  cpl_mask
+	* removed cpl_binary images use cpl_mask
+	* added accessor functions
+	* removed support for binary images
+	* cpl_bin images support removed
+	* removed support for binary images
+	* binary images replaced by cpl_mask
+	* added cpl_binary definition
+	* removed support for binary images
+	* removed binary image
+	* removed cpl_image_binary (-> cpl_mask)
+	* updated
+	* cpl_image_binary - > cpl_mask
+	* from cpl_image_binary
+	* moved to cpl_mask
+
+2004-11-30  cizzo
+
+	* cpl_table_save(): Make sure that the XTENSION property is removed
+	  before writing the primary header.
+
+2004-11-25  llundin
+
+	* Added CPL_ERROR_UNSPECIFIED and CPL_ERROR_EOL
+
+2004-11-18  yjung
+
+	* remove NAXIS1 and NAXIS2 if empty image is passed
+	  (cpl_image_save)
+	* add simple in header if not passed...
+	* update NAXIS to 0 if the passed image is NULL (cpl_image_save)
+	* corrected bug when you try to save an empty image
+
+2004-11-09  rpalsa
+
+	* Make the script tolerant in case the libltdl directory exists,
+	  but is empty
+
+2004-11-05  yjung
+
+	* doxygen command corrected
+
+2004-11-03  rpalsa
+
+	* Package version changed
+
+2004-10-26  llundin
+
+	* Fixed memory leak. Use return cpl_error_get_code()
+	* Fixed memory leak. Use cpl_error_reset() + assert() + return
+	  cpl_error_get_code()
+	* Fixed memory leak: cpl_vector_delete(tmp_vec)
+	* Fixed memory leak. Use cpl_error_get_code() and assert().
+	* CPL_ASSURE_ERR_CODE() in cpl_imset_set_image()
+	* Removed memory leak using cpl_sparseimage_delete()
+	* moved remove()
+	* Use assert(). Stricter numerical check
+	* Fixed memory leak in cpl_image_percentile()
+	* Removed memory leak in cpl_image_bpm_set_from_ascii()
+	* Use assert()
+	* Fixed too big malloc() in cpl_imset_new(). Fixed return value on
+	  error in cpl_imset_get_type()
+
+2004-10-21  llundin
+
+	* Avoid use of internals in cpl_image_copy_from_fits()
+
+2004-10-18  llundin
+
+	* Corrected argument check in cpl_matrix_power(),
+	  cpl_matrix_logarithm()
+
+2004-10-13  cizzo
+
+	* In cpl_table_save(), avoid a field_size = 0 when in a character
+	  column all strings are invalid
+
+2004-10-12  cizzo
+
+	* Correct computation of the standard deviation
+
+2004-10-07  cizzo
+
+	* Eliminate debug printf()s
+	* Trying to fix a number of memory leaks
+
+2004-10-06  cizzo
+
+	* Fix access violation in cpl_column_median_TYPE() functions
+
+2004-09-30  llundin
+
+	* ker_norm = 0
+	* Added ifdef`ed code for FFT-test
+	* renamed to test.fits
+	* Added cpl_msg_stop()
+	* Fixed memory leaks in cpl_sparseimage_new(),
+	  cpl_sparseimage_shift_int(), cpl_image_shift_int_local()
+
+2004-09-29  llundin
+
+	* Allow functions to complete when called with cpl_error_get_code()
+
+2004-09-28  cizzo
+
+	* Translate into English
+
+2004-09-22  yjung
+
+	* forgot to deallocate an image
+	* corrected access to the cpl_apert structure
+	* removed doxy entry
+
+2004-09-13  dmckay
+
+	* Allow comment lines (which start with a hash (#)) within Set Of
+	  Frames (SOF)
+	  files. This affects the cpl_frameset_load() function.
+
+2004-09-13  llundin
+
+	* CPL_ASSURE_ERR_CODE() in cpl_vector_fill()
+
+2004-09-10  llundin
+
+	* Added support for binary images. Fixed a few memory leaks (on
+	  error). Some checks on centroid output. Avoid overwrite of
+	  cpl_error_code
+
+2004-09-05  llundin
+
+	* replaced printf() with cpl_msg_info()
+
+2004-09-04  llundin
+
+	* Improved handling of bad pixels in cpl_image_collapse()
+	* Detect stdev error with one sample
+
+2004-09-02  rpalsa
+
+	* In cpl_property_set_string(): add check for argument value.
+
+2004-09-01  rpalsa
+
+	* Cross reference corrected in cpl_frameset_next() documentation.
+
+2004-09-01  yjung
+
+	* added check on the size of an image added to an image set
+
+2004-08-27  yjung
+
+	* corrected rotation bug reported by Nuria
+
+2004-08-24  cizzo
+
+	* eliminate comma at enum end
+
+2004-08-18  yjung
+
+	* added doc for cpl_image_load()
+
+2004-08-03  llundin
+
+	* Allowed minor rounding (SunOS)
+
+2004-07-29  cplmgr
+
+	* Package version changed.
+
+2004-07-27  yjung
+
+	* added 8 fields in cpl_apert : left_x, left_y, right_x right_y
+	  top_x top_y
+	  bottom_x bottom_y
+
+2004-07-16  yjung
+
+	* de allocate cpl_image_stats with cpl_image_stats_delete()
+	* added ref to bitmask def
+
+2004-07-14  llundin
+
+	* Fixed allocation bug
+	* stdev is bias-corrected (vector and image). Check that
+	  image_stats object is properly defined when used
+
+2004-07-07  rpalsa
+
+	* Move typedef cpl_plugin_type after enum definition.
+
+2004-07-06  cizzo
+
+	* Send warnings to the print stream
+
+2004-07-05  llundin
+
+	* Corrected meaning of cpl_vector_new_from_data() + removed const !
+	* Added const to prototypes
+
+2004-07-04  llundin
+
+	* Added guard on Loop time prediction offset
+
+2004-07-02  llundin
+
+	* cpl_vector_delete_but_data()
+	* Added const to cpl_table_load()
+
+2004-06-24  llundin
+
+	* Cancelled non-intrusive use of cpl_tools_cputime() in
+	  cpl_msg_progress(). Fixed bug in cpl_tools_cputime()
+
+2004-06-24  rpalsa
+
+	* Package version changed
+
+2004-06-24  llundin
+
+	* Added const to several function prototypes. Removed some dead
+	  code and unused variables. Improved cpl_tools_cputime(). Casted
+	  several filenames to (char*) due to qfits
+
+2004-06-24  cizzo
+
+	* Replace error handling with asserts
+
+2004-06-24  llundin
+
+	* Added consistency checks and read-only mode for
+	  cpl_tools_cputime() and fixed wrap-around bug. Non-intrusive use
+	  of cpl_tools_cputime() in cpl_msg_progress().
+
+2004-06-23  llundin
+
+	* Added some consistency checks to cpl_msg_progress()
+	* cpl_msg_progress() produces normal line(s) of output
+
+2004-06-23  rpalsa
+
+	* Merge in changes from cpl 1.0.1.
+	* Cleanup
+	* Merge in changes from cpl 1.0.1. In cpl_frameset_load(): If no
+	  tag is given in the input file use an empty string as tag instead
+	  of ignoring the entry in the file.
+	* When checking for qfits_get_datetime_iso8601() use AC_LINK_IFELSE
+	  instead of AC_RUN_IFELSE.
+
+2004-06-23  yjung
+
+	* check the image size for FWHM computation
+
+2004-06-22  yjung
+
+	* bug corrected in cpl_vector_get_noise()
+
+2004-06-21  yjung
+
+	* bug corrected
+
+2004-06-18  llundin
+
+	* sqrt(stdev)
+	* Fixed a few CPL_ASSURE bugs. Renamed some variables
+	* Removed variable names from prototypes
+
+2004-06-16  cizzo
+
+	* Complete the previous delta
+	* Complete the previous delta
+
+2004-06-15  yjung
+
+	* rm unused var
+	* typo in messages
+	* rm unused var
+	* removed relative path in includes
+	* include ../../cpl_apert.h replaced by include cpl_apert.h
+
+2004-06-15  rpalsa
+
+	* Extra single quote removed from symbol definition of
+	  CPLDRS_INCLUDE
+	* Package version changed. Checks for header files stropts.h,
+	  sys/ioctl.h, termios.h, and termio.h added. Support for directory
+	  libltdl removed.
+	* Use correct quoting in macro definitions. Subdirectories of
+	  cpldrs added to CPLDRS_INCLUDES
+	* Required version of GNU build tools updated.
+	* Updated to new version from automake 1.8.5
+	* Definition of target html removed. Already provided by automake
+	  1.8.5
+	* Updated to new version from libtool 1.5.6
+	* Required version of automake updated. Subdirectory libltdl is no
+	  longer built.
+	* Required version of automake updated. List of includes updated.
+	* Required version of automake updated.
+	* Use correct quoting in macro definitions. Add check for qfits
+	  compatibility
+
+2004-06-15  yjung
+
+	* corrected bug
+
+2004-06-15  cizzo
+
+	* Avoid line wrapping for overwritable messages
+
+2004-06-15  rpalsa
+
+	* Obsolete.
+
+2004-06-15  yjung
+
+	* added doc
+
+2004-06-11  cizzo
+
+	* From branch: eliminate from primary header spurious entries
+	  EXTNAME EXTVER EXTLEVEL, and update the DATE entry for each
+	  appended HDU
+	* Import from branch: NAXIS keywords must be removed both from
+	  primary and secondary headers of created FITS tables
+
+2004-06-02  llundin
+
+	* Improved documentation of cpl_sparseimage_from_binary()
+
+2004-06-02  yjung
+
+	* corrected error on the combined image size computation
+
+2004-06-01  llundin
+
+	* Added cpl_bivector_delete_but_data()
+
+2004-05-28  yjung
+
+	* typo
+	* added cpl_bivector_new_from_vectors
+
+2004-05-27  yjung
+
+	* added cpl_frameset_to_tags()
+
+2004-05-24  llundin
+
+	* Removed flawed test
+
+2004-05-11  cizzo
+
+	* Now cpl_msg_stop() also closes the logfile if still open
+
+2004-05-07  yjung
+
+	* corrected bug in computation of the intersection image (shift and
+	  add)
+	  piosition
+
+2004-05-06  rpalsa
+
+	* Library and package version changed.
+	* Updated.
+
+2004-05-04  yjung
+
+	* added the refine parameter to cpl_geom_ima_offset_combine()
+
+2004-05-04  cizzo
+
+	* Fix a bug - verbosity level shouldn't be changed in case of
+	  failure in creating a logfile
+
+2004-05-01  yjung
+
+	* do not try to correlate the 1st frame with itself any more
+
+2004-04-30  cizzo
+
+	* Consistent heading style of capitalisation
+
+2004-04-29  cizzo
+
+	* Fix bug in cpl_table_and_select_string() (inverted logic)
+
+2004-04-23  yjung
+
+	* corrected a bug (array read outside bounds
+
+2004-04-23  llundin
+
+	* cpl_vector_gen_polynomial_equid() renamed x to x0
+
+2004-04-22  llundin
+
+	* Rename of cpl_vector_planck() to cpl_phot_blackbody()
+
+2004-04-22  yjung
+
+	* commented out cpl_matrix_dump()
+	* changed the include back
+	* changed include
+	* added cpl_det_linearity
+	* added cpl_det_ron_ring()
+
+2004-04-19  yjung
+
+	* cpl_matrix_leastsq() changed
+
+2004-04-19  cizzo
+
+	* Correct convention used in cpl_matrix_leastsq(), consistent with
+	  cpl_matrix_solve_system()
+	* Add cpl_matrix_leastq() test
+
+2004-04-15  llundin
+
+	* Wien displacement. Unit-less Planck
+
+2004-04-13  cplmgr
+
+	* Package version updated.
+
+2004-04-08  yjung
+
+	* add datamd5 and date of writing in saved images
+	* changed API for image generation functions
+	* changed the image generation functions API
+	* changed API of cpl_polynomial_1d_fit and cpl_polynomial_2d_fit()
+	  according
+	  CPL group req.
+	* renamed
+	* cpl_1dfunction -> cpl_bivector
+	* cpl_1dfunction -> cpl_bivector
+	* 1dfunction -
+	  > bivector
+	* moved to cpl_bictor
+	* cpl_1dfunction -> cpl_bivector
+	* 1dfunction-> bivector
+	* doc update
+	* rm an unused include
+	* removed an unused include
+	* doc corrected
+	* cpl_1dfunction-> cpl_bivector
+	* moved to cpl_bivector
+	* New revision
+
+2004-04-08  cizzo
+
+	* Avoid duplication of DATAMD5 keyword
+	* Minor change
+
+2004-04-07  llundin
+
+	* Renamed cpl_polynomial_1d_eval_equid() to
+	  cpl_vector_gen_polynomial_equid()
+
+2004-04-07  yjung
+
+	* NAXIS NAXIS1 NAXIS2 NAXIS3 corrected inside cpl_image_save() and
+	  cpl_image_append()
+
+2004-04-06  llundin
+
+	* Removed relative include-path
+
+2004-04-06  yjung
+
+	* corrected missing include and unused variables
+	* moved to cpl_phot/cpl_phot.[ch]
+	* moved to cpl_phot-test
+	* renamed from cpl_spectro-test
+	* renamed cpl_spectro in cpl_phot
+	* New revision
+	* created cpl_phot/
+
+2004-04-06  llundin
+
+	* Fixed API for cpl_1dfunction_interpolate_linear(). Removed
+	  cpl_1dfunction_natural_spline()
+
+2004-04-06  yjung
+
+	* added cpl_apert_detect_threshold_sigma()
+
+2004-04-05  cizzo
+
+	* Avoid warning from xmemory
+	* Correct violation in cpl_table_print()
+
+2004-04-05  yjung
+
+	* added test for insert_local()
+	* corrected bug in insert_local()
+	* bug in insert_local()
+
+2004-04-02  yjung
+
+	* added cpl_sparseimage_insert_local()
+	* added bad pixels handling in cpl_image_insert_local()
+	* added cpldrs
+	* added cpl_image_insert_local()
+	* cpl_image_subsample moved from cpl_image_basic to
+	  cpl_image_resample
+	* cpl_geom_ima_offset_saa() prototype changed
+
+2004-04-02  cizzo
+
+	* Move previous fix to the right block...
+
+2004-04-02  yjung
+
+	* added cpl_polynomial_2d_fit and cpl_polynomial_1d_fit
+	* added cpl_image_gen_polynomial_double and
+	  cpl_image_gen_polynomial_float
+
+2004-04-02  cizzo
+
+	* Avoid empty line after progress bar
+
+2004-04-01  yjung
+
+	* cpl_geom_ima_offset_saa and cpl_geom_ima_offset_combine return
+	  now both the
+	  cpombined image and the contribution map
+	* added an include
+	* cpl_geom_ima_offset_combine() returns now 3 images
+
+2004-03-31  cizzo
+
+	* Add function cpl_table_row_is_selected()
+
+2004-03-29  yjung
+
+	* corrected bad check on entries
+
+2004-03-26  yjung
+
+	* the filtered images borders are computed now
+	* updated doc
+
+2004-03-26  cizzo
+
+	* Keep into account message indentation when wrapping
+
+2004-03-25  cizzo
+
+	* Improve documentation, and add a new-line character at the end of
+	  the progress message
+
+2004-03-25  yjung
+
+	* if refining fails or if no anchor point is detected, still
+	  recombine using
+	  the offsets estimates
+
+2004-03-22  yjung
+
+	* cpl_apert_get_xxx() 's index starts with 1 and not 0
+
+2004-03-17  yjung
+
+	* unused variables removed
+	* added doc
+
+2004-03-16  yjung
+
+	* made cpl_det_clean_bad_pix() much faster
+	* small change in entries check
+	* added some doc
+	* removed a cpl_image_save()
+	* typo
+	* added tests on bad pixels support
+	* corrected cpl_apert_dump()
+	* added cpl_apert_get_min() cpl_apert_get_xcentroid() and
+	  cpl_apert_get_ycentroid()
+	* changed doc and better checked inputs of
+	  cpl_image_bpm_set_from_map()
+
+2004-03-15  yjung
+
+	* comment out the dumps
+	* typo
+	* added cpl_apert_ima-test
+	* Initial revision
+	* typo
+	* typo
+	* updated
+	* updated
+	* typo
+	* added cpl_geom_ima-test and cpl_det-test
+	* updated
+	* new directory organisation
+	* bad file included
+	* functions moved to cpl_geom/cpl_geom_ima.c
+	* functions moved to cpl_det/cpl_det.c and
+	  cpl_apert/cpl_apert_ima.c
+	* moved to cpl_apert/cpl_apert.c
+	* typo
+	* changed the compiled files
+	* Initial revision
+	* renamed cpl_apert_detect()
+	* Initial revision
+
+2004-03-12  yjung
+
+	* added cpl_apert.c cpl_apert_ima.c
+	* typo
+	* Initial revision
+	* first correct version
+	* Initial revision
+
+2004-03-10  yjung
+
+	* cpl_image_get_fwhm_basic moved to cplcore as
+	  cpl_image_fwhm_locmax()
+	* added cpl_image_get_fwhm_locmax() and changed prototype of
+	  cpl_image_gaussian_fit()
+
+2004-03-08  yjung
+
+	* added cpl_image_xcentroid(), cpl_image_xcentroid_subw(),
+	  cpl_image_ycentroid() and cpl_image_ycentroid_subw()
+	* added 3 parameters to cpl_imset_recombine (min and max rej and
+	  union_flag)
+
+2004-03-05  yjung
+
+	* typo
+	* use log()
+
+2004-03-04  yjung
+
+	* added test for cpl_image_fwhm_gaussian()
+	* doc
+	* support bad pixels handling in cpl_image fit gaussian()
+	* test cpl_image_get() on bad pixels.
+	* handle the case where cpl_image_get() is called on a bad pixel
+	* added cpl_image_get()
+	* added cpl_image_get_fwhm_gaussian()
+	  cpl_image_get_fwhms_gaussian()
+	  cpl_image_get_fwhm_basic() cpl_image_get_fwhms_basic()
+	* anges in cpl_image_gaussian_fit(0
+
+2004-03-03  yjung
+
+	* some changes due to the new cpl_image_gen()
+	* start the message system
+
+2004-03-03  cizzo
+
+	* Ensure that the messaging system is initialized just once
+
+2004-03-03  yjung
+
+	* nothing
+	* new image generated by default
+	* typo
+	* allow to specify sig_x and sig_y for the 2d gaussian generation
+	* typo
+	* added cpl_image_gaussian_fit()
+
+2004-03-02  llundin
+
+	* Test of cpl_vector_planck() with atmospheric transmissivity
+
+2004-03-02  yjung
+
+	* added cpl_image_append()
+
+2004-03-01  yjung
+
+	* cpl_imset_time_median() efficiency improve - bad pixels not
+	  handled any
+	  more by the function
+	* removed a cpl_msg_info()
+	* added calls to cpl_msg_progress()
+	* added call to cpl_msg_progress()
+
+2004-03-01  cizzo
+
+	* Implement function cpl_msg_progress()
+
+2004-03-01  yjung
+
+	* remove call to cpl_vector_dump()
+	* added tests for cpl_vector_slect() and cpl_vector
+	  _extract_selected()
+	* added cpl_vector_extract_selected
+	* typo
+
+2004-03-01  cizzo
+
+	* implementation of cpl_msg_progress()
+
+2004-03-01  yjung
+
+	* added cpl_vector_extract_selected() and cpl_vector_select()
+
+2004-03-01  llundin
+
+	* cpl_vector_planck() supports 4 modes
+
+2004-02-27  yjung
+
+	* additional test on fwhm validity
+	* bug in cpl_image_extractrow() and cpl_image_extractcol()
+	* bug corrected in cpl_objects_detect()
+	* added cpl_image_get_objects_fwhm()
+	* added cpl_image_extract_row() and cpl_image_extract_col()
+	* x, y pos in cpl_objects are in FITS convention
+
+2004-02-27  cizzo
+
+	* Correct typo
+	* Implement function cpl_msg_over() (UNTESTED)
+
+2004-02-27  yjung
+
+	* added a missing include
+	* added an unclude
+	* use cpl_memory instead of cxmemory
+
+2004-02-27  rpalsa
+
+	* Function cpl_strdup() added.
+
+2004-02-26  yjung
+
+	* input test less strict on the nb of bad pixels allowed in
+	  cpl_image_clean_badpix()
+	* corrected bad check of inputs in cpl_vector_extract()
+	* changed the output messages
+	* new test on cross correlation validity
+
+2004-02-25  yjung
+
+	* typo
+	* typo
+	* typo + new tests
+	* added cpl_vector_new_from_data() cpl_vector_get()
+	  cpl_vector_set()
+	  cpl_vector_extract() cpl_vector_sum()
+
+2004-02-16  yjung
+
+	* cpl_image_delete used instead of free to delete an image
+	  !!!!!!!!!!
+
+2004-02-16  llundin
+
+	* Fixed bug in cpl_polynomial_duplicate(). Added
+	  cpl_polynomial_cmp(). Improved documentation on
+	  cpl_polynomial_1d_shift().
+
+2004-02-14  rpalsa
+
+	* Obsolete.
+
+2004-02-13  yjung
+
+	* new check on entries in deadpix correction
+	* bugs in deadpix correction - test ok
+	* borders effects in clean_bad_pix()
+	* added cpl_image_clean_badpix()
+	* added cpl_image_photometry_body.h
+	* Initial revision
+	* typo
+	* added cpl_image_bpm_get_pos()
+	* added option to specify the anchor points
+
+2004-02-13  llundin
+
+	* Improved documentation on cpl_polynomial_1d_shift(). Optimized
+	  cpl_polynomial_copy() for same size args
+
+2004-02-13  yjung
+
+	* corrected bug with pointers...
+
+2004-02-12  llundin
+
+	* cpl_polynomial_1d_{eval,diff}() uses long double
+
+2004-02-11  llundin
+
+	* Changed output format of cpl_polynomial_dump
+	* Renamed cpl_polynomial_compute() to cpl_polynomial_eval() and
+	  cpl_polynomial_get_dimension() to cpl_polynomial_dimension()
+	* Removed cpl_polynomial_get_size(). Added cpl_polynomial_degree().
+	  Redeclared void cpl_polynomial_dump() to cpl_error_code. Renamed
+	  cpl_polynomial_compute() to cpl_polynomial_eval() and
+	  cpl_polynomial_get_dimension() to cpl_polynomial_dimension()
+	* Added CPL_ASSURE_ERR_CODE()
+
+2004-02-11  yjung
+
+	* added cpl_imset_recombine()
+
+2004-02-11  llundin
+
+	* Unified API for 1- and multi-dimensional polynomials
+
+2004-02-10  yjung
+
+	* corrected test to detect bad correlated planes
+
+2004-02-10  llundin
+
+	* Special storage for 1d-polynomials
+
+2004-02-10  yjung
+
+	* renamed cpl_image_distortion in cpl_image_resample.
+	  removed cpl_image_distortion_linear() - was a special case of
+	  cpl_image_distortion_poly().
+	  cpl_image_distortion_poly() renamed in cpl_image_warp_poly()
+
+2004-02-10  llundin
+
+	* Added cpl_double_horner1d_diff()
+
+2004-02-09  llundin
+
+	* Added cpl_vector_horner1d_shift()
+
+2004-02-09  cizzo
+
+	* Handle case of all-NULL string column
+
+2004-02-09  llundin
+
+	* cpl_double_horner1d_root_nr: Improved convergence check (2)
+	* cpl_double_horner1d_root_nr: Improved convergence check
+
+2004-02-06  llundin
+
+	* Accelerated NR
+
+2004-02-06  yjung
+
+	* added an include
+	* added tests for cpl_imset_shiftandadd()
+	  cpl_imset_find_offsets_with_objs()
+
+2004-02-06  llundin
+
+	* Renamed constants
+
+2004-02-06  yjung
+
+	* added tests on cpl_objects_detect() and cpl_objects_detect_subw()
+	* cx_malloc inst. of cpl_malloc
+	* added cpl_frameset_to_filenames() cpl_frameset_labelise()
+	  cpl_frameset_get_frame() cpl_frameset_extract()
+
+2004-02-06  llundin
+
+	* cpl_double_horner1d() suddenly less accurate
+
+2004-02-06  yjung
+
+	* updated test on cpl_imset_reject_images()
+	* test of cpl_imaset_find_offsets() moved to cpldrs
+	* added test of cpl_imset_find_offsets()
+	* ok...
+	* typo
+	* added test on cpl_vector_planck()
+	* typo
+	* test on cpl_vector_planck() moved to cpldrs
+	* typo
+	* added new test suites
+	* moved to cplcore
+	* added cpl_image_distortion
+	* added cpl_image-distortion-test
+	* Re imported
+	* new
+	* mistake
+	* Initial revision
+
+2004-02-06  llundin
+
+	* Added CPL_ERROR_CONTINUE
+
+2004-02-06  yjung
+
+	* moved to cplcore/tests
+	* in progress
+	* from cplcore/tests
+	* to cpldrs/tests
+	* Initial revision
+	* to cplui/tests
+	* coming from cplcore/tests
+	* Initial revision
+	* added SUBDIRS = tests
+	* New file
+
+2004-02-06  llundin
+
+	* cpl_double_horner1d() also computes derivative. Added
+	  cpl_double_horner1d_root()
+
+2004-02-06  yjung
+
+	* added declaration of cplcore/tests/Makefile, cplui/tests/Makefile
+	  and
+	  cpldrs/tests/Makefile
+	* removed compilation of cpl/tests
+	* removed usage of cpldrs functions
+	* moved cpl/tests/* to cpl/cplcore/tests/.
+
+2004-02-05  yjung
+
+	* added cpl_objects_detect_subw() and cpl_objects_detect()
+	* changed prototype of cpl_imset_reject_images()
+	* changed cpl_imset_reject_frames()
+	* removed fwhm stuff
+	* precisely defined the different offsets meanings !
+
+2004-02-04  yjung
+
+	* added cpl_image_correlate_subw(),
+	  cpl_image_find_offset_with_objs() and
+	  cpl_imset_find_offsets_with_objs()
+
+2004-02-03  llundin
+
+	* Moved cpl_double_horner1d() and cpl_vector_horner1d_equid
+	* cpl_vector_planck: Improved comments and testing
+	* cpl_vector_planck() tested
+
+2004-02-03  yjung
+
+	* removed unused defines
+	* added missing defines
+	* Initial revision
+	* moved readout noise measurement functions to cpldrs
+	* added cpl_image_photometry
+
+2004-02-03  llundin
+
+	* Removed spurious #endif
+	* cpl_vector_planck()
+
+2004-02-03  yjung
+
+	* added an include
+
+2004-02-03  llundin
+
+	* Added cpl_phys_const.h & cpl_spectro.{h,c}
+
+2004-02-03  yjung
+
+	* typo
+	* moved cpl_imset_finf_offsets() and cpl_imset_shiftandadd() to
+	  cpldrs
+	* added cpl_imset_combine
+	* added cpldrs
+
+2004-02-03  llundin
+
+	* Speed of light, Planck & Boltzman
+
+2004-02-03  yjung
+
+	* moved to cpldrs
+	* moved cpl_image_distortion and cpl_objects to cpldrs
+	* added cpl_image_distortion and cpl_objects files
+
+2004-02-02  llundin
+
+	* cpl_double_horner1d: Improved comments
+	* Imporved cpl_double_horner1d
+	* cpl_1dfunction_interpolate_linear: more checks and efficiency
+
+2004-02-02  yjung
+
+	* polynomial object from 2d to any dimension
+
+2004-02-02  llundin
+
+	* Added cpl_double_horner1d() and cpl_vector_horner1d_equid()
+
+2004-02-02  rpalsa
+
+	* Added.
+	* Build directory cpldrs added.
+	* cplbase replaced by cpldrs
+	* Obsolete.
+	* Added.
+
+2004-01-30  llundin
+
+	* cpl_tools_is_power_of_2: Reimplemented with frexp() and improved
+	  comment
+
+2004-01-30  cizzo
+
+	* Take care of the EXTEND, BSCALE and BZERO keywords in the
+	  secondary array, while saving a table
+	* Take care of the SIMPLE keyword in the secondary array, while
+	  saving a table
+	* cpl_table_save() crashed with integer columns just containing
+	  NULLs
+
+2004-01-23  rpalsa
+
+	* Installation of default print handlers is done before terminal
+	  size check.
+	* _cpl_plist_decode_fits(): Do proper check whether a returned
+	  value or comment is empty.
+	* Remove single quotes from string value for the entry ORIGIN in
+	  hdr[]
+
+2004-01-23  yjung
+
+	* added cpl_imset_shiftandadd()
+	* added const in declarations
+
+2004-01-22  yjung
+
+	* move cpl_interpolation_kernel to cpl_tools
+
+2004-01-22  rpalsa
+
+	* Test 11 renamed to Test 12. Test for cpl_plist_from_fits() added
+	  as Test 11.
+	* _cpl_plist_decode_fits(): Leave parsing the FITS card to qfits to
+	  avoid problems if the qfits keytuple does not carry the line
+	  member. This currently needs to use a work around due to a type
+	  reporting problem in qfits! Fix it asap.
+	* Frame type CPL_FRAME_TYPE_PAF added.
+
+2004-01-22  yjung
+
+	* corrected bug in cpl_1dfunction_read()
+	* changed cpl_imset_find_offsets() prototype
+
+2004-01-20  yjung
+
+	* added a test 12 case
+	* bug in cpl_imset_delete() corrected
+	* corrected bug in cpl_imset_delete()
+	* bug in cpl_1dfunction_gen_rect_poisson() corrected
+
+2004-01-19  yjung
+
+	* cpl_image_set_badpixels() : better check on inputs
+	* cpl_image_rect_readout_noise() made public (used in NACO
+	  pipeline)
+
+2004-01-14  cizzo
+
+	* Wrong stream flushed in _cpl_print_out() and _cpl_print_err()
+
+2004-01-13  llundin
+
+	* XC: Toeplitz comment
+
+2004-01-09  llundin
+
+	* cpl_vector_xcorr: Removed zero-term from norms
+
+2004-01-08  llundin
+
+	* cpl_vector_xcorr: Fixed offset bug. Added zero-term to norms. Use
+	  that dot-product is distributive over subtraction (3rd)
+
+2004-01-07  llundin
+
+	* cpl_vector_xcorr: Use that dot-product is distributive over
+	  subtraction (2nd)
+	* cpl_vector_xcorr: Use that dot-product is distributive (1st)
+
+2004-01-07  yjung
+
+	* chaeck inputs in cpl_tools_median_9double()
+
+2004-01-02  cizzo
+
+	* Fix some typos
+	* Switch off doxygen triggers
+
+2004-01-02  rpalsa
+
+	* MAINTAINERCLEANFILES and surrounding MAINTAINER_MODE conditional
+	  added.
+	* MAINTAINER_MODE conditional moved.
+
+2003-12-30  rpalsa
+
+	* Merged in changes from CPL-1_0-BRANCH, release cpl-1_0
+	* License changed to GPL, Copyright updated. Two semicolons added
+	  to make it compile.
+	* License changed to GPL, Copyright updated.
+	* Merged in changes from CPL-1_0-BRANCH, release cpl-1_0
+	* Added.
+	* License changed to GPL, Copyright updated.
+	* Useless.
+
+2003-12-19  llundin
+
+	* cpl_vector_xcorr: Incremental RMS
+
+2003-12-18  llundin
+
+	* cpl_vector_xcorr: Added comments
+
+2003-12-17  llundin
+
+	* cpl_vector_xcorr: Improved documentation
+	* Fixed cross-correlation i1-bug
+
+2003-12-16  llundin
+
+	* Cross-correlation checked
+	* 1st version of cross-correlation. cpl_vector_compare:
+	  CPL_ASSURE() on tolerance. cpl_vector_sort: Improved order
+	  onversion
+
+2003-12-16  cizzo
+
+	* Fix a bug
+	* Fix bugs detected by Lars: functions segmented instead of failing
+	  appropriately
+	* Remove prototype of non-existing function
+
+2003-12-15  llundin
+
+	* Fixed CPL_ASSURE() bug
+	* Additional tests. Use of assert()
+	* CPL_ASSURE of arguments
+
+2003-12-12  yjung
+
+	* @see function -> @see function()
+	* params in accordance with doc in cpl_image_threshold()
+
+2003-12-12  cizzo
+
+	* Fix function names in doc
+	* Fix parameter list in doc
+
+2003-12-12  llundin
+
+	* Replaced some small arbitrary constants
+	* sinc: Removed arbitrary constant
+
+2003-12-11  llundin
+
+	* cpl_vector_mean & cpl_vector_sqrt: Verify input
+
+2003-12-11  cizzo
+
+	* Fix incorrect asserts
+
+2003-12-09  yjung
+
+	* corrected a small bug
+	* added test case for shift function
+	* added test cases
+	* changed cpl_sparseimage_shift_int_local() - >
+	  cpl_sparseimage_shift_int()
+	* *** empty log message ***
+	* corrected bug in indices computation in cpl_spareimage_extract()
+	* added cpl_sparseimage_shift_int_local()
+
+2003-12-09  cizzo
+
+	* Avoid brakets in component name
+	* Fix wrong doc
+
+2003-12-08  yjung
+
+	* added cpl_image_shift_int_local()
+	* added tests for cpl_imset_find_offsets()
+	* corrected the shift computation
+	* small bug
+	* 0 is not a power of 2 (cpl_tools_is_power_of_2())
+	* added doc
+	* added test on multiply_complex()
+	* cpl_imset_multiply_complex renamed in
+	  cpl_imset_complex_multiply()
+	* cpl_imset_multiply_complex() -> cpl_imset_complex_multiply
+	* added bad pixel map handling
+	* corrected cpl_tools_is_power_of_2() name
+	* moved some tests to cpl_imset_complex-test
+	* Initial revision
+	* added cpl_imset_complex-test
+	* new module... cpl_imset_complex
+	* created a new module cpl_imset_complex
+	* added cpl_tools_is_power_of_2()
+	* Initial revision
+
+2003-12-05  cizzo
+
+	* Fix doc
+	* Upgrade doc
+	* Correct typos
+	* Upgrade doc
+	* Eliminate Doxygen trigger
+
+2003-12-04  cizzo
+
+	* Improve documentation.
+	* Improve documentation. Function cpl_matrix_is_matrix() is
+	  eliminated.
+	* Function cpl_matrix_is_matrix() is eliminated
+
+2003-12-04  yjung
+
+	* upgraded documentation
+	* remove an extrac cpl_msg_stop()
+	* upgraded documentation
+	* forgot badpixelmap
+	* upgraded documentation
+	* ugrade documentation
+	* upgrade documentation
+	* upgrade documerntation
+	* documentation upgrade
+
+2003-12-04  cizzo
+
+	* Upgrade doc
+
+2003-12-03  yjung
+
+	* added calls to cpl_msg_start and stop() and added test for
+	  cpl_image_move_pixels()
+	* added cpl_sparseimage_move_pixels(), cpl_image_move_pixels(),
+	  cpl_imset_multiply_complex(), cpl_imset_find_offstes()
+
+2003-12-01  cizzo
+
+	* Add Synopsis
+	* Improve documentation
+	* Fix a problem with header files, because cpl_error.h included
+	  cpl_messaging.h and viceversa (Lars)
+	* Set the right type to functions
+	* Init messaging system
+
+2003-11-30  cizzo
+
+	* Upgrade documentation, and make the software a bit safer
+
+2003-11-26  cizzo
+
+	* Minor improvement to documentation
+	* Further improvements to the documentation
+
+2003-11-25  cizzo
+
+	* Replace calls to snprintf() with calls to cx_snprintf() to solve
+	  a problem with the gcc 3.2 compiler
+
+2003-11-24  cizzo
+
+	* Major upgrade of the documentation, and fix some minor bugs.
+	  Eliminate two unused functions
+	* Eliminate two unused functions
+
+2003-11-21  cizzo
+
+	* Correct typo in the doc
+
+2003-11-18  cizzo
+
+	* Minor change in documentation
+	* Minor change in documentation
+	* Minor change in doc style
+
+2003-11-17  cizzo
+
+	* Improve the documentation, replace the emulation of realloc()
+	  with a call to cx_realloc(), and other minor changes
+
+2003-11-14  yjung
+
+	* renamed cpl_image_bpm_set_goodpix() in
+	  cpl_image_bpm_reset_badpix()
+	* check bounds of indices given in ASCII file
+	* added tests fo cpl_sparseimage_has_index() and
+	  cpl_sparseimage_remove_pixel()
+	* added tests for cpl_image_bpm_set_goodpix() and
+	  cpl_image_bpm_is_bad()
+	* typo
+	* added cpl_image_bpm_is_badpix() and cpl_image_bpm_set_goodpix()
+	* added cpl_sparseimage_remove_pixel()
+	* added cpl_sparseimage_has_index()
+
+2003-11-07  yjung
+
+	* added cpl_imset_conv_xy_rtheta() and cpl_imset_conv_rtheta_xy()
+	* added test for cpl_imset_fft()
+	* added cpl_is_power_of_2()
+	* corrected index
+	* changed api of cpl_imset_save()
+	* doxygen
+
+2003-11-07  cizzo
+
+	* Eliminate identifiers in capital letters prefixed by an
+	  underscore
+
+2003-11-07  yjung
+
+	* added cpl_imset_fft()
+	* added cpl_imset_set_image()
+
+2003-11-07  cizzo
+
+	* rename cpl_matrix_is_null() to cpl_matrix_is_zero(), add tests
+	  for cpl_matrix_maxpos _minpos _max _min
+	* Create new function cpl_table_column_convert() replacing the
+	  convert functions carrying the type signature in their names
+	* rename cpl_matrix_is_null() to cpl_matrix_is_zero(), fix a
+	  serious bug in cpl_matrix_maxpos _minpos
+
+2003-11-06  yjung
+
+	* some functions made static
+	* cleaned cpl_tools and improved documentation
+	* added CPL_ASSURE checks in cpl_image_duplicate()
+
+2003-11-05  yjung
+
+	* doxygen
+	* _CPL_XXX_H_ -> CPL_XXX_H
+	  CPL_CLASS_BINARY -> CPL_CLASS_BIN
+	* updated doxygen documentation
+	* changed cpl_image_load_TYPE() to cpl_image_load(.., TYPE,..)
+	  changed cpl_image_convert_to_TYPE() to cpl_image_convert(...,
+	  TYPE, ...)
+
+2003-10-30  yjung
+
+	* doxygen: added error codes in doc
+	* removed cpl_image_delete_bpm() (replaced by
+	  cpl_image_bpm_reset())
+
+2003-10-29  yjung
+
+	* removed cpl_image_count_badpixels
+	* do not use sparse images any more
+	* rm printf()
+	* removed a bad test
+	* bug in cpl_image_bpm_set_badpix()
+	* do not use sparse images any more
+	* do not use cpl_sparse objects any more
+	* removed cpl_image_add_badpixel()
+	* changed prototype of cpl_image_new_type()
+	* removed cpl_image_get_badpixelmap()
+	* doxygen
+	* added a missing include
+	* changed cpl_sparseimage_subsample()
+	* added a entries test in cpl_sparseimage_subsample()
+	* added declaration of cpl_memory_init()
+	* added tests for all currently existing bpm functions
+	* cpl_sparseimage_loadmap() removed and implemented here.
+	* removed cpl_sparseimage_loadmap()
+	* removed cpl_sparseimage_loadmap()
+	* fixed a bug in cpl_image_bpm_reset()
+	* added a test case im cpl_image_bpm_set_pix
+	* added a check
+
+2003-10-28  yjung
+
+	* typo
+	* doxygen doc small update
+	* hide cpl_sparseimage to ext user, and add a cpl_image_bpm module
+	  for the
+	  bad pixels handling interface
+	* added cpl_image_bpm-test
+	* Initial revision
+	* added cpl_image_bpm module and removed cpl_sparseimage from
+	  public place
+	* added cpl_image_bpm module
+	* Initial revision
+	* doxygen...
+	* doxygen documentation updated according Derek's comments
+
+2003-10-27  yjung
+
+	* added cpl_image_subsample()
+	* added cpl_sparseimage_subsample()
+	* added test case for cpl_image_subsample()
+
+2003-10-24  yjung
+
+	* _CPL_BAL_BLA_H_ ---> CPL_BLA_BLA_H
+
+2003-10-23  yjung
+
+	* use xmemory functions in the tests
+	* typo
+	* call cpl_init() to use xmemory
+	* use the xmemory model (call cpl_init())
+	* changed cpl_image_save() prototype to use cpl_plist instead of
+	  qfits_header
+	* change in cpl_image_save prototype
+
+2003-10-01  cizzo
+
+	* Fix bug in cpl_column_min() and cpl_column_max()
+	* Fix bug in cpl_column_minpos() and cpl_column_maxpos()
+	* Fix error in the interface
+	* Fix error in the documentation
+
+2003-09-29  yjung
+
+	* added Synopsys/doxygen info
+
+2003-09-29  cplmgr
+
+	* Package version change reverted
+	* Package version changed
+
+2003-09-09  yjung
+
+	* small warnings corrected
+
+2003-09-05  yjung
+
+	* added an include
+	* removed unused var.
+	* use accessor functions
+	* typo
+	* added accessor functions
+	* added cpl_objects_sort_max() and cpl_objects_sort_flux()
+	* added cpl_objects_sort_npix()
+
+2003-09-04  yjung
+
+	* some additional tests
+	* some new functions added
+	* added an include
+	* added some includes
+	* cosmetics
+	* added missing includes
+	* added cpl_objects-test
+	* Initial revision
+	* added some functions declarations
+	* added doc
+	* cosmetics
+	* remived cxstrutils dependency
+	* removed cxchar
+	* cosmetics
+	* various corrections
+	* added cpl_objects
+	* include only image definition
+
+2003-09-03  yjung
+
+	* cosmetics
+	* added cpl_image_distortion_poly() and tested it
+	* first usable version
+	* added include "math.h"
+
+2003-09-03  cizzo
+
+	* eliminate unused prototype
+
+2003-09-03  yjung
+
+	* moved #include cpl_tools.h from .c to .h
+	* added cpl_image_distortion-test
+	* Initial revision
+
+2003-09-02  yjung
+
+	* added sinc()
+	* added cpl_image_distortion_linear()
+	* added cpl_interpolation_kernel()
+	* added cpl_image_distortion.h
+	* added cpl_image_distortion
+	* New revision - still empty
+	* changed cpl_polynomial_new() and first working revision
+	* functions successfully tested
+
+2003-09-01  yjung
+
+	* added cpl_polynomial
+	* added cpl_polynomial
+	* Initial revision
+	* typo
+	* typo
+	* added cpl_polynomial.[ch]
+	* New revision
+
+2003-09-01  cizzo
+
+	* Added function cpl_table_erase_unselected()
+
+2003-08-29  rpalsa
+
+	* Fixes from branch CPL-1_0-BRANCH, revision 1.4.2.9 added.
+
+2003-08-25  cizzo
+
+	* *** empty log message ***
+	* Rewrite cpl_table_print()
+	* Change default column formats
+
+2003-08-22  cizzo
+
+	* Add tests for cpl_table_load() and cpl_table_save()
+	* First fully tested version of cpl_table_save()
+
+2003-08-21  cizzo
+
+	* Fix uninitialized pointers in cpl_column_code_null_TYPE()
+	  functions
+	* Fix a problem with headers. There is still a problem with NULL
+	  values coding in FITS, but this seems to be related to qfits.
+	  This routine should still not be considered tested.
+
+2003-08-20  cizzo
+
+	* Add cpl_table_save(). The function is not yet completely tested
+
+2003-08-20  llundin
+
+	* Added environment var. CPL_SRAND_CONST to set the srand argument
+	  to the constant 1
+
+2003-08-19  cizzo
+
+	* Restore original print and error handlers at msg_stop()
+
+2003-08-18  cizzo
+
+	* Add cpl_plist_prepend_TYPE()
+
+2003-08-13  yjung
+
+	* use CPL_END_DECLS and CPL_BEGIN_DECLS
+	* use #include "cpl_memory_impl.h"
+	* added #include "cpl_macros.h"
+
+2003-08-13  rpalsa
+
+	* Private header file cpl_memory_impl.h added.
+	* Added from CPL-1_0-BRANCH
+
+2003-08-07  cizzo
+
+	* Eliminate memory leak in column destructor
+
+2003-08-05  yjung
+
+	* added tests for cpl_image_flip_local()
+	* removed some products creation
+	* added cpl_image_flip_local() and cpl_sparseimage_flip_local()
+
+2003-08-04  yjung
+
+	* removed #include "xmemory.h" and added #include "cxmemory.h"
+
+2003-07-24  rpalsa
+
+	* Source modules cpl_init and cpl_memory added.
+	* Fixes from CPL-1_0-BRANCH, Revision 1.11.2.2 imported
+	* Fixes from CPL-1_0-BRANCH, Revision 1.4.2.5 imported
+	* Fixes from CPL-1_0-BRANCH, Revision 1.37.2.10 imported
+	* Added from CPL-1_0-BRANCH
+	* Fixes form CPL-1_0-BRANCH, Revision 1.2.2.5 imported
+	* Fixes form CPL-1_0-BRANCH, Revision 1.3.2.3 imported
+
+2003-07-23  llundin
+
+	* Added const qualifier to second arg of cpl_image_set_type()
+	* Added const qualifier to cpl_image_new_{double,float,int,bin}()
+	* Added pointer args to cpl_image_new_{double,float,int,bin}()
+	* use assert() to verify internal consistency
+
+2003-07-22  llundin
+
+	* Improved argument check in cpl_sparseimage_rotate_int_local() &
+	  cpl_sparseimage_extract() & cpl_sparseimage_collapse()
+
+2003-07-21  llundin
+
+	* return CPL_ERROR_NONE
+	* Allowed for NULL input in cpl_sparseimage_rotate_int_local() &
+	  cpl_sparseimage_extract() & cpl_sparseimage_collapse()
+	* Numerically robusted & fixed scale bug in cpl_image_normalize().
+	  Add const qualifier to args of cpl_image_threshold(). Identifier
+	  rename in prep. for BPM in arithmetics.
+	* Fix firstgoodpos bug in cpl_image_stat_subw(). Add const
+	  qualifier to function arguments
+
+2003-07-17  cizzo
+
+	* Avoid memory leak in solve_system()
+	* Fix memory leak from incomplete cpl_table destructor
+
+2003-07-16  yjung
+
+	* changed filtering functiuons names
+	* rm a const
+	* changed filter functions names
+	* enhanced the bad pixel maps handling in filtering functions
+
+2003-07-15  yjung
+
+	* forgot to initialize ql.map
+	* changed a call
+	* - added correct output badpixel maps in collapsing functions.
+	  - added cpl_image_binary_from_sparse_subw() and changed prototype
+	  of
+	  cpl_image_binary_from_sparse()
+	  - added cpl_sparseimage_collapse()
+
+2003-07-15  llundin
+
+	* cpl_sparseimage_add_pixel() & cpl_image_add_badpixel()
+
+2003-07-15  yjung
+
+	* added test case for cpl_imset_time_median()
+	* correct a bug in cpl_imset_time_median()
+	* removed a bug
+	* added tests on cpl_imset_time_median(0
+	* added cpl_imset_time_median()
+
+2003-07-14  llundin
+
+	* rename to cpl_image_count_badpixels(). Fixed return value of
+	  cpl_imset_time_badpixels
+	* Improved comments. Added assert()
+	* cpl_imset_time_badpixels()
+
+2003-07-14  cizzo
+
+	* Import changes from CPL-1_0-BRANCH
+
+2003-07-11  yjung
+
+	* warning removed
+	* ...
+	* removed some debug code
+	* added cpl_imset_time_stdev()
+
+2003-07-11  llundin
+
+	* Included cpl_messaging.h
+	* Adhered to bad-pixel convention in cpl_sparseimage_from_binary()
+	* Add CPL_MSG_DEBUG output
+
+2003-07-10  llundin
+
+	* Added cpl_msg_debug to CPL_ASSURE
+
+2003-07-08  yjung
+
+	* doxygen
+	* moved imset definition in cpl_imset_defs.h and changed includes
+	  accordingly
+	* doxygen
+	* added cpl_image_defs.h
+	* forgot includes
+	* forgot some includes
+	* reorganized the includes to put the image definition in
+	  cpl_image_defs.h
+	* put the cpl_image and cpl_sparseimage definitions in the
+	  cpl_sparseimage.c
+	  and added accessors functions for sparseimage objects
+
+2003-07-07  yjung
+
+	* made cpl_image_stats struct invisible and added accessor
+	  functions in
+	  cpl_image_stats.h
+	* doxygen
+	* cast filename
+
+2003-07-07  cizzo
+
+	* Correct wrong docs
+
+2003-07-07  llundin
+
+	* cpl_error_set() sets file name & line number
+
+2003-07-04  rpalsa
+
+	* Require bash. Bugs fixed.
+
+2003-07-04  yjung
+
+	* forgot to Zero-pad the saved FITS files
+
+2003-07-03  llundin
+
+	* Enhanced error handling with file & line number
+
+2003-07-03  rpalsa
+
+	* Fixes form CPL-1_0-BRANCH, Revision 1.4.2.3 imported
+	* Fixes form CPL-1_0-BRANCH, Revision 1.6.2.2 imported
+
+2003-07-03  yjung
+
+	* support all kind of conversion in cpl_image_convert()
+
+2003-07-02  llundin
+
+	* Fixed typo in cpl_image_rect_readout_noise
+
+2003-07-02  yjung
+
+	* better testing for cpl_image_save()
+	* bug fixed in cpl_image_save (bpp not correctly handled in
+	  headers)
+	* added use of cpl_tools_cputime()
+	* added cpl_tools_cputime()
+
+2003-07-02  rpalsa
+
+	* Merged in changes on CPL-1_0-BRANCH Revision 1.4.2.1
+	* Merged in changes on CPL-1_0-BRANCH Revision 1.2.2.1
+	* Merged in changes on CPL-1_0-BRANCH Revision 1.3.2.1
+	* Merged in changes on CPL-1_0-BRANCH Revision 1.6.2.1
+	* Merged in changes on CPL-1_0-BRANCH Revision 1.4.2.2
+
+2003-07-02  cizzo
+
+	* rename some functions
+
+2003-07-01  yjung
+
+	* added tests for cpl_imset_time_average()
+	* added a test case
+	* break ; were missing
+	* the contribution map counts the good pixels, not the bad ones
+	* added tests for 14 functions
+	* ..
+
+2003-07-01  llundin
+
+	* Not yet tested: cpl_image_rect_readout_noise &
+	  cpl_generate_rect_poisson_points
+
+2003-07-01  yjung
+
+	* NFRAMES 10 -> 5
+	* added cpl_imset_basic-test (still empty)
+
+2003-07-01  llundin
+
+	* Added mean & stdev. Declared cpl_vector_copy as cpl_error_code.
+	  Added const qualifiers
+
+2003-07-01  yjung
+
+	* added test cases
+	* added cpl_imset_duplicate() cpl_imset_reject_images()
+	  replaced cpl_imset_new_TYPE() by cpl_imset_new()
+	* added an include for cpl_tools.h
+	* added cpl_imset_from_image() and removed
+	  cpl_imset_get_pixel_type()
+	* changed doc
+	* added printf
+	* changed prototype of cpl_sparseimage_rotate_int_local()
+	* implemented cpl_sparseimage_rotate_int_local()
+	* added cpl_tools_iarray_sort()
+
+2003-06-30  yjung
+
+	* added support in rotate function for bad pixel map handling,
+	  added
+	  cpl_sparseimage_rotate_int_local (still to be written...
+	* added tests for rotate function
+	* corrected rotate function
+	* added cpl_image_basic_rotate_int_local()
+
+2003-06-30  cizzo
+
+	* Improve the documentation
+
+2003-06-30  yjung
+
+	* moved some definitions from .h to .c
+	* moved some defines in .c
+	* changed cpl_imset_new() in cpl_imset_new_type()
+	* added cpl_imset_add_local, cpl_imset_subtract_local,
+	  cpl_imset_multiply_local, cpl_imset_divide_local,
+	  cpl_imset_add_image_local, cpl_imset_subtract_image_local,
+	  cpl_imset_multiply_image_local, cpl_imset_divide_image_local,
+	  cpl_imset_const_op_local, cpl_imset_normalize_local,
+	  cpl_imset_threshold_local, cpl_imset_contribution_map,
+	  cpl_imset_time_average.
+	* added cpl_imset_check(), added some const, replaced
+	  cpl_imset_new() by
+	  cpl_imset_new_double(), cpl_imset_new_float() and
+	  cpl_imset_new_int()
+	* added type field in the cpl_imset definition
+	* added cpl_image_delete_bpm()
+	* added a const...
+	* added cpl_sparseimage_from_binary()
+	* tabs ...
+	* added cpl_imset_basic_body.h
+
+2003-06-27  yjung
+
+	* Initial revision
+
+2003-06-27  llundin
+
+	* Removed "const" qualifier from cpl_image_const_op_local
+
+2003-06-27  rpalsa
+
+	* Patches from CPL-1_0-BRANCH Rev 1.2.2.1 imported.
+
+2003-06-27  yjung
+
+	* added cpl_imset_basic
+	* added cpl_imset_basic.ch (still empty)
+
+2003-06-27  cizzo
+
+	* Correct prototype of cpl_column_set_string() and of
+	  cpl_column_fill_string()
+
+2003-06-26  llundin
+
+	* Improved comment on cpl_sparseimage_union_local
+
+2003-06-25  cizzo
+
+	* rename cpl_matrix_resize() to cpl_matrix_reshape(), and create
+	  new function cpl_matrix_resize()
+
+2003-06-24  yjung
+
+	* typo
+	* corrected kernel norm computation (with fabs()...)
+
+2003-06-23  cizzo
+
+	* Correct documentation
+
+2003-06-23  llundin
+
+	* Changed return type of cpl_image_{min,max}pos* from int to
+	  cpl_error_code
+
+2003-06-20  cizzo
+
+	* Add const qualifier at the last argument of
+	  cpl_table_set_string()
+
+2003-06-18  cizzo
+
+	* Alignment to cpl_type
+	* Upgrade the documentation with regard to the error codes set by
+	  the routines
+	* Minor change in the documentation
+	* Upgrade the documentation with regard to the error codes set by
+	  the routines
+	* Minor changes
+
+2003-06-18  yjung
+
+	* rm tabs
+	* use types frome cpl_types.h for image types
+	* test
+
+2003-06-17  cizzo
+
+	* Upgrade the documentation with regard to the error codes set by
+	  the routines
+	* Add cpl_error_set()
+	* Set the comments on cpl_error codes to the appropriate location
+	  so that they are interpreted correctly by Doxygen
+	* Fix wrong call to _cpl_plist_compare_regexp
+
+2003-06-16  cplmgr
+
+	* Package version set to pre 1.1
+
+2003-06-14  rpalsa
+
+	* Adapted to changed loader calling sequence.
+	* Loader calling sequence changed. Fills a property list instead of
+	  creation one.
+
+2003-06-13  cizzo
+
+	* Minor change
+
+2003-06-13  yjung
+
+	* doc...
+	* typo
+	* doc...
+	* doc
+	* doc..
+	* doc...
+	* doc...
+	* doc ...
+	* doc...
+	* ...
+	* doc...
+	* doc...
+	* doc...
+
+2003-06-13  cizzo
+
+	* Rename a number of functions to uniform to used CPL conventions
+
+2003-06-13  yjung
+
+	* changed prototype of cpl_image_threshold()
+
+2003-06-13  cizzo
+
+	* Rename a number of functions to uniform to used CPL conventions
+
+2003-06-12  llundin
+
+	* Improved sparse statistics test with less output
+
+2003-06-12  yjung
+
+	* add some printf()
+	* update
+	* tabs...
+	* update tests
+	* completed test suite for image_io
+
+2003-06-12  llundin
+
+	* Improved sparse image union with undefined map
+
+2003-06-12  yjung
+
+	* chieved bpm handling in filtering functions
+
+2003-06-11  yjung
+
+	* support bad pixels for all functions but stdev filtering
+
+2003-06-11  llundin
+
+	* Test of statistics on images with bad pixels
+	* Removed unused declaration
+
+2003-06-11  yjung
+
+	* added support for bpm for linear filtering
+
+2003-06-11  llundin
+
+	* NULL input to sparse image union no longer an error
+	* Fixed bug (inverted values) in cpl_image_binary_from_sparse
+
+2003-06-11  yjung
+
+	* morphological operations use now a kernel
+	* changed morpho functions prototypes
+
+2003-06-11  llundin
+
+	* Added support for NULL params in cpl_image_binary_from_sparse
+
+2003-06-11  yjung
+
+	* typo
+
+2003-06-11  llundin
+
+	* Added assert comments to cpl_image_get_badpixels
+
+2003-06-10  yjung
+
+	* checks if input image is empty
+	* added checks to verify that the input image is not empty
+	* cheks to verify if the input image is empty or not
+	* added checks to verify that input images are not empty
+	* typo
+	* add checks to verify that input image is not 'empty'
+	* typo
+	* typo
+	* new functions
+
+2003-06-10  cizzo
+
+	* Rename cpl_vector_size() to cpl_vector_get_size()
+	* Merge all constant arith operations into cpl_vector_const_op(),
+	  and rename some of the functions
+	* Minor changes
+
+2003-06-10  yjung
+
+	* slightly corrected imset functions and added test cases
+
+2003-06-10  cizzo
+
+	* Minor changes
+
+2003-06-10  llundin
+
+	* Improved bad pixel map usage with binary image
+
+2003-06-10  yjung
+
+	* added cpl_imset_get_ni()
+
+2003-06-09  rpalsa
+
+	* Cast added to filename in image loading operations
+	* Some functions added (TO BE CONFIRMED)
+	* Function definitions changed to be compatible with Bourne shell.
+
+2003-06-06  yjung
+
+	* not needed any more - use images generation now
+	* rm cpl_image_test12.fits
+	* use image generation function
+	* generate test images
+	* use image generation function
+	* changed proto of cpl_image_gen_test()
+	* *** empty log message ***
+	* can specify the size to cpl_image_gen_test()
+	* use a generated test image now
+	* completed tests for cpl_image_gen_test
+
+2003-06-06  rpalsa
+
+	* Modules cpl_parameter and cpl_parlist added. Interface
+	  cpl_recipe.h added.
+
+2003-06-06  yjung
+
+	* added cpl_image_gen_test()
+
+2003-06-06  rpalsa
+
+	* Parameter initialization merged with parameter creation.
+	  Prototypes adapted.
+	* Parameter initialization merged with parameter creation.
+	* Function name changed for cpl_plugin_set_all(). Lines folded if
+	  necessary.
+	* Names changed.
+	* Type names adapted. Accessor functions are not used anymore for
+	  frames and parameters.
+
+2003-06-06  cizzo
+
+	* Correct return type of several functions: cpl_error_code instead
+	  of int
+
+2003-06-06  yjung
+
+	* in progress
+	* added cpl_tools_gaussian_2d()
+
+2003-06-06  cizzo
+
+	* Correct return type of several functions: cpl_error_code instead
+	  of int
+
+2003-06-06  yjung
+
+	* added cpl_image_gen-test
+	* Initial revision
+	* added first compiling version of cpl_image_gen
+	* Initial revision
+	* ...
+
+2003-06-06  llundin
+
+	* Extended sparse image test
+
+2003-06-06  cizzo
+
+	* Regular expression matching was not applied in the
+	  _or_constant_string selection function; upgrade the documentation
+	* Rename some functions
+	* Rename some functions, remove cpl_plist_erase_with() and replace
+	  it with cpl_plist_erase_regexp()
+	* Rename some functions calls
+
+2003-06-06  yjung
+
+	* int-> cpl_error_code in functions prototypes
+	* cpl_image_save proto changed
+	* changed prototype : int->cpl_error_code
+	* prototype changed int->cpl_error_code
+	* some prototypes changed int->cpl_error_code
+	* changed prototype int to cpl_error_code
+	* includes stuff
+	* rm an include
+	* returned type int replaced by cpl_error_code for some functions
+	* return type int replaced by cpl_error_code for some functions
+	* not used any more
+	* ..
+	* added cpl_imset_io.c
+	* Initial revision
+	* added cpl_imset.h cpl_imset_io.h cpl_imset_io.c cpl_imset_body.h
+
+2003-06-06  rpalsa
+
+	* Tabs removed.
+	* Typo fixed when removing array flag.
+
+2003-06-06  yjung
+
+	* first compiling version
+
+2003-06-06  llundin
+
+	* Tests for sparse image functionality
+	* Improved error handling
+
+2003-06-06  cizzo
+
+	* Renaming some calls
+	* Rename cpl_frameset_size() to cpl_frameset_get_size() and
+	  cpl_frameset_empty() to cpl_frameset_is_empty()
+	* Call to cpl_frame_copy() changed to cpl_frame_duplicate()
+	* Rename cpl_frame_copy() to cpl_frame_duplicate()
+	* Implement cpl_matrix_determinant()
+
+2003-06-05  mkiesgen
+
+	* Changed /bin/sh to /bin/bash
+
+2003-06-05  yjung
+
+	* ...
+	* typo
+	* added new functions
+
+2003-06-05  cizzo
+
+	* Rename some functions
+	* Rename several functions, and add some more
+	* Rename a function and fix an exception in minmax routines
+	* Rename a function
+
+2003-06-05  yjung
+
+	* use CPL_ASSURE in cpl_image_convert()
+
+2003-06-03  yjung
+
+	* fix badpixels handling for collapse functions
+	* added support for sparseimage in cpl_image_extract()
+	* added cpl_sparseimage_extract()
+	* renaming
+	* renameing
+	* changed doc for stats
+
+2003-06-02  yjung
+
+	* changed defgroup
+
+2003-06-02  mkiesgen
+
+	* Cleaned up code
+	* Added testcase for cpl_pluginlist, part of the high-level
+	  caller-plugin interface
+	* Testcase for cpl_pluginlist, part of the high-level caller-plugin
+	  interface
+
+2003-06-01  rpalsa
+
+	* Error code CPL_ERROR_INVALID_TYPE added.
+	* Added.
+
+2003-05-28  yjung
+
+	* images for tests included in the dist
+
+2003-05-28  mkiesgen
+
+	* Changed cpl_pluginlist according to CPL high level interface
+	  proposal
+	* Changed cpl_plugin according to CPL high level interface proposal
+
+2003-05-28  llundin
+
+	* Removed some gcc warnings (including cpl_tools.h bug in
+	  cpl_image_basic)
+
+2003-05-28  rpalsa
+
+	* Added symbols to PREDEFINED, optimization for C turned off.
+
+2003-05-28  llundin
+
+	* Added const in function declarations
+
+2003-05-27  llundin
+
+	* Fixed too long line
+	* Fixed too long line (and improved comment)
+	* Exception handling + bug fix (log domain cpl_image_cst_op*)
+
+2003-05-27  yjung
+
+	* in progress
+	* in progress
+	* Initial revision
+	* in progress
+	* moved to cpl_imset_io.c
+	* Initial revision
+	* in progress
+	* Initial revision
+
+2003-05-26  yjung
+
+	* in progress
+	* moved objects def in .c and use error module
+	* Initial revision
+	* added test case for read and dump
+	* added a parameter to cpl_vector_compare
+
+2003-05-26  rpalsa
+
+	* Added.
+
+2003-05-26  yjung
+
+	* added test for cpl_1dfunction_read() and cpl_1dfunction_dump()
+	* small bug in cpl_1dfunction_read()
+
+2003-05-24  cizzo
+
+	* Fix wrong error check
+
+2003-05-23  yjung
+
+	* some functions now return an error code
+	* returned value is now error code for some functions
+	* some returned values changed (error code)
+	* typo
+	* introduce use of the error module
+	* improved use of error module
+	* improved error module usage
+	* changed cpl_vector_sort prototype
+	* use error module
+
+2003-05-23  cizzo
+
+	* Try some CPL_ASSURE calls to macro
+	* Renaming of a function
+	* Add new functions for computing log, exp and pow of a column, and
+	  add the general function cpl_table_const_op() for compatibility
+	  with other packages
+
+2003-05-23  yjung
+
+	* changed prototype of cpl_vector_sort and use error module
+	* changed prototype of cpl_vector_sort()
+	* added usage of the error system
+	* use a bit more accessors.
+
+2003-05-23  llundin
+
+	* Added CPL_ASSURE for exception handling
+
+2003-05-22  yjung
+
+	* relation code - message done by a function
+
+2003-05-22  llundin
+
+	* Fixed initialization bug in sparse minmaxpos
+
+2003-05-22  yjung
+
+	* changed some names
+	* added test cases for binary images handling functions
+
+2003-05-21  yjung
+
+	* addded cpl_image_binary-test.c
+	* Initial revision
+	* added test cases for all filtering functions
+	* ...
+	* removed cpl_image_filter_flat which is covered by the linear
+	  filtering
+	  functions
+	* morpho filtering now uses cpl_matrix
+	* added test for morpho filtering
+
+2003-05-21  cizzo
+
+	* Eliminate type in constant operation functions names
+
+2003-05-21  yjung
+
+	* hide the vector and 1dfunction data types
+
+2003-05-21  cizzo
+
+	* Correct documentation of some functions
+	* Rename a function and implement regular expression for string
+	  matching
+
+2003-05-20  yjung
+
+	* removed cpl_image_filter_3x1() cpl_image_filter_3x3(),
+	  cpl_image_filter_5x5().
+	  They are replaced by the more generic cpl_image_filter_linear().
+	  cpl_image_filter_linear is 8% slower for a 5x5 filter, but that's
+	  ok.
+	* added test for linear filtering
+	* the kernel size has to be odd, not even
+	* do not acces cpl_matrix struct
+	* put the cpl_matrix definition back in the .c
+	* CPL_IMAGE_STATS_MEDIAN -> CPL_IMAGE_STATS_MEDIAN_STAT
+	* use cpl_matrix for kernels and add a generic
+	  cpl_image_filter_linear
+	  function
+	* typo
+	* cpl_image_filter3x3, cpl_image_filter3x1, cpl_image_filter5x5
+	  made static
+	* no support for int images
+	* classified methods...
+	* print_matrix() -> cpl_matrix_print()
+	* typo
+	* use cpl_tools.c
+	* added cpl_tools_kth_float() cpl_tools_kth_int()
+	  cpl_tools_median_float()
+	  and cpl_tools_median_int()
+	* added CPL_END_DECLS
+	* use cpl_tools.c...
+	* added cpl_image_filter-test
+	* Initial revision
+	* completed with cpl_image_median_stat() and cpl_image_percentile()
+	* corrected index in cpl_image_percentile()
+
+2003-05-19  yjung
+
+	* added cpl_image_stats-test.c
+	* bad call for a collapse function
+	* cpl_image_firstgoodpos_subw() not offered...not tested
+	* added cpl_image-basic
+	* Initial revision
+	* comments
+	* comment
+	* moved cpl_image_firstgoodpos_subw as static into
+	  cpl_image_stats()
+	* removed cpl_image_floor() (use cpl_image_convert instead)
+
+2003-05-19  cizzo
+
+	* Renaming several functions
+	* Renaming several functions, add functionality
+
+2003-05-19  yjung
+
+	* removed cpl_image_opposite() and cpl_image_invert()
+	* added cpl_image_io-test
+	* first usable version
+	* Initial revision
+	* added test cases to cover all functions
+	* cosmetics
+	* ...
+	* added some test cases to cover all functions
+	* moved cpl_binary definition to cpl_image.h
+	* added support for binary images
+	* added CPL_CLASS_BINARY
+	* added cpl_image_new_bin
+	* include error corrected
+	* moved some functions to cpl_sparseimage.h
+	* corrected some errors...
+	* added cpl_sparseimage and cpl_image_binary
+	* added cpl_binary definition
+	* moved sparse functions to cpl_sparseimage.c and add defgroup for
+	  doxygen
+	* added defgroup for doxygen
+	* added include for cpl_image_binary and cpl_sparseimage
+	* Initial revision
+
+2003-05-16  rpalsa
+
+	* cpl_image_binary.h added to include_HEADERS
+	* Libtool versioning is setup here. Support added. Macro names
+	  changed in accordance with changes in acinlude.m4
+	* Macros renamed. Macros which are needed for building (external)
+	  instrument packages moved to cpl.m4
+	* Standard files removed from EXTRA_DIST, already distributed by
+	  default with recent automake versions. Add m4macros/cpl.m4 to
+	  EXTRA_DIST
+	* New version installed
+
+2003-05-16  llundin
+
+	* Added *_body.h files
+
+2003-05-16  rpalsa
+
+	* Using symbols in INCLUDES, LDFLAGS. Libtool version now done in
+	  configure; support added.
+	* Macro CPL_CHECK_CEXT added. Type in cpl_check_cpl_header fixed.
+	  Macro CPL_CREATE_SYMBOLS added.
+	* Symbols used in INCLUDES, LDFLAGS
+	* Remove all occurrances of the cwd from PATH
+
+2003-05-16  llundin
+
+	* Beta version of bad pixel maps
+
+2003-05-15  cizzo
+
+	* Rename some of the functions
+	* Rename some functions
+
+2003-05-15  yjung
+
+	* doxygen things
+
+2003-05-15  cizzo
+
+	* Changed calling sequence for cpl_table_move_column(), and insert
+	  alternative code in case cpl_table_resize would be eliminated
+	* Several changes, in accordance with (not yet all) Michele's
+	  comments
+
+2003-05-15  yjung
+
+	* added an include
+	* define moved in cpl_tools.h
+	* added defin ASCIILINESZ
+	* removed end of defgroup (doxygen)
+	* added defgroup for doxygen
+	* added defgroup for Doxygen
+	* cosmetics
+
+2003-05-14  yjung
+
+	* in progress
+
+2003-05-14  rpalsa
+
+	* Obsolete.
+	* Replaced by bootstrap shell script.
+	* ACLOCAL_AMFLAGS added.
+	* Package independent macros replaced by common version. Local
+	  implementations removed.
+	* Package independent macros replaced by common version.
+	* Added.
+	* Makefile.boot and kazlib specific parts removed.
+	* Obsolete. Usage of kazlib has bbeen abandoned.
+
+2003-05-13  yjung
+
+	* Initial revision
+	* Initial revision
+
+2003-05-12  yjung
+
+	* changed possible values foe CPL_IMAGE_OPERATION
+	* renames possible values for CPL_IMAGE_OPERATION
+	* rnamed CPL_OPERATION possible values
+	* renamed some the CPL_OPERATION possible values
+	* use cpl_tools
+	* cpl_tools_double_sort() renamed in cpl_tools_darray_sort()
+	* files splitted into cpl_image_io basic filter ans stats
+	* sorting and median -> cpl_tools.ch
+	* Initial revision
+	* cpl_image.c splitted in 4 different cpl_image categories
+
+2003-05-09  cizzo
+
+	* Rename cpl_table_select() and cpl_table_unselect()
+	* Get rid of several select functions, and eliminate needless type
+	  check in comparison between columns
+
+2003-05-06  cizzo
+
+	* Correct header
+
+2003-05-05  yjung
+
+	* changed prototype of cpl_image_convert()
+
+2003-04-30  yjung
+
+	* forgot a fabs()
+	* static function were not supposed to be declared here
+
+2003-04-29  yjung
+
+	* cpl_function1d_centroid also handles negative values now
+
+2003-04-29  llundin
+
+	* Removed unused declarations found by MKiesgen
+
+2003-04-29  cizzo
+
+	* 1x1 matrices are now allowed
+	* Add test on 1x1 matrix
+
+2003-04-28  llundin
+
+	* Reverted change in cpl_image.c rev. 1.34. Added stdout/stderr
+	  from `make check` on HP-UX (& alpha linux)
+
+2003-04-25  cizzo
+
+	* Avoid changing pointer to matrix once it is shifted
+
+2003-04-24  yjung
+
+	* new test FITS files (512x512 instead of 1024x1024)
+	* reduced IMAGESZ
+
+2003-04-23  llundin
+
+	* Fixed first-pixel-bug in min/max location in cpl_image_stat_subw.
+	  Increased memory performance by reordering some loops.
+
+2003-04-17  llundin
+
+	* Removed invert & reciprocal functions. Improved accuracy in
+	  std.dev. Finalized code reuse
+	* Express invert & reciprocal by cpl_image_cst_op
+
+2003-04-11  llundin
+
+	* Increased number of digits in printf in cpl_image_stat_dump
+	* Set result to zero in case of division overflow
+
+2003-04-11  mkiesgen
+
+	* Bugfixed cpl_property_copy due to changes in memory allocation
+	* Added erase for keywords starting with a given string.
+
+2003-04-11  llundin
+
+	* Fixed rounding problem with sqrt() in cpl_image_stat_subw. Made
+	  cpl_image_invert consistent over types
+	* Moderated ranges and prevented gross rounding errors
+
+2003-04-10  yjung
+
+	* forgot a cast ...
+	* Check return of stat functions
+	* Statistic object and related functions completely re-written
+	  according
+	  design discussed together in the CPL meeting 09-04-2003.
+
+2003-04-10  cizzo
+
+	* Minor changes
+	* Minor changes
+
+2003-04-09  llundin
+
+	* Robust use of pow() and log(). Rewritten cpl_image_cst_op* to
+	  reduce code replication
+
+2003-04-08  yjung
+
+	* added test cases for log ^ and exp
+
+2003-04-08  llundin
+
+	* Fixed cpp warning - really
+	* Fixed cpp warning. Rewritten to reduce code replication
+
+2003-04-08  rpalsa
+
+	* Order of typedef and enum definition changed. The HP compiler
+	  apparently needs to know the object size for typedef referring to
+	  enums.
+	* _cpl_property_value_resize(): Bare type (char *) replaced by
+	  library type (cxptr)
+	* cpl_property_get_bool(): cast operation on result fixed.
+	* Comment updated.
+
+2003-04-08  yjung
+
+	* Problems of compilations on HP:
+	  moved type_t to cpl_type_t
+	* added cpl_image_operation.h
+
+2003-04-07  yjung
+
+	* changed comments
+
+2003-04-07  rpalsa
+
+	* Added option to skip QFITS test completely in CPL_CHECK_QFITS
+
+2003-04-07  yjung
+
+	* reorganized a bit the functions.
+	  Corrected the log() bug reported by Lars
+	* added test on INT and cross types operations
+	* added support for integer_t images in all functions but filtering
+	  functions
+	* added cpl_image_load_int()
+
+2003-04-04  yjung
+
+	* added cpl_image_convert() - still needs to be tested
+	* Support now operations on images with differtent types.
+	  Removed MACROS for operation functions (to support thes cross
+	  operations).
+	  Division is correctly done now.
+	  In cpl_image_getmaxpos(): corrected bad initialization
+	  INT image type support still has to be added.
+	* moved data to pixels in the cpl_image definition
+
+2003-04-04  llundin
+
+	* Renamed lx/ly (and made new division default)
+	* Rewritten to reduce code replication
+	* Rewritten to reduce code replication
+
+2003-04-03  yjung
+
+	* added 2 input FITS test files and upgraded the cpl_image-test
+	  module
+
+2003-04-02  yjung
+
+	* added cpl_image_get_pixels_as_float()
+	  cpl_image_get_pixels_as_double()
+	* some bugs detected thanks to tests cpl_image-test.c
+	* in progress - still has to be completed
+	* cpl_image_del() -> cpl_image_delete()
+	* typo
+	* new tests for the new cpl_image functions()
+	* moved image-test to cpl_image-test
+	* moved to cpl_image-test.c
+	* previously named image-tests.c
+	* Finished to upgrade the cpl_image functions. Still have to be
+	  tested.
+
+2003-04-01  yjung
+
+	* in progress...
+
+2003-03-31  yjung
+
+	* in progress - many functions are still missing
+
+2003-03-19  mkiesgen
+
+	* Changed the memory allocation scheme, due to a misalignment
+	  memory
+	  allocation problem in the old scheme. Works without memory leaks
+	  now.
+
+2003-03-10  llundin
+
+	* Renamed cpl_image_t
+
+2003-02-24  rpalsa
+
+	* CVSROOT updated, tool versions corrected.
+
+2003-02-10  yjung
+
+	* image_cst_op_local -> cpl_image_cst_op_local
+	  image_get_median -> cpl_image_get_median
+	* pixelvalue-> pixelval
+	* pixelvalue -> pixelval
+	* cleaning
+
+2003-01-14  rpalsa
+
+	* CPL_CHECK_LIBCEXT commented out. Not yet implemented.
+
+2002-12-18  cizzo
+
+	* Correct documentation
+
+2002-09-25  rpalsa
+
+	* Pushed to automake 1.6
+
+2002-09-24  rpalsa
+
+	* New version installed.
+
+2002-09-02  cizzo
+
+	* Add handlers for printing, and do all the messages printing
+	  through the cx_print() and cx_printerr() calls
+
+2002-08-26  rpalsa
+
+	* Added.
+	* Add cpl_framet and cpl_frameset tests.
+	* Added.
+
+2002-07-27  rpalsa
+
+	* Cleaned up. Tests cpl_property-test and cpl_plist-test added.
+	* Added.
+
+2002-07-22  rpalsa
+
+	* Added.
+
+2002-07-15  rpalsa
+
+	* Obsolete, dictionary implementation moved to C extensions.
+	* Obsolete. Implementation replaced by C extensions.
+	* Remove kazlib dependencies.
+	* Remove kazlib support. Subdirectory cplui added.
+	* Remove kazlib support. Obsolete.
+	* Let QFITSDIR take precedence over CPLDIR when locating the qfits
+	  library.
+	* Remove kazlib. Obsolete.
+
+2002-07-02  cizzo
+
+	* Minor changes in the documentation
+	* Restoring original value of EXTRACT_ALL
+	* Add documentation to cpl_error_code enum
+	* Minor changes
+	* Add extra standard messages
+	* Correct cpl_error_set_where() prototype, and add Doxygen
+	  preprocessing instructions.
+	* Correct cpl_error_set_where() prototype.
+
+2002-07-01  rpalsa
+
+	* FILE_IO and BAD_FILE_FORMAT errors added.
+
+2002-07-01  cizzo
+
+	* DOXYGEN_SKIP added to PREDEFINED list
+
+2002-07-01  rpalsa
+
+	* Add directory cplui to input list.
+
+2002-07-01  cizzo
+
+	* Final version of the loader
+
+2002-06-27  cizzo
+
+	* Transform some asserts in recoverable errors
+	* Transform some asserts in recoverable errors, and fix some more
+	  bugs
+
+2002-06-24  cizzo
+
+	* Changed prototype qfits_query_columns_nulls()
+
+2002-06-21  rpalsa
+
+	* Type mismatch error added.
+
+2002-06-19  cizzo
+
+	* Now using xmemory.h. Calls to realloc() must be replaced by less
+	  efficient code
+	* Introduce new memory model, and the VERBOSE flag
+	* Align to new qfits_query_column_data() prototype
+	* Introducing the VERBOSE flag
+	* Now using xmemory.h. Calls to realloc() must be replaced by less
+	  efficient code
+	* Upgrade header
+	* Working on loader in progress; now using consistently the memory
+	  model defined in xmemory.h
+	* Fix a bug, other minor changes
+
+2002-06-18  cizzo
+
+	* Shorten functions names
+
+2002-06-17  cizzo
+
+	* Improve error handling
+	* Improve error handling
+	* Improve error handling
+	* Add messaging module
+	* Add more error codes, and modify cpl_error_set_code() to return
+	  the set code
+	* First implementation
+
+2002-06-12  cizzo
+
+	* Minor change
+	* Add one more message
+	* Several changes, use error module, fix bugs, add functions
+	  cpl_table_any_null() and cpl_table_any_valid()
+	* Add functions cpl_table_any_null() and cpl_table_any_valid()
+	* Add functions cpl_column_any_null() and cpl_column_any_valid()
+
+2002-06-10  cizzo
+
+	* Fix wrong usage of cpl_error_set_where()
+	* Add error module
+	* Add some more error flags
+	* Unsing error module; some more useless checka are eliminated
+	* First implementation
+	* First using of the error module
+	* Matching modifications in CPL matrix
+
+2002-06-07  cizzo
+
+	* Close doxygen block
+	* Remove comments in italian...
+	* Eliminate return status checks from cxmemory routines
+
+2002-06-06  cizzo
+
+	* Add include path to cext (hardcoded, to be fixed)
+	* Eliminate return status checks from cxmemory routines
+	* Eliminate return status checks from cxmemory routines
+	* Support column unit and format
+
+2002-06-05  rpalsa
+
+	* Blank lines removed.
+
+2002-06-05  cizzo
+
+	* Add unit and format to cpl_column
+
+2002-05-15  cizzo
+
+	* Some optimizations added
+
+2002-05-12  cizzo
+
+	* Completed code optimization
+
+2002-05-09  cizzo
+
+	* Optimization of some routines
+	* Optimization
+	* Add one more test
+	* Improve checks
+
+2002-05-07  cizzo
+
+	* Add functions for median computation, and avoid creation of 1x1
+	  matrices
+	* Add functions for median computation
+	* Minor changes
+
+2002-05-05  cizzo
+
+	* Add cpl_matrix tester
+	* Implementation
+	* Add matrix class
+
+2002-04-26  rpalsa
+
+	* Comments included.
+
+2002-04-24  rpalsa
+
+	* Change record: correct date inserted.
+	* Added.
+	* Changed to new header template.
+
+2002-04-18  cizzo
+
+	* Correct standard header
+	* Add standard header
+	* First (untested) implementation
+
+2002-04-10  yjung
+
+	* added cpl_vector_threshold()
+
+2002-04-10  csabet
+
+	* Removed the cause for a warning
+	* added prototypes for the new routines
+	* Changed two routines subject to further discussion
+
+2002-03-21  cizzo
+
+	* Add new function()
+	* Add new module cpl_column_set_data_null()
+
+2002-03-18  cizzo
+
+	* Fix sorting routine
+	* Add sorting checks
+
+2002-03-18  ndevilla
+
+	* Added basic tests for arithmetic.
+	* Corrected bug in cpl_image_mul
+
+2002-03-13  rpalsa
+
+	* Use correct syntax for test command in boot-libltdl and
+	  boot-kazlib.
+
+2002-03-13  cizzo
+
+	* Silence the 'OK' messages of the program
+	* Add tests for the cpl_table class
+	* Trying to create a table modeled on an existing cpl_table,
+	  specifying a negative number of rows.
+	* Trying to create a table with negative number of rows
+	* Implementation (test on selection and sorting still missing)
+	* Implementation of cpl_table_column_exist(), eliminate a buggy
+	  speedup, fix more bugs
+	* Declaration of cpl_table_column_exist() and
+	  cpl_table_compare_structures(), correct declaration of
+	  cpl_table_set_segment_null()
+	* Fix s few bugs
+
+2002-03-07  yjung
+
+	* added the size of vector
+	* ...
+	* added tests
+	* first usable version
+	* ...
+	* usable now
+
+2002-03-06  yjung
+
+	* added cpl_vector-test and cpl_1dfunction-test
+	* Initial revision
+	* *** empty log message ***
+	* Initial revision
+
+2002-03-05  rpalsa
+
+	* Add -lm to libcplcore_la_LIBADD to satisfy the library
+	  dependency.
+
+2002-03-04  ndevilla
+
+	* Initial release, just to see if it compiles.
+	* Added image-test target
+
+2002-02-22  yjung
+
+	* bad function call...
+
+2002-02-22  ndevilla
+
+	* Renamed eclipse functions, removed eclipse error handling, added
+	  pixel
+	  sorting routines.
+
+2002-02-22  rpalsa
+
+	* Empty XFAIL_TESTS hook added.
+	* Don't distribute test executables. TESTS removed from EXTRA_DIST.
+	* Create Makefile for the testsuite.
+	* Added testsuite directory.
+	* Added.
+
+2002-02-20  yjung
+
+	* updated files headers
+
+2002-02-19  cizzo
+
+	* Replace size_t -> int, on failure/success return 0/not-zero
+	  instead of EXIT_SUCCESS/EXIT_FAILURE, and other changes in the
+	  documentation
+
+2002-02-18  ndevilla
+
+	* added load/save functions.
+
+2002-02-18  cizzo
+
+	* Move @return after @param documentation
+
+2002-02-12  rpalsa
+
+	* cpl_image.h added to include_HEADERS
+
+2002-02-07  ndevilla
+
+	* Removed GNU attributes for some functions. Not needed here.
+	* Added section about qfits.
+
+2002-02-07  rpalsa
+
+	* Handle qfits as installed library.
+	* Check for external qfits library. Removed qfits from
+	  CONFIG_SUBDIRS
+	* Macro CPL_CHECK_QFITS added.
+	* Support for qfits as part of the CPL tree removed.
+	* Directory qfits removed.
+	* Updated with respect to the changed handling of Qfits.
+
+2002-02-06  ndevilla
+
+	* Added filtering functions.
+
+2002-01-23  ndevilla
+
+	* Suppressed e_error messages.
+
+2002-01-21  rpalsa
+
+	* Don't rely on variable LIBTOOL in check whether litool is used or
+	  not.
+	* Changed location of KAZLIB_CONVENIENCE_LIBRARY. Must run after
+	  AC_PROG_LIBTOOL.
+	* Check if libtool is used and determine proper library suffix.
+
+2002-01-16  yjung
+
+	* added modifs requested during CPL meeting
+	* modif after meeting requests
+	* added some functions required by Cyrus
+
+2002-01-16  rpalsa
+
+	* Typo fixed.
+	* AC_PROG_RANLIB removed, since AC_PROG_LIBTOOL does it too.
+	* Better test for dvi file in target dist-hook.
+	* Better test for html subdirectory in target dist-hook.
+
+2002-01-14  rpalsa
+
+	* Typo fixed in MAINTAINER_MODE conditional.
+	* Remove aclocal.m4 from MAINTAINERCLEANFILES when building a
+	  convenience library, since the parent configure might depend on
+	  it.
+	* Add kazlib's aclocal.m4 to MAINTAINERCLEANFILES.
+
+2002-01-11  yjung
+
+	* moved a part to cpl_1dfunction and changed cpl_vector type
+	* first valid version
+	* added cpl_1dfunction.[ch]
+
+2002-01-11  ndevilla
+
+	* Added cpl_image.c
+	* Initial release, contains various constructors/destructors,
+	  arithmetic
+	  operators, statistics computation and various data extraction
+	  routines.
+	  Still missing FITS I/O.
+
+2002-01-11  yjung
+
+	* Initial revision
+
+2002-01-08  cizzo
+
+	* Select functions now return correctly size_t instead of int
+	* Review documentation, and apply some minor changes
+
+2002-01-08  rpalsa
+
+	* Test for working malloc() removed. Use simple check for
+	  vprintf().
+	* Bug in macro KAZLIB_ENABLE_EXCEPTIONS fixed. Output of default
+	  parameter values unified.
+
+2002-01-08  cizzo
+
+	* Review documentation, and some minor changes
+
+2002-01-07  cizzo
+
+	* Add modules cpl_table and cpl_column
+	* Implementation
+
+2002-01-07  rpalsa
+
+	* sfx.c moved to EXTRA_libkaz_SOURCES.
+	* Iterator type removed.
+	* Add kazlib to aclocal include path.
+
+2002-01-04  yjung
+
+	* Still in development
+	* added cpl_vector.[ch]
+
+2002-01-02  yjung
+
+	* Initial revision
+
+2002-01-01  rpalsa
+
+	* Changed behaviour of ENABLE_DEBUG macro. This should avoid the
+	  necessity of calling ENABLE_DEBUG before any other macro setting
+	  compiler options.
+	* Avoid (cached) output when ENABLE_DEBUG and ENABLE_STRICT macros
+	  run the first time. Bug fixed in ENABLE_STRICT macro. Not needed
+	  AC_REQUIRE removed from ENABLE_DEBUG and ENABLE_STRICT macros.
+
+2001-12-30  rpalsa
+
+	* Bug fixed when caching results in ENABLE_DEBUG and ENABLE_STRICT
+	  macros.
+
+2001-12-19  rpalsa
+
+	* Topics added. Some recommendations about the installation
+	  process.
+	* Distribute files AUTHORS, COPYING, INSTALL and README. Added to
+	  EXTRA_DIST.
+
+2001-12-17  rpalsa
+
+	* Added.
+	* Package version set to 0.0
+	* Changed symbol INCLUDES to use correct path to qfits includes.
+	* Changed symbol LIBQFITS to correct path.
+	* Added generated files in libltdl to MAINTAINERCLEANFILES.
+	* Import of GNU libltdl from libtool 1.4.2
+	* Added when adding support for automake/autoconf.
+	* Import of kazlib v1.20
+
+2001-12-14  rpalsa
+
+	* Imported CPL sources.
+
+2001-12-14  svnadmin
+
+	* Standard project directories initialized by cvs2svn.
+

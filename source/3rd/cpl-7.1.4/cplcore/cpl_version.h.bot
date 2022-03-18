@@ -1,0 +1,17 @@
+
+
+CPL_BEGIN_DECLS
+
+unsigned int cpl_version_get_major(void) CPL_ATTR_CONST;
+unsigned int cpl_version_get_minor(void) CPL_ATTR_CONST;
+unsigned int cpl_version_get_micro(void) CPL_ATTR_CONST;
+
+unsigned int cpl_version_get_interface_age(void) CPL_ATTR_CONST;
+unsigned int cpl_version_get_binary_age(void) CPL_ATTR_CONST;
+
+const char *cpl_version_get_version(void) CPL_ATTR_CONST;
+unsigned int cpl_version_get_binary_version(void) CPL_ATTR_CONST;
+
+CPL_END_DECLS
+
+#endif /* CPL_VERSION_H */

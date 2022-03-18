@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   viewBox="0 0 169.33333 17.333332"
+   height="17.333332"
+   width="169.33333"
+   xml:space="preserve"
+   id="svg2"
+   version="1.1"><metadata
+     id="metadata8"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs6"><clipPath
+       id="clipPath14"
+       clipPathUnits="userSpaceOnUse"><path
+         id="path12"
+         d="M 0,0 H 612 V 792 H 0 Z" /></clipPath></defs><g
+     clip-path="url(#clipPath14)"
+     transform="matrix(1.3333333,0,0,-1.3333333,-198.66667,889.33333)"
+     id="g10"><g
+       transform="scale(0.1)"
+       id="g16"><g
+         transform="scale(10)"
+         id="g18"><text
+           id="text22"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,148.68,657.24)"><tspan
+             id="tspan20"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text26"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,157.56008,657.24)"><tspan
+             id="tspan24"
+             y="0"
+             x="0">=</tspan></text>
+<text
+           id="text30"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,167.99988,657.24)"><tspan
+             id="tspan28"
+             y="0"
+             x="0">w</tspan></text>
+<text
+           id="text34"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,175.07996,655.80016)"><tspan
+             id="tspan32"
+             y="0"
+             x="0 6.1199298 14.639848 21.60001">FWHM</tspan></text>
+<text
+           id="text38"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,205.79986,657.24)"><tspan
+             id="tspan36"
+             y="0"
+             x="0">/</tspan></text>
+<text
+           id="text42"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,210.8397,657.24)"><tspan
+             id="tspan40"
+             y="0"
+             x="0 3.8399916">(2</tspan></text>
+<text
+           id="text46"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,219.71978,665.76031)"><tspan
+             id="tspan44"
+             y="0"
+             x="0">p</tspan></text>
+</g><g
+         transform="matrix(39.6,0,0,-4.8,2295.48,6662.28)"
+         id="g48"><rect
+           id="rect50"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g52"><text
+           id="text56"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,229.56,657.24)"><tspan
+             id="tspan54"
+             y="0"
+             x="0 3.8399916 10.560151 13.319802 18.359789 23.399776 27.239792 32.279778 36.11977 39.959785">(2log(2)))</tspan></text>
+<text
+           id="text60"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,273.36,657.24)"><tspan
+             id="tspan58"
+             y="0"
+             x="0">,</tspan></text>
+</g></g></g></svg>

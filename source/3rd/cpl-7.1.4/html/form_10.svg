@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   viewBox="0 0 296 126.66667"
+   height="126.66667"
+   width="296"
+   xml:space="preserve"
+   id="svg2"
+   version="1.1"><metadata
+     id="metadata8"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs6"><clipPath
+       id="clipPath14"
+       clipPathUnits="userSpaceOnUse"><path
+         id="path12"
+         d="M 0,0 H 612 V 792 H 0 Z" /></clipPath></defs><g
+     clip-path="url(#clipPath14)"
+     transform="matrix(1.3333333,0,0,-1.3333333,-260,862.66667)"
+     id="g10"><g
+       transform="scale(0.1)"
+       id="g16"><g
+         transform="scale(10)"
+         id="g18"><text
+           id="text22"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,195.6,631.8)"><tspan
+             id="tspan20"
+             y="0"
+             x="0">θ</tspan></text>
+<text
+           id="text28"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,210.4801,631.8)"><tspan
+             id="tspan24"
+             y="0"
+             x="0">=</tspan><tspan
+             id="tspan26"
+             y="-6.7199202"
+             x="18.959801">1</tspan></text>
+</g><g
+         transform="matrix(50.4,0,0,-4.8,2294.28,6345.48)"
+         id="g30"><rect
+           id="rect32"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g34"><text
+           id="text40"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,229.44,624.96)"><tspan
+             id="tspan36"
+             y="0"
+             x="0">2</tspan><tspan
+             id="tspan38"
+             y="-6.8398399"
+             x="7.8000002 12.839987 16.800003 21.239992 25.080009 30.119995">arctan</tspan></text>
+<text
+           id="text44"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,266.64,645.83964)"><tspan
+             id="tspan42"
+             y="0"
+             x="0"></tspan></text>
+<text
+           id="text48"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,273.96031,631.79984)"><tspan
+             id="tspan46"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text54"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,279.00015,631.79984)"><tspan
+             id="tspan50"
+             y="0"
+             x="0">ρ</tspan><tspan
+             id="tspan52"
+             y="-6.7199202"
+             x="12.3602">σ</tspan></text>
+<text
+           id="text58"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,297.00019,637.07992)"><tspan
+             id="tspan56"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text62"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,302.04003,638.51976)"><tspan
+             id="tspan60"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text66"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,307.68026,637.07992)"><tspan
+             id="tspan64"
+             y="0"
+             x="0">y</tspan></text>
+</g><g
+         transform="matrix(334.8,0,0,-4.8,2852.28,6345.48)"
+         id="g68"><rect
+           id="rect70"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g72"><text
+           id="text76"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,285.24,624.96)"><tspan
+             id="tspan74"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text80"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,291.24,627.83969)"><tspan
+             id="tspan78"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text84"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,290.88023,622.56)"><tspan
+             id="tspan82"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text88"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMSY10;-inkscape-font-specification:CMSY10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,298.20015,624.96)"><tspan
+             id="tspan86"
+             y="0"
+             x="0">−</tspan></text>
+<text
+           id="text92"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,308.16031,624.96)"><tspan
+             id="tspan90"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text96"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,314.16031,627.83969)"><tspan
+             id="tspan94"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text100"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,313.80016,622.56)"><tspan
+             id="tspan98"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text104"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,319.92008,645.8397)"><tspan
+             id="tspan102"
+             y="0"
+             x="0"></tspan></text>
+<text
+           id="text108"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,195.24008,599.6397)"><tspan
+             id="tspan106"
+             y="0"
+             x="0">a</tspan></text>
+<text
+           id="text112"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,210.47988,599.6397)"><tspan
+             id="tspan110"
+             y="0"
+             x="0">=</tspan></text>
+<text
+           id="text116"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,228.24008,599.6397)"><tspan
+             id="tspan114"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text120"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,233.88031,598.19986)"><tspan
+             id="tspan118"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text124"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,238.92015,599.6397)"><tspan
+             id="tspan122"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text128"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,244.56038,598.19986)"><tspan
+             id="tspan126"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text132"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,249.36038,616.43966)"><tspan
+             id="tspan130"
+             y="0"
+             x="0">s</tspan></text>
+</g><g
+         transform="matrix(1567.2,0,0,-4.8,2593.08,6169.08)"
+         id="g134"><rect
+           id="rect136"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g138"><text
+           id="text142"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,259.32,599.64)"><tspan
+             id="tspan140"
+             y="0"
+             x="0 5.0399871 8.880003">2(1</tspan></text>
+<text
+           id="text146"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMSY10;-inkscape-font-specification:CMSY10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,275.4001,599.64)"><tspan
+             id="tspan144"
+             y="0"
+             x="0">−</tspan></text>
+<text
+           id="text150"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,285.36026,599.64)"><tspan
+             id="tspan148"
+             y="0"
+             x="0">ρ</tspan></text>
+<text
+           id="text154"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,290.51963,602.52008)"><tspan
+             id="tspan152"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text160"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,294.95986,599.64)"><tspan
+             id="tspan156"
+             y="0"
+             x="0">)</tspan><tspan
+             id="tspan158"
+             y="-6.84023"
+             x="50.039799 54.47979 59.519802 65.03981">cos2</tspan></text>
+<text
+           id="text164"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,365.03946,606.48023)"><tspan
+             id="tspan162"
+             y="0"
+             x="0">θ</tspan></text>
+</g><g
+         transform="matrix(1147.2,0,0,-4.8,2999.88,6023.88)"
+         id="g166"><rect
+           id="rect168"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g170"><text
+           id="text174"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,300,600.36)"><tspan
+             id="tspan172"
+             y="0"
+             x="0"></tspan></text>
+<text
+           id="text178"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,304.68008,592.31977)"><tspan
+             id="tspan176"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text182"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,310.68008,595.19985)"><tspan
+             id="tspan180"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text186"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,310.31992,589.79985)"><tspan
+             id="tspan184"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text190"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,317.51992,592.31977)"><tspan
+             id="tspan188"
+             y="0"
+             x="0">+</tspan></text>
+<text
+           id="text194"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,327.48008,592.31977)"><tspan
+             id="tspan192"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text198"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,333.48008,595.19985)"><tspan
+             id="tspan196"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text202"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,333.11993,589.79985)"><tspan
+             id="tspan200"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text206"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,338.03985,600.36005)"><tspan
+             id="tspan204"
+             y="0"
+             x="0"></tspan></text>
+<text
+           id="text210"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,344.28008,592.31982)"><tspan
+             id="tspan208"
+             y="0"
+             x="0 4.4399891 9.4800005 15.00001">cos2</tspan></text>
+<text
+           id="text214"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,364.31988,592.31982)"><tspan
+             id="tspan212"
+             y="0"
+             x="0">θ</tspan></text>
+<text
+           id="text218"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,371.39996,592.31982)"><tspan
+             id="tspan216"
+             y="0"
+             x="0">+</tspan></text>
+<text
+           id="text222"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,381.36012,592.31982)"><tspan
+             id="tspan220"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text226"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,387.36012,595.1999)"><tspan
+             id="tspan224"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text230"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,386.99996,589.7999)"><tspan
+             id="tspan228"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text234"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMSY10;-inkscape-font-specification:CMSY10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,394.08004,592.31982)"><tspan
+             id="tspan232"
+             y="0"
+             x="0">−</tspan></text>
+<text
+           id="text238"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,404.0402,592.31982)"><tspan
+             id="tspan236"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text242"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,410.0402,595.1999)"><tspan
+             id="tspan240"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text246"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,409.68044,589.7999)"><tspan
+             id="tspan244"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text250"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,196.32044,565.4401)"><tspan
+             id="tspan248"
+             y="0"
+             x="0">b</tspan></text>
+<text
+           id="text254"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,210.48064,565.4401)"><tspan
+             id="tspan252"
+             y="0"
+             x="0">=</tspan></text>
+<text
+           id="text258"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,228.24084,565.4401)"><tspan
+             id="tspan256"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text262"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,233.88068,563.99987)"><tspan
+             id="tspan260"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text266"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,238.92052,565.4401)"><tspan
+             id="tspan264"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text270"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,244.56075,563.99987)"><tspan
+             id="tspan268"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text274"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,249.36075,582.11977)"><tspan
+             id="tspan272"
+             y="0"
+             x="0">s</tspan></text>
+</g><g
+         transform="matrix(1567.2,0,0,-4.8,2593.08,5825.88)"
+         id="g276"><rect
+           id="rect278"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g280"><text
+           id="text284"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,259.32,565.44)"><tspan
+             id="tspan282"
+             y="0"
+             x="0 5.0399871 8.880003">2(1</tspan></text>
+<text
+           id="text288"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMSY10;-inkscape-font-specification:CMSY10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,275.4001,565.44)"><tspan
+             id="tspan286"
+             y="0"
+             x="0">−</tspan></text>
+<text
+           id="text292"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,285.36026,565.44)"><tspan
+             id="tspan290"
+             y="0"
+             x="0">ρ</tspan></text>
+<text
+           id="text296"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,290.51963,568.32008)"><tspan
+             id="tspan294"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text302"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,294.95986,565.44039)"><tspan
+             id="tspan298"
+             y="0"
+             x="0">)</tspan><tspan
+             id="tspan300"
+             y="-6.7199202"
+             x="50.039799 54.47979 59.519802 65.03981">cos2</tspan></text>
+<text
+           id="text306"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,365.03946,572.16031)"><tspan
+             id="tspan304"
+             y="0"
+             x="0">θ</tspan></text>
+</g><g
+         transform="matrix(1147.2,0,0,-4.8,2999.88,5681.88)"
+         id="g308"><rect
+           id="rect310"
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero"
+           transform="matrix(1,0,0,-1,0,1)"
+           height="1"
+           width="1"
+           y="0"
+           x="0" /></g><g
+         transform="scale(10)"
+         id="g312"><text
+           id="text316"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,300,566.16)"><tspan
+             id="tspan314"
+             y="0"
+             x="0"></tspan></text>
+<text
+           id="text320"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,304.68008,557.99984)"><tspan
+             id="tspan318"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text324"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,310.68008,560.87992)"><tspan
+             id="tspan322"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text328"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,310.31992,555.59984)"><tspan
+             id="tspan326"
+             y="0"
+             x="0">x</tspan></text>
+<text
+           id="text332"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,317.51992,557.99984)"><tspan
+             id="tspan330"
+             y="0"
+             x="0">+</tspan></text>
+<text
+           id="text336"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,327.48008,557.99984)"><tspan
+             id="tspan334"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text340"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,333.48008,560.87992)"><tspan
+             id="tspan338"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text344"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,333.11993,555.59984)"><tspan
+             id="tspan342"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text348"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMEX10;-inkscape-font-specification:CMEX10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,338.03985,566.16004)"><tspan
+             id="tspan346"
+             y="0"
+             x="0"></tspan></text>
+<text
+           id="text352"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,344.28008,557.99988)"><tspan
+             id="tspan350"
+             y="0"
+             x="0 4.4399891 9.4800005 15.00001">cos2</tspan></text>
+<text
+           id="text356"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,364.31988,557.99988)"><tspan
+             id="tspan354"
+             y="0"
+             x="0">θ</tspan></text>
+<text
+           id="text360"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMSY10;-inkscape-font-specification:CMSY10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,371.39996,557.99988)"><tspan
+             id="tspan358"
+             y="0"
+             x="0">−</tspan></text>
+<text
+           id="text364"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,381.36012,557.99988)"><tspan
+             id="tspan362"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text368"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,387.36012,560.87996)"><tspan
+             id="tspan366"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text372"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,386.99996,555.59988)"><tspan
+             id="tspan370"
+             y="0"
+             x="0">y</tspan></text>
+<text
+           id="text376"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMR10;-inkscape-font-specification:CMR10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,394.08004,557.99988)"><tspan
+             id="tspan374"
+             y="0"
+             x="0">+</tspan></text>
+<text
+           id="text380"
+           style="font-variant:normal;font-weight:normal;font-size:9.96263981px;font-family:CMMI10;-inkscape-font-specification:CMMI10;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,404.0402,557.99988)"><tspan
+             id="tspan378"
+             y="0"
+             x="0">σ</tspan></text>
+<text
+           id="text384"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMR7;-inkscape-font-specification:CMR7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,410.0402,560.87996)"><tspan
+             id="tspan382"
+             y="0"
+             x="0">2</tspan></text>
+<text
+           id="text388"
+           style="font-variant:normal;font-weight:normal;font-size:6.97384977px;font-family:CMMI7;-inkscape-font-specification:CMMI7;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,409.68044,555.59988)"><tspan
+             id="tspan386"
+             y="0"
+             x="0">x</tspan></text>
+</g></g></g></svg>

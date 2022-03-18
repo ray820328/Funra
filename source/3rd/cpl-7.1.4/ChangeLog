@@ -1,0 +1,4730 @@
+2021-05-07  rpalsa
+
+	* cplcore/cpl_filter.h: _cpl_filter_mode_: More fixes of the
+	  doxygen documentation rendering.
+
+	* configure.ac: Package version updated, set to 7.1.4.
+
+2021-05-05  rpalsa
+
+	* m4/cpl.m4: CPL_CHECK_CFITSIO(): the macro also depends on
+	  pkg-config, therefore make sure ESO_CHECK_PKGCONFIG was called
+	  before.
+
+2021-04-21  rpalsa
+
+	* cplcore/cpl_filter.h: Fixed rendering issues of doxygen
+	  documentation caused by @verbatim/@endverbatim blocks.
+
+	* cplcore/cpl_polynomial.c: Remove unterminated @verbatim which
+	  causes a doxygen warning. Remove @verbatim/@endverbatim
+	  environment from non-doxygen documentation.
+
+	* Doxyfile.in: Updated to use SVG instead of PNG output for
+	  formulas (requires pdf2svg or inkscape to be present). Disable
+	  USE_MATHJAX as default for local builds, and use pdflatex as
+	  default for generating latex output.
+
+	* README.SVN: Updated required doxygen version to 1.8.20 and added
+	  dependency on pdf2svg.
+
+2021-04-20  llundin
+
+	* cplcore/cpl_mask.c, cplcore/tests/cpl_mask-test.c:
+	  cpl_mask_count_window_test(): Added.
+	  cpl_mask_count_window_test(): Fix out-of-bounds access
+	  (PIPE-9501)
+
+2021-04-16  rpalsa
+
+	* .: Property svn:externals updated: point libcext to revision
+	  r256630.
+
+	* NEWS: Updated for the CPL 7.1.4 release.
+
+	* README: Updated for the CPL 7.1.4 release.
+
+	* NEWS: Initial update for the CPL 7.1.4 release.
+
+	* ChangeLog: ChangeLog updated for the release of CPL 7.1.4
+
+2021-04-13  rpalsa
+
+	* cplcore/cpl_array.h, cplcore/cpl_array_impl.h,
+	  cplcore/cpl_column.h, cplcore/cpl_image_io.h,
+	  cplcore/cpl_property.h, cplcore/cpl_propertylist.h,
+	  cplcore/cpl_table.h, cplcore/cpl_test.h: Remove conditional
+	  relying on the definition of _Complex_I in public header files.
+	  Support for complex number arithmetic is by requiring at least a
+	  C99 compiler to build and use the library. cpl_column.h,
+	  cpl_array.h: Work around an issue if the headers are used by a
+	  C++ compiler. Inclusion of these headers breaks building C++ code
+	  because they unnecessarily include the C99 header complex.h.
+	  Strictly speaking including complex.h in the CPL public API
+	  headers is not needed and should be removed, however this may
+	  break client code. The workaround prevents issues in existing
+	  client code. A final fix for this issue is left for a later
+	  release of the library (PIPE-9014).
+
+	* ., m4/cpl.m4: Import changes from the trunk (revision r254001).
+
+2021-01-22  llundin
+
+	* cpldrs/cpl_geom_img.c, cpldrs/cpl_geom_img.h:
+	  cpl_geom_img_offset_saa(): Improve doxygen (PIPE-9379)
+
+2020-10-27  rpalsa
+
+	* Doxyfile.in: USE_MATHJAX: Enable use of MathJax for rendering
+	  formulas. On a trial basis for now.
+
+	* cplcore/cpl_error.h: _cpl_error_code enumeration: Fixed outdated
+	  comment for value CPL_ERROR_UNSPECIFIED.
+
+2020-10-13  cgarcia
+
+	* .: Block revision 258528 from being merged into the 7.1 branch
+
+2020-10-08  llundin
+
+	* cplcore/cpl_vector.c: cpl_vector_fit_gaussian(): Fix always true
+	  conditionals (PIPE-8110)
+
+2020-09-24  llundin
+
+	* cplcore/tests/cpl_io_fits-test.c: Import from trunk r256424
+	  (PIPE-8824)
+
+2020-09-10  llundin
+
+	* cplcore/cpl_image_bpm.c: Revert cpl_image_reject_(): bpm creation
+	  is thread-critical (PIPE-9236)
+
+2020-09-09  llundin
+
+	* cplcore/cpl_image_bpm.c: cpl_image_reject_(): bpm creation is
+	  thread-critical (PIPE-9236)
+
+2020-07-31  rpalsa
+
+	* m4/eso.m4: Updated to the latest version.
+
+2020-07-30  rpalsa
+
+	* m4/cpl.m4: Include the needed header files when checking for
+	  library availability, so that the tests work with strict compiler
+	  settings.
+
+2020-07-20  rpalsa
+
+	* m4/cpl.m4: Replaced deprecated macro call AC_HELP_STRING by
+	  AS_HELP_STRING.
+
+2020-07-13  rpalsa
+
+	* cplcore/cpl_matrix.c: cpl_matrix_product_normal(): Fixed
+	  formatting of doxygen comment block.
+
+2020-05-14  rpalsa
+
+	* configure.ac: Package version updated, set to 7.1.3.
+
+	* ChangeLog: ChangeLog updated for the release of CPL 7.1.3
+
+2020-05-06  llundin
+
+	* README: 7.1.2 -> 7.1.3, wcslib: 4.16 -> 4.24
+
+2020-05-05  llundin
+
+	* NEWS, acinclude.m4, configure.ac, cpljava/Makefile.am,
+	  cpljava/org_eso_cpl_jni_CPLControl.h,
+	  cpljava/org_eso_cpl_jni_JNIParameterImp.h,
+	  cpljava/org_eso_cpl_jni_JNIRecipe.h,
+	  cpljava/org_eso_cpl_jni_LibraryLoader.h,
+	  cpljava/org_eso_cpl_jni_PluginLibrary.h: Import from trunk the
+	  changes needed for PIPE-8671 - and update NEWS
+	* NEWS, configure.ac: 7.1.3: New version, updated NEWS
+
+2020-02-21  llundin
+
+	* cplcore/tests/cpl_io_fits-test.c: cpl_io_fits_test_many(): Add
+	  diag msg (PIPE-8824), reduce var scope
+
+2020-01-28  llundin
+
+	* cpldrs/cpl_wcs.c: cpl_wcs_get_crval() et al: rm duplicated NULL
+	  check
+
+2020-01-13  llundin
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_to_fitsfile(): Fix
+	  comment typo
+
+2019-12-19  llundin
+
+	* cplcore/tests/cpl_io_fits-test.c: Reduce default number of HDUs
+	  by a factor 6 (PIPE-8824)
+
+2019-12-16  llundin
+
+	* cplcore/tests/cpl_io_fits-test.c: Delete generated test FITS data
+	  (PIPE-8824)
+
+2019-10-02  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: Test also conversion of
+	  +/- inf in FITS card
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Add unit tests w. NaN-value
+
+2019-08-09  rpalsa
+
+	* m4/cpl.m4: CPL_CHECK_CFITSIO(), CPL_CHECK_WCS(),
+	  CPL_CHECK_LIBS(): Undefine LIBS (reset to empty) for tests which
+	  only require the headers.
+
+2019-07-25  llundin
+
+	* cplcore/cpl_image_io.c: cpl_image_get_(): Fix doxygen internal
+	  (PIPE-8593)
+
+2019-07-12  llundin
+
+	* ChangeLog: ChangeLog updated for CPL 7.1.2.
+
+2019-07-11  llundin
+
+	* README: 7.1.1 -> 7.1.2
+
+	* NEWS: 7.1.2: Add changes, improve description
+
+2019-07-08  llundin
+
+	* cplcore/cpl_vector_fit_impl.h: Copy comment improvements from
+	  head
+
+2019-07-03  llundin
+
+	* cplcore/cpl_polynomial.c: Fix typo in (internal) doxygen
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_to_fitsfile():
+	  Change non-unique message from info to warning (PIPE-8552)
+
+2019-05-29  rpalsa
+
+	* acinclude.m4: CPL_PATH_JAVA(): Don't leave JAVAH unset if no java
+	  was found.
+
+2019-05-10  llundin
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_fill_from_fits():
+	  Improve support of blank FITS card (PIPE-8450)
+
+2019-05-09  llundin
+
+	* NEWS, configure.ac: 7.1.2: New vision, updated NEWS
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_fill_from_fits():
+	  Fix bug in handling of a blank FITS card (PIPE-8450_
+
+2019-04-29  llundin
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_fill_from_fits_locale(),
+	  cpl_propertylist_to_fitsfile_locale(): Guard uselocale() from
+	  unavailable POSIX locale (PIPE-7540)
+
+2019-04-11  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Call freelocale()
+
+2019-04-09  llundin
+
+	* cplcore/cpl_propertylist.c:
+	  cpl_propertylist_fill_from_fits_locale(),
+	  cpl_propertylist_to_fitsfile_locale(): Deallocate locale
+	  (PIPE-7540)
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Fix comment typo
+
+2019-04-05  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: Locale: improve msg
+
+2019-04-04  llundin
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_to_fitsfile_locale(): Added, static.
+	  cpl_fits_get_value(): Update pjparsed also on invalid character.
+	  _cpl_propertylist_fill_from_fits(): Improve error message.
+	  cpl_propertylist_test_local(): Call also w. non-POSIX locale
+
+2019-04-03  llundin
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_fill_from_fits():
+	  Called only once now, so inline
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_numeric_type(): Merge in changes from trunk
+
+	* cplcore/cpl_propertylist.c:
+	  cpl_propertylist_fill_from_fits_locale(): Added static, to
+	  encapsulate the locale setting (PIPE-7540)
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_fill_from_fits():
+	  Set locale only when needed (PIPE-7540)
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Revert to default testing for now
+
+	* cplcore/tests/cpl_propertylist-test.c: HAVE_LOCALE_H,
+	  HAVE_XLOCALE_H: check both, unit tests (bis)
+
+	* cplcore/cpl_propertylist.c: HAVE_LOCALE_H, HAVE_XLOCALE_H: check
+	  both
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Add locale messaging (PIPE-7540)
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Call also with non-POSIX locale
+	  (PIPE-7540)
+
+	* configure.ac, cplcore/cpl_propertylist.c:
+	  _cpl_propertylist_fill_from_fits(): Use correct include for
+	  uselocale() (PIPE-7540)
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_fill_from_fits():
+	  Temporarily set locale (LC_NUMERIC) to POSIX (PIPE-7540)
+
+2019-04-03  rpalsa
+
+	* configure.ac: In call to CPL_CONFIG_CFITSIO(): Adjust version
+	  number to match the updated CPL_CONFIG_CFITSIO macro. The version
+	  number comparison is done by comparing strings, i.e. a trailing 0
+	  will make the test fail.
+
+2019-04-02  rpalsa
+
+	* m4/cpl.m4: CPL_CHECK_CFITSIO(): Replace the runtime test for the
+	  CFITSIO version so that a correct setup of the library search
+	  path is no longer required. CPL_CHECK_LIBS(): Make the macro safe
+	  against multiple expansion by initializing the variables
+	  cpl_with_cpl, cpl_with_cpl_includes and cpl_with_cpl_libs on
+	  entry.
+
+2019-03-28  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_propertylist_get_long_long():
+	  Type cxllong replaces cxlong (PIPE-8363)
+
+2019-03-25  llundin
+
+	* cplcore/cpl_property.c: cpl_property_set_sort_dicb(): Copy fix +
+	  improvements from trunk, no effect on FITS products
+
+	* cplcore/cpl_propertylist.c:
+	  cpl_propertylist_copy_property_regexp(): Copy also comment
+	  (PIPE-8349)
+
+2019-02-18  rpalsa
+
+	* README: Package version updated.
+
+	* ChangeLog: ChangeLog updated for CPL 7.1.1.
+
+	* configure.ac: Package version updated to 7.1.1. Library version
+	  updated, revision set to 1.
+
+	* cplcore/cpl_table.c: cpl_table_get_column_mean_complex(): remove
+	  non-printable characters from the doxygen documentation.
+
+	* NEWS: Fixed titel formatting for CPL 7.1.1
+
+	* .: Property svn:externals updated: pointing libcext to revision
+	  r236337
+
+2019-02-15  rpalsa
+
+	* m4/eso.m4: Updated to the latest version.
+
+2019-02-11  llundin
+
+	* cplcore/cpl_imagelist_io.c: cpl_imagelist_save(): Improve
+	  CPL_IO_APPEND doxygen
+
+2019-02-07  llundin
+
+	* configure.ac: Package version updated to 7.1.1b3
+
+	* cplcore/cpl_propertylist.c: cpl_propertylist_load_name_(): Fix
+	  doxygen typo. cpl_property_find_type(): Update doxygen
+
+2019-02-06  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_number():
+	  Detect malformed D-exponent - unit tests
+
+	* cplcore/cpl_propertylist.c: cpl_fits_get_number(): Detect
+	  malformed D-exponent
+
+2019-02-05  llundin
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value(): Fix
+	  memory error on FORTRAN-formatted float with maximum length key,
+	  w. unit test
+
+2019-02-04  llundin
+
+	* configure.ac: Package version updated to 7.1.1b2
+
+2019-02-01  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_fits_get_key(): Add comment
+
+2019-01-31  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_fits_get_key(): Support empty
+	  FITS commentary card truncated by CFITSIO (PIPE-8157).
+	  _cpl_propertylist_fill_from_fits(): Fix empty COMMENT card
+	  regression (triggered by SWARP), w. unit test (PIPE-8157) (bis)
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_key():
+	  Support empty FITS commentary card truncated by CFITSIO
+	  (PIPE-8157). _cpl_propertylist_fill_from_fits(): Fix empty
+	  COMMENT card regression (triggered by SWARP), w. unit test
+	  (PIPE-8157)
+
+2019-01-30  llundin
+
+	* cplcore/cpl_property.c: rm CPL_DIAG_PRAGMA_PUSH_IGN() for
+	  -Wcast-qual, no longer needed due to r234963 (bis)
+
+2019-01-29  llundin
+
+	* cplcore/cpl_propertylist.c: rm CPL_DIAG_PRAGMA_PUSH_IGN() for
+	  -Wcast-qual, no longer needed due to r234963
+
+2019-01-28  llundin
+
+	* NEWS: cpl_image_extract(): Improve NEWS
+
+	* cplcore/cpl_image_basic.c: cpl_image_extract(): Improve doxygen
+
+2019-01-25  llundin
+
+	* cplcore/cpl_property.c: cpl_property_get_size(): Doxygen usage
+	  example w. cpl_property_get_string()
+
+2019-01-22  llundin
+
+	* cplcore/cpl_polynomial.c: Doxygen typo
+
+	* cplcore/cpl_propertylist.c, cplcore/tests/cpl_polynomial-test.c:
+	  Fix gcc-warning from deliberate switch fall through (and one
+	  variable shadowing)
+
+	* cplcore/cpl_tools.h: Prepare for fixing gcc-warning from
+	  deliberate switch fall through
+
+	* cplcore/cpl_property.c: Fix Cppcheck warnings
+
+	* cplcore/cpl_propertylist.c: Fix Cppcheck warnings
+
+	* cplcore/cpl_cfitsio.c: Rearrange
+	  CPL_DIAG_PRAGMA_PUSH_IGN(),CPL_DIAG_PRAGMA_POP to avoid gcc
+	  warning
+
+	* cpldfs/cpl_dfs.c: cpl_dfs_update_product_header_(): Suppress
+	  const correctness warning from CFITSIO
+
+	* cpldrs/cpl_fit.c: cpl_fit_image_gaussian(): Fix variable
+	  shadowing
+
+2019-01-21  llundin
+
+	* cpldfs/cpl_dfs.c: Fix constant string w. length gcc 8.1 warnings
+	  regarding discarded const modifier (bis)
+
+	* cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c, cplcore/cpl_propertylist_impl.h,
+	  cpldfs/cpl_dfs.c: Fix constant string w. length gcc 8.1 warnings
+	  regarding discarded const modifier
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Avoid variable shadowing (warning
+	  from gcc 8.1)
+
+2019-01-18  llundin
+
+	* configure.ac: Package version updated to 7.1.1b1
+
+2019-01-17  llundin
+
+	* NEWS: cpl_polynomial_fit(): Use Horner-scheme also for
+	  multivariate input
+
+	* NEWS: 7.1.1: cpl_fit_lvmq() is primary function for improved
+	  fitting
+
+2019-01-10  llundin
+
+	* configure.ac: Package version updated to 7.1.1a1
+
+	* NEWS: 7.1.1: Update with bug fixes (bis)
+
+2019-01-09  llundin
+
+	* cplcore/cpl_propertylist.c: Merged in changes from trunk
+	  (r234419)
+
+2019-01-08  llundin
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value():
+	  Reinterpret FITS std. 4.4.2.4, COMMENT/HISTORY is commentary even
+	  with value indicator
+
+	* cplcore/cpl_propertylist.c: cpl_fits_key_is_unique(): Refine
+	  declaration, use CPL_FITS_IS_UNIQUE_TWO()
+
+	* cplcore/tests/cpl_propertylist-test.c: Reenable
+	  cpl_propertylist_test_local()
+
+2018-12-13  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value():
+	  Reinterpret FITS std. 4.2.1 1 (i.e. a string of spaces is empty),
+	  adapt unit test (PIPE-8157) (bis)
+
+	* cplcore/cpl_property.c, cplcore/tests/cpl_property-test.c:
+	  cpl_property_set_string_cx(): Avoid redundant strlen(), extend
+	  unit testing
+
+	* cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c: _cpl_propertylist_to_fitsfile(): New,
+	  internal cpl_property_get_size_() replaces redundant
+	  cpl_property_get_size_string(). cpl_fits_key_is_unique(): Improve
+	  doxygen
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_property_eq(): Raise
+	  floating point tolerance
+
+2018-12-12  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_compare(): Added, static.
+	  cpl_propertylist_test_file(): Warn on non-unique cards
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value():
+	  Reinterpret FITS std. 4.2.1 1 (i.e. a string of spaces is empty),
+	  adapt unit test (PIPE-8157)
+
+	* cplcore/cpl_test.c: cpl_test_get_description(): Add msg for
+	  SIZEOF_SIZE_T
+
+2018-12-11  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_fits_key_is_unique(): Improve
+	  doxygen
+
+	* configure.ac: Package version updated to 7.1.1a (Interface is
+	  totally unchanged from previous release)
+
+	* NEWS: 7.1.1: Update with bug fixes
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_file(): Disable normal tests when testing
+	  via CLI
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_to_fitsfile():
+	  Non-unique warning only in debug mode
+
+2018-12-10  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_property_eq(): Added,
+	  static. cpl_propertylist_test_file(): Test when valid FITS
+
+	* cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c, cplcore/tests/cpl_property-test.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_property_dump():
+	  Added, internal. cpl_property_get_size_name(): Return name
+	  length, not size. cpl_property_get_size_string(),
+	  cpl_property_get_size_comment(), cpl_property_get_string_(),
+	  cpl_property_get_comment_(): Added, internal.
+	  cpl_fits_get_number(): Improve doxygen.
+	  _cpl_propertylist_to_fitsfile(): Call fits_write_key*() not
+	  fits_update*() when possible (PIPE-8167)
+
+	* cpldfs/cpl_dfs.c: Avoid key array duplicateion
+
+2018-12-07  llundin
+
+	* ., NEWS, configure.ac, cplcore/Makefile.am, cplcore/cpl_array.c,
+	  cplcore/cpl_array_impl.h, cplcore/cpl_column.c,
+	  cplcore/cpl_column.h, cplcore/cpl_image_basic.c,
+	  cplcore/cpl_image_bpm.c, cplcore/cpl_image_bpm_impl.h,
+	  cplcore/cpl_image_io.c, cplcore/cpl_image_io_impl.h,
+	  cplcore/cpl_image_resample.c, cplcore/cpl_image_resample_body.h,
+	  cplcore/cpl_imagelist_io.c, cplcore/cpl_mask.c,
+	  cplcore/cpl_mask.h, cplcore/cpl_mask_impl.h,
+	  cplcore/cpl_matrix.c, cplcore/cpl_matrix_impl.h,
+	  cplcore/cpl_memory.c, cplcore/cpl_polynomial.c,
+	  cplcore/cpl_polynomial.h, cplcore/cpl_polynomial_impl.h,
+	  cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c, cplcore/cpl_propertylist_impl.h,
+	  cplcore/cpl_test.c, cplcore/cpl_test.h, cplcore/cpl_tools.c,
+	  cplcore/cpl_tools.h, cplcore/cpl_vector.c,
+	  cplcore/cpl_vector_fit_impl.h, cplcore/cpl_vector_impl.h,
+	  cplcore/cpl_xmemory.c, cplcore/tests/cpl_fits-test.c,
+	  cplcore/tests/cpl_image_bpm-test.c,
+	  cplcore/tests/cpl_image_io-test.c,
+	  cplcore/tests/cpl_matrix-test.c, cplcore/tests/cpl_memory-test.c,
+	  cplcore/tests/cpl_polynomial-test.c,
+	  cplcore/tests/cpl_property-test.c,
+	  cplcore/tests/cpl_propertylist-test.c,
+	  cplcore/tests/cpl_stats-test.c, cplcore/tests/cpl_vector-test.c,
+	  cpldfs/cpl_dfs.c, cpldfs/tests/cpl_dfs-test.c,
+	  cpldrs/cpl_apertures.c, cpldrs/cpl_fit.c, cpldrs/cpl_ppm.c,
+	  cpldrs/cpl_ppm.h, cpldrs/cpl_wcs.c,
+	  cpldrs/tests/cpl_apertures-test.c, cpldrs/tests/cpl_fit-test.c,
+	  cpldrs/tests/cpl_ppm-test.c, m4/cpl.m4: Import changes from the
+	  trunk (revisions r221985:r233522)
+
+	* README: Fix typos
+
+2018-08-22  aszostak
+
+	* ., cplcore/tests/Makefile.am, cpldfs/tests/Makefile.am,
+	  cpldrs/tests/Makefile.am: Merging fixes for missing libcext
+	  dependency for unit tests from trunk.
+
+2018-03-08  rpalsa
+
+	* README: Try to get the OS X naming scheme correct.
+
+	* README: Fix macOS section heading in the table of contents.
+
+	* README: Updated macOS section.
+
+2018-03-05  rpalsa
+
+	* cplcore/cpl_image_basic.c: cpl_image_or_mask(),
+	  cpl_image_or_mask_unary(): Add internal directive to doxygen
+	  documentation.
+
+2019-02-18  rpalsa
+
+	* configure.ac: Package version updated to 7.1.1. Library version
+	  updated, revision set to 1.
+
+	* cplcore/cpl_table.c: cpl_table_get_column_mean_complex(): remove
+	  non-printable characters from the doxygen documentation.
+
+	* NEWS: Fixed titel formatting for CPL 7.1.1
+
+	* .: Property svn:externals updated: pointing libcext to revision
+	  r236337
+
+2019-02-15  rpalsa
+
+	* m4/eso.m4: Updated to the latest version.
+
+2019-02-11  llundin
+
+	* cplcore/cpl_imagelist_io.c: cpl_imagelist_save(): Improve
+	  CPL_IO_APPEND doxygen
+
+2019-02-07  llundin
+
+	* configure.ac: Package version updated to 7.1.1b3
+
+	* cplcore/cpl_propertylist.c: cpl_propertylist_load_name_(): Fix
+	  doxygen typo. cpl_property_find_type(): Update doxygen
+
+2019-02-06  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_number():
+	  Detect malformed D-exponent - unit tests
+
+	* cplcore/cpl_propertylist.c: cpl_fits_get_number(): Detect
+	  malformed D-exponent
+
+2019-02-05  llundin
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value(): Fix
+	  memory error on FORTRAN-formatted float with maximum length key,
+	  w. unit test
+
+2019-02-04  llundin
+
+	* configure.ac: Package version updated to 7.1.1b2
+
+2019-02-01  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_fits_get_key(): Add comment
+
+2019-01-31  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_fits_get_key(): Support empty
+	  FITS commentary card truncated by CFITSIO (PIPE-8157).
+	  _cpl_propertylist_fill_from_fits(): Fix empty COMMENT card
+	  regression (triggered by SWARP), w. unit test (PIPE-8157) (bis)
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_key():
+	  Support empty FITS commentary card truncated by CFITSIO
+	  (PIPE-8157). _cpl_propertylist_fill_from_fits(): Fix empty
+	  COMMENT card regression (triggered by SWARP), w. unit test
+	  (PIPE-8157)
+
+2019-01-30  llundin
+
+	* cplcore/cpl_property.c: rm CPL_DIAG_PRAGMA_PUSH_IGN() for
+	  -Wcast-qual, no longer needed due to r234963 (bis)
+
+2019-01-29  llundin
+
+	* cplcore/cpl_propertylist.c: rm CPL_DIAG_PRAGMA_PUSH_IGN() for
+	  -Wcast-qual, no longer needed due to r234963
+
+2019-01-28  llundin
+
+	* NEWS: cpl_image_extract(): Improve NEWS
+
+	* cplcore/cpl_image_basic.c: cpl_image_extract(): Improve doxygen
+
+2019-01-25  llundin
+
+	* cplcore/cpl_property.c: cpl_property_get_size(): Doxygen usage
+	  example w. cpl_property_get_string()
+
+2019-01-22  llundin
+
+	* cplcore/cpl_polynomial.c: Doxygen typo
+
+	* cplcore/cpl_propertylist.c, cplcore/tests/cpl_polynomial-test.c:
+	  Fix gcc-warning from deliberate switch fall through (and one
+	  variable shadowing)
+
+	* cplcore/cpl_tools.h: Prepare for fixing gcc-warning from
+	  deliberate switch fall through
+
+	* cplcore/cpl_property.c: Fix Cppcheck warnings
+
+	* cplcore/cpl_propertylist.c: Fix Cppcheck warnings
+
+	* cplcore/cpl_cfitsio.c: Rearrange
+	  CPL_DIAG_PRAGMA_PUSH_IGN(),CPL_DIAG_PRAGMA_POP to avoid gcc
+	  warning
+
+	* cpldfs/cpl_dfs.c: cpl_dfs_update_product_header_(): Suppress
+	  const correctness warning from CFITSIO
+
+	* cpldrs/cpl_fit.c: cpl_fit_image_gaussian(): Fix variable
+	  shadowing
+
+2019-01-21  llundin
+
+	* cpldfs/cpl_dfs.c: Fix constant string w. length gcc 8.1 warnings
+	  regarding discarded const modifier (bis)
+
+	* cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c, cplcore/cpl_propertylist_impl.h,
+	  cpldfs/cpl_dfs.c: Fix constant string w. length gcc 8.1 warnings
+	  regarding discarded const modifier
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_local(): Avoid variable shadowing (warning
+	  from gcc 8.1)
+
+2019-01-18  llundin
+
+	* configure.ac: Package version updated to 7.1.1b1
+
+2019-01-17  llundin
+
+	* NEWS: cpl_polynomial_fit(): Use Horner-scheme also for
+	  multivariate input
+
+	* NEWS: 7.1.1: cpl_fit_lvmq() is primary function for improved
+	  fitting
+
+2019-01-10  llundin
+
+	* configure.ac: Package version updated to 7.1.1a1
+
+	* NEWS: 7.1.1: Update with bug fixes (bis)
+
+2019-01-09  llundin
+
+	* cplcore/cpl_propertylist.c: Merged in changes from trunk
+	  (r234419)
+
+2019-01-08  llundin
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value():
+	  Reinterpret FITS std. 4.4.2.4, COMMENT/HISTORY is commentary even
+	  with value indicator
+
+	* cplcore/cpl_propertylist.c: cpl_fits_key_is_unique(): Refine
+	  declaration, use CPL_FITS_IS_UNIQUE_TWO()
+
+	* cplcore/tests/cpl_propertylist-test.c: Reenable
+	  cpl_propertylist_test_local()
+
+2018-12-13  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value():
+	  Reinterpret FITS std. 4.2.1 1 (i.e. a string of spaces is empty),
+	  adapt unit test (PIPE-8157) (bis)
+
+	* cplcore/cpl_property.c, cplcore/tests/cpl_property-test.c:
+	  cpl_property_set_string_cx(): Avoid redundant strlen(), extend
+	  unit testing
+
+	* cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c: _cpl_propertylist_to_fitsfile(): New,
+	  internal cpl_property_get_size_() replaces redundant
+	  cpl_property_get_size_string(). cpl_fits_key_is_unique(): Improve
+	  doxygen
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_property_eq(): Raise
+	  floating point tolerance
+
+2018-12-12  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_compare(): Added, static.
+	  cpl_propertylist_test_file(): Warn on non-unique cards
+
+	* cplcore/cpl_propertylist.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_fits_get_value():
+	  Reinterpret FITS std. 4.2.1 1 (i.e. a string of spaces is empty),
+	  adapt unit test (PIPE-8157)
+
+	* cplcore/cpl_test.c: cpl_test_get_description(): Add msg for
+	  SIZEOF_SIZE_T
+
+2018-12-11  llundin
+
+	* cplcore/cpl_propertylist.c: cpl_fits_key_is_unique(): Improve
+	  doxygen
+
+	* configure.ac: Package version updated to 7.1.1a (Interface is
+	  totally unchanged from previous release)
+
+	* NEWS: 7.1.1: Update with bug fixes
+
+	* cplcore/tests/cpl_propertylist-test.c:
+	  cpl_propertylist_test_file(): Disable normal tests when testing
+	  via CLI
+
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_to_fitsfile():
+	  Non-unique warning only in debug mode
+
+2018-12-10  llundin
+
+	* cplcore/tests/cpl_propertylist-test.c: cpl_property_eq(): Added,
+	  static. cpl_propertylist_test_file(): Test when valid FITS
+
+	* cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c, cplcore/tests/cpl_property-test.c,
+	  cplcore/tests/cpl_propertylist-test.c: cpl_property_dump():
+	  Added, internal. cpl_property_get_size_name(): Return name
+	  length, not size. cpl_property_get_size_string(),
+	  cpl_property_get_size_comment(), cpl_property_get_string_(),
+	  cpl_property_get_comment_(): Added, internal.
+	  cpl_fits_get_number(): Improve doxygen.
+	  _cpl_propertylist_to_fitsfile(): Call fits_write_key*() not
+	  fits_update*() when possible (PIPE-8167)
+
+	* cpldfs/cpl_dfs.c: Avoid key array duplicateion
+
+2018-12-07  llundin
+
+	* ., NEWS, configure.ac, cplcore/Makefile.am, cplcore/cpl_array.c,
+	  cplcore/cpl_array_impl.h, cplcore/cpl_column.c,
+	  cplcore/cpl_column.h, cplcore/cpl_image_basic.c,
+	  cplcore/cpl_image_bpm.c, cplcore/cpl_image_bpm_impl.h,
+	  cplcore/cpl_image_io.c, cplcore/cpl_image_io_impl.h,
+	  cplcore/cpl_image_resample.c, cplcore/cpl_image_resample_body.h,
+	  cplcore/cpl_imagelist_io.c, cplcore/cpl_mask.c,
+	  cplcore/cpl_mask.h, cplcore/cpl_mask_impl.h,
+	  cplcore/cpl_matrix.c, cplcore/cpl_matrix_impl.h,
+	  cplcore/cpl_memory.c, cplcore/cpl_polynomial.c,
+	  cplcore/cpl_polynomial.h, cplcore/cpl_polynomial_impl.h,
+	  cplcore/cpl_property.c, cplcore/cpl_property_impl.h,
+	  cplcore/cpl_propertylist.c, cplcore/cpl_propertylist_impl.h,
+	  cplcore/cpl_test.c, cplcore/cpl_test.h, cplcore/cpl_tools.c,
+	  cplcore/cpl_tools.h, cplcore/cpl_vector.c,
+	  cplcore/cpl_vector_fit_impl.h, cplcore/cpl_vector_impl.h,
+	  cplcore/cpl_xmemory.c, cplcore/tests/cpl_fits-test.c,
+	  cplcore/tests/cpl_image_bpm-test.c,
+	  cplcore/tests/cpl_image_io-test.c,
+	  cplcore/tests/cpl_matrix-test.c, cplcore/tests/cpl_memory-test.c,
+	  cplcore/tests/cpl_polynomial-test.c,
+	  cplcore/tests/cpl_property-test.c,
+	  cplcore/tests/cpl_propertylist-test.c,
+	  cplcore/tests/cpl_stats-test.c, cplcore/tests/cpl_vector-test.c,
+	  cpldfs/cpl_dfs.c, cpldfs/tests/cpl_dfs-test.c,
+	  cpldrs/cpl_apertures.c, cpldrs/cpl_fit.c, cpldrs/cpl_ppm.c,
+	  cpldrs/cpl_ppm.h, cpldrs/cpl_wcs.c,
+	  cpldrs/tests/cpl_apertures-test.c, cpldrs/tests/cpl_fit-test.c,
+	  cpldrs/tests/cpl_ppm-test.c, m4/cpl.m4: Import changes from the
+	  trunk (revisions r221985:r233522)
+
+	* README: Fix typos
+
+2018-08-22  aszostak
+
+	* ., cplcore/tests/Makefile.am, cpldfs/tests/Makefile.am,
+	  cpldrs/tests/Makefile.am: Merging fixes for missing libcext
+	  dependency for unit tests from trunk.
+
+2018-03-08  rpalsa
+
+	* README: Try to get the OS X naming scheme correct.
+
+	* README: Fix macOS section heading in the table of contents.
+
+	* README: Updated macOS section.
+
+2018-03-05  rpalsa
+
+	* cplcore/cpl_image_basic.c: cpl_image_or_mask(),
+	  cpl_image_or_mask_unary(): Add internal directive to doxygen
+	  documentation.
+
+2018-01-29  rpalsa
+
+	* ChangeLog: ChangeLog updated for CPL 7.1 final.
+
+2018-01-25  rpalsa
+
+	* configure.ac: Package version updated.
+
+	* ., cplcore/cpl_filter.h: Import changes from the trunk (revision
+	  r215448).
+
+2018-01-19  rpalsa
+
+	* NEWS: CPL 7.1 section updated.
+
+	* Doxyfile.in: Searchengine disabled again, since it apparently
+	  does not find functions where the return type is given on a
+	  separate line. This may be misleading.
+
+	* cplcore/cpl_matrix.c: cpl_matrix_solve_svd(): Documentation
+	  added.
+
+	* README.CVS, README.SVN: Renamed to README.SVN
+
+	* README.CVS: Updated for CPL 7.1b release.
+
+	* configure.ac: Package version updated to 7.1b
+
+	* ChangeLog, README: Updated for the CPL 7.1b release.
+
+2018-01-18  rpalsa
+
+	* ., NEWS, cplcore/cpl_vector.c: Import changes from the trunk
+	  (revisions r214913,r214919).
+
+2018-01-11  rpalsa
+
+	* ., cplcore/cpl_mask.c, cplcore/cpl_xmemory.c,
+	  cplcore/tests/cpl_mask-test.c: Import changes from the trunk
+	  (revisions r214281:r214415).
+
+2017-12-06  rpalsa
+
+	* cplcore/cpl_init.c: Added pre-processor tests: CPL now won't
+	  build with CFITSIO versions older than 3.350. cpl_init(): CFITSIO
+	  version tests restructured. Rely on the linker to use only
+	  compatible versions. An error message is issued if the rumtime
+	  version of CFITSIO is less than what was requiested through
+	  configure at build time. All tests related to versions older that
+	  3.350 were removed. (PIPE-7401)
+
+	* configure.ac: Package version updated. Require at least CFITSIO
+	  3.350.
+
+	* m4/cpl.m4: CPL_CHECK_CFITSIO(): Define header symbol
+	  CPL_CFITSIO_VERSION.
+
+	* cplcore/cpl_table.c, cpljava/cpl_gasgano.c: Fixed compiler
+	  warnings on possible use of uninitialized variables.
+
+2017-11-21  rpalsa
+
+	* ChangeLog: ChangeLog: Updated for the CPL 7.1a release.
+
+	* .: Property svn:externals updated.
+
+	* configure.ac: Package version changed to 7.1a.
+
+	* ChangeLog: ChangeLog updated.
+
+	* NEWS, README: Initial update for the CPL 7.1 release.
+
+2017-11-20  rpalsa
+
+	* ., cplcore/cpl_propertylist.c: Import changes from the trunk
+	  (revision r211623).
+
+2017-10-25  rpalsa
+
+	* cplui/cpl_parameter.c, cplui/tests/cpl_parameter-test.c:
+	  _cpl_parameter_init(): Set error code if any kind of invalid
+	  parameter (initialization) data is passed to the function.
+	  cpl_parameter_new_value(), cpl_parameter_new_range()
+	  cpl_parameter_new_enum(): List of error codes updated in the
+	  documentation. (PIPE-6758)
+
+2017-10-24  rpalsa
+
+	* cplui/cpl_frameset.c: cpl_framset_iterator_get_const(): Fix the
+	  documentation of the return value. Use version of the non-const
+	  counterpart. (PIPE-7285)
+
+	* cplui/cpl_recipeconfig.c: cpl_recipeconfig_is_required(): Fis
+	  description of the return value (PIPE-7286)
+
+2017-10-23  rpalsa
+
+	* ., cplcore/Makefile.am, cplcore/cpl_column.c,
+	  cplcore/cpl_filter_median.c, cplcore/cpl_image_basic.c,
+	  cplcore/cpl_image_basic_body.h, cplcore/cpl_image_fft.c,
+	  cplcore/cpl_image_fft_impl.h, cplcore/cpl_image_io.c,
+	  cplcore/cpl_image_io.h, cplcore/cpl_image_iqe.c,
+	  cplcore/cpl_imagelist.h, cplcore/cpl_imagelist_io.c,
+	  cplcore/cpl_io_fits.c, cplcore/cpl_io_fits.h, cplcore/cpl_mask.c,
+	  cplcore/cpl_matrix.c, cplcore/cpl_msg.c,
+	  cplcore/cpl_polynomial.c, cplcore/cpl_polynomial.h,
+	  cplcore/cpl_propertylist.c, cplcore/cpl_stats_body.h,
+	  cplcore/cpl_table.c, cplcore/cpl_test.c, cplcore/cpl_tools.c,
+	  cplcore/cpl_tools.h, cplcore/cpl_tools_body.h,
+	  cplcore/cpl_vector.c, cplcore/cpl_vector.h,
+	  cplcore/tests/Makefile.am, cplcore/tests/cpl_image_filter-test.c,
+	  cplcore/tests/cpl_imagelist_io-test.c,
+	  cplcore/tests/cpl_io_fits-test.c, cplcore/tests/cpl_mask-test.c,
+	  cplcore/tests/cpl_math-test.c, cplcore/tests/cpl_matrix-test.c,
+	  cplcore/tests/cpl_median-test.c, cplcore/tests/cpl_msg-test.c,
+	  cplcore/tests/cpl_plot-test.c,
+	  cplcore/tests/cpl_polynomial-test.c,
+	  cplcore/tests/cpl_property-test.c,
+	  cplcore/tests/cpl_table-test.c, cplcore/tests/cpl_vector-test.c,
+	  cpldfs/cpl_dfs.c, cpldfs/cpl_multiframe.c,
+	  cpldrs/cpl_apertures.c, cpldrs/cpl_fft.c, cpldrs/cpl_fft_body.h,
+	  cpldrs/cpl_fit.c, cpldrs/cpl_fit_body.h, cpldrs/cpl_wcs.c,
+	  cplui/cpl_frame.c, cplui/cpl_framedata.c, cplui/cpl_frameset.c,
+	  cplui/cpl_parameterlist.c, cplui/cpl_plugin.c,
+	  cplui/cpl_pluginlist.c, cplui/cpl_recipeconfig.c: Import changes
+	  from the trunk (revision r197629:r210748).
+
+2017-10-10  rpalsa
+
+	* .: Point property svn:external for libcext to revision r210064.
+
+2017-08-11  rpalsa
+
+	* cplcore/cpl_matrix.c: _cpl_matrix_decomp_sv_jacobi(): Add
+	  declaration, and declare it as static.
+
+2017-07-12  rpalsa
+
+	* ., cplui/cpl_parameter.c, cplui/tests/cpl_parameter-test.c:
+	  Import fixes from the CPL 7.0 release branch. (revisions
+	  r205039,r205040)
+
+	* ., m4/eso.m4: Import changes from the CPL 7.0 release branch
+	  again. (revisions r196619:r200463)
+
+	* cplcore/cpl_matrix.c, cplcore/cpl_matrix.h:
+	  cpl_matrix_solve_svd(): Added.
+
+	* ., cplcore/cpl_matrix.c, cplcore/cpl_matrix.h, m4/eso.m4: Revert
+	  errorneous commit (r205041)
+
+	* ., cplcore/cpl_matrix.c, cplcore/cpl_matrix.h, m4/eso.m4: Import
+	  changes from the CPL 7.0 release branch (revisions
+	  r196619:r200463)
+
+	* .: Create CPL 7.1 release branch.
+
+2017-02-09  rpalsa
+
+	* Package and library version updated.
+
+2017-02-08  rpalsa
+
+	* Updated copyright entry in the file header. Remove VCS keyword
+	  entries.
+
+2017-02-07  rpalsa
+
+	* Import changes from the trunk (revisions r195891:r196375)
+
+	* Import changes from the trunk (revision r195888)
+
+	* Import changes from the trunk (revisions r191768:r195887)
+
+	* Import changes from the trunk (revision r191628)
+
+	* Import changes from the trunk (revisions r189694:r191580)
+
+2017-02-06  rpalsa
+
+	* Update property mergeinfo.
+
+	* Import changes from the trunk (revision r185817)
+
+	* Import changes from the trunk (revisions r186032:r187261)
+
+	* Update property mergeinfo.
+
+2017-01-27  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Remove zlib dependency from the list of
+	  libraries used for the tests.
+
+	* Fix indentation.
+
+2017-01-24  rpalsa
+
+	* Macro refactoring: CPL_CHECK_CEXT(), CPL_CHECK_CFITSIO(),
+	  CPL_CHECK_FFTW(), CPL_CHECK_LIBS(), and CPL_CHECK_WCS(): Allow
+	  for checking dependencies independent of the library type
+	  (static, shared). Initial version.
+
+2017-01-16  rpalsa
+
+	* Relax required libtool version.
+
+	* Replace hardcoded shared library extension in the library
+	  checking macros by the one determined by libtool.
+
+	* Use the new macro syntax to initialize libtool and libltdl, and
+	  require libtool version 2.4.2.
+
+2016-12-21  rpalsa
+
+	* _cpl_matrix_decomp_sv_jacobi(), cpl_matrix_solve_svd(): Added.
+	  Initial implementation of an SVD based linear system solver.
+
+2016-11-04  rpalsa
+
+	* cpl_msg_out(), _cpl_timestamp_iso8601(): Moved explicit tzset()
+	  calls to cpl_msg_init()
+
+	* cpl_table_compare_structure(): Fix memory leak if tables do not
+	  have the same structure (PIPE-6776)
+
+	* getTimeISO8601(): Renamed to _cpl_timestamp_iso8601() to be in
+	  line with the naming scheme for internal functions.
+	  cpl_msg_out(), _cpl_timestamp_iso8601(): Replace calls to
+	  localtime() by calls to the reentrant version, localtime_r()
+	  (requires _POSIX_C_SOURCE).
+
+2016-06-14  rpalsa
+
+	* Integrate changes from the trunk (revisions r187327:r187524)
+
+	* Block revision r187261 from being merged back into the CPL 7.0
+	  release branch.
+
+2016-06-06  rpalsa
+
+	* Remove obsolete purify support.
+
+	* Remove redundant quotes in macro calls.
+
+2016-05-13  rpalsa
+
+	* Change SEARCHENGINE setting to enabled.
+
+2016-02-12  rpalsa
+
+	* ChangeLog updated.
+
+2016-02-05  rpalsa
+
+	* Revert commit r182587. Note that the way these tests are coded
+	  cause a compiler warning on OSX!
+
+	* Fix compiler warning: Replace logical or by bitwise or.
+
+2016-02-04  rpalsa
+
+	* configure.ac: Update package version.
+	* cplcore/cpl_table.c: Fix parameter name in doxygen comments.
+	* cplcore/tests/cpl_array-test.c: Integrate fixes from the trunk
+	  (revisions r181961:r182351).
+
+2016-02-03  llundin
+
+	* cplcore/tests/cpl_array-test.c:
+	  cpl_array_test_power_complex_one(): Raise float-tol for Mac OSX
+	* cplcore/cpl_image_basic.c: cpl_m_from_int64: added, w. fix for
+	  clang (PIPE-6401) (bis)
+	* cplcore/cpl_mask.c, cplcore/cpl_mask_binary.h: cpl_m_from_int64:
+	  added, w. fix for clang (PIPE-6401)
+	* cplcore/cpl_mask.c: Copy SSE2 header inclusion from
+	  cpl_image_basic (PIPE-6401)
+
+2016-02-02  rpalsa
+
+	* ChangeLog: ChangeLog updated.
+	* configure.ac: Package version updated.
+
+2016-02-02  llundin
+
+	* cplcore/cpl_column.c, cplcore/cpl_column_body.h:
+	  cpl_column_pow_*(): Use const assignments, reduce var scope
+	* NEWS: Updated with tickets closed by Lars (PIPE-6211),
+	  (PIPE-6205), (PIPE-6075), (PIPE-4745), (PIPE-4716), (PIPE-4505)
+	* cplcore/cpl_table.c, cplcore/tests/cpl_table-test.c: Apply change
+	  to trunk:
+	  cpl_table_fill_invalid_{int,long,long_long,float,float_complex,double,double_complex}():
+	  Update doxygen to reflect actual handling of array elements
+	  (PIPE-4505)
+
+2016-01-28  llundin
+
+	* cplcore/cpl_column_body.h: Apply patch from HEAD (PIPE-4716):
+	  cpl_column_pow_*(): Fix incorrect cast causing integer base with
+	  non-integer power to fail
+
+2016-01-19  rpalsa
+
+	* cplcore/cpl_test.c: Integrate fixes from the trunk
+	  (revision 181606)
+	* cplui/cpl_parameter.c: Module documentation: Try to be more
+	  precise on how parameter constructors have to be called.
+	* NEWS: More updates for CPL 7.0.
+
+2016-01-15  rpalsa
+
+	* configure.ac: Package version updated.
+	* cplcore/cpl_image_basic.c, cplcore/cpl_mask_binary.h,
+	  cplcore/tests/cpl_image_filter-test.c,
+	  cplcore/tests/cpl_polynomial-test.c: Integrate changes from the
+	  trunk (revision 181547)
+
+2016-01-11  rpalsa
+
+	* cplcore/cpl_table.c, cpldrs/cpl_wcs.h: Revert inclusion of
+	  RADECSYS in regular expressions (PIPE-6019).
+	* cplcore/cpl_column_body.h: Add conditional to silence Doxygen
+	  warning related to the ADDTYPE macro.
+
+2015-12-17  rpalsa
+
+	* NEWS: Preparations for 7.0 release.
+	* README: Preparations for 7.0 release.
+	* ChangeLog: Changelog updated.
+
+2015-12-16  rpalsa
+
+	* configure.ac: Package version updated.
+	* Creating CPL 7.0 release branch.
+	* Put back deprecated function declarations. They will be removed
+	  finally with the next major version.
+	* Replace AM_PROG_CC_C_O with AC_PROG_CC_C_O
+	* cpl_table_find_column_const(): Avoid compiler warning on pointer
+	  initialization.
+
+2015-12-15  rpalsa
+
+	* Update library version.
+	* Remove deprecated functions from the API (TBC).
+	* Add test for checking cpl_parameter_new_enum(),
+	  cpl_parameter_new_range() when asking for an invalid value type.
+	* cpl_parameter_new_enum(), cpl_parameter_new_range(): Do not
+	  create a parameter from an empty enumeration list, or for invalid
+	  value types (PIPE-5469, PIPE-5470).
+	  _cpl_parameter_init(): Improve error message if a enumeration or
+	  range parameter was created with an invalid value type.
+	* cpl_propertylist_from_fits(): Force WCS keywords to become a
+	  double property, since the FITS standard explicitly defines them
+	  as floating-point.
+	* ERASE_WCS_REGEXP: add RADECSYS to symbol definition (PIPE-6019)
+
+2015-12-11  llundin
+
+	* Add some comments regarding gcc const-correctness warnings for
+	  CFITSIO calls
+	* cpl_table_find_column(), cpl_table_find_column_(),
+	  cpl_table_find_column_type_(): Fix const-correctness issue (and
+	  add correct const variants) (PIPE-4480)
+	* cpl_table_find_column_(): Improve error message
+	* cpl_table_fill_invalid_*(): Add unit-tests to reflect current,
+	  expected behaviour (PIPE-4505)
+	* cpl_column_fill_invalid_int((): Reduce variable scope, declare
+	  variables as const, only one return-on-no-error, size_t for array
+	  index in loop. cpl_column_fill_invalid_float),
+	  cpl_column_fill_invalid_float_complex(),
+	  cpl_column_fill_invalid_double(),
+	  cpl_column_fill_invalid_double_complex(): return CPL_ERROR_NONE
+	  on success
+
+2015-12-07  rpalsa
+
+	* CPL_WCS_REGEXP: Added RADECSYS to the list. (PIPE-6019)
+
+2015-12-07  llundin
+
+	* cpl_array_power_complex(): Add non-trivial unit-tests (PIPE-6205)
+	* cpl_array_power_complex(): Draft added w. limited unit-testing
+	  (PIPE-6205)
+
+2015-11-27  llundin
+
+	* cpl_image_filter_test_1d(): Doxygen
+	* cpl_image_filter_test_1d(): Added to demonstrate a 1D-call
+
+2015-10-28  llundin
+
+	* cpl_array_new_complex_from_arrays(): Added w. unit tests
+	  (PIPE-6211)
+	* cpl_column_new_complex_from_arrays(): Fix nullcount check, update
+	  doxygen (PIPE-6211)
+
+2015-10-21  llundin
+
+	* cpl_array_test_set_string(): Improve coverage
+	* cpl_array_set_string(): Fix incorrect CPL error return code on
+	  error (PIPE-4745)
+	* cpl_array_set_string(): Fix incorrect CPL error return code on
+	  error (PIPE-4745)
+
+2015-10-15  llundin
+
+	* cpl_column_new_complex_from_arrays(): Draft added as internal
+	  (PIPE-6211)
+
+2015-10-12  llundin
+
+	* cpl_{array,column}_cast(): const correctness (PIPE-6236)
+
+2015-09-30  llundin
+
+	* cpl_array_get_data_{int,long,long_long,cplsize,float,double,float_complex,double_complex,string}():
+	  Fix gcc-warning cast discards const qualifier
+	* perl -pli -e 's/\b0x0\b/NULL/g'
+	* cpl_array_extract_real(), cpl_array_extract_imag(): Redeclare
+	  backwards compatibly as const (PIPE-6210)
+
+2015-09-23  llundin
+
+	* CPL_DIAG_PRAGMA_PUSH_IGN(-Wswitch): Suppress -Wswitch due to
+	  cpl_type enum bitwise or
+	* cpl_column_get_data_{int,long,long_long,cplsize,float,double,float_complex,double_complex}_const():
+	  Fix gcc-warning cast discards const qualifier
+	* cpl_column_get_data_string(): Fix gcc-warning cast discards const
+	  qualifier
+	* cpl_column_get_data_array(): Fix gcc-warning cast discards const
+	  qualifier
+	* cpl_column_get_array(), cpl_column_get_array_const(): Fix
+	  gcc-warning cast discards const qualifier
+	* cpl_column_get_array(): Fix gcc-warning cast discards const
+	  qualifier
+	* cpl_error_set_(...) replaces
+	  cpl_error_set("cpl_column_func_name",...) etc
+	* cpl_column_extract_real(), cpl_column_extract_imag(): Redeclare
+	  backwards compatibly as const (PIPE-6210)
+	* cpl_error_set_(...) replaces cpl_error_set(fid,...) etc
+	* cpl_column_get_size_(), cpl_column_get_type_(): Replaces
+	  _cpl_column_get_size(), _cpl_column_get_type() (PIPE-6212)
+	* cpl_column_base_type_invalid_(): Replaces
+	  _cpl_column_base_type_invalid() (PIPE-6212)
+	* cpl_set_error_check_(): replaces _cpl_set_error_check()
+	  (PIPE-6212)
+	* cpl_get_error_check_(): replaces _cpl_get_error_check()
+	  (PIPE-6212)
+	* perl -pli -e 's/\b0x0\b/NULL/g'
+
+2015-09-14  llundin
+
+	* cpl_column_pow_*(): Work around false positive Coverity warning
+
+2015-09-04  llundin
+
+	* cpl_image_filter_test(), cpl_image_filter_test_5320(): Raise
+	  tolerance (due to Jenkins failure on SL5.3)
+
+2015-09-03  llundin
+
+	* cpl_column_power(), cpl_table_power(), cpl_array_power(): Update
+	  doxygen (PIPE-4716)
+	* cpl_array-test.c: Added (bis)
+	* cpl_array_test_power(): A couple more complex tests (without
+	  csqrt/f())
+	* cpl_array_test_power_complex(): Fix test on non-complex error
+	* Add a couple of complex tests
+	* cpl_column_pow_float/double_complex(): Use errno approach as for
+	  cpl_column_pow_float/double()
+	* cpl_column_pow_*(): flop count fix
+	* cpl_column_pow_long/long_long/cplsize(): PIPE-4716
+	* cpl_column_pow_int(): PIPE-4716
+	* cpl_column_power(): Prep for casting/rounding w. ELEM_CAST
+	* cpl_column_pow_double(): Fix PIPE-4716
+	* cpl_column_body.h: Added for cpl_column_power() (PIPE-4716)
+	* AC_CHECK_FUNCS(): Add cbrtf (PIPE-4716)
+	* cpl_array_new(): Improve error message on unsupported type
+	* cpl_array_test_power_complex(): Added. cpl_array_test_power():
+	  Coverage complete, except for PIPE-4716
+	* cpl_array_test_power_valid(), cpl_array_test_power_invalid():
+	  Added
+	* cpl_array_test_power(): Test powers of zero
+	* cpl_type_get_sizeof(), cpl_type_get_name(): Support CPL_TYPE_SIZE
+	  (PIPE-6172)
+	* cpl_column_set(): Support complex column types, propagate error
+	  and set proper error on unsupported type
+	* cpl_column_count_invalid(): Update doxygen.
+	  cpl_column_pow_float(): Draft implementation modified from
+	  cpl_image_power() (PIPE-4716)
+	* cpl_array_test_power(): Basic error checks
+	* cpl_array-test.c: Added
+
+2015-08-13  rpalsa
+
+	* Integrate fixes from the CPL 6.6 release branch (revision 176604)
+
+2015-07-22  rpalsa
+
+	* Integrate updates from the CPL 6.6 release branch (revision
+	  175694)
+
+2015-07-20  rpalsa
+
+	* m4/cpl.m4: CPL_CHECK_WCS(): Also add extra wcslib directory
+	  component to path taken from WCSDIR.
+	* cpldrs/cpl_fft.c: cpl_fft_image_(): Add suggested parentheses.
+	* m4/cpl.m4: CPL_CHECK_CFITSIO(), CPL_CHECK_WCS(),
+	  CPL_CHECK_FFTW(): Remove locally created file conftest.out after
+	  tests are finished.
+	* m4/cpl.m4: CPL_CHECK_WCS(): Add extra wcslib directory component
+	  to path given by with-wcs option.
+	* m4/cpl.m4: CPL_CHECK_WCS(): Remove extra wcslib directory
+	  component.
+	* ChangeLog: Updated for release 6.6.1
+	* Update libcext externals revision
+
+2015-06-26  rpalsa
+
+	* Update libcext externals revision
+	* cplcore/cpl_table.c: cpl_table_dump(): Use correct accessor when
+	  getting values from a CPL_TYPE_LONG_LONG columns.
+	  cpl_table_extract_selected(): Add missing cases for
+	  CPL_TYPE_LONG_LONG, and complex columns.
+	  _cpl_table_write_column(): Fix incorrect bitwise and replaced
+	  with logical and (PIPE-5824). _cpl_table_write_column_array():
+	  Fix and document possible null pointer dereference (PIPE-5823).
+
+2015-05-22  rpalsa
+
+	* cplcore/cpl_column.c: cpl_column_set_<type>(): Fix wrong error
+	  code return in case the argument checks fail.
+
+2015-05-07  rpalsa
+
+	* cplcore/cpl_table.c: _cpl_table_save_legacy(): Fix possible
+	  buffer overrun. cpl_table_overload_window(): Add (redundant)
+	  error check after calling cpl_io_fits_open_diskfile().
+	* cplcore/cpl_mpfit.c: _cpl_mp_fdjac2(): Fix wrong type in call of
+	  sizeof.
+
+2015-04-27  rpalsa
+
+	* libltdl, m4: Updated svn:ignore
+
+2015-03-06  rpalsa
+
+	* configure.ac: Update package and library for 6.6.1
+	* cplcore/cpl_table.c: cpl_table_save(): Add CPL_IO_APPEND mode
+	  related documentation.
+	* Doxyfile.in: Updated. Set COMPACT_LATEX to NO in order to use
+	  documentclass book instead of article.
+
+2015-03-04  rpalsa
+
+	* configure.ac: Package version updated.
+	* Update libcext externals revision.
+
+2015-03-03  rpalsa
+
+	* cpldfs/cpl_multiframe.c, cplui/cpl_frameset.c: Reference
+	  documentation updated.
+	* cplcore/tests/cpl_table-test.c: cpl_table-test.c: Revert
+	  unintended commit.
+	* cplcore/tests/cpl_table-test.c: Update libcext externals
+	  revision.
+	* BUGS, ChangeLog, ChangeLog-0, ChangeLog-1, Makefile.am, README:
+	  Updated for release of CPL 6.6.
+	* cplcore/cpl_propertylist.c: _cpl_propertylist_fill_from_fits():
+	  Fix string value trimming in the case the value is an empty
+	  string.
+	* cpldfs/cpl_multiframe.c: _cpl_fits_format_card(),
+	  _cpl_fits_parse_keyname(): Adapted to changed names of cx_string
+	  member functions.
+
+2015-03-03  llundin
+
+	* NEWS: News: PIPE-5254
+	* NEWS: News: PIPE-5498
+
+2015-03-02  llundin
+
+	* NEWS: News: PIPE-5650
+
+2015-02-20  rpalsa
+
+	* cplcore/tests/cpl_table-test.c: Fix comment: Remove part of
+	  CPL_IO_APPEND test disclaimer.
+	* cplcore/cpl_table.c: _cpl_table_save_append(),
+	  _cpl_table_write_column_array(): Fixes applied to null value
+	  handling after testing.
+
+2015-02-18  rpalsa
+
+	* NEWS: Initial update for release of CPL 6.6
+
+2015-02-17  rpalsa
+
+	* cplcore/tests/cpl_table-test.c: Add simple CPL_IO_APPEND test
+	  case, and comment out the previous one expecting an unsupported
+	  mode error.
+	* cplcore/cpl_table.c: _cpl_table_save_append(),
+	  _cpl_table_write_column_array(): Fixing string array column
+	  issues found during initial debugging.
+
+2015-02-16  rpalsa
+
+	* m4/cpl.m4: Restore previous file name extension used for
+	  searching for libraries.
+
+2015-02-13  rpalsa
+
+	* configure.ac: Package version updated.
+	* m4/cpl.m4: Change file name extension for searched libraries from
+	  .a to .so
+	* cplcore/cpl_table.c, cplcore/tests/cpl_table-test.c: Implemented
+	  CPL_IO_APPEND I/O mode for tables.
+
+2015-02-07  rpalsa
+
+	* cplcore/cpl_propertylist.c:
+	  cpl_propertylist_copy_property_regexp(): Update documentation.
+
+2015-02-06  rpalsa
+
+	* cpldfs/cpl_multiframe.c: Removed string utilities local
+	  implementation. Moved to libcext.
+	* Update libcext external revision.
+	* configure.ac: Fixed library version.
+
+2015-01-28  rpalsa
+
+	* cplcore/cpl_image_iqe.c, cplcore/cpl_mpfit.c,
+	  cplcore/cpl_mpfit.h: Consistently add cpl prefix to functions,
+	  for namespace protection (PIPE-5551).
+
+2015-01-02  cgarcia
+
+	* configure.ac: New branch for CPL 6.6
+
+2014-12-18  llundin
+
+	* cpl_imagelist_median_collapse(): Apply patch from JTaylor
+	  (PIPE-5384)
+
+2014-12-16  llundin
+
+	* Make sure to include complex.h in time
+	* Make sure to include complex.h in time
+	* cpl_image_get_data_<type>*(): Improve error message on type
+	  mismatch
+	* cpl_image_hypot(): Update bad pixel map (PIPE-5650)
+	* cpl_mask_{and,or,xor}_(): Shortcut when called with identical
+	  buffers (PIPE-5649)
+	* cpl_fft_aligned(): omp critical (in still inactive code)
+	* cpl_mask_{and,or,xor}(): Optimize a call with same mask twice
+
+2014-12-11  llundin
+
+	* Undo previous commit (not faster): For each transform create two
+	  plans, FFTW_DESTROY_INPUT and FFTW_PRESERVE_INPUT
+	* For each transform create two plans, FFTW_DESTROY_INPUT and
+	  FFTW_PRESERVE_INPUT
+	* Align c2r code with r2c. Improve comments
+	* cpl_fft_aligned(): Reminder to use fftw_alignment_of() once we
+	  have 3.3.4
+	* ce doxygen + comments
+
+2014-12-06  rpalsa
+
+	* Integrate changes from CPL 6.5 release branch (revision
+	  166757:167280)
+
+2014-12-02  aszostak
+
+	* Changing behaviour of cpl_test_assert to use exit() rather than
+	  just return. (PIPE-4664)
+	  This also fixes a large number of cppcheck errors and double
+	  logging from pipeline unit tests, when using cpl_test_assert in
+	  sub-routines.
+
+2014-11-26  aszostak
+
+	* Adding code to prevent core dumps in the cpl_test_init-test code
+	  where they are expected, due to calling abort().
+	  Also fixing exit code when the test must be skipped.
+
+2014-10-31  llundin
+
+	* cpl_tools_get_median_*(): Avoid signed integer overflow by
+	  generally improving the precision (see cpl_tools_get_mean())
+	  (PIPE-5472)
+
+2014-10-30  llundin
+
+	* 6.4: cpl_gaussian_eval_2d() added
+
+2014-10-24  aszostak
+
+	* Adding regression test to find uninitialised memory errors in
+	  combination with valgrind for cpl_image_divide_create().
+	  (PIPE-5498)
+
+2014-10-22  llundin
+
+	* cpl_image_divide_create(): Assign zero when dividing with zero
+	  (PIPE-5498)
+
+2014-10-02  llundin
+
+	* rm redundant inclusion of complex.h
+	* Fix inclusion of complex.h (see PIPE-5452) (bis)
+	* Fix inclusion of complex.h (see PIPE-5452)
+
+2014-10-01  rpalsa
+
+	* Integrate changes from CPL-6_5-BRANCH (revision 165945).
+	* Integrate changes from CPL-6_5-BRANCH (revisions 163168:165731).
+
+2014-09-05  llundin
+
+	* cpl_imagelist_collapse_median_create(): Apply patch from JTaylor
+	  to improve L1 cache access pattern (PIPE-5384)
+	* cpl_image_new_from_accepted(): Apply performance-patch from
+	  JTaylor (PIPE-5382)
+
+2014-07-22  llundin
+
+	* cpl_stats_new_from_image_window(): Ensure expression reuse in
+	  variancesum (PIPE-5337)
+	* cpl_tools_get_variancesum*(): Ensure expression reuse (PIPE-5337)
+
+2014-07-11  llundin
+
+	* cpl_dfs_save_propertylist(), cpl_dfs_save_imagelist(): Fix typo
+
+2014-07-10  llundin
+
+	* cpl_matrix_solve_normal(): fix unit test failure on mips64el
+	  (free memory) (PIPE-5283)
+
+2014-07-03  llundin
+
+	* cpl_matrix_solve_normal(): Improve comment on previous commit
+
+2014-07-02  llundin
+
+	* cpl_matrix_solve_normal(): (Probably) fix unit test failure on
+	  mips64el (PIPE-5283)
+
+2014-06-27  rpalsa
+
+	* Integrate fixes from CPL 6.4 branch (revisions 159799:161872)
+
+2014-06-26  aszostak
+
+	* Fixing compiler warnings (PIPE-4739).
+
+2014-06-25  aszostak
+
+	* Adding unit test to check median calculation (PIPE-4739).
+
+2014-06-06  llundin
+
+	* getTimeISO8601(): Preserve errno from before call to strftime()
+	  (PIPE-5254)
+	* CPL_MAX(), CPL_MIN(): Add extra, redundant parentheses to avoid
+	  static-checker warnings from e.g. cppcheck (PIPE-5252)
+
+2014-06-03  llundin
+
+	* cpl_filter_median_even(): Binary and replaces modulo
+	* cpl_filter_median_even(): Use memcpy()
+	* cpl_image_filter(), cpl_image_filter_mask(): In-place filtering
+	  is not supported (PIPE-5198)
+	* cpl_image_filter_mask(): Use mean of two central values for
+	  even-sized median - draft (PIPE-5198)
+
+2014-05-22  rpalsa
+
+	* Integrate change 161532 from CPL 6.4 release branch.
+
+2014-04-30  cgarcia
+
+	* Remove *dump.txt files when cleaning
+	* Remove *.log files when cleaning
+
+2014-04-22  rpalsa
+
+	* Integrate fixes from CPL 6.4 branch (revision 159839)
+
+2014-04-17  rpalsa
+
+	* Integrate fixes from CPL 6.4 branch (revision 155879)
+	* Block revisions 159771 from being merged into the trunk
+	* Integrate fixes from CPL 6.4 branch (revisions 158101:r159770)
+	* Block revisions 157515 from being merged into the trunk
+	* Integrate fixes from CPL 6.4 branch (revisions 157026:157503)
+	* Block revisions 157037 from being merged into the trunk
+	* Integrate fixes from CPL 6.4 branch (revisions 156915:156944)
+	* Integrate fixes from CPL 6.4 branch (revisions 156164:156906)
+	* Integrate fixes from CPL 6.4 branch (revision 156163)
+	* Block revisions 156164 from being merged into the trunk
+	* Integrate fixes from CPL 6.4 branch (revisions 156128:156146)
+	* Block revisions 155775 from being merged into the trunk
+	* Block revisions 155269 from being merged into the trunk
+	* Block revisions 155254 from being merged into the trunk
+	* Block revisions 155246 from being merged into the trunk
+	* Block revisions 154781 and 154782 from being merged into the
+	  trunk
+	* Block revision 154779 from being merged into the trunk
+
+2014-04-02  llundin
+
+	* cpl_wcs_test_5115(): Added for PIPE-5115
+
+2014-04-01  llundin
+
+	* cpl_mask_filter(): Support CPL_BORDER_NOP also with
+	  CPL_FILTER_OPENING/CLOSING. Fix doxygen typos
+	* Break long lines
+
+2014-03-17  llundin
+
+	* cpl_fft_aligned(): Update doxygen
+
+2014-02-17  llundin
+
+	* cpl_table_get_column_unit(): Fix error propagation on NULL return
+	  (PIPE-4996)
+
+2014-02-13  llundin
+
+	* cpl_dfs_setup_product_header(): Do not copy CHECKSUM and DATASUM
+	  (PIPE-4980)
+
+2014-01-24  cgarcia
+
+	* svn ci -m "Block revision r156036 from being merged back into the
+	  source"
+
+2014-01-24  rpalsa
+
+	* Integrate fixes from CPL 6.4 release branch.
+
+2014-01-24  llundin
+
+	* cpl_photom_fill_blackbody(): rm cpl_func, cpl_ensure_code() in
+	  loop. Header clean-up
+
+2014-01-24  cgarcia
+
+	* changed complex to _Complex in headers
+
+2014-01-24  llundin
+
+	* Use C99 functions log1p(), expm1() (patch from JTaylor using a
+	  patched version of coccinelle)
+
+2014-01-20  rpalsa
+
+	* Integrate fixes from CPL 6.4 release branch.
+	* Block revision 155874 from being merged into the trunk.
+	* Block revision 155871 from being merged into the trunk.
+	* Integrate fixes from CPL 6.4 release branch.
+
+2014-01-13  llundin
+
+	* cpl_polynomial_add(), cpl_polynomial_subtract(),
+	  cpl_polynomial_multiply_scalar(): cpl_polynomial_delete_coeff()
+	  replaces cpl_polynomial_set_coeff()
+
+2013-12-17  rpalsa
+
+	* Integrate fixes from CPL 6.4 release branch.
+
+2013-12-16  llundin
+
+	* CPL_MIN()/CPL_MAX(): Drop __typeof__ (PIPE-4787) (bis)
+	* CPL_MIN()/CPL_MAX(): Drop __typeof__ (PIPE-4787)
+
+2013-12-16  rpalsa
+
+	* Integrate changes from CPL 6.4 release branch.
+
+2013-12-16  llundin
+
+	* cpl_image_fill_window(): Added
+	* cpl_image_fill_window(): Added (PIPE-4842)
+	* cpl_polynomial_fit(): Improve doxygen
+
+2013-12-13  llundin
+
+	* CPL_MIN()/CPL_MAX(): Drop __typeof__ (PIPE-4787)
+
+2013-12-12  llundin
+
+	* cpl_gaussian_eval_2d(): New name, improved error handling and
+	  doxygen
+	* cpl_gaussian_fit_image_eval(): Added
+	* cpl_apertures_extract_mask(): Fix doxygen typo
+
+2013-12-09  llundin
+
+	* doxygen typo
+
+2013-12-05  cgarcia
+
+	* Added CPL_BEGIN_DECLS and CPL_END_DECLS
+
+2013-12-05  llundin
+
+	* CPL 6.4: note news already in 6.3
+
+2013-12-03  llundin
+
+	* cpl_errorstate_dump(), cpl_errorstate_dump_one(): Improve doxygen
+	  of NULL-dumper
+
+2013-12-02  llundin
+
+	* cpl_errorstate_dump(): With a NULL-iterator do not report on
+	  CPL_ERROR_LOST_HISTORY (PIPE-4838)
+	* cpl_fit_lvmq_(): Avoid infite loop on recovery from CPL error
+	  (PIPE-4837)
+	* cpl_fit_lvmq_(): Recover correctly from CPL error (PIPE-4837)
+	* Start: What's new in CPL 6.4
+	* Copy edit
+	* cpl_image_fft(): Improve doxygen (power-of-two sized image)
+	* cpl_image_bpm_reject_value_test(): Added
+
+2013-11-27  llundin
+
+	* cpl_flux_get_noise_ring(): Handle error from
+	  cpl_image_get_stdev_window(), doxygen, const correctness.
+	  cpl_flux_get_noise_window(): Doxygen, const correctness
+
+2013-11-22  llundin
+
+	* cpl_polynomial_fit_1d(): rm old, invalid assert() (PIPE-4829)
+
+2013-11-21  rpalsa
+
+	* cpl_table_get_column_name(): Marked as deprecated (PIPE-4474)
+	* cpl_column_delete_but_arrays(), cpl_column_delete_but_strings():
+	  Fix potential dereferencing of a NULL pointer (PIPE-4663).
+	* cpl_parameterlist_find_context_const(): Apply patch to fix
+	  potential segmentation fault (PIPE-4661)
+	  Test case added.
+
+2013-11-21  llundin
+
+	* cpl_matrix_extract_{row,column}(): Apply patch from Artur to
+	  avoid NULL-dereference (PIPE-4793)
+	* cpl_matrix_extract_{row,column}(): Add unit tests on error
+	  (PIPE-4793)
+	* Fix comment
+	* Revert use of memmove() back to memcpy() as in the original code.
+	  Use restrict + CPL_ATTR_NONNULL
+	* MD5Final(): Fix strict-aliasing violation (PIPE-3854)
+	* cpl_image_get_interpolated(): intptr_t replaces cpl_size for
+	  efficiency on32-bit
+	* CPL_MIN(), CPL_MAX(): __typeof__ replaces typeof (which also
+	  works with --std=c99) (PIPE-4787)
+
+2013-11-21  rpalsa
+
+	* Fix potential buffer overflow in cpl_msg (PIPE-4658)
+
+2013-11-21  llundin
+
+	* CPL_MIN(), CPL_MAX(): Use __GNUC__ instead of AC_C_TYPEOF since
+	  the conditional compilation is also needed by the CPL-based
+	  application (JIRA PIPE-4787)
+
+2013-11-20  rpalsa
+
+	* Nuke unwanted directory from revision control, finally.
+	* Remove property svn:ignore from untracked directory
+
+2013-11-20  llundin
+
+	* + CPL_INTERNAL
+	* CPL_MIN(), CPL_MAX(): Added using typeof (JIRA PIPE-4787)
+
+2013-11-18  llundin
+
+	* cpl_polynomial_fit_2d(): rm unneeded cast
+	* Suppress -Wcast-qual from cpl_*_wrap(). Uncomment assert()
+	* Suppress -Wcast-qual from cpl_*_wrap()
+	* Use const on cast for _mm_load*_p{s,d}()
+	* Suppress -Wcast-qual
+	* CPL_DIAG_PRAGMA_PUSH_IGN(), CPL_DIAG_PRAGMA_PUSH_ERR(),
+	  CPL_DIAG_PRAGMA_POP, CPL_STRINGIFY(): Export
+	* CPL_FITSIO_READ_PIX_E, CPL_FITSIO_CREATE_IMG_E,
+	  CPL_FITSIO_WRITE_PIX_E: Internal, for error msg
+	* cpl_fits_read_pixll(), cpl_fits_read_pix(),
+	  cpl_fits_create_imgll(), cpl_fits_create_img(),
+	  cpl_fits_write_pixll(), cpl_fits_write_pix(): Added to limit
+	  CFITSIO const-correctness warning to one module
+	* cpl_mask_load_(): Move const-correctness warning to cpl_cfitsio
+	  module
+	* Internal cpl_cfitsio module added
+
+2013-11-12  llundin
+
+	* do_bench: Added for cpl_image_bitwise_test()
+	* Ensure SSE2 and register size match
+	* cpl_mask_{and,or,xor}_scalar): Use all 64-bits of mask, support
+	  odd number of words. cpl_image_{and,or,xor}_scalar(): Pass 64-bit
+	  scalar. cpl_image_bitwise_test(): Test odd number of pixels
+	* cpl_mask_xor_scalar(): Pass 64-bit scalar also on 32-bit systems
+
+2013-11-06  llundin
+
+	* cpl_image_bitwise_test(): Test output
+	* cpl_image_{and,or,xor}{,_scalar}(), cpl_image_not(): Add const
+	  modifier to internal cast
+	* cpl_image_not(): Added
+	* cpl_image_bitwise_test(): Test error handling (and,or,xor)
+
+2013-11-05  llundin
+
+	* cpl_mask_{andor,xor}_scalar(): Fix cast to word-size (bis)
+	* cpl_mask_{andor,xor}_scalar(): Fix cast to word-size
+	* cpl_image_{and,or,xor}{,_scalar}(), cpl_bitmask: Added
+	  (PIPE-4576)
+	* cpl_bitmask: typedef uint64_t. cpl_mask_{and,or,xor}_scalar():
+	  Replaces cpl_mask_{and,or,xor}_int(), uses cpl_bitmask
+	* cpl_mask_{and,or,xor}_int(): Added, replaces cpl_mask_not_()
+	* cpl_mask_not_(): Added. cpl_mask_not(): Call cpl_mask_not_()
+	* cpl_mask_{and,or,xor}{,_}(): Added
+	* cpl_mask_binary.h: Define internal bit-wise functions
+	* cpl_mask_and(): Working prototype using SSE2 (coded as in
+	  cpl_image_basic)
+
+2013-11-04  llundin
+
+	* Added libcext as an external
+
+2013-10-22  rpalsa
+
+	* Updated to the latest version.
+
+2013-10-22  llundin
+
+	* cpl_image_add(0 etc: Set CPL_ERROR_INCOMPATIBLE_INPUT on
+	  incompatible input. cpl_image_add_create() etc: Expand on error
+	  msgs
+	* cpl_image_add() etc: Expand on error message
+
+2013-10-21  llundin
+
+	* cpl_dfs_setup_product_header(): Handle missing filename in frame
+	  (PIPE-4778)
+
+2013-10-16  llundin
+
+	* cpl_fits_find_extension(): Avoid reading uninitialized array
+	  (possible e.g. in case of CFITSIO bug?), reported by coverity
+
+2013-10-14  llundin
+
+	* cpl_image_set_bpm(): Added. cpl_image_unset_bpm(): Wraps around
+	  cpl_image_set_bpm()
+	* cpl_mask_count_window(): Unroll twice to halve multiplication and
+	  shifting
+	* cpl_mask_count_bench(): Added. cpl_mask_count_window(): Added
+	  benchmarking comment
+	* cpl_error_ensure(): CPL errors are unlikely
+	* cpl_mask_count_window(): Use multiplication to count one word at
+	  a time (using idea from JTaylor)
+
+2013-10-09  llundin
+
+	* cpl_imagelist_collapse_median_create(): Fix incorrect handling of
+	  bad pixels (PIPE-4753)
+
+2013-10-08  llundin
+
+	* cpl_fft_image_test_correlate(): auto-correlate
+
+2013-10-07  llundin
+
+	* cpl_fft_image_test_correlate(): Use cpl_fft_imagelist() +
+	  CPL_FFT_NOSCALE. Copy-edit doxygen
+	* cpl_fft_image_test_correlate(): Added
+
+2013-09-05  llundin
+
+	* cpl_matrix_product_normal(): Added w. export pending review
+	  (PIPE-4697). cpl_matrix_product(): ce
+	* cpl_matrix_product(): Reduce block-size from 64 to 48 so blocks
+	  fit on smaller caches (Raise base on unit test)
+
+2013-09-03  llundin
+
+	* cpl_matrix_product(): Reduce block-size from 64 to 48 so blocks
+	  fit on smaller caches
+
+2013-09-02  llundin
+
+	* cpl_matrix_product_create(): Apply blocking-patch from JTaylor
+
+2013-08-28  llundin
+
+	* Additional tests with ARCFILE + EQUINOX
+
+2013-08-28  rpalsa
+
+	* Frame set iterators put back into place.
+	* Use AM_CPPFLAGS for all flags set within the Makefile, instead of
+	  CPPFLAGS. CPPFLAGS has been removed.
+
+2013-08-26  rpalsa
+
+	* cpl_table_save(): Add long long to int conversion for nval array
+	  when dealing with integer column data.
+
+2013-07-25  llundin
+
+	* cpl_image_hypot_test(): Added (PIPE-4478)
+
+2013-07-24  llundin
+
+	* cpl_image_hypot_*(): Explicit cast of hypot/f
+	* cpl_image_hypot(): Added (PIPE-4478)
+
+2013-07-22  llundin
+
+	* MD5Final(): Fix the widely noticed sizeof bug in the "In case
+	  it's sensitive" memset(). (PIPE-4656)
+
+2013-07-11  llundin
+
+	* cpl_image_power(): Fix typo (PIPE-4578). cpl_image_power_test():
+	  Strengthen test a bit
+	* cpl_image_power_test(): Test w. negative powers.
+	  cpl_image_power(): Handle powers -1/2 and -1/3 with sqrt() and
+	  cbrt() (PIPE-4578)
+	* cpl_test_imagelist_abs_macro(): Correct type of variable
+	  "failures"
+
+2013-07-04  llundin
+
+	* cpl_test_get_walltime(): Prefer clock_gettime() w. nanosecond
+	  resolution over gettimeofday()
+
+2013-06-26  llundin
+
+	* cpl_image_save(): Add doxygen regarding NAXIS=3
+
+2013-06-20  llundin
+
+	* cpl_image_reject_value(): Add missing @ingroup
+
+2013-06-19  llundin
+
+	* cpl_vector_sort(): revert rev. 1.167 due to performance
+
+2013-05-31  llundin
+
+	* cpl_fits_set_mode(): fix doxygen typo
+
+2013-05-28  llundin
+
+	* cpl_tools_get_median_*(): Improve doxygen
+
+2013-05-27  llundin
+
+	* cpl_tools_get_0th_*(): Added as static. cpl_tools_get_median_*():
+	  Use cpl_tools_get_0th_*() (PIPE-4541).
+	  cpl_tools_quickselection_*(), cpl_tools_get_kth_(): Copy edit
+	  doxygen
+
+2013-05-21  rpalsa
+
+	* _cpl_propertylist_to_fitsfile(): Merge in changes from CPL 6
+	  branch: Remove cast from keyword names as recent cfitsio uses the
+	  proper prototype. This is not yet true for the comment argument
+	  when the minimum required cfitsio version is used.
+
+2013-05-13  rpalsa
+
+	* Call macro AC_CONFIG_MACRO_DIR() to properly configure the m4
+	  macros directory.
+	* EXTRA_DIST: Added cpl.css
+
+2013-05-10  llundin
+
+	* Reformat long lines
+
+2013-05-08  cgarcia
+
+	* Avoid cpl_size overflow (PIPE-4404)
+
+2013-04-29  llundin
+
+	* Undo previois edit (fails on (some) 32-bit systems)
+
+2013-04-26  llundin
+
+	* Avoid cpl_func. Include cpl_array_impl.h first to verify
+	  self-consistency
+	* cpl_array_set_column(): Fix const-correctness issue and update
+	  doxygen
+	* Fix warnings caused by unneeded cast for cpl_strdup +
+	  cpl_array_duplicate. Avoid cpl_func. Include cpl_column.h first
+	  to verify self-consistency
+	* cpl_wcs_fitsstr2plist(): CFITSIO cast no longer needed
+	* cpl_init(): rm unneeded cast
+	* cpl_dfs_find_md5sum(): Update doxygen.
+	  cpl_dfs_update_product_header_(): CFITSIO cast no longer needed
+	* cpl_mask_dump_window(): Fix overflow optimization warning.
+	  cpl_mask_load_(): Comment on CFITSIO warning, explicit cast
+	* cpl_error_test_ensure(): rm unreachable code
+	* SIZEOF_SIZE_T replaces sizeof(cpl_size)
+	* cpl_imagelist_save_compression_bench(): Doxygen typos
+	* Use CPL_SIZE_FORMAT (bis)
+	* cpl_test_init_macro(): strrchr() replaces deprecated rindex().
+	  cpl_test_array_abs_macro(), cpl_test_image_abs_macro(),
+	  cpl_test_image_rel_macro(), cpl_test_imagelist_abs_macro(): On
+	  failure do not use dump when messaging is off
+
+2013-04-23  llundin
+
+	* Unit tests of cpl_table_fill_invalid_int() for PIPE-4505
+	* Verify success of calls to cpl_table_{set,fill}*()
+	* Verify success of cpl_table_save() calls
+
+2013-04-16  llundin
+
+	* cpl_imagelist_save_compression_bench(): openmp reduction on tsum
+	* cpl_image_divide(): Avoid unnecessary mask creation (PIPE-4481,
+	  DFS07441)
+	* cpl_image_divide(): Keep any bpm also in case no zero-division
+	  occurs (PIPE-4481)
+
+2013-04-12  llundin
+
+	* Comment regarding warning due to missing CFITSIO const modifiers
+	* cpl_image_save_(): Fix const-warning
+
+2013-04-11  llundin
+
+	* cpl_table_find_column_, cpl_table_find_column_type(): rm unneeded
+	  error code params
+
+2013-04-10  llundin
+
+	* cpl_table_find_column_(), cpl_table_find_column_type(): Add
+	  static and use to avoid code duplication
+	* cpl_table_find_column(), cpl_table_append_column(), strmatch():
+	  The functions assume non-NULL input, so declare them with
+	  CPL_ATTR_NONNULL
+
+2013-04-09  llundin
+
+	* Update comments regarding CFITSIO-cast that discards const
+	  modifiers
+	* cpl_table_{get,set}*(): Follow suggestion from Ralf to simplify
+	  error message on NULL pointer input (PIPE-4473)
+
+2013-04-08  llundin
+
+	* cpl_fit_imagelist_polynomial_window_test(): Test both a
+	  high-order overdetermined system and a maximum-order
+	  non-overdetermined system. Allow failure of the latter on 32-bit
+	  systems
+	* cpl_table_get_column_name(): Fix compiler warning, Use
+	  @deprecated instead of @note (see PIPE-4474)
+	* cpl_table_{get,set}*(): Add details to CPL error message
+	  (PIPE-4473) (bis)
+	* cpl_table_{get,set}*(): Add details to CPL error message
+	  (PIPE-4473)
+	* Fix memory error in previous test
+
+2013-04-04  llundin
+
+	* Add tests
+	* cpl_test_image_rel_macro(): Improve message
+	* cpl_test_image_rel(): Added w. unit test (PIPE-4467)
+	* Update FSF address
+
+2013-04-03  llundin
+
+	* cpl_image_get(), cpl_image_get_complex(): Inline BPM calls
+	  (PIPE-4469), fix doxygen, support all pixel types in complex
+	  function
+
+2013-03-25  cgarcia
+
+	* Updated address of FSF
+	* Changed address of FSF
+	* Updated FSF address
+	* Updated the FSF address
+
+2013-03-20  llundin
+
+	* Fix unused-var warning on absent FFTW
+
+2013-03-14  llundin
+
+	* cpl_tools_get_mean_*(), cpl_tools_get_variancesum_*(),
+	  cpl_tools_quickselection_*(), cpl_tools_sort_*(): Use size_t for
+	  indexing (PIPE-4403)
+
+2013-03-13  llundin
+
+	* CPL_ATTR_REALLOC(): rm __attribute__ malloc (PIPE-4422)
+
+2013-03-01  llundin
+
+	* cpl_error_set_message(): Call cpl_error_set_message_one_macro()
+	  when variadic macros are unavailable (PIPE-3851) (DFS11646)
+	* cpl_image_load_(): assert nx == naxes[0] for non-windowed read
+	* cpl_image_load_(): Use fits_read_img() when possible (PIPE-4406)
+	  (bis: support also pnum > 0)
+	* cpl_image_load_(): Use fits_read_img() when possible (PIPE-4406)
+
+2013-02-28  llundin
+
+	* cpl_tools_quickselection(): Use size_t instead of cpl_size
+	  (thanks to JTaylor for patch) (PIPE-4403) (bis)
+	* cpl_tools_quickselection(): Use size_t instead of cpl_size
+	  (thanks to JTaylor for patch) (PIPE-4403)
+
+2013-02-26  cgarcia
+
+	* Use sqrt(DBL_EPSILON) as the criteria to check whether two chi_sq
+	  are the same
+	* Make more robust comparison of the chi square to avoid precission
+	  issues.
+	  Fixes PIPE-3580.
+
+2013-02-26  llundin
+
+	* cpl_image_complex_mult(), cpl_image_complex_mult_d(): Added
+	  comments from JTaylor
+
+2013-02-25  rpalsa
+
+	* Package and library version updated.
+	* Package version updated.
+	* Put back check for threadprivate pragma, which was lost when
+	  updating to the new version from autoconf.
+	* Restore previous version of install-doxygen-generic. The
+	  dependency is already in place if maintainer-mode is enabled,
+	  which is required for building the documentation.
+
+2013-02-22  llundin
+
+	* CPL_FILTER_LINEAR et al: improve doxygen
+	* cpl_image_save_(): Explicitly disallow compression that is not
+	  supported by CFITSIO
+
+2013-02-22  rpalsa
+
+	* Dependency added to target install-doxygen-generic
+
+2013-02-21  cgarcia
+
+	* Removed an old documentation sentence
+	* Fixed doxygen documentation.
+
+2013-02-21  llundin
+
+	* cpl_image_save_compression_test(): Test both flat and random
+	  image
+	* cpl_image_save_compression_test(): Include Julians explanation
+	  for the CFTISIO-compression failures
+
+2013-02-21  rpalsa
+
+	* More 6.3 features added.
+	* Updated for 6.3
+
+2013-02-21  llundin
+
+	* cpl_image_save_compression_test(): Disable tests after failure
+	  and NULL-image
+
+2013-02-20  llundin
+
+	* cpl_image_save_(): CPL_INTERNAL
+
+2013-02-20  rpalsa
+
+	* Use doxygen targets for creating API docs.
+	* Retire html.am and replace it with doxygen.am to avoid name clash
+	  warnings. API docs are now created by 'make doxygen'.
+	* Updated.
+	* Replace call to CHECK_PURIFY by ESO_PROG_PURIFY which follows the
+	  naming scheme for autotools macros.
+	* Synchronized with libcext. Modernized version, not screwing up
+	  the configure output.
+	* Replace conditional PURIFY with USE_PURIFY. Reserve the name
+	  PURIFY for use as environment variable.
+	* Synchronize html target rules with libcext.
+	* CPL_OPENMP(): Take out symbol _AC_CC, which is not supported by
+	  our prehistoric test machine installations.
+
+2013-02-20  llundin
+
+	* cpl_test_memory_is_empty(): Fix invalid definition and deprecate
+	  (PIPE-4382 opened by ASzostak)
+
+2013-02-19  rpalsa
+
+	* Package version updated.
+	* Replaced with latest version from autoconf 1.13, to avoid
+	  autoconf warnings about missing AC_LANG_SOURCE calls.
+	* CPL_CHECK_CFITSIO(): Simplified, hopefully.
+	* Remove unused symbols "all_includes" and "all_ldflags".
+	  In calls to AC_COMPILE_IFELSE, AC_LINK_IFELSE and AC_RUN_IFELSE:
+	  Encapsulate source code in AC_LANG_PROGRAM or AC_LANG_SOURCE, and
+	  make sure it is properly quoted.
+	* Remove an empty line.
+	* Replace deprecated symbol INCLUDES with AM_CPPFLAGS. Do not use
+	  CPPFLAGS or LDFLAGS since they are reserved for the user, but use
+	  AM_CPPFLAGS and AM_LDFLAGS instead.
+
+2013-02-15  rpalsa
+
+	* Package version updated.
+	* Define macros CPL_INTERNAL and CPL_EXPORT.
+	* Replace CX_GNUC_INTERNAL with CPL_INTERNAL
+
+2013-02-14  llundin
+
+	* cpl_image_save(): Make sure to create HDU with NAXIS2, disallow
+	  CPL_IO_APPEND
+
+2013-02-13  rpalsa
+
+	* Package version updated.
+
+2013-02-12  llundin
+
+	* cpl_image_save_(): Added. cpl_image_save(): Support CPL_IO_APPEND
+	  (via cpl_image_save_())
+
+2013-02-12  rpalsa
+
+	* cpl_propertylist_save(): Use simplified check of IO flags.
+
+2013-02-12  llundin
+
+	* CPL_IO_MAX: Redefine to be useful.
+	  cpl_{image,imagelist,mask}_save(): Use CPL_IO_MAX.
+	  cpl_vector_save(): Simplify mode check
+
+2013-02-11  rpalsa
+
+	* cpl_propertylist_save(): Apply patch for redefinition of
+	  CPL_IO_MAX.
+
+2013-02-11  llundin
+
+	* cpl_test_eq_error() w. CPL_ERROR_NONE replaces cpl_test_zero().
+	  Use cpl_test_fits() + cpl_fits_count_extensions()
+	* cpl_mask_save(): Update doxygen on compression
+	* cpl_imagelist_save(): Disallow CPL_IO_APPEND w. compression
+	  (using fits_is_compressed_image())
+	* cpl_mask_save(): DFS11066 add possibility to compress fits data
+	  (Working Draft) (PIPE-3616)
+	* cpl_{vector,mask}_save(): Disallow compression
+	* cpl_imagelist_save(): Clean-up error handling for CPL_IO_APPEND
+	  mode
+
+2013-02-11  rpalsa
+
+	* cpl_frameset_get_position(), cpl_frameset_get_position_const():
+	  Fixed index of by one when doing the validity checkin the given
+	  index.
+	* Added test for cpl_parameter_duplicate().
+	* cpl_parameter_duplicate(): Function added.
+
+2013-02-11  llundin
+
+	* cpl_imagelist_save_compression_test(): CPL_IO_APPEND tests
+	* cpl_imagelist_save(): Move CPL_IO_COMPRESSION_LOSSY code to
+	  proper place
+	* cpl_imagelist_save_compression_test(): Added. Header + ifdef
+	  clean-up
+	* rm unneeded remove(). header clean-up. remove() after testing.
+	  static
+
+2013-02-08  llundin
+
+	* cpl_imagelist_save(): DFS11066 add possibility to compress fits
+	  data (Working Draft) (PIPE-3616)
+	* cpl_image_save(): Enable + test lossy compression w. ifdef
+	  CPL_IO_COMPRESSION_LOSSY
+	* cpl_image_save(): DFS11066 add possibility to compress fits data
+	  (Working Draft) (PIPE-3616)
+
+2013-02-08  rpalsa
+
+	* cpl_msg_stop(): Close message streams only if they differ from
+	  the system's standard streams.
+
+2013-02-05  llundin
+
+	* cpl_vector_sum(): Added w. unit-tests (PIPE-4353)
+
+2013-02-04  llundin
+
+	* cpl_vector_sum(): Added w. unit-tests (PIPE-4353)
+
+2013-02-01  rpalsa
+
+	* CPL_PATH_JAVA(): Rename variable cpl_notfound to
+	  cpl_java_notfound, to fix problem with incomplete error messages.
+
+2013-01-30  rpalsa
+
+	* Apply patch to only handle messages from the master thread.
+	  Workaround to avoid crashing Gasgano.
+	* Add call to AC_SYS_LARGEFILE
+	* CPL_CHECK_CFITSIO(): Remove large file support related
+	  preprocessor flags. Rely on AC_SYS_LARGEFILE instead.
+
+2013-01-29  rpalsa
+
+	* Ignore file test-driver
+	* Ignore default build directory BUILD. Subdirectories build,
+	  debug, etc. are note ignored any longer.
+
+2013-01-28  cgarcia
+
+	* Added threadid api
+
+2013-01-25  rpalsa
+
+	* Replace deprecated AM_CONFIG_HEADER with AC_CONFIG_HEADERS.
+	* Updated to the latest version.
+	* More tests of 64bit integer columns added.
+
+2013-01-24  cgarcia
+
+	* Removed comma at end of enum to avoid compiler warning
+
+2013-01-24  rpalsa
+
+	* Frameset iterators: Temporarily disabled for 6.3a1 release.
+
+2013-01-23  rpalsa
+
+	* cpl_frameset_get_first(),cpl_frameset_get_first_const(),cpl_frameset_get_next(),cpl_frameset_get_next_const():
+	  Deprecation temporarily reverted.
+	  Frameset iterators: Temporarily disabled for 6.3a1 release.
+	* First few tests of 64bit integer columns added.
+	* Add support for 64bit integer columns.
+	* Package version updated.
+
+2013-01-21  llundin
+
+	* cpl_imagelist_cast(): Added w. unit tests (PIPE-3830) (bis:
+	  forgot one const modifier)
+
+2013-01-17  rpalsa
+
+	* Typo fixed in doxygen documentation.
+
+2013-01-17  llundin
+
+	* cpl_imagelist_cast(): Added w. unit tests (PIPE-3830)
+
+2013-01-16  llundin
+
+	* iqefit(): Fix copy-paste error (PIPE-4335) w. unit test
+
+2013-01-15  rpalsa
+
+	* cpl_frameset_iterator_advance(): Set iterator to the end of the
+	  frame set if it would go beyonfd the frame set boundaries.
+	  cpl_frameset_iterator_get(), cpl_frameset_iterator_get_const():
+	  Return NULL if the iterator points to the end of the frame set.
+
+2013-01-14  rpalsa
+
+	* cpl_frameset_iterator_get_position(),
+	  cpl_frameset_iterator_get_position_const(): Removed and added
+	  again as
+	  cpl_frameset_get_position() and
+	  cpl_frameset_get_position_const(), taking a frame set instead of
+	  an iterator.
+
+2013-01-10  rpalsa
+
+	* Add function cpl_frameset_join() and cpl_frameset_sort().
+	  The functions cpl_frameset_get_first(),
+	  cpl_frameset_get_first_const(), cpl_frameset_get_next(),
+	  cpl_frameset_get_next_const() are deprecated and scheduled for
+	  removal.
+	  Add iterator support for frame sets.
+	* Add type definition for frame comparison functions.
+	* Style sheet converted to a addon version for use with
+	  HTML_EXTRA_STYLESHEET.
+	  Use style sheet when generating the html documentation.
+	  Redefine the @error directive to use the same formatting as the
+	  standard doxygen exceptions section.
+
+2013-01-07  llundin
+
+	* cpl_wcs_test_propertylist(): Added
+	* cpl_wcs_new_from_propertylist(): Improve doxygen
+	* Allow for test of NAXIS == 0
+	* cpl_wcs_new_from_propertylist(): Relax handling of NAXIS == 0
+	  back to previous
+
+2012-12-21  rpalsa
+
+	* Put back the required, new versions of the third-party libraries.
+
+2012-12-20  rpalsa
+
+	* Temporary revert to previous 3rd party libraries until the test
+	  environment has been upgraded.
+
+2012-12-19  rpalsa
+
+	* Package and library version updated.
+	  Required third-party library versions updated.
+
+2012-12-18  llundin
+
+	* cpl_wcs_new_from_propertylist(): Handle NAXIS == 0, avoid
+	  repeated calls to cpl_sprintf()
+
+2012-12-17  cgarcia
+
+	* Checks whether the OpenMP implementation supports #pragma omp
+	  threadprivate directive.
+
+2012-12-17  llundin
+
+	* cpl_image_filter_test(): Raise tol on new cross-tesing, rv
+	  previous
+	* cpl_image_filter_test(): Raise tol on new cross-tesing
+
+2012-12-14  llundin
+
+	* cpl_wcs_new_from_propertylist(): Use string literal for format to
+	  avoid strncpy(), Use cpl_sprintf() to avoid snprintf(), reduce
+	  var scope
+	* Version 6.3 started
+	* CPL_FILTER_LINEAR et al: improve doxygen
+
+2012-12-14  cgarcia
+
+	* Add an API to deactivate/activate the thread id display in the
+	  messages.
+	  By default the terminal messages have the thread id display off.
+
+2012-12-14  llundin
+
+	* cpl_image_filter_test(): More cross-testing
+	* cpl_image_filter_test(): Prep for comparison of
+	  cpl_image_filter_mask() / cpl_image_filter(). ce
+
+2012-12-13  cgarcia
+
+	* Fixed documentation of cpl_imagelist_set: a cpl_image can be
+	  deallocated by the client if cpl_imagelist_unset is called first.
+	  Fixes DFS12445.
+
+2012-12-13  rpalsa
+
+	* cpl_frameset_get_frame_const(): Add CPL_ERROR_ILLEGAL_INPUT to
+	  the table of possible error states.
+	* cpl_parameter_new_enum(), cpl_parameter_new_range(),
+	  cpl_parameter_new_value(): add va_end() calls to error branches.
+	* Add test to check parameter lookup in case of invalid parameter
+	  tags.
+
+2012-12-13  llundin
+
+	* Improve doxygen of filter modes
+	* cpl_image_filter_mask(): Doxygen ce
+
+2012-12-13  rpalsa
+
+	* cpl_parameterlist_find_tag_const(): Fix potential NULL pointer
+	  exception
+
+2012-12-13  llundin
+
+	* cpl_image_filter(): Support Scaling filters
+	  CPL_FILTER_LINEAR_SCALE, CPL_FILTER_MORPHO_SCALE (DFS12363)
+	* cpl_image_flip_{double,float,int}(): Added static.
+	  cpl_image_turn(), cpl_image_flip(): Simplify using
+	  cpl_image_flip_*() and improve documentation
+
+2012-12-12  llundin
+
+	* cpl_vector_fill_alpha_kernel(): Improve doxumentation, avoid
+	  implicit cast. cpl_vector_fill_kernel_profile(): Avoid implicit
+	  cast, division by zero on length-1 profile. ce
+	* cpl_vector_fill_alpha_kernel(): Multiply with sinc(x) (DFS12443)
+
+2012-12-10  llundin
+
+	* cpl_io_fits_open_diskfile(): Fix comment typo
+	* cpl_image_reject_value(): Draft implementation
+
+2012-12-07  llundin
+
+	* cpl_image_reject_value(): Stub (DFS12257)
+
+2012-12-05  llundin
+
+	* cpl_imagelist_collapse_median_create(): Use temporary vairable
+	  imself and cast explicitly
+
+2012-12-04  llundin
+
+	* cpl_image_filter_mask(): rm (as yet) unused code (found by
+	  aszostak using coverity)
+	* cpl_mask_filter(): Disable as yet unused code for CPL_BORDER_CROP
+	  (found by aszostak using coverity)
+	* Use EVP_DigestUpdate() etc from OpenSSL when available
+	* CPL_CHECK_FFTW(): Fix copy-paste error in comment
+
+2012-11-28  llundin
+
+	* cpl_image_filter_mask(), cpl_filter_median_slow_*(): Support
+	  CPL_FILTER_MEDIAN + CPL_BORDER_CROP w. bad pixels (DFS12426)
+	  (bis)
+	* cpl_image_filter_mask(), cpl_filter_median_slow_*(): Support
+	  CPL_FILTER_MEDIAN + CPL_BORDER_CROP w. bad pixels (DFS12426)
+
+2012-11-19  llundin
+
+	* cpl_vector_fill_polynomial_fit_residual(): Improve doxygen (on
+	  request from Peter Weilbacher)
+
+2012-11-16  llundin
+
+	* Use CPL_SIZE_FORMAT
+	* Use CPL_SIZE_FORMAT
+
+2012-11-15  llundin
+
+	* cpl_xmemory_init_alloc(), cpl_xmemory_resize(): Use %zu format
+	  for size_t
+	* cpl_xmemory_malloc_count(), cpl_xmemory_calloc_count(),
+	  cpl_xmemory_realloc_count(), cpl_xmemory_realloc(),
+	  cpl_xmemory_status(): Use %zu format for size_t
+	* sizeof(size_t) replaces sizeof(int)
+	* cpl_table_dump_structure(): Fix llvm format %d warnings
+
+2012-11-14  llundin
+
+	* cpl_ppm_match_points(): Use CPL_PPM_DEBUG for conditional
+	  compilation of debug statements, avoid unused assignments
+	* Fix llvm format %d warnings
+
+2012-11-09  rpalsa
+
+	* Package and library version updated.
+	* Added fixes for cpl_propertylist module.
+
+2012-11-09  llundin
+
+	* cpl_image_multiply(): SSE2/3
+	* Update for 6.2
+
+2012-11-08  llundin
+
+	* CPL_FILTER_LINEAR, CPL_FILTER_MORPHO: Improve the doxygen
+	  regarding normalisation (DFS12360)
+
+2012-11-07  llundin
+
+	* cpl_image_get_fwhm(): Fix bug on smoothing, add unit tests
+	  (DFS12346)
+
+2012-11-05  rpalsa
+
+	* Obsolete macro call AM_C_PROTOTYPES removed.
+	* struc _cpl_recipe_: Doxygen link fixed in documentation
+
+2012-10-31  llundin
+
+	* cpl_test_init_macro(): Support log file on source file with
+	  multiple-character extension and drop any directory from log
+	  filename - using slightly modified patch and unit test code from
+	  aszostak
+
+2012-10-30  llundin
+
+	* cpl_test_init_macro(): Roll back to 1.116 due to failure of make
+	  distcheck for visirp
+
+2012-10-30  rpalsa
+
+	* CPL_SET_PATH(): Fixed incomplete expansion of configdir.
+
+2012-10-29  llundin
+
+	* cpl_flux_get_noise_window(): Document rand() usage (DFS12296)
+	* cpl_test_init_macro(): Handle log file from source without
+	  extension in a dir with a dot
+	* cpl_msg_set_log_level(): cpl_error_set_message_() replaces
+	  cpl_error_set_() on failed fopen()
+	* cpl_test_init_macro(): Support log file on source file with
+	  multiple-character extension
+
+2012-10-26  rpalsa
+
+	* Remove some more macros that doxygen cannot handle by defining
+	  them as empty.
+
+2012-10-12  rpalsa
+
+	* Comments form the team incorporated
+
+2012-10-10  llundin
+
+	* cpl_io_fits_reuse_fptr(): Extend critical section, since it is
+	  cheap and just to be sure
+
+2012-10-09  rpalsa
+
+	* Mostly rewritten.
+
+2012-10-08  llundin
+
+	* cpl_image_multiply(): Use sse[23] also on double complex w. unit
+	  tests
+
+2012-10-01  llundin
+
+	* CPL_MATH_STD_MAD: Added w. doxygen
+
+2012-09-13  llundin
+
+	* cpl_image_multiply(): Use new, static
+	  cpl_image_multiply_fcomplex_sse_() (DFS11748)
+
+2012-09-07  llundin
+
+	* main(): Use ifdef for constant initialization
+	* Initialize and comment spurious counter
+	* cpl_test_abs() replaces cpl_test_eq() for floating point tests
+	* cpl_vector_load(): Comment about unreachable code
+	* cpl_tools_get_cputime(): rm (causes clang warning).
+	  cpl_msg_progress(): cpl_test_get_cputime() replaces
+	  cpl_tools_get_cputime()
+	* cpl_matrix_dump(): Fix format width error (DFS12112)
+
+2012-09-05  llundin
+
+	* rm unreachable break statement (as reported by clang after
+	  successful compilation)
+	* perl -pli -e 's/(\*t\wp) ([\+\-\*\/])= (\*fc[df]p)\b/$1 = $1 $2
+	  $3/ || s/\*(t\wp)\+\+ ([\+\-\*\/])=
+	  \*(fc[df]p)\+\+/$1\[to_length\] = $1\[to_length\] $2
+	  $3\[to_length\]/ and s#\s*$# /* Support clang */#'
+	  cplcore/cpl_column.c (DFS12106)
+	* rm unreachable break statement
+	* *cpl_column_unwrap(): rm unused call to cpl_column_get_type(),
+	  reduce variable declaration scope
+
+2012-08-29  llundin
+
+	* CPL_WCS_REGEXP: Added (DFS12095)
+
+2012-08-27  llundin
+
+	* Add cpl_vector_get_median unit test for 4 elements case: Rewrite
+	  using cpl_test_rel()
+	* Fix doxygen intro (DFS12092)
+	* cpl_test_get_failed(): Improve doxygen code example
+
+2012-08-23  cgarcia
+
+	* Fixed documentation
+	* Fixed DFS12809 in the compuation of median for even number of
+	  elements.
+	* Add cpl_vector_get_median unit test for 4 elements case.
+
+2012-08-23  llundin
+
+	* cpl_test_get_tested(), cpl_test_get_failed(): Added w. uni tests
+
+2012-08-17  rpalsa
+
+	* cpl_test_property_dump(): Support for CPL_TYPE_LONG_LONG
+	  properties added.
+	* _cpl_propertylist_insert(): Add missing support for
+	  CPL_TYPE_LONG_LONG properties.
+	* cpl_dfs_paf_dump(): support for CPL_TYPE_LONG_LONG properties
+	  added.
+	* System wide installation prefix changed to standard location.
+
+2012-08-07  llundin
+
+	* cpl_fits_count_extensions(): Use proper CPL error codes
+
+2012-07-31  llundin
+
+	* cpl_image_get_mad_window(): Improve doxygen on MAD as stdev
+	  estimator
+	* cpl_polynomial_fit(): Fix implicit cast warning
+
+2012-07-30  llundin
+
+	* CPL_STATS_MAD, cpl_stats_get_mad(), cpl_image_get_mad(),
+	  cpl_image_get_mad_window(): Added w. unit tests
+	* cpl_stats_get_median_dev(), cpl_image_get_median_dev_window(),
+	  cpl_image_get_median_dev() and CPL_STATS_MEDIAN_DEV: Improve
+	  doxygen (DFS12008)
+	* cpl_fits_set_mode(): CPL_FITS_RESTART_CACHING + external access
+	  documented
+	* cpl_io_fits_close_file(): Simplify logic
+	* cpl_dfs_update_product_header_(), cpl_is_fits(): Guard
+	  fits_movabs_hdu() with CPL_IO_FITS_REWIND
+	* cpl_io_fits_open_diskfile(): fits_movabs_hdu() guarded by
+	  CPL_IO_FITS_REWIND. cpl_io_fits_close_file(): Drop flushing of
+	  r/o, flush w/o clearbuf
+	* Use cpl_fits_set_mode(CPL_FITS_RESTART_CACHING) on dirty CPL FITS
+	  cache
+
+2012-06-20  llundin
+
+	* cpl_polynomial_fit(): if + cpl_error_set_message_() replaces
+	  cpl_ensure_code() (fix variable in error msg)
+	* cpl_polynomial_fit(): if + cpl_error_set_message_() replaces
+	  cpl_ensure_code() (except for NULL-check)
+	* cpl_polynomial_fit(): if + cpl_error_set_message_() replaces
+	  cpl_ensure_code() (mostly)
+
+2012-06-18  llundin
+
+	* cpl_image_power_create(): cpl_image_power replaces
+	  cpl_image_exponent in doxygen (DFS11887)
+
+2012-06-15  llundin
+
+	* cpl_fit_image_gaussian(): Reduce scopy, improve types of
+	  sigma-1st-guess code
+	* cpl_fit_image_gaussian(): Check bpm of error map, if present
+	  (DFS11883)
+
+2012-06-13  llundin
+
+	* cpl_imagelist_collapse_minmax_create(): Support bad pixel maps
+	  (DFS11856) (bis)
+	* cpl_fit_image_gaussian_test_local(): Always active
+	* @addtogroup cpl_image
+	* bigauss(): Simplify error cases
+	* cpl_fit_lvmq_(): Bail out on NaN from get_chisq() (DFS11865)
+	* bigauss(), bigauss_derivative(): Return 0 on error, use errno
+	  (DFS11865). cpl_fit_image_gaussian(): Avoid image duplication,
+	  const sizes, rm dead code
+
+2012-06-12  llundin
+
+	* cpl_fit_image_gaussian_test_local(): Added
+	* cpl_imagelist_collapse_minmax_create(): Support bad pixel maps
+	  (DFS11856)
+	* cpl_image_multiply_fcomplex_sse_(): Disable per default
+	  (DFS11748) (bis)
+	* cpl_imagelist_collapse_median_create_tests(): Fix incorrect error
+	  code check
+
+2012-06-11  llundin
+
+	* cpl_imagelist_collapse_median_create(): Take into account any
+	  input BPM
+	* cpl_image_multiply_fcomplex_sse_(): Disable per default
+	  (DFS11748)
+	* Avoid NULL-derefence on failed test (found by cppcheck)
+
+2012-06-04  llundin
+
+	* cpl_image_multiply(): Use new version of
+	  cpl_image_multiply_fcomplex_sse_() (DFS11748)
+
+2012-05-29  llundin
+
+	* cpl_table_and_selected(): Fix clang warning
+	  (-Wparentheses-equality)
+
+2012-05-25  llundin
+
+	* default_log_message_handler(): Use parameter ptr to avoid
+	  compiler warning
+
+2012-05-24  llundin
+
+	* cpl_table_test_rest(): Initialize prior to _power tests
+	* cpl_test_abs_complex_macro(): Fix wrong imaginary part in message
+	  (DFS11796)
+
+2012-05-23  llundin
+
+	* cpl_table_test_20: Move test code here from
+	  cpl_table_test_main(). Add checks on null-flag to all relevant,
+	  existing tests
+	* cpl_table_test_21(), cpl_table_test_22(): Add checks on null-flag
+	  to all relevant, existing tests
+	* Add checks on CPL error (none) and null-flag to existing tests
+	* cpl_table_test_21(), cpl_table_test_22(): Move test code here
+	  from cpl_table_test_main()
+	* cpl_table_test_main(), cpl_table_test_rest(): Split tests. Allow
+	  compilation (but not testing...) with complex functions undefined
+
+2012-05-22  llundin
+
+	* rm unused header files. Create test-files within name-space.
+	  Always run large-file test code (default on small size). rm some
+	  dead code, unused vars. Revive some dead code. cpl_test_fits() on
+	  created files. Move some tests to separate functions. Avoid
+	  //-comments. Activate cpl_table_dump on debug+info
+
+2012-05-21  llundin
+
+	* cpl_fit_image_gaussian_tests(): Call check_gauss_success() only
+	  on success or with info/debug-level
+
+2012-05-21  rpalsa
+
+	* Package and library version updated.
+	* API documentation issue fixed.
+
+2012-05-21  llundin
+
+	* Work around doxygen attribute-bug, rm unused CPL-includes, mv CPL
+	  class defines
+	* Doxygen group cpl_image replaces obsolete cpl_image_filter
+	* CPL_POLYNOMIAL_CMP: mv to define section (no doxygen)
+	* Improve doxygen title
+
+2012-05-11  llundin
+
+	* setCplMessaging(): Propagate error (DFS11603) (Use
+	  cpl_error_set_where(), rm cpl_error_impl.h)
+	* Raise tol on C2C transform
+	* cpl_fft_image(): Update doxygen (cpl_fft_imagelist())
+	* cpl_fft_imagelist_test_image(): Added
+	* cpl_io_fits_end(): const error, stringify
+	* cpl_fits_set_mode(): CPL_FITS_RESTART_CACHING does not reallocate
+	  the fitslist
+	* cpl_dfs_update_product_header(): Use cpl_io_fits_close_tid(), not
+	  cpl_io_fits_close()
+	* cpl_io_fits_unset_tid(): Replaces cpl_io_fits_close_one(), can
+	  close for all threads
+	* cpl_fits_mode_test(): Limit testing when CPL_IO_FITS_MAX_OPEN ==
+	  0 (bis)
+	* cpl_fits_mode_test(): Limit testing when CPL_IO_FITS_MAX_OPEN ==
+	  0
+	* cpl_fist_set_mode(): Support CPL_FITS_RESTART_CACHING |
+	  CPL_FITS_ONE
+	* cpl_io_fits_close_one(): Added. cpl_io_fits_free(): Use
+	  cpl_error_set_fits() on error. cpl_io_fits_close(): Doxygen
+	* cpl_io_fits_unset_one(): renamed from cpl_io_fits_unset_oldest(),
+	  simplify
+	* setCplMessaging(): Propagate error (DFS11603) (include
+	  cpl_error_impl.h)
+
+2012-05-10  llundin
+
+	* Header clean-up. cpl_fits_mode_test(): Added
+	* cpl_fits_set_mode(): Disallow zero input
+	* cpl_fits_set_mode(): Note on concurrency
+	* cpl_io_fits_init(), cpl_io_fits_end(): OpenMP critical replaces
+	  single. cpl_nfitsfiles: Use atomic directive (DFS11744)
+	* cpl_fft_image_(): is_last replaces iexec/nexec
+
+2012-05-10  rpalsa
+
+	* Package and library version updated.
+
+2012-05-10  llundin
+
+	* rm math.h: No math done in this wrapper module
+	* cpl_fft_image_(): Set FFTW rigor level here to avoid code
+	  duplication and allow non-FFTW-build, declare w. non-NULL
+	  attribute. cpl_fft_aligned(): Build only w. FFTW.
+	  cpl_fft_image_{float,double}(): Declare w. non-NULL attribute
+
+2012-05-09  llundin
+
+	* Raise tol for in-place C2C
+	* cpl_fft_image_(): Avoid memcpy() on aligned image buffer
+	  (backward C2C, all modes done)
+	* cpl_fft_image_(): Avoid memcpy() on aligned image buffer (forward
+	  C2C only)
+	* cpl_fft_image_(): Avoid memcpy() on aligned image buffer (R2C +
+	  C2R only)
+	* DFS11736, 11737
+	* cpl_plot_columns(), cpl_plot_vectors(): NULL-options not
+	  supported (DFS11737)
+	* cpl_fft_image_(): Always use in+out temp-buffers
+	* Raise tol on in-place, CPL_FFT_FIND_MEASURE replaces
+	  CPL_FFT_FIND_PATIENT
+	* cpl_fft_image_{float,double}(): rv fix flops in r.1.14
+	* CPL_TYPE_COMPLEX: Fix doxygen bug (DFS11736)
+	* cpl_fft_image{,list}(): Call cpl_fft_image_ w. NULL plan for no
+	  plan-reuse, improve comments
+	* cpl_fft_image_{float,double}(): rm dead assignment
+	* CPL_FFT_FIND_MEASURE, CPL_FFT_FIND_PATIENT,
+	  CPL_FFT_FIND_EXHAUSTIVE: Added w. unit test
+
+2012-05-08  llundin
+
+	* cpl_fft_image_{float,double}(): Try FFTW_WISDOM_ONLY prior to
+	  FFTW_ESTIMATE
+	* cpl_io_fits_find_fptr(): Pass stat struct or NULL instead of
+	  boolean + sometimes undefined stat members (scan-build report)
+	* cpl_fft_image_test_one(): Benchmarks, messaging, tols, openmp
+	* cpl_fft_image_{float,double}(): Fix flops, doxygen
+	* Use cpl_tools_add_flops()
+	* cpl_fft_image_test_one(): Raise tol for in-place forward fft -
+	  float
+
+2012-05-07  llundin
+
+	* cpl_fft_imagelist(): Support (sub-optimally) a mix of shared and
+	  non-shared planes
+	* cpl_fft_image_(), cpl_fft_imagelist(): Reuse plan + buffer
+	* cpl_fft_image_{float,double}(): pplan, pbuf
+	* cpl_fft_image_test_one(): Call with 1 and several planes
+	* cpl_fft_image_test_one(): Test via cpl_test_imagelist_abs()
+
+2012-05-04  llundin
+
+	* cpl_fft_image_test_one(): cpl_fft_imagelist() replaces
+	  cpl_fft_image()
+	* Raise tol for in-place forward fft
+
+2012-05-03  llundin
+
+	* cpl_image_move(): Support complex pixels (DFS11723)
+	* cpl_image_power(): cbrt() cannot fail (DFS11722)
+	* Check for cbrt() (DFS11722)
+	* cpl_image_power(): Handle special case of 1/3 with cbrt()
+	  (DFS11722)
+	* cpl_fft_image(): Doxument in-place support
+	* New tests: 1D + in-place
+
+2012-05-02  llundin
+
+	* Several news for 6.1
+	* cpl_error_set_message_one(): replaces cpl_error_set_one_message()
+	* cpl_io_fits_test_many(): Test opening of too many files
+	* cpl_io_fits_init(): Fix debug-message, void declaration.
+	  cpl_io_fits_find_fptr(): Fix long lines, debug-messages
+	* cpl_fits_set_mode(), cpl_fits_get_mode(): Added. cpl_init():
+	  cpl_fits_set_mode() replaces cpl_io_fits*(). cpl_io_fits_init():
+	  Redeclare to boolean
+	* cpl_io_fits_free(): Fix incorrect nonnull __attribute__
+	* Support build w. CPL_IO_FITS_MAX_OPEN = 0
+	* CPL_IO_FITS_MAX_OPEN: Limit to NMAXFILES, set to zero in absence
+	  of stat(). cpl_io_fits_reuse_fptr(): Added.
+	  cpl_io_fits_unset_fptr(): Always unset. cpl_io_fits_find_fptr():
+	  Caller calls stat(). cpl_io_fits_open_diskfile(): Avoid unset +
+	  set in case of read-reuse of writer. cpl_maxfitsfiles: rm
+
+2012-04-30  llundin
+
+	* cpl_io_fits_unset_fptr(): Guard against IO-mode off, notid
+	  replaces mtid. cpl_io_fits_find_fptr(): tid, notid replaces mtid,
+	  no IO-mode guard
+	* cpl_io_fits_unset_fptr(): Match writer read-reuse without unset
+	* cpl_fitsfile_t.writing: Protect against repeated reader reuse of
+	  writer
+	* cpl_io_fits_create_file(): Comment ce
+	* cpl_nfitsfiles: Count open files, avoid race-condition
+	* cpl_io_fits_set(): rm mtid parameter. cpl_io_fits_find_fptr():
+	  Use cpl_nfitsfiles only for msgs. cpl_fitsfile_t.tid: rm negative
+	  values
+	* #include <assert.h>
+
+2012-04-27  llundin
+
+	* cpl_io_fits_unset_oldest(), cpl_io_fits_free(): Added with unit
+	  test
+	* cx_list replaces C-array
+
+2012-04-26  llundin
+
+	* CPL_IO_FITS_MAX_OPEN: Limit default to NMAXFILES of CFITSIO
+	* Debugging per default disabled
+	* Disable doxygen. cpl_io_fits_close_file(): rm optional ffchdu()
+	  call
+	* Work around doxygen limitation (DFS10280)
+	* cpl_imagelist_empty(): Fix doxygen typo
+
+2012-04-18  rpalsa
+
+	* Quick fix for system services getting disabled by -std=c99. To be
+	  reviewed!
+	* cpl_table_dump(): type corrected in declaration of row,
+	  field_size and label_len.
+	* cpl_array_dump(): type corrected in declaration of field_size and
+	  label_len.
+
+2012-04-05  llundin
+
+	* cpl_error_set_wcs(), cpl_error_set_regex(), cpl_error_set_fits():
+	  Use doxygen @internal (DFS11648)
+	* cpl_error_set_message(): Improve doxygen (DFS11646). Use
+	  @hideinitializer for several macros.
+	  cpl_error_set_message_one_macro(): Added (DFS11646).
+	  cpl_error_set_message_macro_(): nonnull attribute
+	* CPL_IO_MODE: Update doxygen, comments
+	* Reuse READWRITE for reading from r. 1.47.
+	  cpl_io_fits_open_diskfile(): Break long lines, improve comments.
+	  cpl_io_fits_find_fptr(): Break long lines.
+	  cpl_io_fits_unset_fptr(): Improve comments, doxygen
+	* cpl_mask_save(): Improve comment
+	* Need to close FITS file due to non CPL access (DFS11019)
+	* cpl_io_fits_close(): Replaces cpl_io_fits_close_all()
+	* cpl_dfs_update_product_header_(), cpl_is_fits(): Call
+	  fits_movabs_hdu(1) (DFS11019)
+	* cpl_vector_load(): Improve doxygen, fits_movabs_hdu(1)
+	* _load/_save: Improve comments
+
+2012-04-04  llundin
+
+	* cpl_imagelist_unwrap(): Export instead of static
+	* cpl_apertures_extract_mask(): Added (DFS11638).
+	  cpl_apertures_extract_sigma(): Wrap around
+	  cpl_apertures_extract_mask()
+	* cpl_apertures_new_from_image(): Handle complex input (DFS11639)
+	* cpl_stats_new_from_image_window(): Use size_t to fix performance
+	  problem (DFS11249), rm redundant check on input window
+	* rv previous commit
+	* Draft: Reuse READWRITE for reading, breaks cpl_dfs-test due to
+	  wrong md5sum
+	* Unique content in all HDUs
+	* cpl_io_fits_unset_fptr(): Match r/o to be unset for any thread
+	  id. cpl_io_fits_find_fptr(): Boolean param for matching tid.
+	  Various doxygen/comments improvements
+
+2012-04-03  llundin
+
+	* rv previous change to cpl_io_fits_close_file(), improve its
+	  comments
+	* cpl_init(): Update doxygen for CPL_IO_MODE (DFS11019)
+	* const correctness, CPL_ATTR_NONNULL, comments
+	* cpl_io_fits_find_fptr(), cpl_io_fits_unset_fptr(): Rewrite to
+	  simplify, support mix of read/write
+	* "ESO QC MYCHAR" replaces "QC MYCHAR", cpl_io_fits_close_all()
+	  prior to remove()
+	* reduce scope of i
+
+2012-04-02  llundin
+
+	* Test with multiple files
+	* Activate cpl_io_fits-test (DFS11019)
+	* cpl_io_fits_find_fptr(): writer boolean.
+	  cpl_io_fits_unset_fptr(): replaces cpl_io_fits_remove_fptr()
+	* Improved debugging
+	* cpl_io_fits_close_file(): rv dropped flush of read-only files in
+	  previous commit
+
+2012-03-30  llundin
+
+	* Support create-append-read
+	* Add re-creation test, verify, also FITS header
+	* Improved debugging messages
+	* cpl_io_fits_remove_fptr(): Define tid also w/o OpenMP
+
+2012-03-29  llundin
+
+	* Add multi-threaded read test
+	* cpl_io_fits_close_all(): Used by cpl_dfs_update_product_header(),
+	  rm non-static and use single directive
+
+2012-03-28  llundin
+
+	* rv to r1.32 w. single array, use thead-id + written boolean, some
+	  threaded testing
+	* Clean-up of previous edit. Needs to support non-concurrent
+	  multi-threaded writing
+	* include config.h
+	* setCplMessaging(): Propagate error (DFS11603)
+	* cpl_column_set_depth(), cpl_column_insert_segment(): return
+	  cpl_error_set_where(fid) replaces return cpl_error_set_code()
+	  (DFS11603)
+	* cpl_flux_get_noise_window(), cpl_plot_*(): Fix inccorect CPL
+	  error propagation (DFS11603)
+
+2012-03-27  llundin
+
+	* Use both a thread-private and a thread-shared state for each open
+	  file. Draft: No multi-threaded testing yet
+
+2012-03-26  llundin
+
+	* typo in comment
+
+2012-03-22  llundin
+
+	* cpl_fft_image_test_one(): Raise tol for R2C test (report from Ole
+	  Streicher)
+
+2012-03-21  llundin
+
+	* Raise tol for cpl_image_fft() based on report from Ole Streicher
+
+2012-03-20  rpalsa
+
+	* Fix documentation for type code CPL_TYPE_LONG_LONG.
+
+2012-03-19  llundin
+
+	* @internal added to new static functions
+	* cpl_init(): Document CPL_IO_MODE
+	* cpl_fft_image_test_one(): Raise tol for R2C test (bis)
+
+2012-03-19  rpalsa
+
+	* Removed "Alpha Release" from section title.
+	* cpl_wcs_platesol(): Documentation updated. Added description of
+	  the expected layout of the input maxtrices.
+
+2012-03-19  llundin
+
+	* cpl_image_dump_window(): rv size_t due to format string
+
+2012-03-16  llundin
+
+	* cpl_image_{add,subtract,multiply,divide}_scalar(): Explicit cast
+	  outside of loop
+	* Compute loop iterations explicitly to help vectorization
+	* Index with size_t (DFS11249)
+	* Index with size_t (DFS11249), reduce var-scope
+	* cpl_image_wrap_(): Internal, non-static.
+	  cpl_image_labelise_mask_create(): malloc() replaces calloc(),
+	  avoid call on no data
+	* Index with size_t (DFS11249)
+	* cpl_fft_image_test_one(): Raise tol for R2C test
+	* cpl_image_power(): Apply handling of sqrt() correctly (DFS3222)
+	* cpl_image_multiply_fcomplex_sse3_(): Fix missing return, size_t
+	  replaces int, explicit cast, attribute non-null, doxygen
+
+2012-03-15  llundin
+
+	* cpl_mask_threshold_image(): Support bpm in image input (DFS11530)
+	* cpl_apertures_extract_sigma(): Improve doxygen
+
+2012-03-14  rpalsa
+
+	* Package version updated.
+
+2012-03-13  llundin
+
+	* cpl_error_set_() replaces cpl_error_set()
+
+2012-03-13  rpalsa
+
+	* cpl_propertylist_get_long(), cpl_propertylist_get_long_long(),
+	  cpl_propertylist_get_double(),
+	  cpl_propertylist_get_double_complex(): Documentation updated.
+
+2012-03-13  llundin
+
+	* cpl_image_fill_re_im(): Test in-place
+	* cpl_image{,list}_{add,subtract,multiply,divide}{,_create}():
+	  Support a complex and a non-complex operand (DFS11524)
+	* cpl_test_image_abs_macro(): Support complex + non-complex image
+	* cpl_image_fill_re_im(), cpl_image_fill_abs_arg(): Replace
+	  cpl_image_fill_real(), cpl_image_fill_imag(),
+	  cpl_image_fill_mod(), cpl_image_fill_phase()
+
+2012-03-12  llundin
+
+	* cpl_image_fill_real(),cpl_image_fill_imag(),cpl_image_fill_mod(),cpl_image_fill_phase():
+	  Added. cpl_image_conjugate(): Optimize (DFS11249)
+	* cpl_image_conjugate(): Update doxygen
+	* cpl_image_conjugate(): Added w. unit tests (DFS10983)
+	* cpl_fft_image_test(): Only w. FFTW installed (DFS11516)
+	* rv changes for DFS3510
+	* Clean-up of header includes
+	* rv changes for DFS3510
+	* (cpl_fft_image(): Improve check on mode
+	* cpl_fft_image_test_one(): Only w. FFTW installed (DFS11516)
+	* cpl_fft_image_test_one(): Raise tol for C2C / R2C comparison
+	  (3rd)
+	* cpl_fft_image_test_one(): Raise tol for C2C / R2C comparison
+	  (bis)
+	* cpl_fft_image_test_one(): Raise tol for C2C / R2C comparison
+	* cpl_fft_image(): Do not use FFTW_PRESERVE_INPUT for in-place C2C
+	* cpl_fft_image(): Fix direction bug in C2C, avoid temporary buffer
+	  in backward C2C
+	* cpl_fft_image(), cpl_fft_imagelist(): Update doxygen (support
+	  half sized r2c/c2r images)
+	* cpl_fft_image_test_one(): Add tests on inverse transform
+	* cpl_fft_image(): Support CPL_FFT_NOSCALE
+	* cpl_fft_image(): Fix scaling for half-sized images
+	* cpl_test_image_abs_macro(): Support complex images
+
+2012-03-09  llundin
+
+	* cpl_fft_image_test_one(): More tests
+	* cpl_fft_image(): Fix size for backward half-size
+	* cpl_fft_image(): Experimental half-size r2c/c2r w. unit tests
+
+2012-03-09  rpalsa
+
+	* cpl_error cpl_image_multiply_fcomplex_sse3_(): Typo fixed in
+	  comment.
+	* Package version updated.
+
+2012-03-09  llundin
+
+	* Changes to previous patch: cpl_image_multiply_fcomplex_sse3_() at
+	  the top replaces _cpl_image_multiply_fcomplex_sse3(), /* */
+	  comment replaces // comment
+	* cpl_image_multiply(): Apply patch from DFS11500
+
+2012-03-09  rpalsa
+
+	* Updated to the latest version
+	* Restore CFLAGS so that 32bit libraries can be build on 64bit
+	  systems.
+	  Remove cfitsio link dependency -lz, this means that a cfitsio
+	  build from the original tar-file is required.
+	  Checks for cfitsio, wcs and fftw now check always for the static
+	  library version. This solves LD_LIBRARY_PATH issues, until a
+	  better solution is found.
+
+2012-03-09  llundin
+
+	* cpl_image_dump_window(): Dump in order of storage. Improve
+	  doxygen
+	* cpl_image_{subtract,multiply,divide}_scalar(): Finish doxygen
+	  change of previous edit
+	* cpl_apertures_extract_sigma(): Document the mask-filtering
+	  (DFS11489)
+	* cpl_apertures_extract_sigma(): rv previous edit (DFS11489)
+
+2012-03-08  llundin
+
+	* cpl_end(): Call both fftw_cleanup() and fftwf_cleanup()
+	* cpl_fft_image_{double,float}(): Reduce number of critical
+	  sections to one pre and one post plan execution
+	* cpl_fft_image(): Inactive, draft support of compact R2C/C2R
+	* cpl_apertures_extract_sigma(): Drop unexpected filtering
+	  (DFS11489)
+
+2012-03-07  llundin
+
+	* cpl_fft_image(): Improve error message
+	* cpl_fft_image(): refactor
+	* cpl_fft_image(): Repack double-data in r2c/c2r
+	* cpl_fft_image(): Repack float-data in r2c/c2r
+	* cpl_fft_image(): Support complex-to-complex transforms
+	* cpl_image_{add,subtract,multiply,divide}_scalar(): Support
+	  complex images (DFS11498)
+
+2012-03-06  llundin
+
+	* cpl_fft_image(): fftw_malloc() replaces cpl_image_duplicate() for
+	  (float) temp array
+	* cpl_fft_image(): fftw_malloc() replaces cpl_image_duplicate() for
+	  (double) temp array
+	* cpl_test_init_macro(): Warn on failed setting of log-file
+	  (DFS11493)
+	* NULL replaces 0x0. cpl_msg_init(), cpl_msg_set_log_level():
+	  cpl_msg_set_log_name(): cpl_func replaces fid. cpl_msg_out(): Fix
+	  doxygen typo. cpl_msg_set_log_name(): Create explicit error
+	  messages (DFS11493)
+	* CPL_MAX_LOGFILE_NAME: Increase default to 72 from 52.
+	  CPL_MAX_MSG_LENGTH, CPL_MAX_FUNCTION_NAME, CPL_MAX_DOMAIN_NAME,
+	  CPL_MAX_LOGFILE_NAME: Allow compile time change
+	* cpl_msg_out(): Drop anything after new-line (DFS11492)
+	* Clean-up include, doxygen
+
+2012-03-05  llundin
+
+	* cpl_fits_find_extension(): Support extensions without EXTNAME
+	  card (DFS11488)
+
+2012-03-02  cgarcia
+
+	* Fix documentation typo
+	* Use prefixes llp for long long pointers and sz for cpl_size
+	  prefixes in many functions.
+	  Fix a cpl_size pointer in cpl_column_multiply.
+
+2012-03-02  rpalsa
+
+	* Package version updated.
+
+2012-03-01  cgarcia
+
+	* Use the proper sz pointer for cpl_size type in function
+	  cpl_column_dump
+
+2012-02-28  rpalsa
+
+	* CPL_CHECK_FFTW(): Ignore suffix which is possibly appended to the
+	  version number.
+
+2012-02-27  rpalsa
+
+	* Support for long, long long and cpl_size arrays added.
+	* CPL type enumeration: Fixed typo in the documentation.
+	* Added argument to macros checking for libraries, to allow setting
+	  the minimum required version from configure.
+	  CPL_CHECK_WCS(), CPL_CHECK_FFTW(): Fix version checks and library
+	  search path.
+
+2012-02-16  llundin
+
+	* cpl_matrix_set_size(): Preserve elements when reducing number of
+	  rows without changing col size
+	* cpl_matrix_set_size(): Fix inefficient behaviour (DFS3510)
+
+2012-02-15  llundin
+
+	* cpl_stats_new_from_image_window(): Document 32-bit round-off and
+	  raise 32-bit tolerance
+	* Raise tol on cpl_image_fft() for 32-bit
+	* cpl_image_power_*(): cpl_tools_ipow() replaces pow() for integer
+	  power
+	* cpl_fit_image_gaussian(): Improve doxygen on covariance matrix
+	* Avoid double free on gauss-fit-failure, increase tol on succes
+	  (for 32-bit builds)
+
+2012-02-14  llundin
+
+	* rm unused header files. iqebgv(): rm dead assignments
+	* Initialize phys_cov to NULL prior to testing
+	  cpl_fit_image_gaussian()
+	* cpl_fit_image_gaussian(): Improve doxygen on phys_cov
+	* cpl_dfs_paf_dump(): Handle CPL_TYPE_CHAR and linefeed in comments
+	  (DFS11380)
+	* cpl_matrix_is_identity(): rm dead assignment
+
+2012-02-07  llundin
+
+	* cpl_bivector_interpolate_linear(): Avoid (false) uninit warning
+	* "< 1 +" replaces <= (DFS11249)
+	* cpl_vector_save(): Indentation. cpl_vector_correlate(),
+	  cpl_vector_gen_lowpass_kernel(): "< 1 +" replaces <= (DFS11249).
+	  cpl_tools_sinc(), cpl_vector_exponential(): Use 0.0 for fp zero
+	* cpl_wlcalib_fill_line_spectrum_model(): "< 1 +" replaces <=
+	  (DFS11249)
+	* cpl_mask_dump(): "< 1 +" replaces <= (DFS11249)
+
+2012-02-06  llundin
+
+	* cpl_error_set_message_(): replaces
+	  cpl_error_set_message{,_macro}()
+	* cpl_error_set_message_(): replaces cpl_error_set_message().
+	  cpl_error_set_(): Replaces cpl_error_set().
+	  cpl_error_set_where_(): Replaces cpl_error_set_where()
+	* cpl_error_set_message_(), cpl_error_set_where_(),
+	  cpl_error_set_(): Replaces cpl_error_set_message_macro(),
+	  cpl_error_set_where(), cpl_error_set().
+	  cpl_table_extract_column(): rm unused variable, reduce var-scope.
+	  cpl_table_set_column_depth(): rm unused variable
+
+2012-02-03  llundin
+
+	* assert() replaces cx_assert()
+	* cpl_io_fits_set(): Drop unused support for full table, redeclare
+	  to void
+
+2012-02-02  llundin
+
+	* cpl_wlcalib_find_best_1d(): Fix uninit warnings
+	* cpl_image_get_interpolated_test(): Raise tol on confidence
+
+2012-01-31  llundin
+
+	* Read different extensions via different paths (to test I/O
+	  optimization). Also fix indentation
+	* cpl_io_fits_open_diskfile(): Include handle pointer in debug msg
+
+2012-01-30  llundin
+
+	* cpl_io_fits_remove_fptr(): replaces less descriptive name
+	  cpl_io_fits_find_fptr(). Indenting
+
+2012-01-26  llundin
+
+	* Remove diagnostic pragmas for now
+
+2012-01-26  rpalsa
+
+	* Package version updated.
+
+2012-01-24  llundin
+
+	* cpl_mask_load_(): Try pragma GCC diagnostic ignored "-Wcast-qual"
+	  due to CFITSIO API
+	* cpl_fft_image(): Require images to be square (pending DFS10988)
+
+2012-01-23  llundin
+
+	* cpl_stats_new_from_image_window(): Use size_t in check of bad
+	  pixel map (bis)
+
+2012-01-20  llundin
+
+	* cpl_filter_linear_slow(), cpl_filter_morpho_slow(): Separate
+	  loops for bpm==NULL case. Reduce scope of bpmj
+	* cpl_stats_new_from_image_window(): Use size_t in check of bad
+	  pixel map
+
+2012-01-20  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Add -lz to LIBCFITSIO_STATIC
+	  CPL_CHECK_LIBS(): Add missing $LDFLAGS to CPL_LDFLAGS when
+	  linking configure tests
+
+2012-01-20  llundin
+
+	* cpl_filter_median_slow(), cpl_filter_stdev_slow(): Separate loops
+	  for bpm==NULL case
+
+2012-01-20  rpalsa
+
+	* CPL_CHECK_CFITSIO(): revert cfitsio runtime path fix
+
+2012-01-20  llundin
+
+	* Line break. Change loop variables to unsigned, "< 1 +" replaces
+	  <= (DFS11249)
+	* cpl_filter_average_slow(): Revert previous edits removal of inner
+	  if-statement, reduce scope
+	* cpl_mask_dump(): Adapt format to cpl_size. cpl_mask_filter():
+	  Change loop variables to unsigned, "< 1 +" replaces <= (DFS11249)
+	* cpl_filter_average_slow(): Change loop variables to unsigned
+	  (DFS11249)
+	* "< 1 +" replaces <= (part of DFS11249)
+
+2012-01-19  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Do not use cfitsio runtime path for
+	  configure tests, since they do not use libtool.
+
+2012-01-17  rpalsa
+
+	* CPL_CHECK_CEXT(): Can no called with arguments specifying header
+	  and library search paths.
+	  CPL_CHECK_LIBS(): Don't require CPL_CHECK_CEXT,
+	  CPL_CHECK_CFITSIO. Call CPL_CHECK_CEXT explicitly.
+
+2012-01-16  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Add cfitsio runtime path to CFITSIO_LDFLAGS
+
+2012-01-13  rpalsa
+
+	* API changes in cplui added.
+
+2012-01-12  rpalsa
+
+	* Updated to the latest version
+
+2012-01-11  llundin
+
+	* cpl_fit_image_gaussian(): Do not reset error when failure is
+	  unavoidable
+	* check_gauss_success(): Fix memory-leak on failure, remove space,
+	  use explicit double const
+	* cpl_msg_info() replaces cpl_msg_warning() from previous edit
+
+2012-01-11  rpalsa
+
+	* Package and library version updated.
+	* Container size and index type changed from int to cpl_size.
+
+2012-01-11  llundin
+
+	* Clean-up branching for tests of large vectors
+
+2012-01-10  llundin
+
+	* Work around CPL_SIZE_BITS=32
+	* cpl_init(): Use env CPL_IO_MODE to enable the I/O optimization.
+	  cpl_io_fits_is_enabled(): Added. cpl_io_fits_init(): Redeclare to
+	  boolean
+	* Raise tol to pass last two tests on current 32-bit test machines
+	  (DFS11193)
+
+2012-01-09  llundin
+
+	* Revert tolerance on 64-bit, raise tol to pass tests on current
+	  32-bit test machines (DFS11193)
+	* Raise tol on float precision fit due to failure on 32-bit
+	  (DFS11193)
+	* Raise tol on double precision fit due to failure on 32-bit
+
+2011-12-23  rpalsa
+
+	* Remove compiler flag std=c99 again from the defaults, as it
+	  applies also to the C library restricting its interface
+	  (discarding POSIX compliant interfaces).
+
+2011-12-22  rpalsa
+
+	* Add compiler flag std=c99 to the default flags.
+	* Synchronized with libcext version.
+	* cpl_propertylist_copy_property(): Bug fixed. When the target list
+	  contains the sought for property, get the source property from
+	  the source list, not from the target one.
+
+2011-12-22  llundin
+
+	* CPL_IO_FITS_MAX_OPEN: Default to 0
+	* Revert attempt to use mtime
+	* cpl_io_fits_find_fptr(): memcmp() replaces memcpy()
+
+2011-12-21  llundin
+
+	* Oops, nested comment
+	* Rely on mtime to know if a sub-process modified the file
+	* Call cpl_io_fits_end() to ensure no pointers are in use. Fix
+	  const warning, add msg
+
+2011-12-20  llundin
+
+	* cpl_apertures_new_from_image(): Fail on negative label, clean-up
+	  const modifier, avoid unneeded image duplication
+	* CPL_ERROR_ACCESS_OUT_OF_RANGE replaces CPL_ERROR_ILLEGAL_INPUT
+	  for out of bounds index. Improve doxygen, add more unit tests
+	* cpl_image_reject_from_mask(): CPL_ERROR_INCOMPATIBLE_INPUT
+	  replaces CPL_ERROR_ILLEGAL_INPUT
+	* self replaces in for object to process
+	* cpl_apertures_get_maxpos_x(), cpl_apertures_get_maxpos_y(),
+	  cpl_apertures_get_minpos_x(), cpl_apertures_get_minpos_y(): Added
+	  (DFS10971)
+	* cpl_apertures_get_pos_x(), cpl_apertures_get_pos_y(): Added,
+	  replaces now deprecated
+	  cpl_apertures_get_max_x(),cpl_apertures_get_max_y() (DFS10971)
+	* cpl_apertures_get_maxpos_x(), cpl_apertures_get_maxpos_y(),
+	  cpl_apertures_get_minpos_x(), cpl_apertures_get_minpos_y(): Added
+	  (DFS10971)
+
+2011-12-19  rpalsa
+
+	* Added CPL_TYPE_SIZE to type enum.
+	  Changed definition of cpl_size from cxint64 to long long
+	  (including format and min/max macros)
+	* Call to AC_HEADER_TIOCGWINSZ added.
+	* Inclusion of ioctl.h centralized. Added check on
+	  GWINSZ_IN_SYS_IOCTL.
+	  cpl_msg_set_log_level(), cpl_tools_get_cputime(): break added in
+	  default clause.
+	* Add header include of cpl_type.h to get format macros together
+	  with the message functions.
+
+2011-12-19  llundin
+
+	* cpl_fft_mode replaces unsigned
+	* cpl_io_fits: Use and test stat()
+	* CPL_DFS_FITSFILE replaces filename
+	* cpl_get_description(): Append CPL_IO_FITS_MAX_OPEN
+
+2011-12-16  llundin
+
+	* cpl_wlcalib_fill_line_spectrum_model(): Fix format warnings due
+	  to cpl_size
+	* cpl_io_fits_open_diskfile(), fits_close_file(): Wrap around their
+	  CFITSIO counterpart (DFS11019)
+	* cpl_test_end(): var rename, errno fix. Rearrange header files
+	* cpl_dfs_update_product_header_(): Added.
+	  cpl_dfs_update_product_header(): Use
+	  cpl_dfs_update_product_header_()
+	* cpl_io_fits_close_all(): Export (to CPL)
+	* cpl_image_get_interpolated_test(): Added
+	* cpl_image_extract_subsample_test(): Added
+
+2011-12-15  llundin
+
+	* cpl_image_get_interpolated(): Prefer temp space from stack
+	  (suggestion from JTaylor)
+
+2011-12-14  llundin
+
+	* cpl_polynomial_multiply_scalar(): Added
+
+2011-12-13  llundin
+
+	* cpl_matrix_test_banded(): Added
+	* Simplify flush-check
+	* Reenable copying, move cpl_test_nonnull()
+	* cpl_fits_flush_file(): Patched fits_flush_file() to properly
+	  flush files. cpl_io_fits_close_file(): Use cpl_fits_flush_file().
+	  CPL_IO_FITS_MAX_OPEN: Support 0-value
+
+2011-12-12  llundin
+
+	* cpl_test_eq_error() replaces cpl_test_zero(), Check CPL error
+	  before pointer, fix warning
+	* cpl_io_fits_resize(): Added. cpl_io_fits_set(): Use
+	  cpl_io_fits_resize() to avoid forced closed of any file
+	* cpl_fitsfiles: Allocate
+	* CPL_IO_FITS_MAX_OPEN default to 1024. Add some more debug
+	  messages
+	* cpl_io_fits_set(), cpl_io_fits_find_fptr(): Ignore CFITSIO
+	  filename meta-character. cpl_io_fits_create_file(): Avoid
+	  incorrect and inefficient work-around for CFITSIO filename
+	  meta-character
+	* Avoid system(cp) while working possible CFITSIO bug
+
+2011-12-09  llundin
+
+	* Support multiple (or no) open files via an array, disable
+	  debug-messages per default, disable doxygen (I think)
+	* cpl_dfs_product_tests(): Support test with many extensions
+	* cpl_wlcalib_test_one(): cpl_wlcalib_find_best_1d(): Do not
+	  evaluate non-physical anchor points, avoid useless vxc-fills
+	* cpl_io_fits_find_fptr(), cpl_io_fits_find_name(),
+	  cpl_io_fits_set(): rm static variable from API
+	* cpl_io_fits_set(): Access self->fptr only inside critical.
+	  cpl_io_fits_find_fptr(): Support NULL-name.
+	  cpl_io_fits_close_all(): Critical access via
+	  cpl_io_fits_find_fptr()
+	* cpl_io_fits_open_diskfile(): Avoid redundant call to
+	  cpl_io_fits_find_fptr()
+	* cpl_io_fits_open_diskfile(): rm cpl_io_fits_close_one().
+	  cpl_io_fits_close_all(): Renamed from cpl_io_fits_close_one()
+	* cpl_io_fits_create_file(): rm cpl_io_fits_close_one()
+	* cpl_io_fits_find_fptr(), cpl_io_fits_find_name(): Improve names.
+	  cpl_io_fits_find_fptr(): Add unset param
+	* cpl_io_fits_set(): rm pname, piomode
+	* cpl_io_fits_set(): return true, when file to be closed
+	* cpl_io_fits_find_name(): return iomode
+
+2011-12-08  llundin
+
+	* rm cpl_error_set_fits() from CFITSIO wrappers.
+	  cpl_io_fits_close_one(): CFITSIO style error.
+	  cpl_io_fits_find_fptr(): Added
+	* cpl_io_fits_set(), cpl_io_fits_find(): Added w. critical
+	  sections. Drop thread-private storage. FIXME: still need to
+	  cpl_io_fits_close_one()
+
+2011-12-07  llundin
+
+	* cpl_wlcalib_find_best_1d(): Do not evaluate non-physical anchor
+	  points, avoid useless vxc-fills
+	* cpl_wlcalib_find_best_1d(): Use cpl_vector_rewrap()
+	* cpl_vector_rewrap(): Added internally
+	* cpl_vector_find(): DFS11130
+	* cpl_vector_find(): Fail on non-sorted data
+	* cpl_wlcalib_fill_line_spectrum_model(): Detect non-increasing
+	  wavelengths
+
+2011-12-06  llundin
+
+	* cpl_wlcalib_fill_line_spectrum_model(): Increment ulines
+	* cpl_wlcalib_test_one(): Comments
+	* cpl_wlcalib_test_one(): 2nd refining search
+	* slitmodel replaces linemodel, catalog replaces lines
+	* cpl_wlcalib_find_best_1d(): vxc wraps around xcorrs, when
+	  non-NULL
+	* cpl_wlcalib_find_best_1d(): xcorrs stores all XC values
+
+2011-12-05  llundin
+
+	* cpl_wlcalib_test_one(): Tighten bounds on
+	  cpl_test_polynomial_abs()
+	* cpl_wlcalib_fill_line_spectrum_model(): Use
+	  cpl_polynomial_solve_1d_() for monotony check, add degree to
+	  error msg. Guard debugging w. CPL_WLCALIB_DEBUG
+	* cpl_polynomial_solve_1d_(): bpos replaces pdx
+	* cpl_polynomial_solve_1d_(): Added w. pdx
+	* cpl_wlcalib_test_one(): Correct cost count check after vxc-guard
+	  fix
+	* Improve doxygen, add flops
+	* cpl_fft_image(): Add omp critical sections for each FFTW-call,
+	  except the execute-ones
+	* cpl_wlcalib_test_one(): Reduce search range on shifted poly
+	* cpl_wlcalib_find_best_1d(): Doxygen typo
+	* cpl_wlcalib_find_best_1d(): Guard vxc access on failure, improve
+	  doxygen
+	* cpl_wlcalib_find_best_1d(): Extend model spectrum by 2*hsize and
+	  tighten unit tests
+	* cpl_wlcalib_find_best_1d(): Draft version of hsize support
+	* cpl_wlcalib_fill_line_spectrum(): Improve doxygen
+
+2011-12-02  llundin
+
+	* cpl_wlcalib_find_best_1d(), cpl_wlcalib_fill_*line_spectrum*():
+	  CPL_ERROR_INVALID_TYPE for non-1D-poly
+	* Improve doxygen
+	* cpl_wlcalib_test_one(): Add lines, reduce nsamples, plot on info
+	* cpl_wlcalib_test_one(): Verify costs
+	* cpl_wlcalib_test_one(): Non-monotone failure
+	* cpl_wlcalib_test_one(): Two more tests
+
+2011-12-01  llundin
+
+	* cpl_wlcalib_fill_line_spectrum_model(): Use erftmp
+	* cpl_wlcalib_test_one(): Time the search
+	* cpl_wlcalib_find_best_1d(): cpl_polynomial_fit_1d() replaces
+	  cpl_polynomial_fit()
+	* rm xtrunc from linemodel struct
+	* cpl_wlcalib_fill_*line_spectrum*(): Redeclare model to void and
+	  move it up
+	* cpl_wlcalib_test_one(): Test XC
+	* cpl_wlcalib_test_one(): Raise fast-tol for valgrind
+	* cpl_wlcalib_test_one(): Reduce degree, add more tests of
+	  cpl_wlcalib_find_best_1d()
+	* cpl_wlcalib_find_best_1d(): Fix degree error
+	* More tests
+	* cpl_wlcalib_find_best_1d(): Units of wl_search
+	* cpl_polynomial_add(), cpl_polynomial_subtract(): Added
+	* cpl_wlcalib_test_one(): Test fillers
+	* _logline(): Improve doxygen
+	* rm redundant include
+	* Added some unit tests
+	* cpl_wlcalib_find_best_1d(): cpl_size replaces int, rename
+	  variables, preserve 1st errors on failure
+	* cpl_wlcalib_find_best_1d(): Added
+	* cpl_wlcalib_fill_logline_spectrum(),
+	  cpl_wlcalib_fill_line_spectrum_fast(),
+	  cpl_wlcalib_fill_logline_spectrum_fast(): Define
+	* Threshold replaces xtrunc
+	* Export minimal set of functions
+	* Obsolete
+
+2011-11-30  llundin
+
+	* cpl_wlcalib_fill_line_spectrum(): Define
+	* cpl_wlcalib_fill_line_spectrum_model(), cpl_erf_antideriv():
+	  Defined
+	* Fix filler-declarations
+	* cpl_errorstate_dump_one_{warning,info,debug}(): Copied from
+	  IRPLIB
+	* Module w. linemodel object
+
+2011-11-29  llundin
+
+	* More testing of Nearest neighbor resampling
+	* cpl_geom_img_offset_saa(): 2.0 replaces CPL_KERNEL_DEF_WIDTH
+	* Nearest neighbor resampling (DFS08665)
+
+2011-11-25  llundin
+
+	* More tests, smaller default size
+	* cpl_io_fits_seek: rm
+	* cpl_io_fits_create_file(): Added, closes all
+	* Draft solution for DFS11019
+
+2011-11-23  llundin
+
+	* cpl_image_load_(), cpl_mask_load_(): fits_movabs_hdu() replaces
+	  fits_movrel_hdu()
+	* filter_median_bf(),test_cpl_image_filter(): Fix memory leaks
+
+2011-11-22  llundin
+
+	* cpl_image_flip(), cpl_mask_flip(): Avoid duplication on square
+	  input
+	* cpl_image_flip_turn_test(): Added
+	* cpl_mask_flip_turn_test(): Verify result
+	* cpl_mask_flip_turn_test(): Test cpl_mask_flip() on square and
+	  rectangular masks
+
+2011-11-21  rpalsa
+
+	* cpl_table_erase_invalid(), cpl_table_erase_invalid_rows():
+	  documentation clarified.
+
+2011-11-18  llundin
+
+	* cpl_image_dump_structure(), cpl_image_dump_window(): Use
+	  CPL_SIZE_FORMAT (DFS10984)
+	* cpl_image_dump_*(): Check also return value
+
+2011-11-17  llundin
+
+	* cpl_mask_extract(): Fix wrong row extraction w. unit test
+	  (DFS10977)
+	* cpl_test_nonnull() replaces cpl_test() of assignment
+
+2011-11-15  llundin
+
+	* cpl_geom_img_offset_combine(): Input imagelist is now const
+	  (DFS08575)
+
+2011-11-02  rpalsa
+
+	* cpl_property_get_long(), cpl_property_get_long_long(), etc: Added
+	  type promotion in case the accessed property has a smaller rank
+	  than the target type.
+	* Include cpl_propertylist_impl.h moved to the end of the list
+	* CPL_FITS_BADKEYS_PRIM: Removed EXTNAME, EXTVER and EXTLEVEL
+	* cpl_type_get_sizeof(): Parentheses added
+
+2011-10-28  llundin
+
+	* clp_*_flip(): doxygen typo
+
+2011-10-18  llundin
+
+	* cpl_matrix_decomp_lu(): Support perm-array with initial invalid
+	  elements
+	* cpl_matrix_fill_diagonal(): Generalize to non-main-diagonals
+	* cpl_mask_threshold_image(): New function
+
+2011-10-12  llundin
+
+	* cpl_vector_extract(): Add several unit-tests
+
+2011-10-11  llundin
+
+	* cpl_mask_threshold_image(): Explicitly document lo == hi case
+
+2011-10-06  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Use static libcfitsio for tests to avoid
+	  runtime environment dependencies.
+
+2011-10-06  llundin
+
+	* cpl_ppm_match_positions(): Improve doxygen grammar
+
+2011-09-27  llundin
+
+	* cpl_test_init_macro(): abort() replaces exit() to be in line with
+	  cpl_xmemory functions
+
+2011-09-15  llundin
+
+	* Doxygen univariate (1D) replaces univariate
+
+2011-09-13  cgarcia
+
+	* Adding comment regarding the dependency of functions fill_chess
+	  and median_1.
+
+2011-08-19  llundin
+
+	* cpl_recipe_define(): Fix doxygen typo
+
+2011-08-18  llundin
+
+	* cpl_image_filter_fill_chess(): replaces duplicated static
+	  fill_chess()
+	* cpl_tools_get_kth(): Avoid duplication
+	* Standardize multi-type support of median filtering
+	* cpl_xmemory_status(): With _OPENMP peak allocation is approximate
+
+2011-08-17  cgarcia
+
+	* Added new float arrays tests cases for the cpl_tools_get_median
+	  function.
+	  Update the test cases to the new median algorithm.
+	* Added functions fill_chess and fill_row copied from
+	  cplcore/cpl_filter_median.c.
+	  Brute force function now also uses the chess-like pattern
+	  filling, like the function we want to test against.
+	  Unused function bf_get_median_upper has been removed.
+	* Added PIXEL_MAX, PIXEL_MIN #define's needed by the functions
+	  fill_chess and fill_row defined in cpl_filter_body.h
+	* Change in documentation reflects the change in the median
+	  algorithm (mean of central values for even number of elements)
+	* Change the implementation of the median, to use the mean of
+	  central values for even number of elements. Also the quickselect
+	  function has been modified, to implement the new median
+	  algorithm.
+	* Added option in cpl_tools_quickselect to specify the value around
+	  which the selection should be performed.
+	* Change in documentation reflects the change in the median
+	  algorithm (mean of central values for even number of elements)
+	* Added warning to reflect the duplication of code in
+	  tests/cpl_filter_body.h
+	* Documentation of CPL_BORDER_FILTER reflects the change in the
+	  median algorithm (mean of central values for even number of
+	  elements)
+
+2011-08-17  llundin
+
+	* cpl_xmemory_count(): drop for performance reasons (revert to rev.
+	  1.32)
+	* cpl_imagelist_empty(): Export
+
+2011-08-12  llundin
+
+	* cpl_imagelist_empty(): Export
+
+2011-08-11  llundin
+
+	* cpl_mask_threshold_image(). cpl_mask_threshold_image_create():
+	  Wrap around cpl_mask_threshold_image()
+	* cpl_matrix_decomp_lu(), cpl_matrix_solve_lu(): Note on API change
+	  (typo)
+	* cpl_matrix_decomp_lu(), cpl_matrix_solve_lu(): Note on API change
+
+2011-08-10  cgarcia
+
+	* Added benchmark test for get_median function,
+	  since eventually, the performance of get_median and
+	  quickselect won't be the same.
+
+2011-08-08  llundin
+
+	* cpl_geom_img_offset_saa(): Use uint32_t to test bpm, do not test
+	  RSC to avoid NaN
+	* cpl_geom_img_offset_saa_one(): Test that
+	  cpl_geom_img_offset_saa() with rejections average the correct
+	  numbers
+	* cpl_geom_img_offset_saa(): Avoid interpolation on integer shifts
+	  (DFS10561)
+	* 5.92cvs
+
+2011-08-05  cgarcia
+
+	* Added median test cases for number of elements equal 10 and 11.
+
+2011-08-05  llundin
+
+	* cplsize replaces long in function names for cpl_size data
+
+2011-08-02  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Require cfitsio 3.270 or newer
+	* printf format %d replaced by %CPL_SIZE_FORMAT where appropriate.
+	* cpl_ppm_match_points(): Integer type arguments promoted to
+	  cpl_size
+	* Package and library version updated.
+	* CPL_CHECK_CFITSIO(): Fix typo in cpl_cfitsio_libdirs. Instead of
+	  checking $CFITSIODIR/lib32 it checked $CFITSIODIR/lib twice
+	  CPL_CHECK_LIBS(): Use all cplcore dependencies for runtime tests.
+
+2011-08-02  llundin
+
+	* cpl_test_get_description_b(), cpl_test_init_macro(): Break long
+	  lines
+	* cpl_fft_image(): Fix unreachable statement warning
+	* cpl_fits_find_extension(): rm cast work-around for CFITSIO < 3.18
+	* For Include + LD flags place 3rd party components last, with
+	  optional ones at the very end
+	* cpl_image_exponential(), cpl_image_logarithm(),
+	  cpl_image_power(): Count flops
+
+2011-08-01  llundin
+
+	* cpl_image_logarithm(): Support bad pixels (DFS10528)
+	* cpl_image_exponential(): Support bad pixels (DFS10528)
+	* cpl_image_power(): Support bad pixels (DFS10528)
+	* cpl_column_pow_int(), cpl_column_pow_float(),
+	  cpl_column_pow_float_complex(), cpl_column_pow_double(),
+	  cpl_column_pow_double_complex(): Fix exponent == -1 bug
+	  (DFS10451)
+	* 6.0 (Development Snapshot)
+	* cpl_error_set_(...) replaces cpl_error_set(cpl_func, ...)
+	* cpl_dfs_save_propertylist(), cpl_dfs_save_imagelist(),
+	  cpl_dfs_save_table(): Fix doxygen-bug (applist now mandatory)
+	  (DFS10545)
+	* Ralf replaces Carlo and Yves
+
+2011-07-29  llundin
+
+	* cpl_matrix_decomp_lu(), cpl_matrix_solve_lu(): Use cpl_array for
+	  permutation
+	* Fix cpl_size cast warnings + long lines
+	* Fix cpl_size cast warnings
+	* Redeclare int to cpl_size
+	* Fix (cpl_size) cast warnigns
+	* Fix cast warnings
+	* Redeclare int* to cpl_size* for calls cpl_polynomial_*()
+	* cpl_fit_imagelist_polynomial_one(): Redeclare degree/kk from int
+	  to cpl_size for calls to
+	  cpl_polynomial_fit_1d()/cpl_polynomial_get_coeff()
+	* find_transform(): Redeclare degree(s) from int to cpl_size for
+	  calls to cpl_polynomial_fit()
+	* Fix implicit cast warnings
+	* Fix cpl_flops cast warnings
+	* Fix format + (double) cast warnings
+	* cpl_polynomial_shift_double(): Non-static, mv to
+	  cpl_polynomial_impl.h
+	* cpl_imagelist_collapse_sigclip_create(): Fix cpl_size warning
+	* cpl_vector_load(): Fix cpl_size warning
+	* cpl_test_matrix_abs_macro(), cpl_test_imagelist_abs_macro(): fix
+	  cpl_size warnings
+	* Fix cpl_size implicit warnings (double+int), fix cpl_size format
+	  warnings
+	* cpl_test_macro(), cpl_test_eq_macro(): fix cpl_size warnings
+	* cpl_polynomial_shift_double(): mv to cpl_polynomial and make
+	  static. Fix cast size_t warnings
+	* Draft version of cpl_size usage (no valgrind warnings, passes
+	  unit-tests)
+
+2011-07-28  llundin
+
+	* cpl_wcs_platesol(), cpl_wcs_convert(): Use cpl_size for
+	  cpl_matrix+cpl_array() sizes
+	* cpl_image_fft(): Proper handling of limited image size support
+	  (bis)
+
+2011-07-27  llundin
+
+	* Use cpl_size
+	* cpl_fit_imagelist_polynomial{,_window}(): Use cpl_size
+
+2011-07-26  llundin
+
+	* cpl_image_fft(): Proper handling of limited image size support
+	* cpl_image_iqe(): Improve limited size support in cpl_iqe()
+	* cpl_matrix_decomp_lu(), cpl_matrix_get_minpos(),
+	  cpl_matrix_get_maxpos(): Use cpl_size
+	* Use cpl_size except for int* functions
+	* Avoid implicit cast to size_t
+	* cpl_fit_image_gaussian(): Redeclare int parms to cpl_size
+	* cpl_fit_lvmq_(): Explicit cast of cpl_size to size_t
+	* Fix formatting. cpl_fit_imagelist_polynomial(),
+	  cpl_fit_imagelist_polynomial_window(): Use CPL_ATTR_ALLOC
+	* cpl_fit_image_gaussian(): Fix cpl_size* warning
+
+2011-07-21  llundin
+
+	* Fix header inclusion error, indent
+	* Fix cpl_size warnings, support calls w. pre-existing error, fix
+	  indentation, avoid direct image-struct access, reduce header
+	  inclusion
+	* Fix cast/cpl_size warnings
+	* Use cpl_size
+	* Fix cpl_size * warning
+	* cpl_flux_get_noise_window(), cpl_flux_get_bias_window(): Simplify
+	  error propagation
+	* Avoid cast of cpl_size to int
+	* Use cpl_size
+	* rm redundant header-files, indenting
+	* rm space in front of ;
+	* cpl_plot_columns(),cpL_plot_bivectors(): Use cpl_size
+	* cpl_mask_load*(): Use cpl_size also for plane and extension
+	* cpl_fits_count_extensions(),cpl_fits_find_extension(): Use
+	  cpl_size
+	* Use cpl_size
+	* cpl_load image(list): Use cpl_size also for plane and extension
+	* Use cpl_size
+
+2011-07-20  llundin
+
+	* Use cpl_size
+	* Use cpl_size
+	* Use cpl_size
+	* Use cpl_size - also for relevant object tests
+	* Use cpl_size
+	* Use cpl_size
+	* Use cpl_size
+
+2011-07-19  llundin
+
+	* cpl_tools_shift_window(): Use cpl_size. cast cpl_size <=> size_t
+	* cpl_image_io uses cpl_size
+	* rm space before ;
+	* Fix -Wconversion
+	* Use cpl_size for cpl_mask+cpl_vector
+	* cpl_plot_vector(), cpl_plot_mask(): Use cpl_size
+	* use cpl_size
+	* cpl_test_init_macro(): sizeof(cpl_size)
+
+2011-07-08  llundin
+
+	* CFITSIO support for I/O of largest possible buffers
+	* rm space preceeding ;
+	* cpl_mask_save(), cpl_mask_load_(), cpl_mask_load_one(): Use
+	  CPL_FITSIO_TYPE etc
+	* mv macros for "CFITSIO support for I/O of largest possible
+	  buffers" to cpl_tool.sh
+	* cpl_imagelist_collapse_sigclip_create(): Merge changes from 5.3
+	  branch (DFS08476)
+
+2011-07-04  llundin
+
+	* cpl_imagelist_collapse_sigclip_create(): Use different CPL error
+	  codes for different types of errors (instead of just
+	  CPL_ERROR_ILLEGAL_INPUT) (bis)
+	* cpl_imagelist_collapse_sigclip_create(): Use different CPL error
+	  codes for different types of errors (instead of just
+	  CPL_ERROR_ILLEGAL_INPUT)
+
+2011-07-01  llundin
+
+	* Merge in changes in cpl-5_3_0-BRANCH
+	* Merge in changes in cpl-5_3_0-BRANCH (mostly DFS10427)
+	* Merge in changes in cpl-5_3_0-BRANCH (mostly DFS10416 + doxygen
+	  typos)
+	* Merge in changes in cpl-5_3_0-BRANCH (mostly DFS10232)
+	* Merge changes from cpl-5_3_0-BRANCH (cpl_vector_count_distinct())
+	* Merge changes from 5.3 branch (cpl_tools_get_mean)
+
+2011-05-13  llundin
+
+	* Merge in changes from 5.3 branch (cpl_test_* changes)
+
+2011-05-11  llundin
+
+	* Merge in changes from 5.3 branch (DFS10280)
+
+2011-04-20  llundin
+
+	* Merge in changes from 5.3 branch: Add cpl_polynomial_impl.h with
+	  declaration of cpl_polynomial_fit_1d()
+	* Merge changes from 5.3 branch (include cpl_error_impl.h)
+	* Merge changes from 5.3 branch (fix gcc 4.6 warnings)
+	* cpl_fit_imagelist_polynomial{,_window}(): Handle complex input
+	  (DFS10232)
+	* cpl_fit_imagelist_polynomial_tests(): various clean-up, prep for
+	  test of new bug
+	* cpl_fit_imagelist_polynomial_tests(): various clean-up
+	* cpl_fit_imagelist_polynomial_window(): Fix minor doxygen issues,
+	  improve comments and variable names, use cpl_error_set_where_().
+	  cpl_fit_imagelist_polynomial(): improve variable names, use
+	  cpl_error_set_where_()
+
+2011-04-19  llundin
+
+	* bigauss(), bigauss_derivative(): Declare with CPL_ATTR_NONNULL,
+	  add internal const modifiers. bigauss_derivative(): Avoid
+	  division by zero, use single point of return
+	* cpl_apertures_get_fwhm(): Move to cpl_apertures.h and deprecate
+	  together with cpl_apertures_img.h
+
+2011-04-18  llundin
+
+	* Merge changes from 5.3 branch (fix gcc 4.6 warnings)
+	* Merge change from 5.3 branch: cpl_msg_progress(),
+	  cpl_tools_get_cputime(): Fix gcc 4.6 warnings
+
+2011-04-15  llundin
+
+	* Merge in changes from 5.3 branch
+
+2011-04-15  cizzo
+
+	* Add omp.h including... since not just pragmas are used.
+
+2011-04-13  cizzo
+
+	* Thread safe version
+	* Thread safe varsion
+
+2011-04-13  llundin
+
+	* Merge in changes from 5.3 branch (bis)
+	* Merge in changes from 5.3 branch
+	* Merge in changes from 5.3 branch (cpl_error_set_where_() + return
+	  replaces cpl_ensure(0,...), fixes clang warning)
+
+2011-04-12  cizzo
+
+	* Fix wrong association of cpl_size definition and used format (it
+	  caused compiler warnings and a segfault in the test modules for
+	  cpl_test and cpl_vector)
+	* Added backward compatibility with cplsize = int
+
+2011-04-12  llundin
+
+	* Merge in changes from 5.3 branch (DFS10210)
+	* cpl_test_get_description_[ab](): Added.
+	  cpl_test_get_description(): Redeclare to alloc, add FFTW version
+	* cpl_test_get_description(): Added size of cpl_size
+	* CPL_SIZE_BITS: Support an alternative definition of cpl_size, to
+	  int (as per CPL meeting 2011-03-24)
+	* Merge in changes from 5.3 branch
+
+2011-04-08  llundin
+
+	* Merge in changes from 5.3 branch (DFS09012)
+
+2011-04-06  llundin
+
+	* Merge in changes from 5.3 branch (DFS10192)
+
+2011-04-05  rpalsa
+
+	* cpl_propertylist_dump(): Empty character constant fixed.
+	* cpl_propertylist_dump(): Variable definitions changed to match
+	  the changed return type of cpl_property_get_size().
+	* Adapt to changed return type of of cpl_property_get_size()
+
+2011-04-05  llundin
+
+	* Merge in changes from 5.3 branch (Fix gcc 4.6 warnings)
+
+2011-04-04  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Improved check on available cfitsio version.
+	  Set minimum required version to 3.260.
+
+2011-04-01  cizzo
+
+	* Add unit tests about extended functionality of
+	  cpl_table_and_selected() and cpl_table_or_selected(), now
+	  supporting also string columns
+	* cpl_table_and_selected() and cpl_table_or_selected() now support
+	  comparison between string columns
+
+2011-04-01  llundin
+
+	* Merge in changes from 5.3 branch for DFS09020
+	* cpl_tools_get_bpp(): Merge in changes from 5.3 branch (DFS09020)
+	* Merge in changes from 5.3 branch (DFS09020, DFS09331)
+	* revert previous edit
+	* cpl_*_save*(): cpl_type replaces cpl_type_bpp (DFS09020)
+
+2011-03-28  rpalsa
+
+	* cpl_property_get_size(): Interface updated to match prototype.
+
+2011-03-25  cizzo
+
+	* Fix doc to cpl_ppm_match_points(), using non-deprecated
+	  cpl_polynomial_fit() in the code example (DFS09113)
+
+2011-03-18  rpalsa
+
+	* Package version updated.
+	* Preliminary support for 8-byte integer (long long) properties.
+
+2011-03-03  cizzo
+
+	* Compatible with cpl_size being 64bit integers
+
+2011-03-03  llundin
+
+	* cpl_error_set_message_( replaces cpl_error_set_message(cpl_func,
+	* cpl_vector_save(): Support largest length possible w. unit test
+	  (default inactive)
+	* cpl_vector_load(): Support loading of long vectors
+
+2011-03-02  llundin
+
+	* cpl_size replaces int where neeeded for cpl_vector
+	* cpl_apertures_extract{,_window}(): Use cpl_size for
+	  cpl_vector-related variables
+
+2011-03-02  cizzo
+
+	* Use LONGLONG cfitsio calls where appropriate in cpl_table_save()
+	  and cpl_table_load()
+	* typedef cpl_size to 64 bits signed int (based on cx lib)
+
+2011-03-02  llundin
+
+	* cpl_xmemory_count(): Name the critical section (DFS10059)
+	* cpl_vector_fit_gaussian_test_one(): Replaces inactive code to
+	  test fix of DFS06126. cpl_vector_{corr,stdev}_bench(): Use
+	  CPL_SIZE_FORMAT
+
+2011-03-02  cizzo
+
+	* Switch to cpl_size type the appropriate integers.
+	* Fix wrong allocation of nb array in cpl_table_save(), and invalid
+	  return in case of error in cpl_table_get_column_depth()
+
+2011-03-01  llundin
+
+	* CPL_SIZE_FORMAT replaces int for cpl_vector
+
+2011-03-01  rpalsa
+
+	* CPL_CHECK_CFITSIO(): Distributers may have changed the cfitsio
+	  build system to provide proper shared library dependencies. An
+	  extra test has been added to catch this case.
+	* CPL_CONFIG_CFITSIO(): Use cpl_cv_cfitsio_is_thread_safe instead
+	  of cpl_cv_cfitsio_requires_pthread to check whether cfitsio
+	  supports threads.
+
+2011-03-01  llundin
+
+	* cpl_tools_permute_*(): Complete change to cpl_size
+	* cpl_apertures_extract{,_window}(): Use cpl_size for
+	  cpl_vector-related variables
+
+2011-03-01  cizzo
+
+	* Change relevant ints to cpl_size type, and make use of the proper
+	  format strings when printing values of type cpl_size
+
+2011-03-01  llundin
+
+	* CPL_SIZE_FORMAT replaces d for cpl_bivector_get_size()
+	* cpl_vector_ensure_distinct(): Redeclare to use cpl_size,
+	  cpl_error_set_message_() replaces cpl_error_set_message_macro().
+	  cpl_fits_add_properties(): cpl_error_set_where_() replaces
+	  cpl_error_set_where(). Move system #include down in .c to expose
+	  any missing includes in .h.
+	* cpl_vector_get_noise(), cpl_vector_get_fwhm()" cpl_size replaces
+	  int (DRAFT)
+	* CPL_SIZE_FORMAT replaces ld w. long-cast. cpl_vector_load(): rm
+	  redundant cast of long nx
+	* @defgroup cpl_type replaces cpl_types. rm redundant and out-dated
+	  doxygen of type codes. Add doxygen of cpl_size and
+	  CPL_SIZE_FORMAT
+
+2011-02-28  llundin
+
+	* cpl_size replaces int where neeeded - DRAFT, use only w. cpl_size
+	  defined to int
+
+2011-02-28  cizzo
+
+	* Make the cpl_size typedef public
+
+2011-02-25  llundin
+
+	* Move static type-specific declarations
+
+2011-02-25  cizzo
+
+	* Add protoypes for supporting cpl_size (long) type
+	* Switch to cpl_size type
+	* Min required changes for a permutation vector of type cpl_size
+
+2011-02-24  llundin
+
+	* cpl_fit_image_gaussian_tests(): Redeclared to take a supported
+	  pixel type; Call it with all 3 of them. Also test the returned
+	  error code
+
+2011-02-23  llundin
+
+	* cpl_matrix_shift(): Use memmove() to reduce copying (for all
+	  shifts). cpl_matrix_get_determinant(): rm assert(), improve error
+	  message
+
+2011-02-22  rpalsa
+
+	* Added again.
+	* Correct the library version.
+	  Call CPL_CONFIG_CFITSIO instead of CPL_CHECK_CFITSIO.
+	* CPL_CHECK_CFITSIO(): Save the result of the libpthread dependency
+	  check to a cache variable.
+	* CPL_CONFIG_CFITSIO(): Added. It relies on CPL_CHECK_CFITSIO, but
+	  requires cfitsio to be thread-safe if building CPL with
+	  thread-support was requested.
+
+2011-02-21  rpalsa
+
+	* Entries reordered.
+
+2011-02-21  cizzo
+
+	* CPL_OPENMP(): Remove call to _AC_CC. Supported only by newer
+	  autotools.
+	* Obsolete.
+	* Fix typo: configure libcext subdirectory if building with a
+	  packaged libcext source tree.
+	* CPL_CONFIG_CEXT(): Add proper compiler flags in case of building
+	  with a packaged libcext.
+
+2011-02-21  rpalsa
+
+	* Build system updated in preparation for multi-threaded
+	  environments.
+	* _cpl_propertylist_to_fitsfile(): Bug fixed affecting the
+	  representation of a character property in the FITS header.
+	  Changed back to a single character string from its numerical
+	  equivalent.
+
+2011-02-21  llundin
+
+	* 5.3.1cvs -> 5.3.2cvs
+
+2011-02-18  llundin
+
+	* 5.3.0 -> 5.3.1cvs
+	* 5.3.0b1 -> 5.3.0
+
+2011-02-17  llundin
+
+	* cpl_matrix_shift(): Use memmove() to reduce copying (so far for
+	  simple shifts)
+
+2011-02-15  llundin
+
+	* cpl_wcs_new_from_propertylist(): Test absence of WCS input w.
+	  non-empty input
+	* cpl_wcs_new_from_propertylist(): Make sure to set a CPL error
+	  code in absence of WCS input. cpl_wcs_is_table(): Replaces
+	  cpl_wcs_get_istab(), fix return values on error and do not
+	  compile (per default)
+	* On 05/02/2011 07:43, Jim Lewis wrote:
+	  > Hi Klaus,
+	  >
+	  > Here is a new version of the cpl_wcs module. This includes
+	  cpl_wcs.c, cpl_wcs.h and cpl_wcs-test.c. Have a look and tell me
+	  what you think...
+	  >
+	  > cheers, Jim
+	* cpl_fit_image_gaussian(): Use cpl_image_count_rejected().
+	  cpl_fit_imagelist_polynomial_window(): rm useless assert()s,
+	  cpl_image_wrap() replaces cpl_image_new()
+
+2011-02-14  cizzo
+
+	* In cpl_fit_image_gaussian() avoid casting to float when input
+	  images are different from float, and prevent handling of complex
+	  types, and different types for data and error images
+	* Test against complex types and type mismatch between data and
+	  error images in cpl_fits_image_gaussian()
+
+2011-02-11  llundin
+
+	* cpl_fit_imagelist_polynomial_window(): Fix const warnings.
+	  bigauss(): CPL_MATH_2PI replaces 2 * CPL_MATH_PI.
+	  cpl_fit_image_gaussian(): Reduce scope of fitting variables,
+	  CPL_MATH_2PI replaces 2 * CPL_MATH_PI, CPL_MATH_PI_2 replaces
+	  CPL_MATH_PI / 2, avoid sqrt() call on error, compute covariance
+	  via cpl_matrix_product_bilinear(), fix comment typo
+	* cpl_matrix_shift(): Preserve pointer to elements and improve unit
+	  tests
+
+2011-02-11  cizzo
+
+	* Use expected error, and not computed error, for comparing
+	  expected and computed values. Better doc on the uncertainty
+	  implied by a 3-sigma level comparison
+
+2011-02-11  llundin
+
+	* static cpl_matrix_set_size_(): Added.
+	  cpl_matrix_product(),cpl_matrix_product_transpose(),cpl_matrix_product_bilinear():
+	  Use cpl_matrix_set_size_(). Also: cpl_error_set\w*_() replaces
+	  ditto w. cpl_func
+
+2011-02-10  llundin
+
+	* check_gauss_success(): Verify that the covariance is SPD. Also:
+	  CPL_MATH_DEG_RAD replaces 180 / CPL_MATH_PI and CPL_MATH_2PI
+	  replaces 2 * CPL_MATH_PI
+
+2011-02-10  cizzo
+
+	* Fix check in check_gauss_success(), using error, not value itself
+	  as error.
+
+2011-02-10  llundin
+
+	* cpl_matrix_product_bilinear(): Added with unit test. Also: Avoid
+	  overflow in calls to cpl_tools_add_flops()
+	* cpl_test_matrix_abs(): Added w. unit-tests
+	* cpl_matrix_product{,_transpose}(): Fix segfault on resize
+	  (DFS10005). Also: Add @internal to all non-exported functions
+
+2011-02-09  llundin
+
+	* cpl_fit_lvmq_(): Replaces _cpl_fit_lvmq(). cpl_fit_lvmq():
+	  Simplify error propagation. cpl_fit_image_gaussian(): Do not
+	  reset pre-existing error, set CPL_ERROR_SINGULAR_MATRIX when
+	  returning that, deallocate own_cov on error also when covariance
+	  is NULL, propagate error, cpl_error_set\w*_() replaces ditto w.
+	  cpl_func (DFS10002)
+	* cpl_fit_image_gaussian(): Fix segfault on non-NULL im_err and
+	  NULL red_chisq (DFS10001)
+	* cpl_fit_image_gaussian(): Fix memory leak (DFS10000)
+
+2011-01-28  llundin
+
+	* 5.3.0b1 -> 5.3.0cvs
+	* 5.3.0cvs -> 5.3.0b1
+	* Updated
+
+2011-01-28  cizzo
+
+	* Prevent compiler warnings from cpl_table_save()
+
+2011-01-26  llundin
+
+	* cpl_error_set_wcs_macro(): Support empty string instead of
+	  function name
+	* cpl_error_set_fits_macro(): Support empty string instead of
+	  function name
+
+2011-01-26  cizzo
+
+	* Fix incorrect error message in cpl_table_save()
+
+2011-01-25  cizzo
+
+	* Add new test for columns of arrays of strings (commented)
+	* Add support for arrays of strings in cpl_table_save() too, not
+	  just cpl_table_load(). Fix wrong number of arrayof string
+	  elements read in cpl_table_load()
+
+2011-01-25  llundin
+
+	* cpl_dfs_extract_printable(): Guard from CFITSIO v. 3.26 and
+	  improve comments
+	* cpl_error_set_fits_macro(): Drop cast, fits_get_errstatus() is
+	  already void
+
+2011-01-24  cgarcia
+
+	* Substitute imaginary by img_imag and real by img_real in the
+	  complex operations (Fix DFS09015)
+
+2011-01-24  llundin
+
+	* cpl_dfs_extract_printable(): Extract a string valid for a FITS
+	  header. cpl_dfs_setup_product_header(): Pass parameters comments
+	  through cpl_dfs_extract_printable() (DFS09935) w. unit-test
+
+2011-01-21  llundin
+
+	* return cpl_error_set_{,where_}() replaces harder-to-read
+	  cpl_ensure_code(0, ...)
+
+2011-01-21  cizzo
+
+	* Correct call to cpl_ensure_code() in
+	  cpl_dfs_setup_product_header()
+
+2011-01-21  llundin
+
+	* cpl_image_load_one(): naxes must have space for 3 elements
+	  (DFS09929)
+
+2011-01-21  kbanse
+
+	* add #ifdef _OPENMP
+
+2011-01-17  kbanse
+
+	* local static vars not o.k. - so use threadprivate directive for
+	  OMP
+
+2011-01-14  kbanse
+
+	* remove global static variables
+
+2011-01-14  cizzo
+
+	* Ensure that after each comparison test no error is set
+
+2011-01-13  cizzo
+
+	* Safer math in cpl_column_pow_float_complex() and
+	  cpl_column_pow_double_complex()
+
+2011-01-13  llundin
+
+	* 5.3.0a3 -> 5.3.0cvs
+	* 5.3.0cvs -> 5.3.0a3
+	* cpl_flux_get_window(): rm nonnull attribute (DFS09871)
+
+2011-01-12  llundin
+
+	* 5.3.0a2 -> 5.3.0cvs
+	* 5.3.0cvs -> 5.3.0a2
+	* filter_median_1(), filter_median(): rm dead code (for support for
+	  different pixel types in input and output). filter_median():
+	  const modifiers added to local declarations
+
+2011-01-12  cizzo
+
+	* Guard complex declarations
+	* Extra test about assignment of complex elements in tables
+
+2011-01-11  llundin
+
+	* attribute warn_unused_result only supported from gcc 3.4.
+	  CPL_ATTR_REALLOC: Warn on unused result also for gcc 3.4 to 4.2 +
+	  malloc attribute for gcc 3.0 to 3.3
+	* NULL-input tests. cpl_plugin_dump(): Test added
+	* cpl_plugin_get_version_string(), cpl_plugin_get_type_string():
+	  Use CPL_ATTR_ALLOC
+	* cpl_plugin_set_synopsis(), cpl_plugin_set_description(): Fix
+	  NULL-value doxygen-bug (DFS09864).
+	  cpl_plugin_get_version_string(), cpl_plugin_get_type_string():
+	  cpl_sprintf() replaces strlen()+strcpy()/sprintf().
+	  cpl_error_set*_() replaces cpl_error_set*() + _id.
+	  cpl_plugin_set_*(): cx_strdup() replaces
+	  strlen()+strcpy()/sprintf()
+
+2011-01-10  llundin
+
+	* LDFLAGS = $(CFITSIO_LDFLAGS) added (for CFITSIO)
+	* cpl_flux_get_window(): Fix guard on nonnull attribute
+
+2011-01-05  llundin
+
+	* cpl_propertylist_update_string(), cpl_propertylist_set_string(),
+	  cpl_propertylist_insert_string(),
+	  cpl_propertylist_insert_after_string(),
+	  cpl_propertylist_prepend_string(): Handle NULL value, unit tests
+	  added (DFS09860)
+
+2011-01-04  llundin
+
+	* cpl_test_abs_complex() replaces cpl_test_abs() w. creal+cimag
+	* cpl_test_abs_complex() tests
+
+2011-01-04  cizzo
+
+	* Added tests regarding the support of complex types
+	* Fix wrong logic in cpl_column_pow_xxx_complex()
+	* Added macro cpl_test_abs_complex()
+	* Better doc to cpl_table_logarithm_column()
+
+2011-01-03  llundin
+
+	* cpl_recipedefine_{create,exec,destroy}(): Improve error message.
+	  cpl_recipedefine_create_is_ok(): Make sure to propagate any
+	  fill-error
+	* cpl_error_set_message_() replaces cpl_error_set_message()
+	* cpl_recipedefine_create_is_ok(): redeclare to take cpl_error_code
+	  instead of int
+	* cpl_xmemory_resize(): Fix (gcc 4.5) const warnings
+
+2011-01-03  cizzo
+
+	* Correct writing of complex numbers to FITS, in cpl_table_save()
+
+2011-01-03  llundin
+
+	* Do not fail on missing perl
+
+2011-01-03  cizzo
+
+	* Fix wrong memory handling with complex types in cpl_table_save()
+	* Fix wrong type check in cpl_column_fill_double_complex()
+

@@ -1,0 +1,295 @@
+
+In this file:
+
+* About CPL
+* Prerequisites
+*   Required dependencies
+*   Optional dependencies
+*   Links
+* Installation
+*   Installing CFITSIO
+*   Gasgano Support
+*   Third party libraries
+*   Installing CPL
+* Installing CPL on the macOS platform
+* Reporting Bugs
+
+
+About CPL
+---------
+This is version 7.1.4 of the ESO Common Pipeline libraries (CPL).
+
+This package includes libraries that are central to the development and
+execution of pipeline recipes as they are operated by ESO for all VLT
+instruments, miscellaneous HTML documentation and regression tests.
+
+
+Prerequisites
+-------------
+
+For installing the CPL or to use it for your own software project you, at
+least, need a C99 compliant compiler (gcc version 4.4 or newer).
+
+In addition, a few third party libraries are used, which are listed below. If
+the target system provides these dependencies they may be used, however the
+system provided libraries must meet certain requirements which are given in
+the Installation section. The recommended way of installing the third party
+libraries for CPL is to re-compile them from source. The references for
+obtaining the third party (source) packages are given in the Links section.
+
+Required dependencies:
+----------------------
+
+- CFITSIO v3.350 or newer
+- wcslib 4.24 or newer
+- fftw 3.3.3 or newer
+
+The dependencies fftw and wcslib are required by default. However, if needed,
+their use can be disabled using an option when running 'configure'.
+
+Optional dependencies:
+----------------------
+
+- Gasgano 2.4.8
+- Oracle Java JDK 7 or newer
+
+Note that in order to build and install the CPL Gasgano interface both
+dependencies, the Gasgano package and the Java Development Kit must be
+installed.
+
+
+Links:
+------
+
+ CFITSIO:  http://heasarc.gsfc.nasa.gov/fitsio
+ Gasgano:  http://www.eso.org/sci/software/gasgano
+ Java JDK: http://www.oracle.com/technetwork/java/javase/downloads/index.html
+ wcslib:   http://www.atnf.csiro.au/people/mcalabre/WCS
+
+
+
+Installation
+------------
+
+This section gives an overview of the CPL installation process. Before the
+CPL package itself can be installed, all required dependencies must be
+installed, as well as all selected optional packages. Note that for the Gasgano
+support, both the Gasgano package and the Java JDK must be installed. All
+dependencies are independent of each other and may be installed in any order.
+
+With the exception of the Gasgano package, and the Java JDK, it is recommended
+that all dependencies are installed into a single, separate directory tree, i.e
+a single, common directory should be given as '--prefix' option when running
+the configure script of the different packages.
+
+If the target directory of the installation is not a system directory like
+'/usr' or '/usr/local' (which would require superuser privileges!) it is
+recommended to setup the search path environment variable of the runtime
+linker so that it includes the the directory where the third party libraries
+will be located. The environment variable to be used is LD_LIBRARY_PATH on
+Linux based systems. For other systems one may have to consult the system
+documentation to find the equivalent environment variable.
+
+The environment variable should then be set such that the library search path
+contains the location of the libraries in the target directory structure, i.e
+the directory '<prefix>/lib' or '<prefix>/lib64' depending on what is the
+default name for library locations on the target system. The latter may be
+used on 64 bit Linux systems, while the first one may be used on both, 32 bit
+and 64 bit systems. Actually on 64 bit systems it is recommended to put both
+in the library search path, however care should be taken that '<prefix>/lib64'
+comes first.
+
+As an example, for a 64 bit Linux system the LD_LIBRARY_PATH may be set as
+follows, assuming that <prefix> is '$HOME/cpl', and a Bourne type shell is
+used:
+
+  $ export LD_LIBRARY_PATH=$HOME/cpl/lib64:$HOME/cpl/lib:$LD_LIBRARY_PATH
+
+
+Installing CFITSIO:
+-------------------
+
+By default CPL is built as a thread safe library, and unless the thread
+support is explicitly disabled, CPL relies on the presence of a thread safe
+CFITSIO library. In order to build a thread safe version of the CFITSIO
+library it has to be configured as outlined below (for detailed installation
+instructions please refer to the CFITSIO documentation).
+
+1. Unpack the CFITSIO tar-archive in a temporary place, where a directory
+  'cfitsio' will be created, and enter it.
+
+2. Configure the package. For being used with CPL it should be configured with
+   the options shown here (build a shared object library, thread support
+   compiled in):
+
+   $ ./configure --prefix=<prefix> --enable-shared --enable-reentrant
+
+3. Build and install the package by running
+
+   $ make
+   $ make shared
+   $ make install
+
+4. If the search path of the runtime loader does not yet include the location
+   of the CFITSIO libraries, it should be added, for instance by prepending it
+   to the environment variable LD_LIBRARY_PATH or the appropriate equivalent
+   (see above).
+
+Note that step 4 is essential if the system provides already a CFITSIO library
+which is not properly configured for CPL.
+
+After the installation is successfully completed, the CFITSIO sources are no
+longer needed, and may be removed.
+
+
+Gasgano support:
+----------------
+
+If the support library for ESO's Java based data organizing tool should
+be built, both, the Gasgano tool itself, and the Java Development Kit (JDK)
+must be present on the system. Please note that the Java Runtime Environment
+(JRE), which whould be sufficient to run Gasgano, is not enough to build CPL's
+Gasgano support library!
+
+Both packages are installed by unpacking the respective tar-archives in a
+suitable place, and adding the location of the executables to the PATH
+environment variable.
+
+In addition to that the JAVA_HOME environment variable should point to the
+root directory of the JDK installation.
+
+
+Third party libraries:
+----------------------
+
+Please follow the installation instructions shipped with the respective source
+packages.
+
+
+Installing CPL
+--------------
+
+Package configuration:
+
+After all dependencies were successfully installed, the system is ready to
+install the CPL itself. To do so, unpack the CPL tar-archive in a directory
+of your choice (if you are reading this file you probably managed to do so
+already) and change directory into the top-level directory of the CPL source
+tree.
+
+The CPL source tree is setup for the target system by running the configure
+script found in the top-level directory of the source tree. In general, i.e.
+if the third party libraries were installed into non-standard directories, the
+configure script must be told where these libraries can be found. This can be
+done by either setting environment variables, which may be convenient if it
+is planned to install CPL more than once, or one can use command line options
+(if both, environment variables and command line options are used, the
+command line options take precedence).
+
+The following table shows for each of the third party libraries the command
+line option, and the equivalent environment variable which can be used to
+specify their location.
+
+   library     option            environment
+   -------     ------            -----------
+   CFITSIO     --with-cfitsio    CFITSIODIR
+   libwcs      --with-wcslib     WCSDIR
+   fftw        --with-fftw       FFTWDIR
+
+Both, the command line option and the environment variable expect as an
+argument or value respectively the path to the root directory of the library
+installation, i.e. if, for instance, '$HOME/cpl' is given as location of one
+of the third party libraries, it is expected that the header files are found
+in '$HOME/cpl/include' and the libraries in '$HOME/cpl/lib', or
+'$HOME/cpl/lib64'.
+
+In case a more fine grained control is needed when specifying third party
+library locations, there are also command line options which allow to give the
+location of headers and libraries directly. Run 'configure --h' for details.
+These (expert) command line options have no environment variable counterpart.
+
+
+If the Gasgano support library should be built and installed, the configure
+script has to find the JDK and the Gasgano installation. The configure script
+tries to find both in a few default places, but in case this does not succeed,
+the location of both packages can be given similar to the third party library
+packages.
+
+The root directory of the Gasgano installation my be given on the command line
+of the configure script using the option '--with-gasgano', or setting the
+environment variable 'GASGANODIR'. An expert option '--with-gasgano-classpath'
+allows to directly specify the location of the Gasgano jar files, if using the
+standard option '--with-gasgano' does not succeed. Usually they can be found in
+the subdirectory 'share' of the Gasgano installation.
+
+By default, the JDK installation is searched at the location given by the
+JAVA_HOME environment variable. However the root directory of the JDK
+installation may also be passed to 'configure' using the command line option
+'--with-java'. Using this option 'configure' assumes that the required C header
+files are found in the subdirectories 'includes' and 'includes/<platform>' of
+the JDK installation. Here, <platform> is usually the name of your operating
+system, for instance 'linux' on a Linux system, but this may not be true in
+all cases.
+
+If running configure using '--with-java' does not succeed, you may want to try
+the expert options '--with-java-includes' and '--with-java-includes-md' to set
+the include directories explicitly to the subdirectories of the JDK containing
+the files 'jni.h' and 'jni_md.h' respectively.
+
+
+The target directory of the CPL installation is specified by either setting
+the environment variable CPLDIR to the desired path, or by using the configure
+command line option `--prefix'. If the target directory does not yet exist it
+will be created.
+If nothing is specified the CPL will be installed into `/usr/local' by default.
+Note that in this case you must have superuser privileges to install CPL!
+
+
+
+Building and Installing CPL:
+
+The following shows the necessary steps to build and install CPL. For that,
+it is assumed that CPL should be installed in $HOME/cpl, CFITSIO was
+installed in $HOME/cpl/lib and $HOME/cpl/include and fftw and wcslib are
+provided by the system.
+
+To configure, build and install CPL one needs to execute the following commands
+in the top-level directory of the source tree:
+
+$ ./configure --prefix=$HOME/cpl --with-cfitsio=$HOME/cpl --with-fftw=/usr \
+> --with-wcslib=/usr
+$ make
+$ make install
+
+Optionally, the HTML reference manual can be installed executing also the
+command:
+
+$ make install-doxygen
+
+By default this installs the HTML reference manual into the subdirectory
+'share/doc/cpl/html' of the installation tree.
+
+Finally, if the CPL was not installed in one of the standard system
+directories, the location of the CPL libraries has to be added to the
+runtime loader's search path by properly setting the LD_LIBRARY_PATH
+variable (or the target system's equivalent).
+
+
+Installing CPL on the macOS platform:
+-------------------------------------
+
+CPL can be built, installed and used on this platform. To build
+CPL on the macOS platform, the following has to be taken into account:
+
+ - On OS X 10.8 or newer a gcc installation is recommended to build CPL.
+   The OS X 10.8 default compiler (clang) is not supported by CPL versions
+   prior to and including CPL 6.1.1!
+
+ - The symbol for the runtime loader search path is DYLD_LIBRARY_PATH and it
+   has to replace LD_LIBRARY_PATH in the installation instructions.
+
+
+Reporting Bugs
+--------------
+
+Please report any bugs to <cpl-help@eso.org>

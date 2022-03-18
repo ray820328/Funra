@@ -1,0 +1,27 @@
+\_form#0=278x20:$\frac{(1*1.0+2*2.0+3*3.0+4*4.0+5*5.0+6*6.0+7*7.0+8*8.0+9*9.0)} {1+2+3+4+5+6+7+8+9}$
+\_form#1=408x10:$1*1.0+2*2.0+3*3.0+4*4.0+5*5.0+6*6.0+7*7.0+8*8.0+9*9.0$
+\_form#2=278x20:$\frac{(1*1.0+2*2.0+3*3.0+4*4.0+5*5.0+6*6.0+7*7.0+8*8.0+9*9.0)}{1+2+3+4+5+6+7+8+9}$
+\_form#3=14x14:$\chi^2$
+\_form#4=545x39:\[ z = B + \frac{A}{2 \pi \sigma_x \sigma_y \sqrt{1-\rho^2}} \exp\left({-\frac{1}{2\left(1-\rho^2\right)} \left(\left(\frac{x - \mu_x}{\sigma_x}\right)^2 -2\rho\left(\frac{x - \mu_x}{\sigma_x}\right) \left(\frac{y - \mu_y}{\sigma_y}\right) + \left(\frac{y - \mu_y}{\sigma_y}\right)^2\right)}\right) \]
+\_form#5=10x10:$B$
+\_form#6=10x10:$A$
+\_form#7=121x126:\begin{eqnarray*} \mathrm{parameters[0]} &=& B \\ \mathrm{parameters[1]} &=& A \\ \mathrm{parameters[2]} &=& \rho \\ \mathrm{parameters[3]} &=& \mu_x \\ \mathrm{parameters[4]} &=& \mu_y \\ \mathrm{parameters[5]} &=& \sigma_x \\ \mathrm{parameters[6]} &=& \sigma_y \end{eqnarray*}
+\_form#8=18x13:$a, b$
+\_form#9=6x10:$\theta$
+\_form#10=278x119:\begin{eqnarray*} \theta &=& \frac{1}{2} \arctan \left(2 \rho \frac{\sigma_x \sigma_y} {\sigma_x^2 - \sigma_y^2}\right) \\ a &=& \sigma_x \sigma_y \sqrt{2(1-\rho^2) \frac{\cos 2\theta} {\left(\sigma_x^2 + \sigma_y^2\right) \cos 2\theta + \sigma_y^2 - \sigma_x^2}} \\ b &=& \sigma_x \sigma_y \sqrt{2(1-\rho^2) \frac{\cos 2\theta} {\left(\sigma_x^2 + \sigma_y^2\right) \cos 2\theta - \sigma_y^2 + \sigma_x^2}} \end{eqnarray*}
+\_form#11=8x6:$x$
+\_form#12=29x14:$-\pi/2$
+\_form#13=29x14:$+\pi/2$
+\_form#14=30x11:$\rho = 0$
+\_form#15=43x13:$\sigma_x \geq \sigma_y$
+\_form#16=54x51:\begin{eqnarray*} \theta &=& 0 \\ a &=& \sigma_x \\ b &=& \sigma_y \end{eqnarray*}
+\_form#17=43x11:$\sigma_x < \sigma_y$
+\_form#18=8x9:$y$
+\_form#19=54x55:\begin{eqnarray*} \theta &=& \frac{\pi}{2} \\ a &=& \sigma_y \\ b &=& \sigma_x \end{eqnarray*}
+\_form#20=56x13:\[ \mathrm{G} = \mathrm{J} \mathrm{C} \mathrm{J}^\mathrm{T} \]
+\_form#21=180x14:$ (B, A, \rho, \mu_x, \mu_y, \sigma_x, \sigma_y) \rightarrow (\theta, a, b) $
+\_form#22=111x14:$x_{max} = w/2 + k * \sigma,$
+\_form#23=10x6:$w$
+\_form#24=159x16:$\sigma = w_{FWHM}/(2\sqrt(2\log(2))),$
+\_form#25=48x9:$w_{FWHM}$
+\_form#26=6x10:$k$

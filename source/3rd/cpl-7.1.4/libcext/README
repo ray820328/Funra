@@ -1,0 +1,36 @@
+
+In this file:
+
+* About libcext
+* Prerequisites
+* Installation
+* Reporting Bugs
+
+
+About libcext
+-------------
+This is version 1.2.4 of libcext, ESO's C Library Extensions. It is a C utility
+library, which is used to implement ESO's Common Pipeline Library (CPL).
+
+This package provides the libcext library including the on-line reference
+manual.
+
+
+Prerequisites
+--------------
+
+For installing libcext or to use it for your own software project you need
+an ANSI-C compiler (gcc version 3.2 or newer for instance).
+
+
+Installation
+------------
+
+For generic installation instructions please refer to the file INSTALL
+coming with this package.
+
+
+Reporting Bugs
+--------------
+
+Please report any bugs to <cpl-help@eso.org>

@@ -10,6 +10,7 @@ SET(SRC_LIB
         src/dict.c
         src/mt19937-64.c
         src/siphash.c
+        src/rdict.c
         src/rlist.c
         src/rtime.c
         src/rlog.c
