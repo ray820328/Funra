@@ -22,6 +22,7 @@ extern "C" {
 #include <inttypes.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 
 #include "rbase.h"
 
@@ -42,11 +43,12 @@ extern "C" {
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4319 4819)
-#endif
+#endif //_MSC_VER
+
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#endif
+#endif //__GNUC__
 #if defined(_WIN32) || defined(_WIN64)
 #pragma message("Platform info: "macro_print_macro(_WIN64))
 
@@ -113,7 +115,7 @@ extern "C" {
     }
 
 
-#define RAY_USE_POOL
+//#define RAY_USE_POOL
 
 #ifdef RAY_USE_POOL
 #define rnew_data(T) rcheck_value(true, rpool_get(T, rget_pool(T)))
@@ -183,6 +185,20 @@ extern "C" {
             #expr,                                        \
             msg);                                         \
     abort();                                              \
+  }                                                       \
+ } while (0)
+
+#define rassert_goto(expr, msg, code_int)                 \
+ do {                                                     \
+  if (!(expr)) {                                          \
+    msg = msg ? msg : "";                                 \
+    fprintf(stderr,                                       \
+            "Assertion failed in [ %s:%d (%s) ], [%d - %s ]\n", \
+            __FILE__,                                     \
+            __LINE__,                                     \
+            #expr,                                        \
+            code, msg);                                   \
+    goto exit##code_int;                                  \
   }                                                       \
  } while (0)
 

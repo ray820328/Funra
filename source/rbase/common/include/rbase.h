@@ -25,6 +25,7 @@ extern "C" {
 #define rayfree free
 
 #define fn_raymalloc(x) raymalloc((x))
+#define fn_raycmalloc(x, size_elem) calloc((x), (size_elem))
 #define fn_rayfree(x) \
     do { \
         rayfree((x)); \
