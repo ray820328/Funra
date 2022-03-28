@@ -29,6 +29,8 @@ extern "C" {
 #define sizeptr 8
 #define LPRId64 L"lld"
 
+#define rcheck_value(b, value) (value)
+
 #define macro_print_macro_helper(x)   #x  
 #define macro_print_macro(x)          #x"="macro_print_macro_helper(x)
 

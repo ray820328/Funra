@@ -12,6 +12,7 @@
 #include "rcommon.h"
 #include "rtime.h"
 #include "rlist.h"
+#include "rdict.h"
 #include "dict.h"
 
 #include "rbase/common/test/rtest.h"
@@ -23,10 +24,12 @@ rattribute_unused(static int run_test(const char* test, int benchmark_output, in
 
 static void rdict_test(void **state);
 static void rlist_test(void **state);
+static void dict_test(void **state);
 
 const static struct CMUnitTest tests[] = {
     cmocka_unit_test(rdict_test),
     cmocka_unit_test(rlist_test),
+    cmocka_unit_test(dict_test),
 };
 
 static int init() {
@@ -175,6 +178,100 @@ static void rlist_test(void **state) {
 }
 
 
+
+static void rdict_test(void **state) {
+    (void)state;
+    int count = 1;
+    long j;
+
+    init_benchmark(1024, "test rdict(%d)", count);
+
+    rdict dict_ins_stack = {
+        NULL, 0, 0, 0, 0, 0.0f, NULL,
+
+        //dic_hash_callback,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    };
+    
+    start_benchmark(0);
+    rdict* dict_ins = rdict_create(8, NULL);
+    assert_true(dict_ins);
+    end_benchmark("Linear access of existing elements (2nd round)");
+
+
+    //start_benchmark(0);
+    //for (j = 0; j < count; j++) {
+    //    int retval = dictAdd(dict, dic_longlong_2string(j), (void*)j);
+    //    assert_true(retval == DICT_OK);
+    //}
+    //assert_true((long)dictSize(dict) == count);
+
+    ///* Wait for rehashing. */
+    //while (dictIsRehashing(dict)) {
+    //    dictRehashMilliseconds(dict, 100);
+    //}
+
+    //for (j = 0; j < count; j++) {
+    //    char *key = dic_longlong_2string(j);
+    //    dictEntry *de = dictFind(dict, key);
+    //    assert_true(de != NULL);
+    //    zfree(key);
+    //}
+
+    //for (j = 0; j < count; j++) {
+    //    char *key = dic_longlong_2string(j);
+    //    dictEntry *de = dictFind(dict, key);
+    //    assert_true(de != NULL);
+    //    zfree(key);
+    //}
+    //end_benchmark("Linear access of existing elements (2nd round)");
+
+    //start_benchmark(0);
+    //for (j = 0; j < count; j++) {
+    //    char *key = dic_longlong_2string(rand() % count);
+    //    dictEntry *de = dictFind(dict, key);
+    //    assert_true(de != NULL);
+    //    zfree(key);
+    //}
+    //end_benchmark("Random access of existing elements");
+
+    //start_benchmark(0);
+    //for (j = 0; j < count; j++) {
+    //    dictEntry *de = dictGetRandomKey(dict);
+    //    assert_true(de != NULL);
+    //}
+    //end_benchmark("Accessing random keys");
+
+    //start_benchmark(0);
+    //for (j = 0; j < count; j++) {
+    //    char *key = dic_longlong_2string(rand() % count);
+    //    key[0] = 'X';
+    //    dictEntry *de = dictFind(dict, key);
+    //    assert_true(de == NULL);
+    //    zfree(key);
+    //}
+    //end_benchmark("Accessing missing");
+
+    //start_benchmark(0);
+    //for (j = 0; j < count; j++) {
+    //    char *key = dic_longlong_2string(j);
+    //    int retval = dictDelete(dict, key);
+    //    assert_true(retval == DICT_OK);
+    //    key[0] += 17; /* Change first number to letter. */
+    //    retval = dictAdd(dict, key, (void*)j);
+    //    assert_true(retval == DICT_OK);
+    //}
+    //end_benchmark("Removing and adding");
+    //dictRelease(dict);
+}
+
+
 static uint64_t dic_hash_callback(const void *key) {
     return dictGenHashFunction((unsigned char*)key, (int)strlen((char*)key));
 }
@@ -206,7 +303,7 @@ static char *dic_longlong_2string(long long value) {
 }
 
 
-static void rdict_test(void **state) {
+static void dict_test(void **state) {
     (void)state;
     int count = 10000;
     count = count > 0 ? count : 10000;

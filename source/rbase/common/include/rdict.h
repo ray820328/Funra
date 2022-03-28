@@ -21,8 +21,16 @@ extern "C" {
 #define rdict_size unsigned long
 #define rdict_size_max LONG_MAX
 #define rdict_size_min 0L
-#define rdict_init_capacity_default 4
+#define rdict_size_format "ul"
+#define rdict_bucket_capacity_default 16
+#define rdict_init_capacity_default 16
 #define rdict_scale_factor_default 0.75
+#define rdict_used_factor_default 0.75
+
+typedef enum rdict_code {
+    rdict_code_ok = 0,
+    rdict_code_error = 1,
+} rdict_code;
 
 typedef struct rdict_entry {
     union {
@@ -48,17 +56,18 @@ typedef struct rdict {
     rdict_entry **entry;
     rdict_size size;
     rdict_size capacity;
-    rdict_size init_capacity;
+    rdict_size buckets;
+    rdict_size bucket_capacity;
     float scale_factor;
     void* data_ext;
 
-    uint64_t(*hash_func)(const void *key);
+    uint64_t (*hash_func)(const void *key);
     void *(*copy_key_func)(void *data_ext, const void *key);
     void *(*copy_value_func)(void *data_ext, const void *obj);
-    int(*compare_key_func)(void *data_ext, const void *key1, const void *key2);
-    void(*free_key_func)(void *data_ext, void *key);
-    void(*free_value_func)(void *data_ext, void *obj);
-    void(*expand_failed_func)(void *data_ext);
+    int (*compare_key_func)(void *data_ext, const void *key1, const void *key2);
+    void (*free_key_func)(void *data_ext, void *key);
+    void (*free_value_func)(void *data_ext, void *obj);
+    void (*expand_failed_func)(void *data_ext);
 } rdict;
 
 typedef struct rdict_iterator {
@@ -68,7 +77,7 @@ typedef struct rdict_iterator {
     rdict_entry *entry, *next;
     /* unsafe iterator fingerprint for misuse detection. */
     long long fingerprint;
-} dictIterator;
+} rdict_iterator;
 
 typedef void (rdict_scan_func)(void *data_ext, const rdict_entry *de);
 typedef void (rdict_scan_bucket_func)(void *data_ext, rdict_entry **bucketref);
@@ -124,6 +133,9 @@ typedef void (rdict_scan_bucket_func)(void *data_ext, rdict_entry **bucketref);
         (d)->compare_key_func((d)->data_ext, key1, key2) : \
         (key1) == (key2))
 
+
+#define rdict_get_buckets(d) ((d)->entry)
+#define rdict_set_buckets(d, buckets) (d)->entry = (buckets)
 #define rdict_hash_key(d, key) (d)->hash_func(key)
 #define rdict_get_key(he) ((he)->key)
 #define rdict_get_value(he) ((he)->v.value)
