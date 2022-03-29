@@ -181,94 +181,70 @@ static void rlist_test(void **state) {
 
 static void rdict_test(void **state) {
     (void)state;
-    int count = 1;
+    int count = 1000;
     long j;
 
-    init_benchmark(1024, "test rdict(%d)", count);
+    rdict_entry de_temp = { .key.ptr = 0, .value.ptr = 0 };
 
-    rdict dict_ins_stack = {
-        NULL, 0, 0, 0, 0, 0.0f, NULL,
+    init_benchmark(1024, "test rdict(%d) - %d", count, de_temp.key.d);
 
-        //dic_hash_callback,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-    };
+    //rdict dict_ins_stack = {
+    //    NULL, NULL, 0, 0, 0, 0, 0.0f, NULL,
+
+    //    //dic_hash_callback,
+    //    NULL,
+    //    NULL,
+    //    NULL,
+    //    NULL,
+    //    NULL,
+    //    NULL,
+    //    NULL
+    //};
     
     start_benchmark(0);
-    rdict* dict_ins = rdict_create(8, NULL);
+    rdict* dict_ins = rdict_create(2000, NULL);
     assert_true(dict_ins);
-    end_benchmark("Linear access of existing elements (2nd round)");
+    end_benchmark("Create map.");
 
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        int ret = rdict_add(dict_ins, j, count + j);
+        assert_true(ret == rdict_code_ok);
+    }
+    assert_true(rdict_size(dict_ins) == count);
 
-    //start_benchmark(0);
-    //for (j = 0; j < count; j++) {
-    //    int retval = dictAdd(dict, dic_longlong_2string(j), (void*)j);
-    //    assert_true(retval == DICT_OK);
-    //}
-    //assert_true((long)dictSize(dict) == count);
+    for (j = 0; j < count; j++) {
+        rdict_entry *de = rdict_find(dict_ins, j);
+        assert_true(de != NULL && de->value.s64 == count + j);
+    }
+    end_benchmark("Linear access existing elements");
 
-    ///* Wait for rehashing. */
-    //while (dictIsRehashing(dict)) {
-    //    dictRehashMilliseconds(dict, 100);
-    //}
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        int index = rand() % count;
+        rdict_entry *de = rdict_find(dict_ins, index);
+        assert_true(de != NULL && de->value.s64 == count + index);
+    }
+    end_benchmark("Random access existing elements");
 
-    //for (j = 0; j < count; j++) {
-    //    char *key = dic_longlong_2string(j);
-    //    dictEntry *de = dictFind(dict, key);
-    //    assert_true(de != NULL);
-    //    zfree(key);
-    //}
+    start_benchmark(0);
+    for (j = count; j < 2 * count; j++) {
+        rdict_entry *de = rdict_find(dict_ins, j);
+        assert_true(de == NULL);
+    }
+    end_benchmark("Access missing keys");
 
-    //for (j = 0; j < count; j++) {
-    //    char *key = dic_longlong_2string(j);
-    //    dictEntry *de = dictFind(dict, key);
-    //    assert_true(de != NULL);
-    //    zfree(key);
-    //}
-    //end_benchmark("Linear access of existing elements (2nd round)");
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        int ret = rdict_remove(dict_ins, j);
+        assert_true(ret == rdict_code_ok);
+    }
+    assert_true(rdict_size(dict_ins) == 0);
+    end_benchmark("Remove all keys");
 
-    //start_benchmark(0);
-    //for (j = 0; j < count; j++) {
-    //    char *key = dic_longlong_2string(rand() % count);
-    //    dictEntry *de = dictFind(dict, key);
-    //    assert_true(de != NULL);
-    //    zfree(key);
-    //}
-    //end_benchmark("Random access of existing elements");
-
-    //start_benchmark(0);
-    //for (j = 0; j < count; j++) {
-    //    dictEntry *de = dictGetRandomKey(dict);
-    //    assert_true(de != NULL);
-    //}
-    //end_benchmark("Accessing random keys");
-
-    //start_benchmark(0);
-    //for (j = 0; j < count; j++) {
-    //    char *key = dic_longlong_2string(rand() % count);
-    //    key[0] = 'X';
-    //    dictEntry *de = dictFind(dict, key);
-    //    assert_true(de == NULL);
-    //    zfree(key);
-    //}
-    //end_benchmark("Accessing missing");
-
-    //start_benchmark(0);
-    //for (j = 0; j < count; j++) {
-    //    char *key = dic_longlong_2string(j);
-    //    int retval = dictDelete(dict, key);
-    //    assert_true(retval == DICT_OK);
-    //    key[0] += 17; /* Change first number to letter. */
-    //    retval = dictAdd(dict, key, (void*)j);
-    //    assert_true(retval == DICT_OK);
-    //}
-    //end_benchmark("Removing and adding");
-    //dictRelease(dict);
+    start_benchmark(0);
+    rdict_release(dict_ins);
+    end_benchmark("Release map");
 }
 
 

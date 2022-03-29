@@ -9,6 +9,7 @@
 
 #include <string.h>
 
+#include "rlog.h"
 #include "rbase/common/test/rtest.h"
 
 static int init_platform();
@@ -20,6 +21,8 @@ static int init_platform() {
 }
 
 int main(int argc, char **argv) {
+    init_rlog("RLog.txt", RLOG_ALL, false, "all");
+
     init_platform();
 
     run_tests(0);

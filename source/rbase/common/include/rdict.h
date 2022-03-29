@@ -18,10 +18,10 @@
 extern "C" {
 #endif
 
-#define rdict_size unsigned long
+#define rdict_size_t unsigned long
 #define rdict_size_max LONG_MAX
 #define rdict_size_min 0L
-#define rdict_size_format "ul"
+#define rdict_size_t_format "ul"
 #define rdict_bucket_capacity_default 16
 #define rdict_init_capacity_default 16
 #define rdict_scale_factor_default 0.75
@@ -34,7 +34,7 @@ typedef enum rdict_code {
 
 typedef struct rdict_entry {
     union {
-        void *ptr;
+        void* ptr;
         uint64_t u64;
         int64_t s64;
         float f;
@@ -42,36 +42,37 @@ typedef struct rdict_entry {
     } key;
 
     union {
-        void *ptr;
+        void* ptr;
         uint64_t u64;
         int64_t s64;
         float f;
         double d;
     } value;
 
-    struct rdict_entry *next;
+    //struct rdict_entry *next;
 } rdict_entry;
 
 typedef struct rdict {
-    rdict_entry **entry;
-    rdict_size size;
-    rdict_size capacity;
-    rdict_size buckets;
-    rdict_size bucket_capacity;
+    rdict_entry *entry;
+    rdict_entry *entry_null;
+    rdict_size_t size;
+    rdict_size_t capacity;
+    rdict_size_t buckets;
+    rdict_size_t bucket_capacity;
     float scale_factor;
     void* data_ext;
 
-    uint64_t (*hash_func)(const void *key);
-    void *(*copy_key_func)(void *data_ext, const void *key);
-    void *(*copy_value_func)(void *data_ext, const void *obj);
-    int (*compare_key_func)(void *data_ext, const void *key1, const void *key2);
-    void (*free_key_func)(void *data_ext, void *key);
-    void (*free_value_func)(void *data_ext, void *obj);
-    void (*expand_failed_func)(void *data_ext);
+    uint64_t (*hash_func)(const void* key);
+    void* (*copy_key_func)(void* data_ext, const void* key);
+    void* (*copy_value_func)(void* data_ext, const void* obj);
+    int (*compare_key_func)(void* data_ext, const void* key1, const void* key2);
+    void (*free_key_func)(void* data_ext, void* key);
+    void (*free_value_func)(void* data_ext, void* obj);
+    void (*expand_failed_func)(void* data_ext);
 } rdict;
 
 typedef struct rdict_iterator {
-    rdict *d;
+    rdict* d;
     long index;
     int table, safe;
     rdict_entry *entry, *next;
@@ -79,8 +80,8 @@ typedef struct rdict_iterator {
     long long fingerprint;
 } rdict_iterator;
 
-typedef void (rdict_scan_func)(void *data_ext, const rdict_entry *de);
-typedef void (rdict_scan_bucket_func)(void *data_ext, rdict_entry **bucketref);
+typedef void (rdict_scan_func)(void* data_ext, const rdict_entry *de);
+typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 
 /* ------------------------------- Macros ------------------------------------*/
 #define rdict_free_key(d, entry) \
@@ -134,16 +135,18 @@ typedef void (rdict_scan_bucket_func)(void *data_ext, rdict_entry **bucketref);
         (key1) == (key2))
 
 
-#define rdict_get_buckets(d) ((d)->entry)
+#define rdict_get_buckets(d) ((d)->entry ? ((d)->entry) : NULL)
 #define rdict_set_buckets(d, buckets) (d)->entry = (buckets)
+#define rdict_get_entry(d, pos) ((d)->entry ? &((d)->entry[pos]) : NULL)
 #define rdict_hash_key(d, key) (d)->hash_func(key)
+#define rdict_init_entry(entry, k, v) (entry)->key.ptr = k; (entry)->value.ptr = v
 #define rdict_get_key(he) ((he)->key)
 #define rdict_get_value(he) ((he)->v.value)
 #define dictGetSignedIntegerVal(he) ((he)->v.s64)
 #define dictGetUnsignedIntegerVal(he) ((he)->v.u64)
 #define dictGetDoubleVal(he) ((he)->v.d)
 #define dictSlots(d) ((d)->ht[0].size+(d)->ht[1].size)
-#define dictSize(d) ((d)->ht[0].used+(d)->ht[1].used)
+#define rdict_size(d) ((d)->size)
 #define dictIsRehashing(d) ((d)->rehashidx != -1)
 #define dictPauseRehashing(d) (d)->pauserehash++
 #define dictResumeRehashing(d) (d)->pauserehash--
@@ -156,19 +159,19 @@ typedef void (rdict_scan_bucket_func)(void *data_ext, rdict_entry **bucketref);
 #endif
 
 /* API */
-rdict *rdict_create(rdict_size init_capacity, void *data_ext);
-int rdict_expand(rdict *d, rdict_size capacity);
-//int dictTryExpand(rdict *d, rdict_size capacity);
-int rdict_add(rdict *d, void *key, void *val);
-//dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing);
-//dictEntry *dictAddOrFind(dict *d, void *key);
-//int dictReplace(dict *d, void *key, void *val);
-int rdict_remove(rdict *d, const void *key);
-//dictEntry *dictUnlink(dict *ht, const void *key);
+rdict* rdict_create(rdict_size_t init_capacity, void* data_ext);
+int rdict_expand(rdict* d, rdict_size_t capacity);
+//int dictTryExpand(rdict* d, rdict_size capacity);
+int rdict_add(rdict* d, void* key, void* val);
+//dictEntry *dictAddRaw(dict *d, void* key, dictEntry **existing);
+//dictEntry *dictAddOrFind(dict *d, void* key);
+//int dictReplace(dict *d, void* key, void* val);
+int rdict_remove(rdict* d, const void* key);
+//dictEntry *dictUnlink(dict *ht, const void* key);
 //void dictFreeUnlinkedEntry(dict *d, dictEntry *he);
-void rdict_release(rdict *d);
-rdict_entry * rdict_find(rdict *d, const void *key);
-//void *dictFetchValue(dict *d, const void *key);
+void rdict_release(rdict* d);
+rdict_entry* rdict_find(rdict* d, const void* key);
+//void* dictFetchValue(dict *d, const void* key);
 //int dictResize(dict *d);
 //dictIterator *dictGetIterator(dict *d);
 //dictIterator *dictGetSafeIterator(dict *d);
@@ -178,7 +181,7 @@ rdict_entry * rdict_find(rdict *d, const void *key);
 //dictEntry *dictGetFairRandomKey(dict *d);
 //unsigned int dictGetSomeKeys(dict *d, dictEntry **des, unsigned int count);
 //void dictGetStats(char *buf, size_t bufsize, dict *d);
-//uint64_t dictGenHashFunction(const void *key, int len);
+//uint64_t dictGenHashFunction(const void* key, int len);
 //uint64_t dictGenCaseHashFunction(const unsigned char *buf, int len);
 //void dictEmpty(dict *d, void(callback)(void*));
 //void dictEnableResize(void);
@@ -187,9 +190,9 @@ rdict_entry * rdict_find(rdict *d, const void *key);
 //int dictRehashMilliseconds(dict *d, int ms);
 //void dictSetHashFunctionSeed(uint8_t *seed);
 //uint8_t *dictGetHashFunctionSeed(void);
-//unsigned long dictScan(dict *d, unsigned long v, dictScanFunction *fn, dictScanBucketFunction *bucketfn, void *privdata);
-//uint64_t dictGetHash(dict *d, const void *key);
-//dictEntry **dictFindEntryRefByPtrAndHash(dict *d, const void *oldptr, uint64_t hash);
+//unsigned long dictScan(dict *d, unsigned long v, dictScanFunction *fn, dictScanBucketFunction *bucketfn, void* privdata);
+//uint64_t dictGetHash(dict *d, const void* key);
+//dictEntry **dictFindEntryRefByPtrAndHash(dict *d, const void* oldptr, uint64_t hash);
 
 
 #ifdef __cplusplus
