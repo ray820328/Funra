@@ -13,7 +13,7 @@
 #include "rbase/common/test/rtest.h"
 
 static int init_platform();
-static int run_tests(int benchmarkOutput);
+static int run_tests(int output);
 
 static int init_platform() {
 
@@ -39,12 +39,14 @@ int main(int argc, char **argv) {
 #endif
 }
 
-static int run_tests(int benchmarkOutput) {
+static int run_tests(int output) {
     int testResult;
 
     testResult = 0;
 
-    testResult = run_rcommon_tests(benchmarkOutput);
+    testResult = run_rcommon_tests(output);
+
+    run_rdict_tests(output);
 
     return testResult;
 }

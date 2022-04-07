@@ -21,6 +21,7 @@ SET(SRC_LIB
 SET(SRC_BIN
     ${SRC_LIB}
     test/rtest_collections.c
+    test/rtest_rdict.c
     test/rtest.c
     )
 

@@ -22,7 +22,8 @@
 
 rattribute_unused(static volatile bool rdict_inited = false);
 
-static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count);
+static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity);
+static rdict_entry* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_entry* d_entry_start, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity);
 
 static void expand_failed_func_default(void* data_ext) {
     rassert(false, "default action");
@@ -31,6 +32,20 @@ static void expand_failed_func_default(void* data_ext) {
 static uint64_t hash_func_default(const void* key) {
     return key;
 }
+
+static void set_key_func_default(void* data_ext, rdict_entry* entry, const void* key) {
+    entry->key.ptr = key;
+}
+
+static void set_value_func_default(void* data_ext, rdict_entry* entry, const void* obj) {
+    entry->value.ptr = obj;
+}
+
+//static int compare_key_func_default(void* data_ext, const void* key1, const void* key2) {
+//    if (key1 == key2)
+//        return 1;
+//    return 0;
+//}
 
 static int _expand_buckets(rdict* d, rdict_size_t capacity);
 
@@ -48,9 +63,11 @@ rdict *rdict_create(rdict_size_t init_capacity, void* data_ext) {
     d->data_ext = data_ext;
 
     d->hash_func = hash_func_default;
+    d->set_key_func = set_key_func_default;
+    d->set_value_func = set_value_func_default;
     d->copy_key_func = NULL;
     d->copy_value_func = NULL;
-    d->compare_key_func = NULL;
+    d->compare_key_func = NULL; // compare_key_func_default;
     d->free_key_func = NULL;
     d->free_value_func = NULL;
     d->expand_failed_func = expand_failed_func_default;
@@ -66,7 +83,7 @@ static int _expand_buckets(rdict* d, rdict_size_t capacity) {
     }
 
     //初始化所有entry对象空间
-    rdict_size_t bucket_count = capacity / d->bucket_capacity + 1;
+    rdict_size_t bucket_count = capacity % d->bucket_capacity == 0 ? capacity / d->bucket_capacity : capacity / d->bucket_capacity + 1;
     rdict_size_t dest_capacity = bucket_count * d->bucket_capacity;
     rdict_entry *new_entry = NULL;
     new_entry = fn_raycmalloc(dest_capacity, rdict_entry);// (d->entry)));
@@ -87,39 +104,41 @@ static int _expand_buckets(rdict* d, rdict_size_t capacity) {
         return rdict_code_ok;
     }
 
-    rayprintf(RLOG_DEBUG, "expand map, size vs capacity = %"rdict_size_t_format" : %"rdict_size_t_format" -> %"rdict_size_t_format, 
+    rayprintf(RLOG_DEBUG, "expand map, size vs capacity = %"rdict_size_t_format" : %"rdict_size_t_format" -> %"rdict_size_t_format"\n", 
         d->size, d->capacity, dest_capacity);
     if (d->size * 1.0 / d->capacity < rdict_used_factor_default) { //使用率太小，换hash算法
-        rayprintf(RLOG_WARN, "used ratio under the score of %1.3f", d->size * 1.0 / d->capacity);
+        rayprintf(RLOG_WARN, "used ratio under the score of %1.3f\n", d->size * 1.0 / d->capacity);
     }
 
-    rdict_entry *bucket_next = rdict_get_buckets(d);
-    rdict_entry *new_bucket_cur = NULL;
+    rdict_entry* entry_next = NULL;
+    rdict_entry* entry_start = entry_next = rdict_get_buckets(d);
+    rdict_entry* new_bucket_cur = NULL;
     rdict_size_t inc = 0;
-    for (rdict_size_t i = 0; i < d->buckets; ++i) {
-        if (bucket_next->key.ptr == NULL) {
-            ++bucket_next;
+    for (rdict_size_t i = 0; i < d->capacity; ) {
+        entry_next = entry_start + i;
+
+        if (entry_next->key.ptr == NULL) {
+            i = (i / d->bucket_capacity + 1) * d->bucket_capacity;
             continue; //桶内元素保持连续
         }
 
-        inc = 0;
-        new_bucket_cur = _find_bucket(d, bucket_next->key.ptr, bucket_count);
-        if (likely(new_bucket_cur->key.ptr)) {
-            while (++new_bucket_cur, ++inc) {
-                if (inc >= d->bucket_capacity - 1) {
-                    return _expand_buckets(d, capacity * 2);//递归扩容
-                }
+        new_bucket_cur = _find_bucket_raw(d->hash_func, new_entry, entry_next->key.ptr, bucket_count, d->bucket_capacity);
+        for (inc = 0; new_bucket_cur && new_bucket_cur->key.ptr; ++new_bucket_cur, ++inc) {
+            if (inc >= d->bucket_capacity - 1) {
+                return _expand_buckets(d, capacity * 2);//递归扩容
             }
         }
-        memcpy(new_bucket_cur, bucket_next, sizeof(rdict_entry));
+        memcpy(new_bucket_cur, entry_next, sizeof(rdict_entry));
 
-        ++bucket_next;
+        i++;
     }
 
     //最后才能释放原始表
     if (d->entry) {
         rayfree(d->entry);
         d->entry = new_entry;
+        d->capacity = dest_capacity;
+        d->buckets = bucket_count;
     }
 
     return rdict_code_ok;
@@ -153,19 +172,31 @@ int rdict_add(rdict* d, void* key, void* val) {
         return rdict_code_ok;
     }
 
-    rdict_entry *entry_cur = _find_bucket(d, key, d->buckets); 
+    rdict_entry *entry_cur = NULL;
+    rdict_entry *entry_start = entry_cur  = _find_bucket(d, key, d->buckets, d->bucket_capacity);
 
     while (entry_cur->key.ptr && entry_cur->key.ptr != key) { //桶内元素长度受限
         //rayprintf(RLOG_DEBUG, "go next %"PRId64" -> %"PRId64"\n", entry_cur, entry_cur + 1);
         ++ entry_cur;
     }
 
+    if (entry_cur >= (entry_start + d->bucket_capacity - 1)) {//扩容
+        rayprintf(RLOG_INFO, "not enough space for adding, need expand.\n");
+        int code_expand = _expand_buckets(d, d->capacity * 2);
+        if (code_expand != rdict_code_ok) {
+            return code_expand;
+        }
+        return rdict_add(d, key, val);
+    }
+
     if (!entry_cur->key.ptr) {
         d->size += 1;
     }
 
-    entry_cur->key.ptr = key;
-    entry_cur->value.ptr = val; //支持 NULL 元素
+    rdict_set_key(d, entry_cur, key);
+    rdict_set_value(d, entry_cur, val); //支持 NULL 元素
+
+    //rayprintf(RLOG_DEBUG, "add at: %"PRId64" -> %"PRId64" -> %"PRId64"\n", key, entry_start, entry_cur);
 
     return rdict_code_ok;
 }
@@ -186,15 +217,20 @@ int rdict_remove(rdict* d, const void* key) {
     }
 
     rdict_entry* entry_cur = NULL;
-    rdict_entry* entry_start = entry_cur = _find_bucket(d, key, d->buckets);
+    rdict_entry* entry_start = entry_cur = _find_bucket(d, key, d->buckets, d->bucket_capacity);
     rdict_entry* entry_end = entry_start + (d->bucket_capacity - 1);
 
-    while (entry_cur->key.ptr && entry_cur->key.ptr != key) {
+    //if (key == 0x7f) {
+    //    rayprintf(RLOG_DEBUG, "rdict_remove key = %lld\n", key);
+    //}
+
+    while (entry_cur->key.ptr && !rdict_compare_keys(d, entry_cur->key.ptr, key)) {
         if (entry_cur == entry_end) { //桶内元素长度受限
             return rdict_code_error;
         }
         ++entry_cur;
     }
+    //rayprintf(RLOG_DEBUG, "remove at bucket: %"PRId64" -> %"PRId64", %"PRId64"\n", key, entry_start, entry_cur);
 
     if (!entry_cur->key.ptr) {
         //uint64_t hash = rdict_hash_key(d, key);
@@ -206,13 +242,13 @@ int rdict_remove(rdict* d, const void* key) {
     d->size -= 1;
 
     //元素前移
-    //for (entry_start = entry_end; entry_start < entry_cur; entry_start--) {
-    //    if (entry_start->key.ptr) {
-    //        memcpy(entry_cur, entry_start, sizeof(rdict_entry));
-    //        memset(entry_start, 0, sizeof(rdict_entry));
-    //        break;
-    //    }
-    //}
+    for (entry_start = entry_end; entry_start > entry_cur; entry_start--) {
+        if (entry_start->key.ptr) {
+            memcpy(entry_cur, entry_start, sizeof(rdict_entry));
+            memset(entry_start, 0, sizeof(rdict_entry));
+            break;
+        }
+    }
 
     return rdict_code_ok;
 }
@@ -240,10 +276,10 @@ rdict_entry * rdict_find(rdict* d, const void* key) {
         return d->entry_null;
     }
 
-    rdict_entry* entry = _find_bucket(d, key, d->buckets);
+    rdict_entry* entry = _find_bucket(d, key, d->buckets, d->bucket_capacity);
 
     while (entry->key.ptr) {
-        if (entry->key.ptr == key) {
+        if (rdict_compare_keys(d, entry->key.ptr, key)) {
             return entry;
         }
         ++entry;
@@ -253,12 +289,18 @@ rdict_entry * rdict_find(rdict* d, const void* key) {
 }
 
 
-
-static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count) {
+static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
     uint64_t hash = rdict_hash_key(d, key);
-    uint64_t bucket_pos = (hash % bucket_count) * d->bucket_capacity;
+    uint64_t bucket_pos = (hash % bucket_count) * bucket_capacity;
     return rdict_get_entry(d, bucket_pos);
 }
+
+static rdict_entry* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_entry* d_entry_start, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
+    uint64_t hash = hash_func(key);
+    uint64_t bucket_pos = (hash % bucket_count) * bucket_capacity;
+    return d_entry_start == NULL ? NULL : d_entry_start + bucket_pos;
+}
+
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

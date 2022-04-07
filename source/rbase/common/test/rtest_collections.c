@@ -22,12 +22,10 @@ static int uninit();
 // int run_tests(int benchmark_output);
 rattribute_unused(static int run_test(const char* test, int benchmark_output, int test_count));
 
-static void rdict_test(void **state);
 static void rlist_test(void **state);
 static void dict_test(void **state);
 
 const static struct CMUnitTest tests[] = {
-    cmocka_unit_test(rdict_test),
     cmocka_unit_test(rlist_test),
     cmocka_unit_test(dict_test),
 };
@@ -49,53 +47,17 @@ static int uninit() {
 }
 
 int run_rcommon_tests(int benchmark_output) {
-    // int actual;
-    // int total;
-    // int passed;
-    int failed;
-    // int skipped;
-    // int current;
-    int testResult;
-    // int skip;
-    // task_entry_t* task;
-
-    testResult = init();
-    if (testResult != 0) {
-        return -1;
-    }
-
-    /* Count the number of tests. */
-    // actual = 0;
-    // total = 0;
-
-    /* Run all tests. */
-    // passed = 0;
-    failed = 0;
-    // skipped = 0;
-    // current = 1;
+    init();
 
     int64_t timeNow = nanosec_r();
 
-    testResult = cmocka_run_group_tests(tests, NULL, NULL);
+    cmocka_run_group_tests(tests, NULL, NULL);
 
     printf("run_rcommon_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
 
-    if (testResult != 0) {
-        return testResult;
-    }
+    uninit();
 
-    testResult = uninit();
-    if (testResult != 0) {
-        return -2;
-    }
-
-    return failed;
-}
-
-static int run_test(const char* test, int benchmark_output, int test_count) {
-    int status = 0;
-
-    return status;
+    return 0;
 }
 
 static int rlist_match_func(void* a, void* b) {
@@ -176,77 +138,6 @@ static void rlist_test(void **state) {
 
     assert_false(mylist);
 }
-
-
-
-static void rdict_test(void **state) {
-    (void)state;
-    int count = 1000;
-    long j;
-
-    rdict_entry de_temp = { .key.ptr = 0, .value.ptr = 0 };
-
-    init_benchmark(1024, "test rdict(%d) - %d", count, de_temp.key.d);
-
-    //rdict dict_ins_stack = {
-    //    NULL, NULL, 0, 0, 0, 0, 0.0f, NULL,
-
-    //    //dic_hash_callback,
-    //    NULL,
-    //    NULL,
-    //    NULL,
-    //    NULL,
-    //    NULL,
-    //    NULL,
-    //    NULL
-    //};
-    
-    start_benchmark(0);
-    rdict* dict_ins = rdict_create(2000, NULL);
-    assert_true(dict_ins);
-    end_benchmark("Create map.");
-
-    start_benchmark(0);
-    for (j = 0; j < count; j++) {
-        int ret = rdict_add(dict_ins, j, count + j);
-        assert_true(ret == rdict_code_ok);
-    }
-    assert_true(rdict_size(dict_ins) == count);
-
-    for (j = 0; j < count; j++) {
-        rdict_entry *de = rdict_find(dict_ins, j);
-        assert_true(de != NULL && de->value.s64 == count + j);
-    }
-    end_benchmark("Linear access existing elements");
-
-    start_benchmark(0);
-    for (j = 0; j < count; j++) {
-        int index = rand() % count;
-        rdict_entry *de = rdict_find(dict_ins, index);
-        assert_true(de != NULL && de->value.s64 == count + index);
-    }
-    end_benchmark("Random access existing elements");
-
-    start_benchmark(0);
-    for (j = count; j < 2 * count; j++) {
-        rdict_entry *de = rdict_find(dict_ins, j);
-        assert_true(de == NULL);
-    }
-    end_benchmark("Access missing keys");
-
-    start_benchmark(0);
-    for (j = 0; j < count; j++) {
-        int ret = rdict_remove(dict_ins, j);
-        assert_true(ret == rdict_code_ok);
-    }
-    assert_true(rdict_size(dict_ins) == 0);
-    end_benchmark("Remove all keys");
-
-    start_benchmark(0);
-    rdict_release(dict_ins);
-    end_benchmark("Release map");
-}
-
 
 static uint64_t dic_hash_callback(const void *key) {
     return dictGenHashFunction((unsigned char*)key, (int)strlen((char*)key));
