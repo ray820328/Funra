@@ -288,6 +288,45 @@ rdict_entry * rdict_find(rdict* d, const void* key) {
     return NULL;
 }
 
+rdict_iterator* rdict_it_heap(rdict* d) {
+    rdict_iterator* it = rnew_data(rdict_iterator);
+
+    if (!d || !d->entry) {
+        return it;
+    }
+
+    it->d = d;
+    it->entry = it->next = d->entry;
+
+    return it;
+}
+
+rdict_entry* rdict_next(rdict_iterator* it) {
+    if (unlikely(it->d->entry_null && it->next == it->d->entry_null)) {
+        it->next = it->entry;
+        
+        if (it->d->entry_null->key.ptr) {
+            return it->d->entry_null;
+        }
+    }
+    
+    if (likely(it->next < it->entry + it->d->capacity)) {
+        if (it->next->key.ptr) {
+            return it->next++;
+        }
+        else {
+            it->next = ((it->next - it->entry) / it->d->bucket_capacity + 1) *  it->d->bucket_capacity;
+            for (; it->next && (it->next < it->entry + it->d->capacity - 1);) {
+                if (it->next->key.ptr) {
+                    return it->next++;
+                }
+                it->next = ((it->next - it->entry) / it->d->bucket_capacity + 1) *  it->d->bucket_capacity;
+            }
+        }
+    }
+
+    return NULL;
+}
 
 static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
     uint64_t hash = rdict_hash_key(d, key);

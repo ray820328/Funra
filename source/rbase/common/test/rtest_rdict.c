@@ -145,6 +145,14 @@ static void rdict_int_test(void **state) {
     end_benchmark("fill map.");
 
     start_benchmark(0);
+    rdict_iterator it = rdict_it(dict_ins);
+    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+        assert_true(de->key.s64 < de->value.s64);
+        printf("rdict_iterator: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
+    }
+    end_benchmark("iterator map.");
+
+    start_benchmark(0);
     rdict_release(dict_ins);
     end_benchmark("Release map");
 }

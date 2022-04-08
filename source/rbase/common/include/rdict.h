@@ -32,6 +32,8 @@ typedef enum rdict_code {
     rdict_code_error = 1,
 } rdict_code;
 
+/* ------------------------------- Structs ------------------------------------*/
+
 typedef struct rdict_entry {
     union {
         void* ptr;
@@ -84,6 +86,7 @@ typedef void (rdict_scan_func)(void* data_ext, const rdict_entry *de);
 typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 
 /* ------------------------------- Macros ------------------------------------*/
+
 #define rdict_free_key(d, entry) \
     if ((d)->free_key_func) \
         (d)->free_key_func((d)->data_ext, (entry)->key.ptr); \
@@ -118,20 +121,19 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
     }
 
 #define rdict_set_signed_int_val(entry, _val_) \
-    do { (entry)->value.s64 = _val_; } while(0)
+    (entry)->value.s64 = (_val_);
 
 #define rdict_set_unsigned_int_val(entry, _val_) \
-    do { (entry)->value.u64 = _val_; } while(0)
+    (entry)->value.u64 = (_val_);
 
 #define dict_set_double_val(entry, _val_) \
-    do { (entry)->value.d = _val_; } while(0)
+    (entry)->value.d = (_val_);
 
 #define dict_set_float_val(entry, _val_) \
-    do { (entry)->value.f = _val_; } while(0)
+    (entry)->value.f = (_val_);
 
 #define rdict_compare_keys(d, key1, key2) \
     (((d)->compare_key_func) ? (d)->compare_key_func((d)->data_ext, (key1), (key2)) : (key1) == (key2))
-
 
 #define rdict_get_buckets(d) ((d)->entry ? ((d)->entry) : NULL)
 #define rdict_set_buckets(d, buckets) (d)->entry = (buckets)
@@ -139,12 +141,19 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 #define rdict_get_entry_raw(entry, pos) ((entry) ? &((entry)[pos]) : NULL)
 #define rdict_hash_key(d, key) (d)->hash_func(key)
 #define rdict_init_entry(entry, k, v) (entry)->key.ptr = k; (entry)->value.ptr = v
-#define rdict_get_key(he) ((he)->key)
-#define rdict_get_value(he) ((he)->v.value)
+#define rdict_get_key(entry) ((entry)->key.ptr)
+#define rdict_get_value(entry) ((entry)->value.ptr)
 #define rdict_size(d) ((d)->size)
-#define rdict_rehashing(d) ((d)->rehashidx != -1)
+#define rdict_rehashing(d) ((d)->rehash_id != 0)
 
-/* API */
+//rdict_iterator* rdict_it(rdict* d);
+#define rdict_it(d) \
+    { \
+        (d), (d)->entry, (d)->entry_null ? (d)->entry_null : (d)->entry \
+    }
+
+/* ------------------------------- APIs ------------------------------------*/
+
 rdict* rdict_create(rdict_size_t init_capacity, void* data_ext);
 int rdict_expand(rdict* d, rdict_size_t capacity);
 int rdict_add(rdict* d, void* key, void* val);
@@ -152,6 +161,9 @@ int rdict_remove(rdict* d, const void* key);
 void rdict_release(rdict* d);
 rdict_entry* rdict_find(rdict* d, const void* key);
 
+/* 注意rehash失效 */
+rdict_iterator* rdict_it_heap(rdict* d);
+rdict_entry* rdict_next(rdict_iterator* it);
 
 #ifdef __cplusplus
 }
