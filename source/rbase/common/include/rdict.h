@@ -149,7 +149,7 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 //rdict_iterator* rdict_it(rdict* d);
 #define rdict_it(d) \
     { \
-        (d), (d)->entry, (d)->entry_null ? (d)->entry_null : (d)->entry \
+        (d), (d)->entry, (d)->entry_null \
     }
 
 /* ------------------------------- APIs ------------------------------------*/

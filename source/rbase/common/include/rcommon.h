@@ -256,9 +256,9 @@ extern "C" {
             return src;
         }
 
-        const int strLen = strlen(src);
-        const int oldLen = strlen(oldStr);
-        const int newLen = strlen(oldStr);
+        const size_t strLen = strlen(src);
+        const size_t oldLen = strlen(oldStr);
+        const size_t newLen = strlen(oldStr);
         //char bstr[strLen];//转换缓冲区
         //memset(bstr, 0, sizeof(bstr));
 

@@ -207,10 +207,10 @@ int rdict_remove(rdict* d, const void* key) {
     }
     if (!key) {
         if (d->entry_null) {
-            rfree_data(rdict_entry, d->entry_null);
             d->entry_null = NULL;
             d->size -= 1;
             rassert(d->size >= 0, "size must > 0");
+			rfree_data(rdict_entry, d->entry_null);
         }
 
         return rdict_code_ok;
@@ -302,12 +302,10 @@ rdict_iterator* rdict_it_heap(rdict* d) {
 }
 
 rdict_entry* rdict_next(rdict_iterator* it) {
-    if (unlikely(it->d->entry_null && it->next == it->d->entry_null)) {
+    if (unlikely(it->next == it->d->entry_null)) {
         it->next = it->entry;
         
-        if (it->d->entry_null->key.ptr) {
-            return it->d->entry_null;
-        }
+        return it->d->entry_null;
     }
     
     if (likely(it->next < it->entry + it->d->capacity)) {
@@ -315,7 +313,7 @@ rdict_entry* rdict_next(rdict_iterator* it) {
             return it->next++;
         }
         else {
-            it->next = ((it->next - it->entry) / it->d->bucket_capacity + 1) *  it->d->bucket_capacity;
+            it->next = it->entry + ((it->next - it->entry) / it->d->bucket_capacity + 1) *  it->d->bucket_capacity;
             for (; it->next && (it->next < it->entry + it->d->capacity - 1);) {
                 if (it->next->key.ptr) {
                     return it->next++;
