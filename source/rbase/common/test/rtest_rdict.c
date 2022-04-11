@@ -153,7 +153,16 @@ static void rdict_int_test(void **state) {
     end_benchmark("iterator map.");
 
     start_benchmark(0);
-    rdict_release(dict_ins);
+    rdict_clear(dict_ins);
+    assert_true(rdict_size(dict_ins) == 0);
+    rdict_it_first(&it);
+    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+        assert_true(false);
+    }
+    end_benchmark("clear map.");
+
+    start_benchmark(0);
+    rdict_free(dict_ins);
     end_benchmark("Release map");
 }
 

@@ -151,6 +151,17 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
     { \
         (d), (d)->entry, (d)->entry_null \
     }
+#define rdict_it_first(it) \
+    do { \
+        (it)->entry = (it)->d->entry; \
+        (it)->next = (it)->d->entry_null; \
+    } while(0)
+
+#define rdict_free(d) \
+    if (d) { \
+        rdict_release(d); \
+        d = NULL; \
+    }
 
 /* ------------------------------- APIs ------------------------------------*/
 
@@ -158,6 +169,8 @@ rdict* rdict_create(rdict_size_t init_capacity, void* data_ext);
 int rdict_expand(rdict* d, rdict_size_t capacity);
 int rdict_add(rdict* d, void* key, void* val);
 int rdict_remove(rdict* d, const void* key);
+/** 只置空数据，不释放entry内存 **/
+void rdict_clear(rdict* d);
 void rdict_release(rdict* d);
 rdict_entry* rdict_find(rdict* d, const void* key);
 
