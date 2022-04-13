@@ -14,6 +14,7 @@
 #include "rtime.h"
 #include "rlog.h"
 #include "rdict.h"
+//#include "rpool.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -22,23 +23,24 @@
 
 rattribute_unused(static volatile bool rdict_inited = false);
 
-static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity);
-static rdict_entry* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_entry* d_entry_start, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity);
+static rdict_entry* _find_bucket(rdict* d, const void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity);
+static rdict_entry* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_entry* d_entry_start, const void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity);
+static int _expand_buckets(rdict* d, rdict_size_t capacity);
 
 static void expand_failed_func_default(void* data_ext) {
     rassert(false, "default action");
 }
 
 static uint64_t hash_func_default(const void* key) {
-    return key;
+    return (uint64_t)key;
 }
 
 static void set_key_func_default(void* data_ext, rdict_entry* entry, const void* key) {
-    entry->key.ptr = key;
+    entry->key.ptr = (void*)key;
 }
 
 static void set_value_func_default(void* data_ext, rdict_entry* entry, const void* obj) {
-    entry->value.ptr = obj;
+    entry->value.ptr = (void*)obj;
 }
 
 static int compare_key_func_default(void* data_ext, const void* key1, const void* key2) {
@@ -70,13 +72,24 @@ rdict *rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, vo
     d->free_value_func = NULL;
     d->expand_failed_func = expand_failed_func_default;
 
-    rdict_expand(d, d->capacity);
+    _expand_buckets(d, d->capacity);
 
     return d;
 }
 
 static int _expand_buckets(rdict* d, rdict_size_t capacity) {
     if (d == NULL) {
+        return rdict_code_error;
+    }
+
+    capacity = (rdict_size_t)(capacity / d->scale_factor);//按比率扩大
+
+    if (capacity > rdict_size_max || capacity < rdict_size_min) {
+        rlog(RLOG_ERROR, "invalid size: "rdict_size_t_format, capacity);
+
+        if (d->expand_failed_func) {
+            d->expand_failed_func(d->data_ext);
+        }
         return rdict_code_error;
     }
 
@@ -146,20 +159,12 @@ static int _expand_buckets(rdict* d, rdict_size_t capacity) {
 }
 
 int rdict_expand(rdict* d, rdict_size_t capacity) {
-    if (d->expand_failed_func) d->expand_failed_func = NULL;
-
     rdict_size_t real_capacity = capacity;
     if (real_capacity < rdict_hill_expand_capacity) {//小于峰值，按倍数扩容
         real_capacity *= rdict_expand_factor;
     }
     else {
         real_capacity += rdict_hill_add_capacity;
-    }
-    real_capacity = real_capacity / d->scale_factor;//按比率扩大
-
-    if (real_capacity > rdict_size_max || real_capacity < rdict_size_min) {
-        rlog(RLOG_ERROR, "invalid size: "rdict_size_t_format, capacity);
-        return rdict_code_error;
     }
 
     return _expand_buckets(d, real_capacity);
@@ -359,13 +364,13 @@ rdict_entry* rdict_next(rdict_iterator* it) {
     return NULL;
 }
 
-static rdict_entry* _find_bucket(rdict* d, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
+static rdict_entry* _find_bucket(rdict* d, const void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
     uint64_t hash = rdict_hash_key(d, key);
     uint64_t bucket_pos = (hash % bucket_count) * bucket_capacity;
     return rdict_get_entry(d, bucket_pos);
 }
 
-static rdict_entry* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_entry* d_entry_start, void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
+static rdict_entry* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_entry* d_entry_start, const void* key, rdict_size_t bucket_count, rdict_size_t bucket_capacity) {
     uint64_t hash = hash_func(key);
     uint64_t bucket_pos = (hash % bucket_count) * bucket_capacity;
     return d_entry_start == NULL ? NULL : d_entry_start + bucket_pos;

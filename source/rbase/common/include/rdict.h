@@ -27,8 +27,8 @@ extern "C" {
 #define rdict_scale_factor_default 0.75
 #define rdict_used_factor_default 0.75
 #define rdict_expand_factor 2
-#define rdict_hill_expand_capacity 10240000
-#define rdict_hill_add_capacity 1024000
+#define rdict_hill_expand_capacity (10240000 / sizeof(rdict_entry))
+#define rdict_hill_add_capacity (1024000 / sizeof(rdict_entry))
 
 typedef enum rdict_code {
     rdict_code_ok = 0,

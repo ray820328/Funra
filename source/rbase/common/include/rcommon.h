@@ -266,7 +266,7 @@ extern "C" {
 
         destStr[0] = rstr_end;
 
-        for (int i = 0; i < strLen; i++) {
+        for (size_t i = 0; i < strLen; i++) {
             if (!strncmp(src + i, oldStr, oldLen)) {//查找目标字符串
                 if (strlen(destStr) + newLen >= destLen) {
                     destStr[strlen(destStr)] = rstr_end;
@@ -313,9 +313,9 @@ extern "C" {
     strtold((val))
 
 #if defined(_WIN32) || defined(_WIN64)
-#define rmutex_t_def CRITICAL_SECTION;
+#define rmutex_t_def CRITICAL_SECTION
 #else
-#define rmutex_t_def pthread_mutex_t;
+#define rmutex_t_def pthread_mutex_t
 #endif /* defined(_WIN32) || defined(_WIN64) */
 
     static inline void rmutex_init(void* rmutexObj)

@@ -61,7 +61,7 @@ int run_rdict_tests(int benchmark_output) {
 }
 
 static uint64_t rhash_func_int(const void* key) {
-    return key;
+    return (uint64_t)key;
 }
 //static void set_key_func_default(void* data_ext, rdict_entry* entry, const void* key) {
 //    entry->key.s64 = key;
@@ -76,7 +76,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
     rdict_entry de_temp = { .key.ptr = 0, .value.ptr = 0 };
 
-    init_benchmark(1024, "test int rdict(%d) - %d", count, de_temp.key.d);
+    init_benchmark(1024, "test int rdict(%d) - %f", count, de_temp.key.d);
 
     //rdict dict_ins_stack = {
     //    NULL, NULL, 0, 0, 0, 0, 0.0f, NULL,
@@ -186,6 +186,7 @@ static void* copy_key_func_string(void* data_ext, const void* key) {
     if (key) {
         return rstr_cpy(key);
     }
+    return NULL;
 }
 static void* copy_value_func_string(void* data_ext, const void* obj) {
     if (obj) {

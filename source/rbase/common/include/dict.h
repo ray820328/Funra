@@ -54,7 +54,9 @@
 #define random() rand()
 
 #ifdef WIN32
+#ifndef assert
 #define assert(b) if(!(b)) printf("assert failed.\n")
+#endif
 #else
 #include <assert.h>
 #endif
