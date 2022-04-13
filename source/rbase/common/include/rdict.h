@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 #define rdict_size_t unsigned long
-#define rdict_size_max LONG_MAX
+#define rdict_size_max 0xFFFFFFFFUL
 #define rdict_size_min 0L
 #define rdict_size_t_format "lu"
 #define rdict_bucket_capacity_default 16

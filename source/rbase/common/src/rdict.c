@@ -19,6 +19,8 @@
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-else"
 #endif //__GNUC__
 
 rattribute_unused(static volatile bool rdict_inited = false);
@@ -135,7 +137,7 @@ static int _expand_buckets(rdict* d, rdict_size_t capacity) {
         }
 
         new_bucket_cur = _find_bucket_raw(d->hash_func, new_entry, entry_next->key.ptr, bucket_count, d->bucket_capacity);
-        for (inc = 0; new_bucket_cur && new_bucket_cur->key.ptr; ++new_bucket_cur, ++inc) {
+        for (inc = 0; new_bucket_cur && new_bucket_cur->key.ptr != NULL; ++new_bucket_cur, ++inc) {
             if (inc >= d->bucket_capacity - 1) {
                 rayfree(new_entry);//释放当前申请的块
                 new_entry = NULL;
@@ -204,7 +206,7 @@ int rdict_add(rdict* d, void* key, void* val) {
         return rdict_add(d, key, val);
     }
 
-    if (!entry_cur->key.ptr) {//key不存在，则添加
+    if (entry_cur->key.ptr == NULL) {//key不存在，则添加
         d->size += 1;
         rdict_set_key(d, entry_cur, key);
     }
@@ -224,7 +226,7 @@ int rdict_remove(rdict* d, const void* key) {
         return rdict_code_error;
     }
     if (!key) {
-        if (d->entry_null) {
+        if (d->entry_null != NULL) {
             rdict_free_key(d, d->entry_null);
             rdict_free_value(d, d->entry_null);
             rfree_data(rdict_entry, d->entry_null);
@@ -289,7 +291,7 @@ void rdict_clear(rdict* d) {
     }
 
     rdict_iterator it = rdict_it(d);
-    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         rdict_free_key(d, de);
         rdict_free_value(d, de);
     }
@@ -314,7 +316,7 @@ rdict_entry * rdict_find(rdict* d, const void* key) {
 
     rdict_entry* entry = _find_bucket(d, key, d->buckets, d->bucket_capacity);
 
-    while (entry->key.ptr) {
+    while (entry->key.ptr != NULL) {
         if (rdict_is_key_equal(d, entry->key.ptr, key)) {
             return entry;
         }
@@ -327,7 +329,7 @@ rdict_entry * rdict_find(rdict* d, const void* key) {
 rdict_iterator* rdict_it_heap(rdict* d) {
     rdict_iterator* it = rnew_data(rdict_iterator);
 
-    if (!d || !d->entry) {
+    if (d == NULL || d->entry == NULL) {
         return it;
     }
 
@@ -420,5 +422,6 @@ uint64_t rhash_func_murmur(const char *key)
 }
 
 #ifdef __GNUC__
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif //__GNUC__

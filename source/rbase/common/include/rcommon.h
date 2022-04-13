@@ -65,6 +65,7 @@ extern "C" {
 #include <mstcpip.h>
 #include <iphlpapi.h>
 #include <mswsock.h>
+#include <climits>
 
 #define get_filename(x) strrchr(x, '\\') ? strrchr(x, '\\') + 1 : x
 #define likely(x) x

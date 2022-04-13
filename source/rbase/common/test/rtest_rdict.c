@@ -19,6 +19,11 @@
 
 #include "rbase/common/test/rtest.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-conversion"
+#endif //__GNUC__
+
 static int init();
 static int uninit();
 
@@ -72,7 +77,7 @@ static uint64_t rhash_func_int(const void* key) {
 static void rdict_int_test(void **state) {// 整数类型 k-v
     (void)state;
     int count = 10000;
-    long j;
+    int j;
 
     rdict_entry de_temp = { .key.ptr = 0, .value.ptr = 0 };
 
@@ -154,7 +159,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
     start_benchmark(0);
     rdict_iterator it = rdict_it(dict_ins);
-    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(de->key.s64 == de->value.s64 - count);
         //printf("rdict_iterator: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
     }
@@ -164,7 +169,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     rdict_clear(dict_ins);
     assert_true(rdict_size(dict_ins) == 0);
     rdict_it_first(&it);
-    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(false);
     }
     end_benchmark("Clear map.");
@@ -213,7 +218,7 @@ static int compare_key_func_string(void* data_ext, const void* key1, const void*
 static void rdict_string_test(void **state) {// string类型 k-v
     (void)state;
     int count = 10000;
-    long j;
+    int j;
     char key_str_buffer[24] = { '\0' };
     char value_str_buffer[24] = { '\0' };
 
@@ -294,7 +299,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
 
     start_benchmark(0);
     rdict_iterator it = rdict_it(dict_ins);
-    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(rstr_2int(de->key.ptr) == rstr_2int(de->value.ptr) - count);
         //printf("rdict_iterator: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
     }
@@ -304,7 +309,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     rdict_clear(dict_ins);
     assert_true(rdict_size(dict_ins) == 0);
     rdict_it_first(&it);
-    for (rdict_entry *de = NULL; de = rdict_next(&it); ) {
+    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(false);
     }
     end_benchmark("Clear map.");
@@ -314,3 +319,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     end_benchmark("Release map");
 }
 
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif //__GNUC__

@@ -12,7 +12,6 @@
 #include "rcommon.h"
 #include "rtime.h"
 #include "rlist.h"
-#include "rdict.h"
 #include "dict.h"
 
 #include "rbase/common/test/rtest.h"
@@ -20,7 +19,7 @@
 static int init();
 static int uninit();
 // int run_tests(int benchmark_output);
-rattribute_unused(static int run_test(const char* test, int benchmark_output, int test_count));
+//rattribute_unused(static int run_test(const char* test, int benchmark_output, int test_count));
 
 static void rlist_test(void **state);
 static void dict_test(void **state);
