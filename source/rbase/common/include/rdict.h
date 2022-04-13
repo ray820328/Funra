@@ -26,10 +26,14 @@ extern "C" {
 #define rdict_init_capacity_default 16
 #define rdict_scale_factor_default 0.75
 #define rdict_used_factor_default 0.75
+#define rdict_expand_factor 2
+#define rdict_hill_expand_capacity 10240000
+#define rdict_hill_add_capacity 1024000
 
 typedef enum rdict_code {
     rdict_code_ok = 0,
     rdict_code_error = 1,
+    rdict_code_not_exist = 2,
 } rdict_code;
 
 /* ------------------------------- Structs ------------------------------------*/
@@ -55,6 +59,8 @@ typedef struct rdict_entry {
 } rdict_entry;
 
 typedef uint64_t(*rdict_hash_func_type)(const void* key);
+/** 0 - 不相等; !0 - 相等 **/
+typedef int (*rdict_compare_key_func_type)(void* data_ext, const void* key1, const void* key2);
 
 typedef struct rdict {
     rdict_entry *entry;
@@ -71,7 +77,7 @@ typedef struct rdict {
     void (*set_value_func)(void* data_ext, rdict_entry* entry, const void* obj);
     void* (*copy_key_func)(void* data_ext, const void* key);
     void* (*copy_value_func)(void* data_ext, const void* obj);
-    int (*compare_key_func)(void* data_ext, const void* key1, const void* key2);
+    rdict_compare_key_func_type compare_key_func;
     void (*free_key_func)(void* data_ext, void* key);
     void (*free_value_func)(void* data_ext, void* obj);
     void (*expand_failed_func)(void* data_ext);
@@ -87,36 +93,43 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 
 /* ------------------------------- Macros ------------------------------------*/
 
+#define rdict_is_key_equal(d, key1, key2) (d)->compare_key_func((d)->data_ext, key1, key2)
+
 #define rdict_free_key(d, entry) \
-    if ((d)->free_key_func) \
-        (d)->free_key_func((d)->data_ext, (entry)->key.ptr); \
-    if ((entry)->key.ptr) \
-        (entry)->key.ptr = NULL
+    if (entry) \
+        if ((d)->free_key_func) \
+            (d)->free_key_func((d)->data_ext, (entry)->key.ptr); \
+        if ((entry)->key.ptr) \
+            (entry)->key.ptr = NULL
 
 #define rdict_free_value(d, entry) \
-    if ((d)->free_value_func) \
-        (d)->free_value_func((d)->data_ext, (entry)->value.ptr); \
-    if ((entry)->value.ptr) \
-        (entry)->value.ptr = NULL
+    if (entry) \
+        if ((d)->free_value_func) \
+            (d)->free_value_func((d)->data_ext, (entry)->value.ptr); \
+        if ((entry)->value.ptr) \
+            (entry)->value.ptr = NULL
 
 #define rdict_set_key(d, entry, _key_) \
-    if ((d)->copy_key_func) \
-        (d)->set_key_func((d)->data_ext, (entry), (d)->copy_key_func((d)->data_ext, (_key_))); \
-    else \
-        (d)->set_key_func((d)->data_ext, (entry), (_key_))
+    if (entry) \
+        if ((d)->copy_key_func) \
+            (d)->set_key_func((d)->data_ext, (entry), (d)->copy_key_func((d)->data_ext, (_key_))); \
+        else \
+            (d)->set_key_func((d)->data_ext, (entry), (_key_))
 
 #define rdict_set_value(d, entry, _value_) \
-    if ((d)->copy_value_func) \
-        (d)->set_value_func((d)->data_ext, (entry), (d)->copy_value_func((d)->data_ext, (_value_))); \
-    else \
-        (d)->set_value_func((d)->data_ext, (entry), (_value_))
+    if (entry) \
+        if ((d)->copy_value_func) \
+            (d)->set_value_func((d)->data_ext, (entry), (d)->copy_value_func((d)->data_ext, (_value_))); \
+        else \
+            (d)->set_value_func((d)->data_ext, (entry), (_value_))
 
 #define rdict_set_type_value(d, entry, _value_, _type_) \
     static int rdict_set_value##_type_(d, entry, _value_) { \
-        if ((d)->copy_value_func) \
-            (entry)->value.##_type_ = (d)->copy_value_func((d)->data_ext, _value_); \
-        else \
-            (entry)->value.##_type_ = (_value_); \
+        if (entry) \
+            if ((d)->copy_value_func) \
+                (entry)->value.##_type_ = (d)->copy_value_func((d)->data_ext, _value_); \
+            else \
+                (entry)->value.##_type_ = (_value_); \
         return 0; \
     }
 
@@ -137,10 +150,10 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 
 #define rdict_get_buckets(d) ((d)->entry ? ((d)->entry) : NULL)
 #define rdict_set_buckets(d, buckets) (d)->entry = (buckets)
-#define rdict_get_entry(d, pos) ((d)->entry ? &((d)->entry[pos]) : NULL)
-#define rdict_get_entry_raw(entry, pos) ((entry) ? &((entry)[pos]) : NULL)
-#define rdict_hash_key(d, key) (d)->hash_func(key)
-#define rdict_init_entry(entry, k, v) (entry)->key.ptr = k; (entry)->value.ptr = v
+#define rdict_get_entry(d, pos) ((d)->entry ? (d)->entry + (pos) : NULL)
+#define rdict_get_entry_raw(entry, pos) ((entry) ? (entry) + (pos) : NULL)
+#define rdict_hash_key(d, key) (d)->hash_func((key))
+#define rdict_init_entry(entry, k, v) (entry)->key.ptr = (k); (entry)->value.ptr = (v)
 #define rdict_get_key(entry) ((entry)->key.ptr)
 #define rdict_get_value(entry) ((entry)->value.ptr)
 #define rdict_size(d) ((d)->size)
@@ -165,7 +178,9 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 
 /* ------------------------------- APIs ------------------------------------*/
 
-rdict* rdict_create(rdict_size_t init_capacity, void* data_ext);
+uint64_t rhash_func_murmur(const char *key);
+
+rdict* rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext);
 int rdict_expand(rdict* d, rdict_size_t capacity);
 int rdict_add(rdict* d, void* key, void* val);
 int rdict_remove(rdict* d, const void* key);

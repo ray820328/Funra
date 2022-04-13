@@ -19,6 +19,7 @@
 #define rlog_temp_data_size 51200
 #define rlog_cache_data_size 409600
 
+#define rlog(logLevel, fmt, ...) rayprintf(logLevel, fmt, ##__VA_ARGS__)
 //#define print2file
 
 
