@@ -15,7 +15,6 @@
 #include "rtime.h"
 #include "rlist.h"
 #include "rdict.h"
-#include "dict.h"
 
 #include "rbase/common/test/rtest.h"
 
@@ -23,6 +22,23 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
+
+// static int setup(void **state) {
+//     int *answer = malloc(sizeof(int));
+//     assert_non_null(answer);
+//     *answer = 42;
+//     *state = answer;
+//     return 0;
+// }
+// static int teardown(void **state) {
+//     free(*state);
+//     return 0;
+// }
+// const struct CMUnitTest test_group2[] = {
+//     cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
+// };
+//int result = 0;
+//result += cmocka_run_group_tests(test_group2, NULL, NULL);
 
 static int init();
 static int uninit();
@@ -68,10 +84,10 @@ int run_rdict_tests(int benchmark_output) {
 static uint64_t rhash_func_int(const void* key) {
     return (uint64_t)key;
 }
-//static void set_key_func_default(void* data_ext, rdict_entry* entry, const void* key) {
+//static void set_key_func_default(void* data_ext, rdict_entry_t* entry, const void* key) {
 //    entry->key.s64 = key;
 //}
-//static void set_value_func_default(void* data_ext, rdict_entry* entry, const void* obj) {
+//static void set_value_func_default(void* data_ext, rdict_entry_t* entry, const void* obj) {
 //    entry->value.s64 = obj;
 //}
 static void rdict_int_test(void **state) {// 整数类型 k-v
@@ -79,11 +95,11 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     int count = 10000;
     int j;
 
-    rdict_entry de_temp = { .key.ptr = 0, .value.ptr = 0 };
+    rdict_entry_t de_temp = { .key.ptr = 0, .value.ptr = 0 };
 
-    init_benchmark(1024, "test int rdict(%d) - %f", count, de_temp.key.d);
+    init_benchmark(1024, "test int rdict_t(%d) - %f", count, de_temp.key.d);
 
-    //rdict dict_ins_stack = {
+    //rdict_t dict_ins_stack = {
     //    NULL, NULL, 0, 0, 0, 0, 0.0f, NULL,
 
     //    //dic_hash_callback,
@@ -97,7 +113,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     //};
     
     start_benchmark(0);
-    rdict* dict_ins = rdict_create(count, 0, NULL);
+    rdict_t* dict_ins = rdict_create(count, 0, NULL);
     assert_true(dict_ins);
     dict_ins->hash_func = rhash_func_int;
     //dict_ins->set_key_func = set_key_func_default;
@@ -114,7 +130,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-        rdict_entry *de = rdict_find(dict_ins, j);
+        rdict_entry_t *de = rdict_find(dict_ins, j);
         assert_true(de != NULL && de->value.s64 == count + j);
     }
     end_benchmark("Linear access existing elements");
@@ -122,14 +138,14 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     start_benchmark(0);
     for (j = 0; j < count; j++) {
         int index = rand() % count;
-        rdict_entry *de = rdict_find(dict_ins, index);
+        rdict_entry_t *de = rdict_find(dict_ins, index);
         assert_true(de != NULL && de->value.s64 == count + index);
     }
     end_benchmark("Random access existing elements");
 
     start_benchmark(0);
     for (j = count; j < 2 * count; j++) {
-        rdict_entry *de = rdict_find(dict_ins, j);
+        rdict_entry_t *de = rdict_find(dict_ins, j);
         assert_true(de == NULL);
     }
     end_benchmark("Access missing keys");
@@ -144,7 +160,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-        rdict_entry *de = rdict_find(dict_ins, j);
+        rdict_entry_t *de = rdict_find(dict_ins, j);
         assert_true(de == NULL);
     }
     end_benchmark("Linear access not existing elements");
@@ -158,10 +174,10 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     end_benchmark("Double elements and fill map.");
 
     start_benchmark(0);
-    rdict_iterator it = rdict_it(dict_ins);
-    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
+    rdict_iterator_t it = rdict_it(dict_ins);
+    for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(de->key.s64 == de->value.s64 - count);
-        //printf("rdict_iterator: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
+        //printf("rdict_iterator_t: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
     }
     end_benchmark("Iterator map.");
 
@@ -169,7 +185,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     rdict_clear(dict_ins);
     assert_true(rdict_size(dict_ins) == 0);
     rdict_it_first(&it);
-    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
+    for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(false);
     }
     end_benchmark("Clear map.");
@@ -222,10 +238,10 @@ static void rdict_string_test(void **state) {// string类型 k-v
     char key_str_buffer[24] = { '\0' };
     char value_str_buffer[24] = { '\0' };
 
-    init_benchmark(1024, "test string rdict(%d)", count);
+    init_benchmark(1024, "test string rdict_t(%d)", count);
 
     start_benchmark(0);
-    rdict* dict_ins = rdict_create(count, 32, NULL);
+    rdict_t* dict_ins = rdict_create(count, 32, NULL);
     assert_true(dict_ins);
     dict_ins->hash_func = rhash_func_string;
     dict_ins->copy_key_func = copy_key_func_string;
@@ -248,7 +264,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     start_benchmark(0);
     for (j = 0; j < count; j++) {
         rformat_s(key_str_buffer, "%d", j);
-        rdict_entry *de = rdict_find(dict_ins, key_str_buffer);
+        rdict_entry_t *de = rdict_find(dict_ins, key_str_buffer);
         assert_true(de != NULL && rstr_2int(de->value.ptr) == count + j);
     }
     end_benchmark("Linear access existing elements");
@@ -257,7 +273,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     for (j = 0; j < count; j++) {
         int index = rand() % count;
         rformat_s(key_str_buffer, "%d", index);
-        rdict_entry *de = rdict_find(dict_ins, key_str_buffer);
+        rdict_entry_t *de = rdict_find(dict_ins, key_str_buffer);
         assert_true(de != NULL && rstr_2int(de->value.ptr) == count + index);
     }
     end_benchmark("Random access existing elements");
@@ -265,7 +281,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     start_benchmark(0);
     for (j = count; j < 2 * count; j++) {
         rformat_s(key_str_buffer, "%d", j);
-        rdict_entry *de = rdict_find(dict_ins, key_str_buffer);
+        rdict_entry_t *de = rdict_find(dict_ins, key_str_buffer);
         assert_true(de == NULL);
     }
     end_benchmark("Access missing keys");
@@ -282,7 +298,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     start_benchmark(0);
     for (j = 0; j < count; j++) {
         rformat_s(key_str_buffer, "%d", j);
-        rdict_entry *de = rdict_find(dict_ins, key_str_buffer);
+        rdict_entry_t *de = rdict_find(dict_ins, key_str_buffer);
         assert_true(de == NULL);
     }
     end_benchmark("Linear access not existing elements");
@@ -298,10 +314,10 @@ static void rdict_string_test(void **state) {// string类型 k-v
     end_benchmark("Double elements and fill map.");
 
     start_benchmark(0);
-    rdict_iterator it = rdict_it(dict_ins);
-    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
+    rdict_iterator_t it = rdict_it(dict_ins);
+    for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(rstr_2int(de->key.ptr) == rstr_2int(de->value.ptr) - count);
-        //printf("rdict_iterator: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
+        //printf("rdict_iterator_t: %"PRId64" -> %"PRId64"\n", de->key.s64, de->value.s64);
     }
     end_benchmark("Iterator map.");
 
@@ -309,7 +325,7 @@ static void rdict_string_test(void **state) {// string类型 k-v
     rdict_clear(dict_ins);
     assert_true(rdict_size(dict_ins) == 0);
     rdict_it_first(&it);
-    for (rdict_entry *de = NULL; (de = rdict_next(&it)) != NULL; ) {
+    for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
         assert_true(false);
     }
     end_benchmark("Clear map.");

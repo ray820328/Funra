@@ -27,18 +27,18 @@ extern "C" {
 #define rdict_scale_factor_default 0.75
 #define rdict_used_factor_default 0.75
 #define rdict_expand_factor 2
-#define rdict_hill_expand_capacity (10240000 / sizeof(rdict_entry))
-#define rdict_hill_add_capacity (1024000 / sizeof(rdict_entry))
+#define rdict_hill_expand_capacity (10240000 / sizeof(rdict_entry_t))
+#define rdict_hill_add_capacity (1024000 / sizeof(rdict_entry_t))
 
-typedef enum rdict_code {
+typedef enum rdict_code_t {
     rdict_code_ok = 0,
     rdict_code_error = 1,
     rdict_code_not_exist = 2,
-} rdict_code;
+} rdict_code_t;
 
 /* ------------------------------- Structs ------------------------------------*/
 
-typedef struct rdict_entry {
+typedef struct rdict_entry_t {
     union {
         void* ptr;
         uint64_t u64;
@@ -55,16 +55,16 @@ typedef struct rdict_entry {
         double d;
     } value;
 
-    //struct rdict_entry *next;
-} rdict_entry;
+    //struct rdict_entry_t *next;
+} rdict_entry_t;
 
 typedef uint64_t(*rdict_hash_func_type)(const void* key);
 /** 0 - 不相等; !0 - 相等 **/
 typedef int (*rdict_compare_key_func_type)(void* data_ext, const void* key1, const void* key2);
 
-typedef struct rdict {
-    rdict_entry *entry;
-    rdict_entry *entry_null;
+typedef struct rdict_t {
+    rdict_entry_t *entry;
+    rdict_entry_t *entry_null;
     rdict_size_t size;
     rdict_size_t capacity;
     rdict_size_t buckets;
@@ -73,23 +73,23 @@ typedef struct rdict {
     void* data_ext;
 
     rdict_hash_func_type hash_func;
-    void (*set_key_func)(void* data_ext, rdict_entry* entry, const void* key);
-    void (*set_value_func)(void* data_ext, rdict_entry* entry, const void* obj);
+    void (*set_key_func)(void* data_ext, rdict_entry_t* entry, const void* key);
+    void (*set_value_func)(void* data_ext, rdict_entry_t* entry, const void* obj);
     void* (*copy_key_func)(void* data_ext, const void* key);
     void* (*copy_value_func)(void* data_ext, const void* obj);
     rdict_compare_key_func_type compare_key_func;
     void (*free_key_func)(void* data_ext, void* key);
     void (*free_value_func)(void* data_ext, void* obj);
     void (*expand_failed_func)(void* data_ext);
-} rdict;
+} rdict_t;
 
-typedef struct rdict_iterator {
-    rdict* d;
-    rdict_entry *entry, *next;
-} rdict_iterator;
+typedef struct rdict_iterator_t {
+    rdict_t* d;
+    rdict_entry_t *entry, *next;
+} rdict_iterator_t;
 
-typedef void (rdict_scan_func)(void* data_ext, const rdict_entry *de);
-typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
+typedef void (rdict_scan_func)(void* data_ext, const rdict_entry_t *de);
+typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry_t **bucketref);
 
 /* ------------------------------- Macros ------------------------------------*/
 
@@ -180,18 +180,18 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry **bucketref);
 
 uint64_t rhash_func_murmur(const char *key);
 
-rdict* rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext);
-int rdict_expand(rdict* d, rdict_size_t capacity);
-int rdict_add(rdict* d, void* key, void* val);
-int rdict_remove(rdict* d, const void* key);
+rdict_t* rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext);
+int rdict_expand(rdict_t* d, rdict_size_t capacity);
+int rdict_add(rdict_t* d, void* key, void* val);
+int rdict_remove(rdict_t* d, const void* key);
 /** 只置空数据，不释放entry内存 **/
-void rdict_clear(rdict* d);
-void rdict_release(rdict* d);
-rdict_entry* rdict_find(rdict* d, const void* key);
+void rdict_clear(rdict_t* d);
+void rdict_release(rdict_t* d);
+rdict_entry_t* rdict_find(rdict_t* d, const void* key);
 
 /* 注意rehash失效 */
-rdict_iterator* rdict_it_heap(rdict* d);
-rdict_entry* rdict_next(rdict_iterator* it);
+rdict_iterator_t* rdict_it_heap(rdict_t* d);
+rdict_entry_t* rdict_next(rdict_iterator_t* it);
 
 #ifdef __cplusplus
 }

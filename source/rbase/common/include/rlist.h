@@ -34,17 +34,17 @@ extern "C" {
  */
 
 typedef enum {
-    RLIST_HEAD
-  , RLIST_TAIL
+    rlist_dir_head,
+    rlist_dir_tail
 } rlist_direction_t;
 
 /*
  * list_t node struct.
  */
 
-typedef struct rlist_node {
-  struct rlist_node *prev;
-  struct rlist_node *next;
+typedef struct rlist_node_t {
+  struct rlist_node_t *prev;
+  struct rlist_node_t *next;
   void *val;
 } rlist_node_t;
 
@@ -52,7 +52,7 @@ typedef struct rlist_node {
  * list_t struct.
  */
 
-typedef struct {
+typedef struct rlist_t {
   rlist_node_t *head;
   rlist_node_t *tail;
   unsigned int len;
@@ -69,7 +69,7 @@ typedef struct {
  * list_t iterator struct.
  */
 
-typedef struct {
+typedef struct rlist_iterator_t {
     rlist_node_t *next;
     rlist_direction_t direction;
 } rlist_iterator_t;
@@ -114,7 +114,7 @@ rlist_iterator_t* rlist_iterator_new(rlist_t *list, rlist_direction_t direction)
 
 //rattribute_unused(static) rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_node_t *node, rlist_direction_t direction);
 
-rlist_node_t* rlist_iterator_next(rlist_iterator_t *self);
+rlist_node_t* rlist_next(rlist_iterator_t *self);
 
 //static inline void rlist_iterator_destroy(rlist_t *list, rlist_iterator_t *self) {
 //    list->free_it(self);
@@ -125,6 +125,24 @@ do { \
     (rlist_ptr)->free_it((rlist_iterator_it_prt)); \
     (rlist_iterator_it_prt) = NULL; \
 } while(0)
+
+
+#define rlist_it(list, direction) \
+    { \
+        ((direction) == rlist_dir_tail) ? (list)->head : (list)->tail, (direction) \
+    }
+
+#define rlist_it_first(it) \
+    do { \
+        (it)->next = ((direction) == rlist_dir_tail) ? (list)->head : (list)->tail; \
+        (it)->direction = (direction); \
+    } while(0)
+
+#define rlist_it_from(list, direction, from) \
+    { \
+        (from), (direction) \
+    }
+
 
 #ifdef __cplusplus
 }

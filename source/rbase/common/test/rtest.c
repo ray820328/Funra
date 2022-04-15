@@ -31,8 +31,9 @@ int main(int argc, char **argv) {
     // default:
     //   fprintf(stderr, "Too many arguments.\n");
     //   fflush(stderr);
-    //   return 1;
     // }
+
+    uninit_rlog();
 
 #ifndef __SUNPRO_C
     return 0;
