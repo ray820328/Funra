@@ -7,19 +7,20 @@ PROJECT(rcommon)
 INCLUDE_DIRECTORIES(include)
 
 SET(SRC_LIB
-        src/dict.c
-        src/mt19937-64.c
-        src/siphash.c
+        src/rtime.c
+        src/rstring.c
+        src/rlog.c
         src/rdict.c
         src/rlist.c
-        src/rtime.c
-        src/rlog.c
         )
 
 #LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
 
 SET(SRC_BIN
     ${SRC_LIB}
+    test/dict.c
+    test/mt19937-64.c
+    test/siphash.c
     test/rtest_collections.c
     test/rtest_rdict.c
     test/rtest.c

@@ -8,7 +8,8 @@
  */
 
 #include "stdlib.h"
-#include "string.h"
+
+#include "rstring.h"
 
 #include "rcommon.h"
 #include "rtime.h"

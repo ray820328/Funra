@@ -48,6 +48,8 @@
 
 int run_rcommon_tests(int output);
 
+int run_rstring_tests(int output);
+
 int run_rdict_tests(int output);
 
 #endif /* RTEST_H */

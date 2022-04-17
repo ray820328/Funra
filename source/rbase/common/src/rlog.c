@@ -8,9 +8,9 @@
  */
 
 #include "stdlib.h"
-#include "string.h"
 
 #include "rcommon.h"
+#include "rstring.h"
 #include "rtime.h"
 #include "rlog.h"
 
