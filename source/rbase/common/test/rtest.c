@@ -17,7 +17,6 @@
 static rlist_t *test_entries = NULL;
 
 int rtest_add_test_entry(rtest_entry_type entry_func) {
-
     rlist_rpush(test_entries, entry_func);
 }
 
@@ -61,6 +60,12 @@ static int run_tests(int output) {
     int testResult;
 
     testResult = 0;
+
+    rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
+    rlist_node_t *node = NULL;
+    while ((node = rlist_next(&it))) {
+        (rtest_entry_type)(*(node->val))(output);
+    }
 
     testResult = run_rcommon_tests(output);
 
