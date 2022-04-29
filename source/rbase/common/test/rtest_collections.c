@@ -124,14 +124,21 @@ static void rlist_test(void **state) {
     assert_true(rlist_at(mylist, -3)); // third last
     assert_false(rlist_at(mylist, count - 1));
 
-    rlist_iterator_t *it = rlist_iterator_new(mylist, rlist_dir_head);
-    while ((nodeFind = rlist_next(it))) {
+    rlist_iterator_t *it_new = rlist_iterator_new(mylist, rlist_dir_head);
+    while ((nodeFind = rlist_next(it_new))) {
         assert_true(nodeFind);
         assert_true(nodeFind->val);
     }
-    rlist_iterator_destroy(mylist, it);
+    rlist_iterator_destroy(mylist, it_new);
 
-    assert_false(it);
+    assert_false(it_new);
+
+    rlist_iterator_t it = rlist_it(mylist, rlist_dir_tail);
+    rlist_node_t *node = rlist_next(&it);
+    while (node) {
+        assert_true(node->val);
+        node = rlist_next(&it);
+    }
 
     rdestroy_object(mylist, rlist_destroy);
 

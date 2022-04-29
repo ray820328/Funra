@@ -46,10 +46,9 @@
     printf("%s: elapsed %"PRId64" ms, " benchmarkMsgSuffix "\n", benchmarkTitle, benchmarkElapsed); \
 } while(0)
 
-int run_rcommon_tests(int output);
 
-int run_rstring_tests(int output);
+typedef int(*rtest_entry_type)(int benchmark_output);
 
-int run_rdict_tests(int output);
+int rtest_add_test_entry(rtest_entry_type entry_func);
 
 #endif /* RTEST_H */

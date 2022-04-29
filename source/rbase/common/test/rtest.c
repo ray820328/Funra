@@ -12,10 +12,27 @@
 #include "rlog.h"
 #include "rbase/common/test/rtest.h"
 
+#include "rlist.h"
+
+static rlist_t *test_entries = NULL;
+
+int rtest_add_test_entry(rtest_entry_type entry_func) {
+
+    rlist_rpush(test_entries, entry_func);
+}
+
 static int init_platform();
 static int run_tests(int output);
 
 static int init_platform() {
+
+    test_entries = rlist_new(raymalloc);
+    assert_true(test_entries != NULL);
+
+    rlist_init(test_entries);
+    test_entries->malloc_node = raymalloc;
+    test_entries->free_node = rayfree;
+    test_entries->free_self = rayfree;
 
     return 0;
 }

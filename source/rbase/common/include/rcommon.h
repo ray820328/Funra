@@ -87,7 +87,7 @@ extern "C" {
 
 #endif //RAY_BUILD_AS_DLL
 
-#else //WIN32
+#else // ! WIN32
 
 #include "execinfo.h"
 #include <sys/ioctl.h>

@@ -23,6 +23,7 @@ SET(SRC_BIN
     test/siphash.c
     test/rtest_collections.c
     test/rtest_rdict.c
+    test/rtest_rlog.c
     test/rtest.c
     )
 
