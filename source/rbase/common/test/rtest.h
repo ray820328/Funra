@@ -51,4 +51,9 @@ typedef int(*rtest_entry_type)(int benchmark_output);
 
 int rtest_add_test_entry(rtest_entry_type entry_func);
 
+int run_rdict_tests(int benchmark_output);
+int run_rcommon_tests(int benchmark_output);
+int run_rlog_tests(int benchmark_output);
+
+
 #endif /* RTEST_H */

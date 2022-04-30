@@ -18,6 +18,8 @@ static rlist_t *test_entries = NULL;
 
 int rtest_add_test_entry(rtest_entry_type entry_func) {
     rlist_rpush(test_entries, entry_func);
+
+	return 0;
 }
 
 static int init_platform();
@@ -59,17 +61,19 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int testResult;
 
+	rtest_add_test_entry(run_rcommon_tests);
+	rtest_add_test_entry(run_rdict_tests);
+	rtest_add_test_entry(run_rlog_tests);
+	
+
     testResult = 0;
 
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
     rlist_node_t *node = NULL;
     while ((node = rlist_next(&it))) {
-        (rtest_entry_type)(*(node->val))(output);
+		testResult = ((rtest_entry_type)(node->val))(output);
+		//assert_true(test_entries != 0);
     }
-
-    testResult = run_rcommon_tests(output);
-
-    run_rdict_tests(output);
 
     return testResult;
 }
