@@ -194,6 +194,10 @@ extern "C" {
 #endif /* defined(_WIN32) || defined(_WIN64) */
     }
 
+	static inline void rmutex_uninit(void* rmutexObj){
+
+	}
+
     static inline void rmutex_lock(void* rmutexObj)
     {
 #if defined(_WIN32) || defined(_WIN64)

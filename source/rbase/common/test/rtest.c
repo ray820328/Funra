@@ -39,7 +39,7 @@ static int init_platform() {
 }
 
 int main(int argc, char **argv) {
-    init_rlog("RLog.txt", RLOG_ALL, false, "all");
+    rlog_init("RLog.txt", RLOG_ALL, false, "all");
 
     init_platform();
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     //   fflush(stderr);
     // }
 
-    uninit_rlog();
+    rlog_uninit();
 
 #ifndef __SUNPRO_C
     return 0;

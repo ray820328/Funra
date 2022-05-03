@@ -19,11 +19,15 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #endif //__GNUC__
 
+#define file_serail_num_len 20
+
 rattribute_unused(static volatile bool rlog_inited = false);
 rattribute_unused(static volatile int64_t timeLast = 0);
 rattribute_unused(static int64_t timeMax = 0);
 
 static rmutex_t_def rlog_mutex;
+static rlog_level_t rlog_level;
+static bool file2seperate;
 
 static bool rlog_force_flush = false;//false启用日志buffer
 static int rlog_flush_max = 30000;//n秒刷一次缓存
@@ -32,26 +36,28 @@ rattribute_unused(static int rlog_rollback_size = 0);//rolling文件大小
 static rlog_info_t* rlog_infos[RLOG_ALL];
 
 //"XXX_%s_%s.log"
-void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool seperateFile, const char* fileSuffix) {//字符长度都有保证
+void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool seperateFile, const char* fileSuffix) {//字符长度都有保证
     if (rlog_inited) {
         return;
     }
     rmutex_init(&rlog_mutex);
-    rlog_inited = true;
 
     rmutex_lock(&rlog_mutex);
+
+	rlog_level = logLevel;
+	file2seperate = seperateFile;
 
     //char* filename[rlog_filename_length];
     char timeStr[32];
     int retCode = 1;
 
     if (logLevel != RLOG_ALL && rlog_infos[logLevel]) {
-		printf("init_rlog already inited, level = %d.\n", logLevel);
+		printf("rlog_init already inited, level = %d.\n", logLevel);
 		goto Exit0;
 	}
 
 	if (!logFilename || strlen(logFilename) > rlog_filename_length - 32) {
-		printf("init_rlog logFilename is too long.\n");
+		printf("rlog_init logFilename is too long.\n");
         goto Exit1;
 	}
 
@@ -60,7 +66,7 @@ void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool 
     }
     else {
         if (sprintf(timeStr, "%s", fileSuffix) >= (int)sizeof(timeStr)) {
-            printf("init_rlog logFilename is too long.\n");
+            printf("rlog_init logFilename is too long.\n");
             timeStr[(int)sizeof(timeStr) - 1] = '\0';
         }
     }
@@ -77,26 +83,26 @@ void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool 
 
 		rlog_info_t* log = raymalloc(sizeof(rlog_info_t));
 		if (!log) {
-			printf("init_rlog init failed, %s.\n", levelStr);
+			printf("rlog_init init failed, %s.\n", levelStr);
 			exit(1);
 		}
 		rlog_infos[rLevel] = log;
 		log->level = rLevel;
 
         size_t nSize = strlen(logFilename) + strlen(levelStr) + strlen(timeStr);
-		log->filename = raymalloc(nSize + 1);
+		log->filename = raymalloc(nSize + file_serail_num_len);//add suffix no. n digitals
 		if (!log->filename) {
-			printf("init_rlog init failed, %s.\n", levelStr);
+			printf("rlog_init init failed, %s.\n", levelStr);
             goto Exit1;
 		}
-		if (seperateFile) {
+		if (file2seperate) {
 			//strcpy(log->filename, rlogStr);
-   //         strcat(log->filename, filename);
+			//strcat(log->filename, filename);
             sprintf(log->filename, logFilename, levelStr, timeStr);
-            //printf("init_rlog init, p = %p, len = %d. size = %d, filename = '%s'\n", log->filename, strlen(log->filename), nSize, log->filename);
+            //printf("rlog_init init, p = %p, len = %d. size = %d, filename = '%s'\n", log->filename, strlen(log->filename), nSize, log->filename);
 		}
 		else {
-            sprintf(log->filename, logFilename, "log", timeStr);
+            sprintf(log->filename, logFilename, RLOG_TOSTR(RLOG_ALL), timeStr);//all lt than level str defined
         }
         //todo Ray ...
         log->logItemData = raymalloc(rlog_temp_data_size);
@@ -106,7 +112,7 @@ void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool 
         log->fmtDest = raymalloc(rlog_temp_data_size);
         log->fmtDest[0] = '\0';
 
-		log->file_ptr = fopen(log->filename, "a+");
+		log->file_ptr = fopen(log->filename, "w+");
 		if (!log->file_ptr) {
 			printf("Cannot open file [%s], check file is opening or not!\n", log->filename);
 			goto Exit1;
@@ -114,9 +120,11 @@ void init_rlog(const char* logFilename, const rlog_level_t logLevel, const bool 
     }
 	
 Exit0:
+	rlog_inited = true;
+
     retCode = 0;
 
-    rayprintf(RLOG_INFO, "init rlog finished.\n");
+	rlog_printf(RLOG_INFO, "init rlog finished.\n");
 Exit1:
     if (retCode != 0) {
         printf("init rlog failed. code = %d\n", retCode);
@@ -124,8 +132,13 @@ Exit1:
 
     rmutex_unlock(&rlog_mutex);
 }
-void uninit_rlog() {
-	rayprintf(RLOG_INFO, "uninit rlog finished.\n");
+void rlog_uninit() {
+	rlog_printf(RLOG_INFO, "uninit rlog finished.\n");
+
+	rmutex_lock(&rlog_mutex);
+
+	rlog_inited = false;
+
 	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
         if (rlog_infos[rLevel]) {
             if (rlog_infos[rLevel]->file_ptr) {
@@ -135,7 +148,7 @@ void uninit_rlog() {
             }
 
             if (rlog_infos[rLevel]->filename) {
-                //printf("uninit_rlog free filename, p = %p, filename = %s\n", rlog_infos[rLevel]->filename, rlog_infos[rLevel]->filename);
+                //printf("rlog_uninit free filename, p = %p, filename = %s\n", rlog_infos[rLevel]->filename, rlog_infos[rLevel]->filename);
                 rayfree(rlog_infos[rLevel]->filename);
                 rlog_infos[rLevel]->filename = NULL;
             }
@@ -159,16 +172,23 @@ void uninit_rlog() {
 			rlog_infos[rLevel] = NULL;
 		}
 	}
+
+	rmutex_unlock(&rlog_mutex);
+
+	rmutex_uninit(&rlog_mutex);
 }
 
-int flush_rlog_file() {
+int rlog_flush_file(bool close_file) {
     bool last_flag = rlog_force_flush;
     rlog_force_flush = true;
-    rayprintf(RLOG_INFO, "logFile flushed.\n");
+	rlog_printf(RLOG_INFO, "log file flushed.\n");
 	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
 		if (rlog_infos[rLevel] && rlog_infos[rLevel]->file_ptr) {
 			fflush(rlog_infos[rLevel]->file_ptr);
-			//fclose(logFilePtr);
+			if (close_file) {
+				fclose(rlog_infos[rLevel]->file_ptr);
+				rlog_infos[rLevel]->file_ptr = NULL;
+			}
 		}
 	}
     rlog_force_flush = last_flag;
@@ -176,7 +196,55 @@ int flush_rlog_file() {
     return 0;
 }
 
-int rayprintf(rlog_level_t logLevel, const char* fmt, ...) {
+int rlog_rolling_file() {
+	rlog_info_t* log = NULL;
+	char* temp_filename = NULL;
+	bool changed = false;
+
+	if (!rlog_inited) {
+		rlog_printf(RLOG_INFO, "rolling rlog failed, not inited.\n");
+		goto Exit1;
+	}
+	rmutex_lock(&rlog_mutex);
+
+	rlog_flush_file(true);
+
+	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
+		log = rlog_infos[cur_level];
+		if (!log) {
+			continue;
+		}
+
+		temp_filename = rstr_cpy(log->filename);
+		temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
+		
+		if (file2seperate) {
+			(void)rename(log->filename, temp_filename);
+		}
+		else if (!changed) {
+			(void)rename(log->filename, temp_filename);
+			changed = true;
+		}
+
+		log->file_ptr = fopen(log->filename, "w+");
+		if (!log->file_ptr) {
+			printf("Cannot open file [%s], check file is opening or not!\n", log->filename);
+			goto Exit1;
+		}
+	}
+
+//Exit0:
+	rlog_inited = true;
+
+	rlog_printf(RLOG_INFO, "rolling rlog finished.\n");
+
+Exit1:
+	rmutex_unlock(&rlog_mutex);
+
+	return 0;
+}
+
+int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
 #ifdef print2file
     if (!unlikely(rlog_infos[logLevel])) {
         //va_list ap0;
@@ -253,7 +321,8 @@ int rayprintf(rlog_level_t logLevel, const char* fmt, ...) {
 
     return 0;
 }
-//int readFile(const char* filename) {
+
+//int rlog_read_file(const char* filename) {
 //    FILE *fp;
 //    //文件以追加的方式打开
 //    if ((fp = fopen(filename, "a+")) == NULL) {

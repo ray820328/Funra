@@ -82,20 +82,20 @@ static void rlog_full_test(void **state) {
     int count = 10000;
     int j;
 
-    rdict_entry_t de_temp = { .key.ptr = 0, .value.ptr = 0 };
+    init_benchmark(1024, "test rlog (%d)", count);
 
-    init_benchmark(1024, "test int rdict_t(%d) - %f", count, de_temp.key.d);
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+		rdebug("范德萨发三个\n");
+		rinfo("噶士大夫胜多负少\n");
+    }
+    end_benchmark("print to file.");
 
-    //start_benchmark(0);
-    //for (j = 0; j < count; j++) {
-    //    int ret = rdict_add(dict_ins, j, count + j);
-    //    assert_true(ret == rdict_code_ok);
-    //}
-    //assert_true(rdict_size(dict_ins) == count);
-    //end_benchmark("Fill map.");
+	start_benchmark(0);
+	rlog_rolling_file();
+	end_benchmark("roling files.");
 
 }
-
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

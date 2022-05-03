@@ -28,7 +28,7 @@ extern "C" {
 #define rformat_s(strBuffer, fmt, ...) \
           do { \
             if (sprintf((strBuffer), (fmt), ##__VA_ARGS__) >= (int)sizeof((strBuffer))) { \
-                rayprintf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((strBuffer))); \
+                rlog_printf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((strBuffer))); \
                 (strBuffer)[(int)sizeof((strBuffer)) - 1] = '\0'; \
             } \
           } while(0)
@@ -50,6 +50,7 @@ extern "C" {
 #define rstr_end '\0'
 #define rstr_eq(str1, str2) \
     strcmp((str1), (str2)) == 0 ? 1 : 0
+#define rstr_len(str1) strlen((str1))
 
 #define rstr_2int(val) \
     atoi((val))
@@ -70,11 +71,13 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
 
-	R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest);
+R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest);
 
-	R_API char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...);
+R_API char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...);
 
 R_API char* rstr_cpy(const void *key);
+
+R_API char* rstr_substr(const char *src, const size_t dest_size);
 
 //有中文截断危险
 R_API char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr);
