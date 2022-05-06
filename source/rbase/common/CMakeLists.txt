@@ -25,6 +25,7 @@ SET(SRC_BIN
     test/rtest_collections.c
     test/rtest_rdict.c
     test/rtest_rlog.c
+    test/rtest_rfile.c
     test/rtest.c
     )
 

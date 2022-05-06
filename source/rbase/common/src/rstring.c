@@ -17,9 +17,9 @@
 #endif //__GNUC__
 
 size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest) {
-    size_t position = strlen(dest);
-    size_t srcLen = strlen(src);
-    size_t copyLen = rmin(srcLen, sizeofDest - strlen(dest) - 1);
+    size_t position = rstr_len(dest);
+    size_t srcLen = rstr_len(src);
+    size_t copyLen = rmin(srcLen, sizeofDest - position - 1);
     memcpy(dest + position, src, copyLen);
     position += copyLen;
 
@@ -52,7 +52,8 @@ char* rstr_cpy(const void *key) {//, int maxLen){
         return NULL;
     }
     unsigned int keyLen = (unsigned int)strlen((char*)key);
-    char* keyCopy = raymalloc((int64_t)(keyLen + 1u));
+    char* keyCopy = (char*)rstr_new(keyLen + 1u);
+    rstr_init(keyCopy);
     if (!keyCopy) {
         return NULL;
     }
@@ -233,10 +234,6 @@ char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newSt
 //    return APR_SUCCESS;
 //}
 
-R_API inline void rstr_free(const void *key) {
-    if (key)
-        rayfree((void*)key);
-}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

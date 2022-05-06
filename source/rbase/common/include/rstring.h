@@ -17,7 +17,16 @@ extern "C" {
 #include "rcommon.h"
 
 /* ------------------------------- Macros ------------------------------------*/
-    
+
+#define rstr_null "NULL"
+#define rstr_empty ""
+#define rstr_end '\0'
+
+#define rstr_new(size) rnew_data_array(char, (size))
+#define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
+#define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
+#define rstr_free(str) rfree_data_array(char, (str))
+
 #define rnum2str(retNumStr, num, base) \
           do { \
             char retTempStr[32]; \
@@ -45,9 +54,6 @@ extern "C" {
                 timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
           } while(0)
 
-#define rstr_null "NULL"
-#define rstr_empty ""
-#define rstr_end '\0'
 #define rstr_eq(str1, str2) \
     strcmp((str1), (str2)) == 0 ? 1 : 0
 #define rstr_len(str1) strlen((str1))
@@ -81,8 +87,6 @@ R_API char* rstr_substr(const char *src, const size_t dest_size);
 
 //有中文截断危险
 R_API char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr);
-
-R_API inline void rstr_free(const void *key);
 
 
 #ifdef __cplusplus

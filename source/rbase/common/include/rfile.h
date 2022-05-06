@@ -15,10 +15,24 @@ extern "C" {
 #endif
 
 #include "rcommon.h"
+#include "rlist.h"
 
 /* ------------------------------- Macros ------------------------------------*/
-    
+
+#define file_path_len_max 8192 
+
+
 /* ------------------------------- APIs ------------------------------------*/
+
+int rfile_copy_file(const char* src, const char* dst);
+
+int rfile_move_file(const char* src, const char* dst);
+
+int rfile_remove(const char* file);
+
+
+
+rlist_t* rdir_list(const char* dir, bool only_file, bool sub_dir);
 
 
 #ifdef __cplusplus

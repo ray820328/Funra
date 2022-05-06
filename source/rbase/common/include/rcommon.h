@@ -51,8 +51,17 @@ extern "C" {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #endif //__GNUC__
+
+#define file_system_unicode         1
+
 #if defined(_WIN32) || defined(_WIN64)
 #pragma message("Platform info: "macro_print_macro(_WIN64))
+
+#if defined(_WIN32_WCE) || defined(WINNT)
+#define file_system_ansi            0
+#else
+#define file_system_ansi            1
+#endif
 
 #define rattribute_unused(declaration) declaration
 
@@ -128,8 +137,6 @@ extern "C" {
                 data = NULL; \
             } while(0)
 
-#define rnew_data_s(T, data)  data = rnew_data(T)
-
 #else //RAY_USE_POOL
 #define rnew_data(T) rcheck_value(true, raymalloc(sizeof(T)))
 #define rfree_data(T, data) \
@@ -137,7 +144,16 @@ extern "C" {
 			    rayfree(data); \
 			    data = NULL; \
             } while(0)
+
 #endif //RAY_USE_POOL
+
+#define rnew_data_array(T, count) rcheck_value(true, raymalloc(sizeof(T) * (count)))
+#define rget_data_array(T, data, index) ((data) + sizeof(T) * (index))
+#define rfree_data_array(T, data) \
+            do { \
+			    rayfree(data); \
+			    data = NULL; \
+            } while(0)
 
 #define rmin(a,b) ((a)<(b)?(a):(b))
 #define rmax(a, b) ((a)>(b)?(a):(b))
@@ -159,7 +175,7 @@ extern "C" {
             __FILE__,                                     \
             __LINE__,                                     \
             #expr,                                        \
-            (msg));                                         \
+            (msg));                                       \
     abort();                                              \
   }                                                       \
  } while (0)
@@ -167,17 +183,17 @@ extern "C" {
 #define rassert_goto(expr, msg, code_int)                 \
  do {                                                     \
   if (!(expr)) {                                          \
-    msg = msg ? msg : "";                                 \
     fprintf(stderr,                                       \
             "Assertion failed in [ %s:%d (%s) ], [%d - %s ]\n", \
             __FILE__,                                     \
             __LINE__,                                     \
             #expr,                                        \
-            (code_int), (msg));                                   \
+            (code_int), (msg) ? (msg) : "");              \
     goto exit##code_int;                                  \
   }                                                       \
  } while (0)
 
+#define rgoto(code_int) goto exit##code_int
 
 #if defined(_WIN32) || defined(_WIN64)
 #define rmutex_t_def CRITICAL_SECTION

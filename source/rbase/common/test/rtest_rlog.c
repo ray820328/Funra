@@ -93,7 +93,7 @@ static void rlog_full_test(void **state) {
 
 	start_benchmark(0);
 	rlog_rolling_file();
-	end_benchmark("roling files.");
+	end_benchmark("rolling files.");
 
 }
 

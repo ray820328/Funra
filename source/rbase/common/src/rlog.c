@@ -44,7 +44,7 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 
     rmutex_lock(&rlog_mutex);
 
-	rlog_level = logLevel;
+	rlog_level = logLevel == RLOG_ALL ? RLOG_VERB : logLevel;
 	file2seperate = seperateFile;
 
     //char* filename[rlog_filename_length];
@@ -245,6 +245,9 @@ Exit1:
 }
 
 int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
+    if (logLevel < rlog_level) {
+        return 0;
+    }
 #ifdef print2file
     if (!unlikely(rlog_infos[logLevel])) {
         //va_list ap0;
