@@ -83,7 +83,7 @@ char* rstr_substr(const char *src, const size_t dest_size)
     return dst;
 }
 
-/** 有中文截断危险 **/
+/** 不支持unicode，有中文截断危险，utf8编码可以使用 **/
 char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr) {
     if (!newStr || !destStr) {
         return src;
@@ -119,6 +119,11 @@ char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newSt
     //strcpy(src, bstr);
 
     return destStr;
+}
+
+R_API int rstr_token(const char *src, const char *delim, char** tokens) {
+
+    return rcode_ok;
 }
 //
 //char* rstr_token(char* str, const char* sep, char** last)
@@ -183,7 +188,7 @@ char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newSt
 //
 //    *pathelts = elts;
 //
-//    return 0;
+//    return rcode_ok;
 //}
 //
 //

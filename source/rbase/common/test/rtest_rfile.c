@@ -33,15 +33,15 @@ static int setup(void **state) {
 
     dir_path = "./";
 
-    return 0;
+    return rcode_ok;
 }
 static int teardown(void **state) {
     dir_path = NULL;
 
     free(*state);
-    return 0;
+    return rcode_ok;
 }
-const struct CMUnitTest test_group2[] = {
+static struct CMUnitTest test_group2[] = {
     cmocka_unit_test_setup_teardown(rfile_full_test, setup, teardown),
 };
 
@@ -54,7 +54,7 @@ int run_rfile_tests(int benchmark_output) {
 
     printf("run_rfile_tests, pass: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
 
-    return 0;
+    return rcode_ok;
 }
 
 static void rfile_full_test(void **state) {

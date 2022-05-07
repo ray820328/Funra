@@ -26,6 +26,8 @@ extern "C" {
 
 #include "rbase.h"
 
+#define rcode_ok 0
+
 #define sizeptr 8
 #define LPRId64 L"lld"
 

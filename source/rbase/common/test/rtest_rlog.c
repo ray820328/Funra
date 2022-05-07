@@ -26,11 +26,11 @@
 //     assert_non_null(answer);
 //     *answer = 42;
 //     *state = answer;
-//     return 0;
+//     return rcode_ok;
 // }
 // static int teardown(void **state) {
 //     free(*state);
-//     return 0;
+//     return rcode_ok;
 // }
 // const struct CMUnitTest test_group2[] = {
 //     cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
@@ -55,12 +55,12 @@ static int init() {
     fprintf(stdout, "total: %d\n", total);
     fflush(stdout);
 
-    return 0;
+    return rcode_ok;
 }
 
 static int uninit() {
 
-    return 0;
+    return rcode_ok;
 }
 
 int run_rlog_tests(int benchmark_output) {
@@ -74,7 +74,7 @@ int run_rlog_tests(int benchmark_output) {
 
     uninit();
 
-    return 0;
+    return rcode_ok;
 }
 
 static void rlog_full_test(void **state) {

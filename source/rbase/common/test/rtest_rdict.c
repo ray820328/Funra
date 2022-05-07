@@ -26,11 +26,11 @@
 //     assert_non_null(answer);
 //     *answer = 42;
 //     *state = answer;
-//     return 0;
+//     return rcode_ok;
 // }
 // static int teardown(void **state) {
 //     free(*state);
-//     return 0;
+//     return rcode_ok;
 // }
 // const struct CMUnitTest test_group2[] = {
 //     cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
@@ -57,12 +57,12 @@ static int init() {
     fprintf(stdout, "total: %d\n", total);
     fflush(stdout);
 
-    return 0;
+    return rcode_ok;
 }
 
 static int uninit() {
 
-    return 0;
+    return rcode_ok;
 }
 
 int run_rdict_tests(int benchmark_output) {
@@ -76,7 +76,7 @@ int run_rdict_tests(int benchmark_output) {
 
     uninit();
 
-    return 0;
+    return rcode_ok;
 }
 
 static uint64_t rhash_func_int(const void* key) {
@@ -199,7 +199,7 @@ static uint64_t rhash_func_string(const void* key) {
     if (key) {
         return rhash_func_murmur((char*)key);
     }
-    return 0;
+    return rcode_ok;
 }
 static void* copy_key_func_string(void* data_ext, const void* key) {
     if (key) {
@@ -227,7 +227,7 @@ static int compare_key_func_string(void* data_ext, const void* key1, const void*
     if (key1 && key2) {
         return rstr_eq(key1, key2);
     }
-    return 0;
+    return rcode_ok;
 }
 static void rdict_string_test(void **state) {// string类型 k-v
     (void)state;

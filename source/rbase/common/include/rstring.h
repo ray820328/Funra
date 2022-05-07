@@ -55,7 +55,7 @@ extern "C" {
           } while(0)
 
 #define rstr_eq(str1, str2) \
-    strcmp((str1), (str2)) == 0 ? 1 : 0
+    strcmp((str1), (str2)) == 0 ? true : false
 #define rstr_len(str1) strlen((str1))
 
 #define rstr_2int(val) \
@@ -87,6 +87,8 @@ R_API char* rstr_substr(const char *src, const size_t dest_size);
 
 //有中文截断危险
 R_API char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr);
+
+R_API int rstr_token(const char *src, const char *delim, char** tokens);
 
 
 #ifdef __cplusplus

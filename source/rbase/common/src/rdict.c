@@ -49,7 +49,7 @@ static void set_value_func_default(void* data_ext, rdict_entry_t* entry, const v
 static int compare_key_func_default(void* data_ext, const void* key1, const void* key2) {
     if (key1 == key2)
         return 1;
-    return 0;
+    return rcode_ok;
 }
 
 rdict_t *rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext) {

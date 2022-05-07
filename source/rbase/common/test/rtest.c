@@ -19,7 +19,7 @@ static rlist_t *test_entries = NULL;
 int rtest_add_test_entry(rtest_entry_type entry_func) {
     rlist_rpush(test_entries, entry_func);
 
-	return 0;
+	return rcode_ok;
 }
 
 static int init_platform();
@@ -35,7 +35,7 @@ static int init_platform() {
     test_entries->free_node = rayfree;
     test_entries->free_self = rayfree;
 
-    return 0;
+    return rcode_ok;
 }
 
 int main(int argc, char **argv) {
@@ -54,13 +54,16 @@ int main(int argc, char **argv) {
     rlog_uninit();
 
 #ifndef __SUNPRO_C
-    return 0;
+    return rcode_ok;
 #endif
 }
 
 static int run_tests(int output) {
     int testResult;
 
+    rtest_add_test_entry(run_rstring_tests);
+    rtest_add_test_entry(run_rthread_tests);
+    rtest_add_test_entry(run_rarray_tests);
 	rtest_add_test_entry(run_rcommon_tests);
 	rtest_add_test_entry(run_rdict_tests);
     rtest_add_test_entry(run_rlog_tests);

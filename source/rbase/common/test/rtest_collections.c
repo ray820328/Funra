@@ -37,12 +37,12 @@ static int init() {
     fprintf(stdout, "total: %d\n", total);
     fflush(stdout);
 
-    return 0;
+    return rcode_ok;
 }
 
 static int uninit() {
 
-    return 0;
+    return rcode_ok;
 }
 
 int run_rcommon_tests(int benchmark_output) {
@@ -56,7 +56,7 @@ int run_rcommon_tests(int benchmark_output) {
 
     uninit();
 
-    return 0;
+    return rcode_ok;
 }
 
 static int rlist_match_func(void* a, void* b) {
@@ -68,7 +68,7 @@ static int rlist_match_func(void* a, void* b) {
             return 1;
         }
     }
-    return 0;
+    return rcode_ok;
 }
 
 static void rlist_test(void **state) {
@@ -154,7 +154,7 @@ static int dic_compare_callback(void *privdata, const void *key1, const void *ke
 
     l1 = (int)strlen((char*)key1);
     l2 = (int)strlen((char*)key2);
-    if (l1 != l2) return 0;
+    if (l1 != l2) return rcode_ok;
     return memcmp(key1, key2, l1) == 0;
 }
 static void dic_free_callback(void *privdata, void *val) {

@@ -10,6 +10,8 @@ SET(SRC_LIB
         src/rfile.c
         src/rtime.c
         src/rstring.c
+        src/rthread.c
+        src/rarray.c
         src/rlog.c
         src/rdict.c
         src/rlist.c
@@ -23,6 +25,9 @@ SET(SRC_BIN
     test/mt19937-64.c
     test/siphash.c
     test/rtest_collections.c
+    test/rtest_rstring.c
+    test/rtest_rthread.c
+    test/rtest_rarray.c
     test/rtest_rdict.c
     test/rtest_rlog.c
     test/rtest_rfile.c

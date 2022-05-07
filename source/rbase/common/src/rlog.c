@@ -193,7 +193,7 @@ int rlog_flush_file(bool close_file) {
 	}
     rlog_force_flush = last_flag;
 
-    return 0;
+    return rcode_ok;
 }
 
 int rlog_rolling_file() {
@@ -241,12 +241,12 @@ int rlog_rolling_file() {
 Exit1:
 	rmutex_unlock(&rlog_mutex);
 
-	return 0;
+	return rcode_ok;
 }
 
 int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     if (logLevel < rlog_level) {
-        return 0;
+        return rcode_ok;
     }
 #ifdef print2file
     if (!unlikely(rlog_infos[logLevel])) {
@@ -322,7 +322,7 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     }
     logItemData[0] = '\0';
 
-    return 0;
+    return rcode_ok;
 }
 
 //int rlog_read_file(const char* filename) {
@@ -341,7 +341,7 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
 //    //    //输出a = 1, b = 2
 //    //}
 //    //fclose(fp);
-//    return 0;
+//    return rcode_ok;
 //}
 /**/
 

@@ -30,7 +30,7 @@ int rfile_move_file(const char* src, const char* dst);
 
 int rfile_remove(const char* file);
 
-
+int rfile_format_path(char* file);
 
 rlist_t* rdir_list(const char* dir, bool only_file, bool sub_dir);
 

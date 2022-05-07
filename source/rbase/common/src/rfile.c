@@ -131,7 +131,7 @@ static int convert_utf8_to_ucs2(const char *in, size_t *inbytes, WCHAR *out, siz
     /* Buffer full 'errors' aren't errors, the client must inspect both
      * the inbytes and outwords values
      */
-    return 0;
+    return rcode_ok;
 }
 
 static int convert_ucs2_to_utf8(const WCHAR *in, size_t *inwords, char *out, size_t *outbytes)
@@ -207,7 +207,7 @@ static int convert_ucs2_to_utf8(const WCHAR *in, size_t *inwords, char *out, siz
     /* Buffer full 'errors' aren't errors, the client must inspect both
      * the inwords and outbytes values
      */
-    return 0;
+    return rcode_ok;
 }
 
 
@@ -270,7 +270,7 @@ static int path_utf8_to_unicode(WCHAR* retstr, size_t retlen, const char* srcstr
     for (; *t; ++t)
         if (*t == L'/')
             *t = L'\\';
-    return 0;
+    return rcode_ok;
 }
 
 static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr)
@@ -307,7 +307,7 @@ static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr
     if (srcremains) {
         return -3;
     }
-    return 0;
+    return rcode_ok;
 }
 
 #else
@@ -344,7 +344,7 @@ int rfile_copy_file(const char *src, const char *dst) {
     rassert_goto(!fclose(dfp), "error flushing dest", 1);
     dfp = NULL;
 
-    return 0;
+    return rcode_ok;
 exit1:
     if (sfp)
         fclose(sfp);
@@ -373,7 +373,7 @@ int rfile_move_file(const char *src, const char *dst) {
 
     rassert_goto(rfile_remove(src) == 0, "", 1);
 
-    return 0;
+    return rcode_ok;
 exit1:
     return 1;
 }
@@ -383,8 +383,28 @@ int rfile_remove(const char *file) {
 
     rassert_goto(unlink(file) >= 0, "unlink", 1);
 
-    return 0;
+    return rcode_ok;
 exit1:
+    return 1;
+}
+
+int rfile_format_path(char* file_path) {
+    int path_len = 0;
+    while (true) {
+        path_len = rstr_len(file_path);
+        if (file_path[path_len] == '\\') {
+            file_path[path_len] = rstr_end;
+            continue;
+        }
+
+        path_len = rstr_len(file_path);
+        if (file_path[path_len] == '/') {
+            file_path[path_len] = rstr_end;
+            continue;
+        }
+
+        break;
+    }
     return 1;
 }
 
@@ -405,21 +425,9 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     if (format_path[path_len] == '*') {
         format_path[path_len] = rstr_end;
     }
-    while (true) {
-        path_len = rstr_len(format_path);
-        if (format_path[path_len] == '\\') {
-            format_path[path_len] = rstr_end;
-            continue;
-        }
 
-        path_len = rstr_len(format_path);
-        if (format_path[path_len] == '/') {
-            format_path[path_len] = rstr_end;
-            continue;
-        }
+    rfile_format_path(format_path);//去掉末尾正/反斜杠
 
-        break;
-    }
     //结尾统一加上 /
     path_len = rstr_len(format_path);
     format_path[path_len] = '/';
@@ -445,14 +453,14 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
         rgoto(0);
     }
     path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
-    if (strcmp(file_full_name, ".") != 0 && strcmp(file_full_name, "..") != 0) {
+    if (!rstr_eq(file_full_name, ".") && !rstr_eq(file_full_name, "..")) {
         rlist_rpush(ret_list, rstr_cpy(file_full_name));
     }
 
     while (FindNextFileW(file_find_ret, &file_find_data))
     {
         path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
-        if (strcmp(file_full_name, ".") != 0 && strcmp(file_full_name, "..") != 0) {
+        if (!rstr_eq(file_full_name, ".") && !rstr_eq(file_full_name, "..")) {
             rlist_rpush(ret_list, rstr_cpy(file_full_name));
         }
     }
@@ -468,13 +476,13 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
         rerror("Unable to scan ansi directory: %s, error: %lu \n", format_path, GetLastError());
         rgoto(0);
     }
-    if (strcmp(file_find_data.cFileName, ".") != 0 && strcmp(file_find_data.cFileName, "..") != 0) {
+    if (!rstr_eq(file_find_data.cFileName, ".") && !rstr_eq(file_find_data.cFileName, "..")) {
         rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName));
     }
 
     while (FindNextFileA(file_find_ret, &file_find_data))
     {
-        if (strcmp(file_find_data.cFileName, ".") != 0 && strcmp(file_find_data.cFileName, "..") != 0) {
+        if (!rstr_eq(file_find_data.cFileName, ".") && !rstr_eq(file_find_data.cFileName, "..")) {
             rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName));
         }
     }
@@ -514,12 +522,12 @@ exit0:
 //    DIR *dir = opendir(".");
 //    if (dir == NULL) {
 //        printf("Directory cannot be opened!");
-//        return 0;
+//        return rcode_ok;
 //    }
 //    while ((files = readdir(dir)) != NULL)
 //        printf("%s\n", files->d_name);
 //    closedir(dir);
-//    return 0;
+//    return rcode_ok;
 //}
 
 #ifdef __GNUC__
