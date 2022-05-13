@@ -149,17 +149,17 @@ extern "C" {
 
 #endif //RAY_USE_POOL
 
-#define rnew_data_array(T, count) rcheck_value(true, raymalloc(sizeof(T) * (count)))
-#define rget_data_array(T, data, index) ((data) + sizeof(T) * (index))
-#define rfree_data_array(T, data) \
+#define rnew_data_array(size_elem, count) calloc((count), (size_elem))
+#define rfree_data_array(data) \
             do { \
-			    rayfree(data); \
-			    data = NULL; \
+			    free(data); \
+			    (data) = NULL; \
             } while(0)
 
 #define rmin(a,b) ((a)<(b)?(a):(b))
 #define rmax(a, b) ((a)>(b)?(a):(b))
 
+/** 只支持带显式类型的原生数组，如：int[] **/
 #define rcount_array(ptr, count) \
           do { \
             if ((ptr) != NULL) \
@@ -275,6 +275,28 @@ extern "C" {
         //}
 #endif /* defined(_WIN32) || defined(_WIN64) */
     }
+
+
+
+    typedef enum rdata_plain_type_t {
+        rdata_type_unknown = 0,                          /** no type */
+        rdata_type_bool = sizeof(bool),                  /** bool */
+        rdata_type_char = sizeof(char),                  /** char */
+        rdata_type_uchar = sizeof(unsigned char),        /** unsigned char */
+        rdata_type_short = sizeof(short),                /** short int */
+        rdata_type_ushort = sizeof(unsigned short),      /** unsigned short int */
+        rdata_type_int = sizeof(int),                    /** int */
+        rdata_type_uint = sizeof(unsigned int),          /** unsigned int */
+        rdata_type_long = sizeof(long),                  /** long int */
+        rdata_type_ulong = sizeof(unsigned long),        /** unsigned long int */
+        rdata_type_long_long = sizeof(long long),        /** long long */
+        rdata_type_ulong_long = sizeof(unsigned long long),           /** unsigned long long */
+        rdata_type_float = sizeof(float),                /** float */
+        rdata_type_double = sizeof(double),              /** double */
+        rdata_type_long_double = sizeof(long double),    /** long double */
+        rdata_type_ptr = sizeof(void *)                  /** generic pointer */
+    } rdata_plain_type_t;
+
 
 #ifdef __cplusplus
 }

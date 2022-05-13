@@ -41,6 +41,7 @@ extern "C" {
         (x) = NULL; \
     } while (0)
 
+
 #ifdef __cplusplus
 }
 #endif

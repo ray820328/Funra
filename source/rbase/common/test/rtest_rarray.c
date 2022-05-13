@@ -57,27 +57,37 @@ int run_rarray_tests(int benchmark_output) {
     return rcode_ok;
 }
 
+static void* copy_value_func_int(const void* obj) {
+    return obj;
+}
+static void free_value_func_int(void* obj) {
+
+}
+
 static void rarray_full_test(void **state) {
     (void)state;
- //    int count = 10000;
- //    int j;
+    int count = 10000;
+    int j;
+    int temp;
 
- //    init_benchmark(1024, "test rlog (%d)", count);
+    init_benchmark(1024, "test rarray (%d)", count);
 
- //    start_benchmark(0);
- //    rlist_t* file_list = rdir_list(dir_path, true, true);
- //    rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
- //    rlist_node_t *node = NULL;
- //    while ((node = rlist_next(&it))) {
- //        rinfo("rthread_full_test filename: %s\n", (char*)(node->val));
- //        //assert_true(test_entries != 0);
- //    }
- //    end_benchmark("print to file.");
- //    rlist_destroy(file_list);
+    start_benchmark(0);
+    rarray_t* array_ins = rarray_create(rdata_type_int, count);
+    assert_true(array_ins);
+    end_benchmark("create rarray.");
 
-	// start_benchmark(0);
-	
-	// end_benchmark("rolling files.");
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        rarray_add(array_ins, j + count);
+        rarray_at(array_ins, j, &temp);
+        assert_true(temp == j + count);
+    }
+    temp = 0;
+    assert_true(rarray_size(array_ins) == count);
+    end_benchmark("rolling files.");
+
+    rarray_release(array_ins);
 
 }
 

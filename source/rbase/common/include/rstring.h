@@ -22,10 +22,10 @@ extern "C" {
 #define rstr_empty ""
 #define rstr_end '\0'
 
-#define rstr_new(size) rnew_data_array(char, (size))
+#define rstr_new(size) raymalloc(size)
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
-#define rstr_free(str) rfree_data_array(char, (str))
+#define rstr_free(str) rayfree(str)
 
 #define rnum2str(retNumStr, num, base) \
           do { \
@@ -85,7 +85,7 @@ R_API char* rstr_cpy(const void *key);
 
 R_API char* rstr_substr(const char *src, const size_t dest_size);
 
-//有中文截断危险
+//支持utf8，非unicode16
 R_API char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr);
 
 R_API int rstr_token(const char *src, const char *delim, char** tokens);

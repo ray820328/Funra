@@ -23,12 +23,12 @@ int rsocket_init(const void* cfg_data) {
 
     init_tcp_server();
 
-    return 0;
+    return rcode_ok;
 }
 
 int rsocket_uninit() {
 
-    return 0;
+    return rcode_ok;
 }
 
 ripc_item* get_ipc_item(const char* key) {

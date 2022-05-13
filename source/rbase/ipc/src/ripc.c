@@ -14,10 +14,10 @@ int ripc_init(const void* cfg_data) {
 
     rsocket_init(cfg_data);
 
-    return 0;
+    return rcode_ok;
 }
 
 int ripc_uninit() {
 
-    return 0;
+    return rcode_ok;
 }
