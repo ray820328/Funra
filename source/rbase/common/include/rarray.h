@@ -25,26 +25,38 @@ extern "C" {
 #define rarray_scale_factor 2
 
 #define rarray_size(ar) ((ar)->size)
-//#define rarray_init_normal(ar, T, size) \
-//    do { \
-//        rassert((ar) == NULL, ""); \
-//        (ar) = rarray_create((size)); \
-//        (ar)->alloc_array_func = rarray_alloc_array_##T; \
-//    } while(0)
-
 
 #define rarray_declare_alloc_array_func(T) T* rarray_alloc_array_##T(size)
+
+#define rarray_declare_set_value_func(T) int rarray_set_value_func_##T(T* start_ptr, const rarray_size_t offset, const T obj)
+#define rarray_define_set_value_func(T) rarray_declare_set_value_func(T) { \
+        T* dest_ptr = (start_ptr) + (offset); \
+        *dest_ptr = (obj); \
+        return rcode_ok; \
+    }
+
+#define rarray_declare_get_value_func(T) void* rarray_get_value_func_##T(T* start_ptr, const rarray_size_t offset)
+#define rarray_define_get_value_func(T) rarray_declare_get_value_func(T) { \
+        T* dest_ptr = (start_ptr) + (offset); \
+        return *dest_ptr; \
+    }
+
+#define rarray_init(ar, T, size) \
+    do { \
+        rassert((ar) == NULL, ""); \
+        (ar) = rarray_create(sizeof(T), (size)); \
+        rassert((ar) != NULL, ""); \
+        (ar)->set_value_func = rarray_set_value_func_##T; \
+        (ar)->get_value_func = rarray_get_value_func_##T; \
+    } while(0)
 
     //rarray_iterator* rarray_it(rarray* d);
 #define rarray_it(ar) \
     { \
-        (ar)->items, (ar)->items \
+        (ar), 0 \
     }
-#define rarray_it_first(it) \
-    do { \
-        (it)->entry = (it)->d->entry; \
-        (it)->next = (it)->d->entry_null; \
-    } while(0)
+#define rarray_it_first(it) (it)->index = 0
+#define rarray_has_next(it) ((it)->index <= (it)->d->size)
 
 #define rarray_free(d) \
     if (d) { \
@@ -64,13 +76,14 @@ extern "C" {
     typedef int(*rarray_compare_func_type)(const void* obj1, const void* obj2);
 
     typedef struct rarray_t {
-        rdata_plain_type_t type;
+        rarray_size_t value_size;
         rarray_size_t size;
         rarray_size_t capacity;
         float scale_factor;
         bool keep_serial;
 
-        void* (*copy_value_func)(const void* obj);
+        int (*set_value_func)(void** start_ptr, const rarray_size_t offset, const void* obj);
+        void* (*get_value_func)(void** start_ptr, const rarray_size_t offset);
         rarray_compare_func_type compare_value_func;
         void(*free_value_func)(void* obj);
 
@@ -78,22 +91,25 @@ extern "C" {
     } rarray_t;
 
     typedef struct rarray_iterator_t {
-        void *items, *next;
+        rarray_t* d;
+        rarray_size_t index;
     } rarray_iterator_t;
 
 /* ------------------------------- APIs ------------------------------------*/
 
-    //rarray_declare_alloc_array_func(int);
+    rarray_declare_set_value_func(int);
     //rarray_declare_alloc_array_func(float);
     //rarray_declare_alloc_array_func(double);
 
-    rarray_t* rarray_create(rdata_plain_type_t type, rarray_size_t init_capacity);
+    rarray_declare_get_value_func(int);
+
+    rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity);
     int rarray_add(rarray_t* d, void* val);
     int rarray_remove(rarray_t* d, const void* val);
     void rarray_clear(rarray_t* d);
     void rarray_release(rarray_t* d);
     bool rarray_exist(rarray_t* d, const void* data);
-    int rarray_at(rarray_t* d, rarray_size_t index, void** data);
+    void* rarray_at(rarray_t* d, rarray_size_t index);
 
     void* rarray_next(rarray_iterator_t* it);
 
@@ -101,4 +117,4 @@ extern "C" {
 }
 #endif
 
-#endif //RTHREAD_H
+#endif //RARRAY_H

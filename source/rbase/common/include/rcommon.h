@@ -150,6 +150,7 @@ extern "C" {
 #endif //RAY_USE_POOL
 
 #define rnew_data_array(size_elem, count) calloc((count), (size_elem))
+#define rclear_data_array(data, size_block) memset((data), 0, (size_block))
 #define rfree_data_array(data) \
             do { \
 			    free(data); \
@@ -279,23 +280,42 @@ extern "C" {
 
 
     typedef enum rdata_plain_type_t {
-        rdata_type_unknown = 0,                          /** no type */
-        rdata_type_bool = sizeof(bool),                  /** bool */
-        rdata_type_char = sizeof(char),                  /** char */
-        rdata_type_uchar = sizeof(unsigned char),        /** unsigned char */
-        rdata_type_short = sizeof(short),                /** short int */
-        rdata_type_ushort = sizeof(unsigned short),      /** unsigned short int */
-        rdata_type_int = sizeof(int),                    /** int */
-        rdata_type_uint = sizeof(unsigned int),          /** unsigned int */
-        rdata_type_long = sizeof(long),                  /** long int */
-        rdata_type_ulong = sizeof(unsigned long),        /** unsigned long int */
-        rdata_type_long_long = sizeof(long long),        /** long long */
-        rdata_type_ulong_long = sizeof(unsigned long long),           /** unsigned long long */
-        rdata_type_float = sizeof(float),                /** float */
-        rdata_type_double = sizeof(double),              /** double */
-        rdata_type_long_double = sizeof(long double),    /** long double */
-        rdata_type_ptr = sizeof(void *)                  /** generic pointer */
+        rdata_type_unknown = 0,           /** no type */
+        rdata_type_bool,                  /** bool */
+        rdata_type_char,                  /** char */
+        rdata_type_uchar,                 /** unsigned char */
+        rdata_type_short,                 /** short int */
+        rdata_type_ushort,                /** unsigned short int */
+        rdata_type_int,                   /** int */
+        rdata_type_uint,                  /** unsigned int */
+        rdata_type_long,                  /** long int */
+        rdata_type_ulong,        /** unsigned long int */
+        rdata_type_long_long,        /** long long */
+        rdata_type_ulong_long,           /** unsigned long long */
+        rdata_type_float,                /** float */
+        rdata_type_double,              /** double */
+        rdata_type_long_double,    /** long double */
+        rdata_type_ptr                  /** generic pointer */
     } rdata_plain_type_t;
+
+    typedef enum rdata_plain_type_size_t {
+        rdata_type_size_unknown = 0,                          /** no type */
+        rdata_type_size_bool = sizeof(bool),                  /** bool */
+        rdata_type_size_char = sizeof(char),                  /** char */
+        rdata_type_size_uchar = sizeof(unsigned char),        /** unsigned char */
+        rdata_type_size_short = sizeof(short),                /** short int */
+        rdata_type_size_ushort = sizeof(unsigned short),      /** unsigned short int */
+        rdata_type_size_int = sizeof(int),                    /** int */
+        rdata_type_size_uint = sizeof(unsigned int),          /** unsigned int */
+        rdata_type_size_long = sizeof(long),                  /** long int */
+        rdata_type_size_ulong = sizeof(unsigned long),        /** unsigned long int */
+        rdata_type_size_long_long = sizeof(long long),        /** long long */
+        rdata_type_size_ulong_long = sizeof(unsigned long long),           /** unsigned long long */
+        rdata_type_size_float = sizeof(float),                /** float */
+        rdata_type_size_double = sizeof(double),              /** double */
+        rdata_type_size_long_double = sizeof(long double),    /** long double */
+        rdata_type_size_ptr = sizeof(void *)                  /** generic pointer */
+    } rdata_plain_type_size_t;
 
 
 #ifdef __cplusplus

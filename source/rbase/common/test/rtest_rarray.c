@@ -73,19 +73,46 @@ static void rarray_full_test(void **state) {
     init_benchmark(1024, "test rarray (%d)", count);
 
     start_benchmark(0);
-    rarray_t* array_ins = rarray_create(rdata_type_int, count);
+    rarray_t* array_ins = NULL;
+    rarray_init(array_ins, int, count);
     assert_true(array_ins);
     end_benchmark("create rarray.");
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
         rarray_add(array_ins, j + count);
-        rarray_at(array_ins, j, &temp);
+        temp = rarray_at(array_ins, j);
         assert_true(temp == j + count);
     }
     temp = 0;
     assert_true(rarray_size(array_ins) == count);
-    end_benchmark("rolling files.");
+    end_benchmark("Fill array.");
+
+    start_benchmark(0);
+    rarray_clear(array_ins);
+    end_benchmark("Clear rarray.");
+
+    start_benchmark(0);
+    rarray_iterator_t it = rarray_it(array_ins);
+    for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
+        assert_true(temp == 0);
+    }
+    end_benchmark("Iterator rarray.");
+
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        rarray_add(array_ins, j - count);
+    }
+
+    j = 0;
+    rarray_it_first(&it);
+    for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
+        rinfo("Iterator rarray, value=%d, index="rarray_size_t_format, temp, (&it)->index);
+        assert_true(temp == j++ - count);
+    }
+    temp = 0;
+    assert_true(rarray_size(array_ins) == count);
+    end_benchmark("Fill and check.");
 
     rarray_release(array_ins);
 
