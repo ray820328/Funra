@@ -24,14 +24,19 @@ static int compare_func_default(const void* obj1, const void* obj2) {
     return rcode_ok;
 }
 
-static int set_value_func_default(void** start_ptr, const rarray_size_t offset, const void* obj) {
-    void** dest_ptr = start_ptr + offset;
-    *dest_ptr = obj;
+static int set_value_func_default(rarray_t* ar, const rarray_size_t offset, const void* obj) {
+    void** dest_ptr = (void**)(ar)->items + offset;
+    if (ar->copy_value_func) {
+        *dest_ptr = ar->copy_value_func(obj);
+    }
+    else {
+        *dest_ptr = obj;
+    }
     return rcode_ok;
 }
 
-static void* get_value_func_default(void** start_ptr, const rarray_size_t offset) {
-    void** dest_ptr = start_ptr + offset;
+static void* get_value_func_default(rarray_t* ar, const rarray_size_t offset) {
+    void** dest_ptr = (void**)(ar)->items + offset;
     return *dest_ptr;
 }
 
@@ -63,6 +68,7 @@ rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
 
     d->set_value_func = set_value_func_default;
     d->get_value_func = get_value_func_default;
+    d->copy_value_func = NULL;
     d->compare_value_func = compare_func_default;
     d->free_value_func = free_value_func_default;
 
@@ -77,7 +83,7 @@ int rarray_add(rarray_t* d, void* val) {
         return rarray_code_error;
     }
 
-    int code = d->set_value_func(d->items, d->size, val);
+    int code = d->set_value_func(d, d->size, val);
     d->size ++;
 
     return code;
@@ -116,7 +122,7 @@ void* rarray_at(rarray_t* d, rarray_size_t index) {
     }
     //temp = d->get_value_func(d->items, index);
 
-    return d->get_value_func(d->items, index);
+    return d->get_value_func(d, index);
 }
 
 void* rarray_next(rarray_iterator_t* it) {

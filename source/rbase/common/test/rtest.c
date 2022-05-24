@@ -76,7 +76,9 @@ static int run_tests(int output) {
     rlist_node_t *node = NULL;
     while ((node = rlist_next(&it))) {
 		testResult = ((rtest_entry_type)(node->val))(output);
-		//assert_true(test_entries != 0);
+        if (testResult != rcode_ok) {
+            break;
+        }
     }
 
     return testResult;

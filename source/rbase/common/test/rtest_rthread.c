@@ -54,7 +54,7 @@ int run_rthread_tests(int benchmark_output) {
 
     printf("run_rthread_tests, pass: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
 
-    return rcode_ok;
+    return rcode_ok;// result == sizeof(test_group2) ? rcode_ok : -1;
 }
 
 static void rthread_full_test(void **state) {

@@ -28,16 +28,16 @@ extern "C" {
 
 #define rarray_declare_alloc_array_func(T) T* rarray_alloc_array_##T(size)
 
-#define rarray_declare_set_value_func(T) int rarray_set_value_func_##T(T* start_ptr, const rarray_size_t offset, const T obj)
+#define rarray_declare_set_value_func(T) int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, const T obj)
 #define rarray_define_set_value_func(T) rarray_declare_set_value_func(T) { \
-        T* dest_ptr = (start_ptr) + (offset); \
+        T* dest_ptr = (T*)((ar)->items) + (offset); \
         *dest_ptr = (obj); \
         return rcode_ok; \
     }
 
-#define rarray_declare_get_value_func(T) void* rarray_get_value_func_##T(T* start_ptr, const rarray_size_t offset)
+#define rarray_declare_get_value_func(T) void* rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset)
 #define rarray_define_get_value_func(T) rarray_declare_get_value_func(T) { \
-        T* dest_ptr = (start_ptr) + (offset); \
+        T* dest_ptr = (T*)((ar)->items) + (offset); \
         return *dest_ptr; \
     }
 
@@ -82,8 +82,9 @@ extern "C" {
         float scale_factor;
         bool keep_serial;
 
-        int (*set_value_func)(void** start_ptr, const rarray_size_t offset, const void* obj);
-        void* (*get_value_func)(void** start_ptr, const rarray_size_t offset);
+        int (*set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
+        void* (*get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
+        void* (*copy_value_func)(const void* obj);
         rarray_compare_func_type compare_value_func;
         void(*free_value_func)(void* obj);
 

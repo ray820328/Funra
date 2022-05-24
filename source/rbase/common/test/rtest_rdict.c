@@ -70,13 +70,14 @@ int run_rdict_tests(int benchmark_output) {
 
     int64_t timeNow = nanosec_r();
 
-    cmocka_run_group_tests(tests, NULL, NULL);
+    int result = 0;
+    result += cmocka_run_group_tests(tests, NULL, NULL);
 
     printf("run_rcommon_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
 
     uninit();
 
-    return rcode_ok;
+    return result == 0 ? rcode_ok : -1;
 }
 
 static uint64_t rhash_func_int(const void* key) {

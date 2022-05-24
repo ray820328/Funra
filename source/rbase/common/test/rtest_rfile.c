@@ -50,11 +50,11 @@ int run_rfile_tests(int benchmark_output) {
 
     int64_t timeNow = nanosec_r();
 
-    result + cmocka_run_group_tests(test_group2, NULL, NULL);
+    result += cmocka_run_group_tests(test_group2, NULL, NULL);
 
-    printf("run_rfile_tests, pass: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
+    printf("run_rfile_tests, failed: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
 
-    return rcode_ok;
+    return result == 0 ? rcode_ok : -1;
 }
 
 static void rfile_full_test(void **state) {

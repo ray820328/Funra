@@ -50,11 +50,11 @@ int run_rstring_tests(int benchmark_output) {
 
     int64_t timeNow = nanosec_r();
 
-    result + cmocka_run_group_tests(test_group2, NULL, NULL);
+    result += cmocka_run_group_tests(test_group2, NULL, NULL);
 
-    printf("run_rarray_tests, pass: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
+    printf("run_rstring_tests, failed: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
 
-    return rcode_ok;
+    return result == 0 ? rcode_ok : -1;
 }
 
 static void rstring_full_test(void **state) {
@@ -79,6 +79,7 @@ static void rstring_full_test(void **state) {
 
        // end_benchmark("rolling files.");
 
+    assert_true(1);
 }
 
 
