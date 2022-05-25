@@ -277,8 +277,6 @@ extern "C" {
 #endif /* defined(_WIN32) || defined(_WIN64) */
     }
 
-
-
     typedef enum rdata_plain_type_t {
         rdata_type_unknown = 0,           /** no type */
         rdata_type_bool,                  /** bool */
@@ -289,33 +287,53 @@ extern "C" {
         rdata_type_int,                   /** int */
         rdata_type_uint,                  /** unsigned int */
         rdata_type_long,                  /** long int */
-        rdata_type_ulong,        /** unsigned long int */
-        rdata_type_long_long,        /** long long */
-        rdata_type_ulong_long,           /** unsigned long long */
-        rdata_type_float,                /** float */
-        rdata_type_double,              /** double */
-        rdata_type_long_double,    /** long double */
-        rdata_type_ptr                  /** generic pointer */
+        rdata_type_ulong,                 /** unsigned long int */
+        rdata_type_long_long,             /** long long */
+        rdata_type_ulong_long,            /** unsigned long long */
+        rdata_type_float,                 /** float */
+        rdata_type_double,                /** double */
+        rdata_type_long_double,           /** long double */
+        rdata_type_string,                /** string */
+        rdata_type_ptr                    /** generic pointer */
     } rdata_plain_type_t;
 
     typedef enum rdata_plain_type_size_t {
-        rdata_type_size_unknown = 0,                          /** no type */
-        rdata_type_size_bool = sizeof(bool),                  /** bool */
-        rdata_type_size_char = sizeof(char),                  /** char */
-        rdata_type_size_uchar = sizeof(unsigned char),        /** unsigned char */
-        rdata_type_size_short = sizeof(short),                /** short int */
-        rdata_type_size_ushort = sizeof(unsigned short),      /** unsigned short int */
-        rdata_type_size_int = sizeof(int),                    /** int */
-        rdata_type_size_uint = sizeof(unsigned int),          /** unsigned int */
-        rdata_type_size_long = sizeof(long),                  /** long int */
-        rdata_type_size_ulong = sizeof(unsigned long),        /** unsigned long int */
-        rdata_type_size_long_long = sizeof(long long),        /** long long */
-        rdata_type_size_ulong_long = sizeof(unsigned long long),           /** unsigned long long */
-        rdata_type_size_float = sizeof(float),                /** float */
-        rdata_type_size_double = sizeof(double),              /** double */
-        rdata_type_size_long_double = sizeof(long double),    /** long double */
-        rdata_type_size_ptr = sizeof(void *)                  /** generic pointer */
+        rdata_type_unknown_size = 0,                          /** no type */
+        rdata_type_bool_size = sizeof(bool),                  /** bool */
+        rdata_type_char_size = sizeof(char),                  /** char */
+        rdata_type_uchar_size = sizeof(unsigned char),        /** unsigned char */
+        rdata_type_short_size = sizeof(short),                /** short int */
+        rdata_type_ushort_size = sizeof(unsigned short),      /** unsigned short int */
+        rdata_type_int_size = sizeof(int),                    /** int */
+        rdata_type_uint_size = sizeof(unsigned int),          /** unsigned int */
+        rdata_type_long_size = sizeof(long),                  /** long int */
+        rdata_type_ulong_size = sizeof(unsigned long),        /** unsigned long int */
+        rdata_type_long_long_size = sizeof(long long),        /** long long */
+        rdata_type_ulong_long_size = sizeof(unsigned long long),           /** unsigned long long */
+        rdata_type_float_size = sizeof(float),                /** float */
+        rdata_type_double_size = sizeof(double),              /** double */
+        rdata_type_long_double_size = sizeof(long double),    /** long double */
+        rdata_type_string_size = sizeof(char*),               /** string */
+        rdata_type_ptr_size = sizeof(void*)                   /** generic pointer */
     } rdata_plain_type_size_t;
+
+#define rdata_type_unknown_inner_type
+#define rdata_type_bool_inner_type bool
+#define rdata_type_char_inner_type char
+#define rdata_type_uchar_inner_type unsigned char
+#define rdata_type_short_inner_type short int
+#define rdata_type_ushort_inner_type unsigned short int
+#define rdata_type_int_inner_type int
+#define rdata_type_uint_inner_type unsigned int
+#define rdata_type_long_inner_type long int
+#define rdata_type_ulong_inner_type unsigned long int
+#define rdata_type_long_long_inner_type long long
+#define rdata_type_ulong_long_inner_type unsigned long long
+#define rdata_type_float_inner_type float
+#define rdata_type_double_inner_type double
+#define rdata_type_long_double_inner_type long double
+#define rdata_type_string_inner_type char*
+#define rdata_type_ptr_inner_type void**
 
 
 #ifdef __cplusplus

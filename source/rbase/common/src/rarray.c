@@ -7,7 +7,7 @@
  * @author: Ray
  */
 
-#include "rfile.h"
+#include "rstring.h"
 #include "rlog.h"
 #include "rarray.h"
 
@@ -24,7 +24,7 @@ static int compare_func_default(const void* obj1, const void* obj2) {
     return rcode_ok;
 }
 
-static int set_value_func_default(rarray_t* ar, const rarray_size_t offset, const void* obj) {
+int rarray_set_value_func_rdata_type_ptr(rarray_t* ar, const rarray_size_t offset, const void* obj) {
     void** dest_ptr = (void**)(ar)->items + offset;
     if (ar->copy_value_func) {
         *dest_ptr = ar->copy_value_func(obj);
@@ -34,14 +34,25 @@ static int set_value_func_default(rarray_t* ar, const rarray_size_t offset, cons
     }
     return rcode_ok;
 }
-
-static void* get_value_func_default(rarray_t* ar, const rarray_size_t offset) {
+void** rarray_get_value_func_rdata_type_ptr(rarray_t* ar, const rarray_size_t offset) {
     void** dest_ptr = (void**)(ar)->items + offset;
     return *dest_ptr;
 }
+void rarray_free_value_func_rdata_type_ptr(void* obj) {
+    
+}
 
-static void free_value_func_default(void* obj) {
-
+int rarray_set_value_func_rdata_type_string(rarray_t* ar, const rarray_size_t offset, const char* obj) {
+    char** dest_ptr = (char**)(ar)->items + offset;
+    *dest_ptr = rstr_cpy(obj);
+    return rcode_ok;
+}
+char* rarray_get_value_func_rdata_type_string(rarray_t* ar, const rarray_size_t offset) {
+    char** dest_ptr = (char**)(ar)->items + offset;
+    return *dest_ptr;
+}
+void rarray_free_value_func_rdata_type_string(void* obj) {
+    rstr_free(obj);
 }
 
 static int _rarray_expand(rarray_t* d, rarray_size_t capacity) {
@@ -66,11 +77,11 @@ rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
     d->capacity = init_capacity > 0 ? init_capacity : rarray_init_capacity_default;
     d->keep_serial = true;
 
-    d->set_value_func = set_value_func_default;
-    d->get_value_func = get_value_func_default;
+    d->set_value_func = NULL;
+    d->get_value_func = NULL;
     d->copy_value_func = NULL;
     d->compare_value_func = compare_func_default;
-    d->free_value_func = free_value_func_default;
+    d->free_value_func = NULL;
 
     rassert(_rarray_expand(d, d->capacity) == rcode_ok, "oom");
 
@@ -95,6 +106,13 @@ int rarray_remove(rarray_t* d, const void* val) {
 }
 
 void rarray_clear(rarray_t* d) {
+    if (d->free_value_func) {
+        rarray_iterator_t it = rarray_it(d);
+        void* temp = NULL;
+        for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
+            d->free_value_func(temp);
+        }
+    }
     rclear_data_array(d->items, d->value_size * d->capacity);
     d->size = 0;
 }
@@ -131,9 +149,9 @@ void* rarray_next(rarray_iterator_t* it) {
 }
 
 
-rarray_define_set_value_func(int);
-
-rarray_define_get_value_func(int);
+rarray_define_set_get_value_func(rdata_type_int);
+rarray_define_set_get_value_func(rdata_type_float);
+rarray_define_set_get_value_func(rdata_type_double);
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

@@ -28,26 +28,31 @@ extern "C" {
 
 #define rarray_declare_alloc_array_func(T) T* rarray_alloc_array_##T(size)
 
-#define rarray_declare_set_value_func(T) int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, const T obj)
-#define rarray_define_set_value_func(T) rarray_declare_set_value_func(T) { \
-        T* dest_ptr = (T*)((ar)->items) + (offset); \
+#define rarray_declare_set_get_value_func(T) \
+    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, const T##_inner_type obj); \
+    T##_inner_type rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset); \
+    void rarray_free_value_func_##T(void* obj) \
+
+#define rarray_define_set_get_value_func(T) \
+    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, const T##_inner_type obj) { \
+        T##_inner_type* dest_ptr = (T##_inner_type*)((ar)->items) + (offset); \
         *dest_ptr = (obj); \
         return rcode_ok; \
-    }
-
-#define rarray_declare_get_value_func(T) void* rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset)
-#define rarray_define_get_value_func(T) rarray_declare_get_value_func(T) { \
-        T* dest_ptr = (T*)((ar)->items) + (offset); \
+    } \
+    T##_inner_type rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset) { \
+        T##_inner_type* dest_ptr = (T##_inner_type*)((ar)->items) + (offset); \
         return *dest_ptr; \
-    }
+    } \
+    void rarray_free_value_func_##T(void* obj) {}
 
 #define rarray_init(ar, T, size) \
     do { \
         rassert((ar) == NULL, ""); \
-        (ar) = rarray_create(sizeof(T), (size)); \
+        (ar) = rarray_create(T##_size, (size)); \
         rassert((ar) != NULL, ""); \
         (ar)->set_value_func = rarray_set_value_func_##T; \
         (ar)->get_value_func = rarray_get_value_func_##T; \
+        (ar)->free_value_func = rarray_free_value_func_##T; \
     } while(0)
 
     //rarray_iterator* rarray_it(rarray* d);
@@ -98,11 +103,11 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
 
-    rarray_declare_set_value_func(int);
-    //rarray_declare_alloc_array_func(float);
-    //rarray_declare_alloc_array_func(double);
-
-    rarray_declare_get_value_func(int);
+    rarray_declare_set_get_value_func(rdata_type_int);
+    rarray_declare_set_get_value_func(rdata_type_float);
+    rarray_declare_set_get_value_func(rdata_type_double);
+    rarray_declare_set_get_value_func(rdata_type_string);
+    rarray_declare_set_get_value_func(rdata_type_ptr);
 
     rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity);
     int rarray_add(rarray_t* d, void* val);

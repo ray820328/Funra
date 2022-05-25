@@ -22,6 +22,7 @@
 #endif //__GNUC__
 
 static void rarray_int_test(void **state);
+static void rarray_string_test(void **state);
 static void rarray_ptr_test(void **state);
 
 static char* dir_path = NULL;
@@ -44,6 +45,7 @@ static int teardown(void **state) {
 }
 static struct CMUnitTest test_group2[] = {
     cmocka_unit_test_setup_teardown(rarray_int_test, setup, teardown),
+    cmocka_unit_test_setup_teardown(rarray_string_test, setup, teardown),
     cmocka_unit_test_setup_teardown(rarray_ptr_test, setup, teardown),
 };
 
@@ -61,7 +63,7 @@ int run_rarray_tests(int benchmark_output) {
 
 static void rarray_int_test(void **state) {
     (void)state;
-    int count = 10000;
+    int count = 1000;
     int j;
     int temp;
 
@@ -69,7 +71,7 @@ static void rarray_int_test(void **state) {
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;
-    rarray_init(array_ins, int, count);
+    rarray_init(array_ins, rdata_type_int, count);
     assert_true(array_ins);
     end_benchmark("create rarray.");
 
@@ -102,7 +104,7 @@ static void rarray_int_test(void **state) {
     j = 0;
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-        rinfo("Iterator rarray, value=%d, index="rarray_size_t_format, temp, (&it)->index);
+        rinfo("Iterator rarray, value=%d, index="rarray_size_t_format"\n", temp, (&it)->index);
         assert_true(temp == j++ - count);
     }
     temp = 0;
@@ -113,25 +115,17 @@ static void rarray_int_test(void **state) {
 
 }
 
-static void* copy_value_func_string(const char* obj) {
-    char* dest = rstr_cpy(obj);
-    return dest;
-}
-static void free_value_func_string(void* obj) {
-    rstr_free(obj);
-}
-static void rarray_ptr_test(void **state) {
+static void rarray_string_test(void **state) {
     (void)state;
-    int count = 10000;
+    int count = 1000;
     int j;
     char* temp;
 
     init_benchmark(1024, "test rarray (%d)", count);
 
     start_benchmark(0);
-    rarray_t* array_ins = rarray_create(sizeof(void*), count);
-    array_ins->copy_value_func = copy_value_func_string;
-    array_ins->free_value_func = free_value_func_string;
+    rarray_t* array_ins = NULL;
+    rarray_init(array_ins, rdata_type_string, count);
     assert_true(array_ins);
     end_benchmark("create rarray.");
 
@@ -164,13 +158,110 @@ static void rarray_ptr_test(void **state) {
         rarray_add(array_ins, temp_str);
         temp = rarray_at(array_ins, j);
         assert_true(rstr_2int(temp) == j - count);
+        rnum2str(temp_str, j - count, 0);
+        assert_true(rstr_eq(temp, temp_str));
     }
 
     j = 0;
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-        rinfo("Iterator rarray, value=%d, index="rarray_size_t_format, temp, (&it)->index);
-        assert_true(rstr_2int(temp) == j++ - count);
+        rinfo("Iterator rarray, value=%d, index="rarray_size_t_format"\n", temp, (&it)->index);
+        assert_true(rstr_2int(temp) == j - count);
+        rnum2str(temp_str, j - count, 0);
+        assert_true(rstr_eq(temp, temp_str));
+        j++;
+    }
+    temp = NULL;
+    assert_true(rarray_size(array_ins) == count);
+    end_benchmark("Fill and check.");
+
+    rarray_release(array_ins);
+
+}
+
+static struct data_test
+{
+    int index;
+    char* value;
+} data_test;
+static struct data_test* copy_value_func_obj(const struct data_test* obj) {
+    struct data_test* dest = rnew_data(struct data_test);
+    dest->index = obj->index;
+    dest->value = rstr_cpy(obj->value);
+    return dest;
+}
+static void free_value_func_obj(struct data_test* obj) {
+    if (obj == NULL) {
+        return;
+    }
+    rstr_free(obj->value);
+    obj->value = NULL;
+    rfree_data(struct data_test, obj);
+}
+static void rarray_ptr_test(void **state) {
+    (void)state;
+    int count = 1000;
+    int j;
+    struct data_test* temp;
+
+    init_benchmark(1024, "test rarray (%d)", count);
+
+    start_benchmark(0);
+    rarray_t* array_ins = NULL;
+    rarray_init(array_ins, rdata_type_ptr, count);
+    array_ins->copy_value_func = copy_value_func_obj;
+    array_ins->free_value_func = free_value_func_obj;
+    assert_true(array_ins);
+    end_benchmark("create rarray.");
+
+    start_benchmark(0);
+    struct data_test temp_obj = { 0, NULL };
+    struct data_test* temp_ptr = &temp_obj;
+    char* temp_str = NULL;
+    for (j = 0; j < count; j++) {
+        rnum2str(temp_str, j + count, 0);
+        temp_ptr->index = j;
+        temp_ptr->value = temp_str;
+        rarray_add(array_ins, temp_ptr);
+        temp = rarray_at(array_ins, j);
+        assert_true(temp->index == j);
+        assert_true(rstr_2int(temp->value) == j + count);
+    }
+    temp = NULL;
+    assert_true(rarray_size(array_ins) == count);
+    end_benchmark("Fill array.");
+
+    start_benchmark(0);
+    rarray_clear(array_ins);
+    end_benchmark("Clear rarray.");
+
+    start_benchmark(0);
+    rarray_iterator_t it = rarray_it(array_ins);
+    for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
+        assert_true(temp == NULL);
+    }
+    end_benchmark("Iterator rarray.");
+
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        rnum2str(temp_str, j - count, 0);
+        temp_ptr->index = j;
+        temp_ptr->value = temp_str;
+        rarray_add(array_ins, temp_ptr);
+        temp = rarray_at(array_ins, j);
+        assert_true(temp->index == j);
+        assert_true(rstr_2int(temp->value) == j - count);
+        assert_true(rstr_eq(temp->value, temp_str));
+    }
+
+    j = 0;
+    rarray_it_first(&it);
+    for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
+        rinfo("Iterator rarray, value=%s, index="rarray_size_t_format"\n", temp->value, (&it)->index);
+        assert_true(rstr_2int(temp->value) == j - count);
+        rnum2str(temp_str, j - count, 0);
+        assert_true(rstr_eq(temp->value, temp_str));
+        j++;
     }
     temp = NULL;
     assert_true(rarray_size(array_ins) == count);
