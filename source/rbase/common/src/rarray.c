@@ -19,17 +19,31 @@
 #endif //__GNUC__
 
 static int compare_func_default(const void* obj1, const void* obj2) {
-    if (obj1 == obj2)
-        return 1;
-    return rcode_ok;
+    if (obj1 == obj2) {
+        return rcode_eq;
+    }
+    return rcode_neq;
 }
 
-static int _rarray_expand(rarray_t* ar, rarray_size_t capacity) {
-    ar->items = rnew_data_array(ar->value_size, capacity);
-    if (ar->items == NULL) {
-        rerror("expand failed.\n");
+static int _rarray_alloc(rarray_t* ar, rarray_size_t capacity) {
+    void** dest_ptr = rnew_data_array(ar->value_size, capacity);
+    if (dest_ptr == NULL) {
+        rerror("expand failed."Li);
         return rarray_code_error;
     }
+
+    if (ar->items != NULL && ar->items != dest_ptr) {//数据移动
+        rdebug("rarray realloc."Li);
+
+        int copy_len = (ar)->size;
+        if (copy_len > 0) {
+            memcpy(dest_ptr, ar->items, copy_len * (ar)->value_size);
+        }
+
+        rfree_data_array(ar->items);
+    }
+
+    ar->items = dest_ptr;
     ar->capacity = capacity;
 
     return rcode_ok;
@@ -53,15 +67,14 @@ rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
     ar->compare_value_func = compare_func_default;
     ar->free_value_func = NULL;
 
-    rassert(_rarray_expand(ar, ar->capacity) == rcode_ok, "oom");
+    rassert(_rarray_alloc(ar, ar->capacity) == rcode_ok, "oom");
 
     return ar;
 }
 
 int rarray_add(rarray_t* ar, void* val) {
     if (ar->size >= ar->capacity) {
-        rassert(_rarray_expand(ar, ar->capacity) == rcode_ok, "oom");
-        return rarray_code_error;
+        rassert(_rarray_alloc(ar, ar->capacity * ar->scale_factor) == rcode_ok, "oom");
     }
 
     int code = ar->set_value_func(ar, ar->size, val);
@@ -71,8 +84,15 @@ int rarray_add(rarray_t* ar, void* val) {
 }
 
 int rarray_remove(rarray_t* ar, const void* val) {
-
-    return rcode_ok;
+    rarray_iterator_t it = rarray_it(ar);
+    void* temp = NULL;
+    for (rarray_size_t index = 0; temp = rarray_next(&it), rarray_has_next(&it); index ++) {
+        if (ar->compare_value_func(temp, val) == rcode_eq) {
+            ar->remove_value_func(ar, index);
+            return rcode_ok;
+        }
+    }
+    return rarray_code_not_exist;
 }
 
 int rarray_remove_at(rarray_t* ar, rarray_size_t index) {
@@ -100,15 +120,23 @@ void rarray_release(rarray_t* ar) {
         return;
     }
 
+    rarray_clear(ar);
+
     if (ar->items != NULL) {
         rfree_data_array(ar->items);
     }
     rfree_data(rarray_t, ar);
 }
 
-bool rarray_exist(rarray_t* d, const void* data) {
-
-    return true;
+bool rarray_exist(rarray_t* ar, const void* data) {
+    rarray_iterator_t it = rarray_it(ar);
+    void* temp = NULL;
+    for (; temp = rarray_next(&it), rarray_has_next(&it);) {
+        if (ar->compare_value_func(temp, data) == rcode_eq) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void* rarray_at(rarray_t* ar, rarray_size_t index) {
@@ -152,7 +180,7 @@ int rarray_remove_value_func_rdata_type_ptr(rarray_t* ar, const rarray_size_t in
         (ar)->free_value_func(*dest_ptr);
     }
 
-    int copy_len = (ar)->size - (index)-1;
+    int copy_len = (ar)->size - (index) - 1;
     if (copy_len > 0) {
         memcpy(dest_ptr, dest_ptr + 1, copy_len * (ar)->value_size);
     }
@@ -183,7 +211,7 @@ int rarray_remove_value_func_rdata_type_string(rarray_t* ar, const rarray_size_t
         (ar)->free_value_func(*dest_ptr);
     }
 
-    int copy_len = (ar)->size - (index)-1;
+    int copy_len = (ar)->size - (index) - 1;
     if (copy_len > 0) {
         memcpy(dest_ptr, dest_ptr + 1, copy_len * (ar)->value_size);
     }

@@ -86,9 +86,11 @@ extern "C" {
 
     typedef enum rarray_code_t {
         rarray_code_error = 1,
-        rarray_code_not_exist = 2,
-        rarray_code_index_out4_size = 3,
-        rarray_code_index_out4_capacity = 4,
+        rarray_code_equal,
+        rarray_code_not_equal,
+        rarray_code_not_exist,
+        rarray_code_index_out4_size,
+        rarray_code_index_out4_capacity,
     } rarray_code_t;
 
     /** 0 - 不相等; !0 - 相等 **/
