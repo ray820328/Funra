@@ -63,7 +63,7 @@ int run_rarray_tests(int benchmark_output) {
 
 static void rarray_int_test(void **state) {
     (void)state;
-    int count = 1000;
+    rarray_size_t count = 100;
     int j;
     int temp;
 
@@ -98,14 +98,14 @@ static void rarray_int_test(void **state) {
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-        rarray_add(array_ins, j - count);
+        rarray_add(array_ins, count - j);
     }
 
     j = 0;
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
         rinfo("Iterator rarray, value=%d, index="rarray_size_t_format"\n", temp, (&it)->index);
-        assert_true(temp == j++ - count);
+        assert_true(temp == count - j++);
     }
     temp = 0;
     assert_true(rarray_size(array_ins) == count);
@@ -117,7 +117,7 @@ static void rarray_int_test(void **state) {
 
 static void rarray_string_test(void **state) {
     (void)state;
-    int count = 1000;
+    rarray_size_t count = 3;
     int j;
     char* temp;
 
@@ -143,7 +143,27 @@ static void rarray_string_test(void **state) {
 
     start_benchmark(0);
     rarray_clear(array_ins);
+    temp = rarray_at(array_ins, 0);
+    assert_true(temp == NULL);
     end_benchmark("Clear rarray.");
+
+    for (j = 0; j < count; j++) {
+        rnum2str(temp_str, j + count, 0);
+        rarray_add(array_ins, temp_str);
+        temp = rarray_at(array_ins, j);
+        assert_true(rstr_2int(temp) == j + count);
+    }
+    temp = NULL;
+
+    start_benchmark(0);
+    for (j = 0; j < count; j++) {
+        temp = rarray_at(array_ins, 0);
+        assert_true(rstr_2int(temp) == j + count);
+        rarray_remove_at(array_ins, 0);
+    }
+    assert_true(rarray_size(array_ins) == 0);
+    temp = NULL;
+    end_benchmark("Remove rarray.");
 
     start_benchmark(0);
     rarray_iterator_t it = rarray_it(array_ins);
@@ -154,11 +174,11 @@ static void rarray_string_test(void **state) {
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-        rnum2str(temp_str, j - count, 0);
+        rnum2str(temp_str, count - j, 0);
         rarray_add(array_ins, temp_str);
         temp = rarray_at(array_ins, j);
-        assert_true(rstr_2int(temp) == j - count);
-        rnum2str(temp_str, j - count, 0);
+        assert_true(rstr_2int(temp) == count - j);
+        rnum2str(temp_str, count - j, 0);
         assert_true(rstr_eq(temp, temp_str));
     }
 
@@ -166,8 +186,8 @@ static void rarray_string_test(void **state) {
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
         rinfo("Iterator rarray, value=%d, index="rarray_size_t_format"\n", temp, (&it)->index);
-        assert_true(rstr_2int(temp) == j - count);
-        rnum2str(temp_str, j - count, 0);
+        assert_true(rstr_2int(temp) == count - j);
+        rnum2str(temp_str, count - j, 0);
         assert_true(rstr_eq(temp, temp_str));
         j++;
     }
@@ -200,7 +220,7 @@ static void free_value_func_obj(struct data_test* obj) {
 }
 static void rarray_ptr_test(void **state) {
     (void)state;
-    int count = 1000;
+    rarray_size_t count = 100;
     int j;
     struct data_test* temp;
 
@@ -244,13 +264,13 @@ static void rarray_ptr_test(void **state) {
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-        rnum2str(temp_str, j - count, 0);
+        rnum2str(temp_str, count - j, 0);
         temp_ptr->index = j;
         temp_ptr->value = temp_str;
         rarray_add(array_ins, temp_ptr);
         temp = rarray_at(array_ins, j);
         assert_true(temp->index == j);
-        assert_true(rstr_2int(temp->value) == j - count);
+        assert_true(rstr_2int(temp->value) == count - j);
         assert_true(rstr_eq(temp->value, temp_str));
     }
 
@@ -258,8 +278,8 @@ static void rarray_ptr_test(void **state) {
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
         rinfo("Iterator rarray, value=%s, index="rarray_size_t_format"\n", temp->value, (&it)->index);
-        assert_true(rstr_2int(temp->value) == j - count);
-        rnum2str(temp_str, j - count, 0);
+        assert_true(rstr_2int(temp->value) == count - j);
+        rnum2str(temp_str, count - j, 0);
         assert_true(rstr_eq(temp->value, temp_str));
         j++;
     }

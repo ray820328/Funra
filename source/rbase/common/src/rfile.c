@@ -389,7 +389,7 @@ exit1:
 }
 
 int rfile_format_path(char* file_path) {
-    int path_len = 0;
+    size_t path_len = 0;
     while (true) {
         path_len = rstr_len(file_path);
         if (file_path[path_len] == '\\') {

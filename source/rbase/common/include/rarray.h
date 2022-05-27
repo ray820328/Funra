@@ -29,12 +29,13 @@ extern "C" {
 #define rarray_declare_alloc_array_func(T) T* rarray_alloc_array_##T(size)
 
 #define rarray_declare_set_get_value_func(T) \
-    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, const T##_inner_type obj); \
+    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, T##_inner_type obj); \
     T##_inner_type rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset); \
-    void rarray_free_value_func_##T(void* obj) \
+    int rarray_remove_value_func_##T(rarray_t* ar, const rarray_size_t index); \
+    void rarray_free_value_func_##T(void* obj)
 
 #define rarray_define_set_get_value_func(T) \
-    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, const T##_inner_type obj) { \
+    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, T##_inner_type obj) { \
         T##_inner_type* dest_ptr = (T##_inner_type*)((ar)->items) + (offset); \
         *dest_ptr = (obj); \
         return rcode_ok; \
@@ -42,6 +43,17 @@ extern "C" {
     T##_inner_type rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset) { \
         T##_inner_type* dest_ptr = (T##_inner_type*)((ar)->items) + (offset); \
         return *dest_ptr; \
+    } \
+    int rarray_remove_value_func_##T(rarray_t* ar, const rarray_size_t index) { \
+        T##_inner_type* dest_ptr = (T##_inner_type*)((ar)->items) + (index); \
+        size_t copy_len = (ar)->size - (index) - 1; \
+        if (copy_len > 0) { \
+            memcpy(dest_ptr, dest_ptr + 1, copy_len * (ar)->value_size); \
+        } \
+        dest_ptr = (T##_inner_type*)((ar)->items) + (ar)->size - 1; \
+        *dest_ptr = 0; \
+        (ar)->size --; \
+        return rcode_ok; \
     } \
     void rarray_free_value_func_##T(void* obj) {}
 
@@ -52,6 +64,7 @@ extern "C" {
         rassert((ar) != NULL, ""); \
         (ar)->set_value_func = rarray_set_value_func_##T; \
         (ar)->get_value_func = rarray_get_value_func_##T; \
+        (ar)->remove_value_func = rarray_remove_value_func_##T; \
         (ar)->free_value_func = rarray_free_value_func_##T; \
     } while(0)
 
@@ -74,7 +87,8 @@ extern "C" {
     typedef enum rarray_code_t {
         rarray_code_error = 1,
         rarray_code_not_exist = 2,
-        rarray_code_index_overflow = 3,
+        rarray_code_index_out4_size = 3,
+        rarray_code_index_out4_capacity = 4,
     } rarray_code_t;
 
     /** 0 - 不相等; !0 - 相等 **/
@@ -90,6 +104,7 @@ extern "C" {
         int (*set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
         void* (*get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
         void* (*copy_value_func)(const void* obj);
+        int (*remove_value_func)(struct rarray_t* ar, const rarray_size_t index);
         rarray_compare_func_type compare_value_func;
         void(*free_value_func)(void* obj);
 
@@ -112,6 +127,7 @@ extern "C" {
     rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity);
     int rarray_add(rarray_t* d, void* val);
     int rarray_remove(rarray_t* d, const void* val);
+    int rarray_remove_at(rarray_t* d, rarray_size_t index);
     void rarray_clear(rarray_t* d);
     void rarray_release(rarray_t* d);
     bool rarray_exist(rarray_t* d, const void* data);
