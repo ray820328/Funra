@@ -134,6 +134,7 @@ extern "C" {
     void rarray_release(rarray_t* d);
     bool rarray_exist(rarray_t* d, const void* data);
     void* rarray_at(rarray_t* d, rarray_size_t index);
+    void** rarray_get_all(rarray_t* d);
 
     void* rarray_next(rarray_iterator_t* it);
 

@@ -21,9 +21,38 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static void rstring_full_test(void **state);
+static char* test_full_str = NULL;
 
-static char* dir_path = NULL;
+static void rstring_index_test(void **state) {
+    (void)state;
+
+    int count = 100;
+    int j;
+
+    init_benchmark(1024, "test rstring (%d)", count);
+
+    //start_benchmark(0);
+    //rstr_index(test_full_str, "cd");
+    //end_benchmark("rstring index.");
+
+    start_benchmark(0);
+    char** tokens = rstr_split(test_full_str, "z0");
+    int count_token;
+    rstr_array_count(tokens, count_token);
+    assert_true(count_token == 3);
+
+    char* token_cur = NULL;
+    rstr_array_for(tokens, token_cur) {
+        int cur_len = rstr_len(token_cur);
+        assert_true(cur_len > 0);
+    }
+
+    rstr_array_free(tokens);
+
+    end_benchmark("rstring token.");
+
+
+}
 
 static int setup(void **state) {
     int *answer = malloc(sizeof(int));
@@ -31,18 +60,18 @@ static int setup(void **state) {
     *answer = 0;
     *state = answer;
 
-    dir_path = "./";
+    test_full_str = "abcderghijklmnopqrstuvwxyz0恭喜123456789z0发财ABCDEFJHIJKLMNOPQRSTUVWXYZ";
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-    dir_path = NULL;
+    test_full_str = NULL;
 
     free(*state);
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rstring_full_test, setup, teardown),
+    cmocka_unit_test_setup_teardown(rstring_index_test, setup, teardown),
 };
 
 int run_rstring_tests(int benchmark_output) {
@@ -55,31 +84,6 @@ int run_rstring_tests(int benchmark_output) {
     printf("run_rstring_tests, failed: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
-}
-
-static void rstring_full_test(void **state) {
-    (void)state;
-    //    int count = 10000;
-    //    int j;
-
-    //    init_benchmark(1024, "test rlog (%d)", count);
-
-    //    start_benchmark(0);
-    //    rlist_t* file_list = rdir_list(dir_path, true, true);
-    //    rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
-    //    rlist_node_t *node = NULL;
-    //    while ((node = rlist_next(&it))) {
-    //        rinfo("rthread_full_test filename: %s\n", (char*)(node->val));
-    //        //assert_true(test_entries != 0);
-    //    }
-    //    end_benchmark("print to file.");
-    //    rlist_destroy(file_list);
-
-       // start_benchmark(0);
-
-       // end_benchmark("rolling files.");
-
-    assert_true(1);
 }
 
 

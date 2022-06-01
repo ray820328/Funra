@@ -103,6 +103,24 @@ int rarray_remove_at(rarray_t* ar, rarray_size_t index) {
     return ar->remove_value_func(ar, index);
 }
 
+void** rarray_get_all(rarray_t* ar) {
+    if (ar == NULL || ar->items == NULL) {
+        return NULL;
+    }
+
+    void** dest_ptr = rnew_data_array(ar->value_size, rarray_size(ar));
+    if (dest_ptr == NULL) {
+        rerror("rarray_get_all failed."Li);
+        return NULL;
+    }
+
+    int copy_len = rarray_size(ar);
+    if (copy_len > 0) {
+        memcpy(dest_ptr, ar->items, copy_len * (ar)->value_size);
+    }
+    return dest_ptr;
+}
+
 void rarray_clear(rarray_t* ar) {
     if (ar->free_value_func) {
         rarray_iterator_t it = rarray_it(ar);
@@ -198,7 +216,7 @@ void rarray_free_value_func_rdata_type_ptr(void* obj) {
 
 int rarray_set_value_func_rdata_type_string(rarray_t* ar, const rarray_size_t offset, char* obj) {
     char** dest_ptr = (char**)(ar)->items + offset;
-    *dest_ptr = rstr_cpy(obj);
+    *dest_ptr = rstr_cpy(obj, 0);
     return rcode_ok;
 }
 char* rarray_get_value_func_rdata_type_string(rarray_t* ar, const rarray_size_t offset) {

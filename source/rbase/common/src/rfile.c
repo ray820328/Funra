@@ -433,7 +433,7 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     format_path[path_len] = '/';
     format_path[path_len + 1] = rstr_end;
 
-    char* root_path = rstr_cpy(format_path);
+    char* root_path = rstr_cpy(format_path, 0);
 
 #ifdef _WIN64
 
@@ -454,14 +454,14 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     }
     path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
     if (!rstr_eq(file_full_name, ".") && !rstr_eq(file_full_name, "..")) {
-        rlist_rpush(ret_list, rstr_cpy(file_full_name));
+        rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
     }
 
     while (FindNextFileW(file_find_ret, &file_find_data))
     {
         path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
         if (!rstr_eq(file_full_name, ".") && !rstr_eq(file_full_name, "..")) {
-            rlist_rpush(ret_list, rstr_cpy(file_full_name));
+            rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
         }
     }
 
@@ -477,13 +477,13 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
         rgoto(0);
     }
     if (!rstr_eq(file_find_data.cFileName, ".") && !rstr_eq(file_find_data.cFileName, "..")) {
-        rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName));
+        rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName, 0));
     }
 
     while (FindNextFileA(file_find_ret, &file_find_data))
     {
         if (!rstr_eq(file_find_data.cFileName, ".") && !rstr_eq(file_find_data.cFileName, "..")) {
-            rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName));
+            rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName, 0));
         }
     }
 
@@ -500,7 +500,7 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     }
     while ((ptr = readdir(dir_ptr)) != 0) {
         if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0) {
-            rlist_rpush(ret_list, rstr_cpy(ptr->d_name));
+            rlist_rpush(ret_list, rstr_cpy(ptr->d_name, 0));
         }
     }
     closedir(dir_ptr);

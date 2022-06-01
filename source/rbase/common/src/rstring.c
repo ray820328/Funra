@@ -8,6 +8,8 @@
  */
 
 #include "rstring.h"
+#include "rarray.h"
+#include "rlog.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -16,15 +18,84 @@
 #pragma GCC diagnostic ignored "-Wdangling-else"
 #endif //__GNUC__
 
-size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest) {
+static void _kmp_next_array_init(char* pat, int len_pattern, rarray_t* array_ins) {
+    int length = 0;
+    rarray_add(array_ins, 0);
+    int i = 1;
+    while (i < len_pattern) {
+        if (pat[i] == pat[length]) {
+            length++;
+            rarray_add(array_ins, length);
+            i++;
+        }
+        else {
+            if (length != 0) {
+                rarray_add(array_ins, length - 1);
+            }
+            else {
+                rarray_add(array_ins, 0);
+                i++;
+            }
+        }
+    }
+}
+static rarray_t* _kmp_search(char* str, char* pattern, int count) {
+    const int len_pattern = strlen(pattern);
+    int len_src = strlen(str);
+
+    static rarray_t* array_key = NULL;
+    if (array_key == NULL) {
+        rarray_init(array_key, rdata_type_int, 30);
+    }
+    rarray_clear(array_key);
+
+    _kmp_next_array_init(pattern, len_pattern, array_key);
+
+    rarray_t* array_ret = NULL;
+    if (array_ret == NULL) {
+        rarray_init(array_ret, rdata_type_int, 10);
+    }
+
+    int i = 0;
+    int j = 0;
+    while (i < len_src) {
+        if (pattern[j] == str[i]) {
+            j++;
+            i++;
+        }
+        if (j == len_pattern) {
+            rarray_add(array_ret, i - j);
+            if (count > 0) {
+                if (--count == 0) {
+                    return array_ret;
+                }
+            }
+
+            j = rarray_at(array_key, j - 1);
+        }
+        else if (i < len_src && pattern[j] != str[i]) {
+            if (j != 0) {
+                j = rarray_at(array_key, j - 1);
+            }
+            else {
+                i = i + 1;
+            }
+        }
+    }
+
+    return array_ret;
+}
+
+
+size_t rstr_cat(char* dest, const char* src, const size_t dest_size) {
     size_t position = rstr_len(dest);
-    size_t srcLen = rstr_len(src);
-    size_t copyLen = rmin(srcLen, sizeofDest - position - 1);
-    memcpy(dest + position, src, copyLen);
-    position += copyLen;
+    size_t src_len = rstr_len(src);
+    size_t copy_len = rmin(src_len, dest_size - position - 1);
+    memcpy(dest + position, src, copy_len);
+    position += copy_len;
 
     dest[position] = '\0';
-    return copyLen - srcLen;
+    return copy_len - src_len;
 }
 
 char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...) {
@@ -47,40 +118,81 @@ char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...) {
     return dest;
 }
 
-char* rstr_cpy(const void *key) {//, int maxLen){
-    if (!key) {
+char* rstr_cpy(const void* data, size_t len){
+    if (data == NULL) {
         return NULL;
     }
-    unsigned int keyLen = (unsigned int)strlen((char*)key);
-    char* keyCopy = (char*)rstr_new(keyLen + 1u);
-    rstr_init(keyCopy);
-    if (!keyCopy) {
+    unsigned int data_len = (unsigned int)strlen((char*)data);
+    data_len = len > 0 && len < data_len ? len : data_len;
+    char* data_copy = (char*)rstr_new(data_len + 1u);
+    rstr_init(data_copy);
+    if (data_copy == NULL) {
         return NULL;
     }
-    memcpy(keyCopy, key, keyLen);
-    keyCopy[keyLen] = rstr_end;
-    return keyCopy;
+    memcpy(data_copy, data, data_len);
+    data_copy[data_len] = rstr_end;
+    return data_copy;
 }
 
-char* rstr_substr(const char *src, const size_t dest_size)
-{
-    size_t length=0;
-    char *p;
-    const char *q;
-
-    char *dst = raymalloc((int64_t)(dest_size));
-
-    assert(dst != NULL);
-    assert(src != (const char *) NULL);
-    assert(dest_size >= 1);
-
-    for ( p=dst, q=src, length=0; (*q != 0) && (length < dest_size-1); length++, p++, q++ ){
-        *p = *q;
+char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool new) {
+    if (!src || from  < 0 || dest_size < 0 || rstr_len(src) < (from + dest_size)) {
+        rassert(false, "invalid str.");
+        return rstr_empty;
     }
 
-    dst[length]='\0';
+    if (!new) {
+        return src + from;//整个from字符串，不仅仅dest
+    }
 
-    return dst;
+    char* dest = rstr_new(dest_size + 1u);
+    rassert(dest != NULL, "dest is null.");
+
+    memcpy(dest, src + from, dest_size);
+    //size_t length=0;
+    //char *p;
+    //const char *q;
+    //for ( p=dst, q=src, length=0; (*q != 0) && (length < from + dest_size - 1); length++, p++, q++ ){
+    //    *p = *q;
+    //}
+
+    dest[dest_size] = '\0';
+
+    return dest;
+}
+
+char* rstr_sub_str(const char* src, const char* key, bool new) {
+    if (!src || !key) {
+        rassert(false, "invalid str.");
+        return rstr_empty;
+    }
+
+    char* sub = strstr(src, key);
+    if (sub != NULL) {
+        return rstr_empty;
+    }
+    if (!new) {
+        return sub;
+    }
+
+    size_t sub_len = rstr_len(sub);
+    char* dest = rstr_new(sub_len + 1u);
+
+    memcpy(dest, sub, sub_len);
+
+    dest[sub_len] = '\0';
+
+    return dest;
+}
+
+
+size_t rstr_index(const char* src, const char* key) {
+    //kmp_search(src, key, 0);
+    return 0;
+}
+
+size_t rstr_last_index(const char* src, const char* key) {
+
+    return 0;
 }
 
 /** 不支持unicode，有中文截断危险，utf8编码可以使用 **/
@@ -121,9 +233,55 @@ char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newSt
     return destStr;
 }
 
-R_API int rstr_token(const char *src, const char *delim, char** tokens) {
+char** rstr_split(const char* src, const char* delim) {
+    //todo Ray 根据长度走短字符串直接走遍历
 
-    return rcode_ok;
+    //char* token = strtok(src, delim);
+    //while (token != NULL) {
+    //    rarray_add(array_ins, token);
+    //    token = strtok(NULL, delim);
+    //}
+    //return rarray_get_all(array_ins);
+
+    rarray_t* array_tokens = _kmp_search(src, delim, 0);
+    rarray_size_t data_len = rarray_size(array_tokens);
+    if (data_len == 0) {
+        rarray_free(array_tokens);
+        return NULL;
+    }
+
+    //rarray_t* array_ins = NULL;
+    //rarray_init(array_ins, rdata_type_string, data_len + 1);
+
+    char** ret = rstr_array_new(data_len + 1);
+    char** token = NULL;
+    size_t src_len = rstr_len(src);
+    size_t delim_len = rstr_len(delim);
+    size_t from_pos = 0;
+    size_t sub_len = rarray_at(array_tokens, 0);
+
+    //rarray_add(array_ins, rstr_sub(src, from_pos, sub_len, true));
+    token = ret;
+    *token = rstr_sub(src, from_pos, sub_len, true);
+
+    for (int index = 1; index < data_len; index++) {
+        from_pos = (rdata_type_int_inner_type)rarray_at(array_tokens, index - 1) + delim_len;
+        sub_len = (rdata_type_int_inner_type)rarray_at(array_tokens, index) - from_pos;
+        token = ret + index;
+        *token = rstr_sub(src, from_pos, sub_len, true);
+    }
+
+    from_pos = (rdata_type_int_inner_type)rarray_at(array_tokens, data_len - 1) + delim_len;
+    sub_len = src_len - from_pos;
+    token = ret + data_len;
+    *token = rstr_sub(src, from_pos, sub_len, true);
+
+    token = ret + data_len + 1;
+    *token = NULL;
+
+    rarray_free(array_tokens);
+
+    return ret;
 }
 //
 //char* rstr_token(char* str, const char* sep, char** last)

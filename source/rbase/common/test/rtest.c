@@ -7,6 +7,7 @@
  * @author: Ray
  */
 
+#include <locale.h>
 #include <string.h>
 
 #include "rlog.h"
@@ -39,6 +40,14 @@ static int init_platform() {
 }
 
 int main(int argc, char **argv) {
+    setlocale(LC_ALL, "zh_CN.UTF-8");
+    setlocale(LC_NUMERIC, "zh_CN");
+    setlocale(LC_TIME, "zh_CN");
+    wchar_t local_time[100];
+    time_t t = time(NULL);
+    wcsftime(local_time, 100, L"%A %c", localtime(&t));
+    wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
+
     rlog_init("RLog.txt", RLOG_ALL, false, "all");
 
     init_platform();

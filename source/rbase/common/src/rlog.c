@@ -215,7 +215,7 @@ int rlog_rolling_file() {
 			continue;
 		}
 
-		temp_filename = rstr_cpy(log->filename);
+		temp_filename = rstr_cpy(log->filename, 0);
 		temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
 		
 		if (file2seperate) {

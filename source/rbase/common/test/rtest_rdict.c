@@ -204,13 +204,13 @@ static uint64_t rhash_func_string(const void* key) {
 }
 static void* copy_key_func_string(void* data_ext, const void* key) {
     if (key) {
-        return rstr_cpy(key);
+        return rstr_cpy(key, 0);
     }
     return NULL;
 }
 static void* copy_value_func_string(void* data_ext, const void* obj) {
     if (obj) {
-        return rstr_cpy(obj);
+        return rstr_cpy(obj, 0);
     }
     return NULL;
 }
