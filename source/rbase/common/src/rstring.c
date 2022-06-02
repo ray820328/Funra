@@ -125,10 +125,10 @@ char* rstr_cpy(const void* data, size_t len){
     unsigned int data_len = (unsigned int)strlen((char*)data);
     data_len = len > 0 && len < data_len ? len : data_len;
     char* data_copy = (char*)rstr_new(data_len + 1u);
-    rstr_init(data_copy);
     if (data_copy == NULL) {
         return NULL;
     }
+    //rstr_init(data_copy);
     memcpy(data_copy, data, data_len);
     data_copy[data_len] = rstr_end;
     return data_copy;
