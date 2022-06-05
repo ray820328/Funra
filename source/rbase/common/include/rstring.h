@@ -27,6 +27,7 @@ extern "C" {
 #define rstr_new(size) raymalloc(size)
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
+#define rstr_reset(rstr) rstr_init((rstr))
 #define rstr_free(rstr) rayfree(rstr)
 
 #define rstr_array_new(size) rnew_data_array(sizeof(char*), (size) + 1)
@@ -37,13 +38,16 @@ extern "C" {
             count += 1; \
         } \
     } while(0)
+/** 确保非最后一个NULL都为rstr_empty，否则会提前结束遍历 **/
 #define rstr_array_for(rstr, item) \
     for (size_t rstr##_index = 0; (char*)item = *((char**)rstr + rstr##_index), rstr != NULL && item != NULL; rstr##_index++)
+/** 确保非最后一个NULL都为rstr_empty，否则会内存泄露 **/
 #define rstr_array_free(rstr) \
     while(rstr) { \
         char* rstr##_free_item = NULL; \
         for (size_t rstr##_free_index = 0; rstr##_free_item = *((char**)rstr + rstr##_free_index), rstr##_free_item != NULL; rstr##_free_index++) { \
-            rstr_free(rstr##_free_item); \
+            if (rstr##_free_item != rstr_empty) \
+				rstr_free(rstr##_free_item); \
         } \
         rfree_data_array(rstr); \
     }
@@ -100,6 +104,7 @@ extern "C" {
 /* ------------------------------- APIs ------------------------------------*/
 
 R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest);
+R_API char* rstr_concat(const char** src, const char* delim, bool suffix);
 
 R_API char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...);
 /** len为0时到src结尾 **/

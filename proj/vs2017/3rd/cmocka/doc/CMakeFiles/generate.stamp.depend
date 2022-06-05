@@ -1,5 +1,5 @@
 # CMake generation dependency list for this directory.
-D:/tools/CMake/share/cmake-3.13/Modules/FindDoxygen.cmake
-D:/tools/CMake/share/cmake-3.13/Modules/FindPackageHandleStandardArgs.cmake
-D:/tools/CMake/share/cmake-3.13/Modules/FindPackageMessage.cmake
+D:/tools/cmake3/share/cmake-3.13/Modules/FindDoxygen.cmake
+D:/tools/cmake3/share/cmake-3.13/Modules/FindPackageHandleStandardArgs.cmake
+D:/tools/cmake3/share/cmake-3.13/Modules/FindPackageMessage.cmake
 E:/workspace/funra/source/3rd/cmocka/doc/CMakeLists.txt

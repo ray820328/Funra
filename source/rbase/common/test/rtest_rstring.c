@@ -28,6 +28,7 @@ static void rstring_index_test(void **state) {
 
     int count = 100;
     int j;
+	char* delim = "z0";
 
     init_benchmark(1024, "test rstring (%d)", count);
 
@@ -36,7 +37,7 @@ static void rstring_index_test(void **state) {
     //end_benchmark("rstring index.");
 
     start_benchmark(0);
-    char** tokens = rstr_split(test_full_str, "z0");
+    char** tokens = rstr_split(test_full_str, delim);
     int count_token;
     rstr_array_count(tokens, count_token);
     assert_true(count_token == 3);
@@ -45,8 +46,12 @@ static void rstring_index_test(void **state) {
     rstr_array_for(tokens, token_cur) {
         int cur_len = rstr_len(token_cur);
         assert_true(cur_len > 0);
-    }
+    } 
 
+	char* str_concat_full = rstr_concat(tokens, delim, false);
+	assert_true(rstr_eq(str_concat_full, test_full_str));
+
+	rstr_free(str_concat_full);
     rstr_array_free(tokens);
 
     end_benchmark("rstring token.");

@@ -98,35 +98,65 @@ size_t rstr_cat(char* dest, const char* src, const size_t dest_size) {
     return copy_len - src_len;
 }
 
-char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...) {
+char* rstr_concat(const char** src, const char* delim, bool suffix) {
+	if (src == NULL || delim == NULL) {
+		return rstr_empty;
+	}
+
+	char* str_cur = NULL;
+	size_t delim_len = rstr_len(delim);
+	size_t dest_len = 0;
+	size_t cur_len = 0;
+	size_t append_len = 0;
+
+	rstr_array_for(src, str_cur) {
+		dest_len += (rstr_len(str_cur) + delim_len);
+	}
+
+	char* dest = (char*)rstr_new(dest_len + 1u);
+
+	rstr_array_for(src, str_cur) {
+		cur_len = rstr_len(str_cur);
+		memcpy(dest + append_len, str_cur, cur_len);
+		append_len += cur_len;
+		memcpy(dest + append_len, delim, delim_len);
+		append_len += delim_len;
+	}
+
+	dest_len = suffix ? dest_len : dest_len - delim_len;
+	dest[dest_len] = rstr_end;
+
+	return dest;
+}
+
+char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...) {
     if (!dest || !fmt) {
-        return NULL;
+        return rstr_empty;
     }
-    //char* dest = raymalloc((int64_t)(maxLen + 1u));
-    //if (!dest) {
-    //    return NULL;
-    //}
+
     va_list ap;
-    va_start(ap, maxLen);
-    int writeLen = vsnprintf(dest, maxLen, fmt, ap);
+    va_start(ap, max_len);
+    int write_len = vsnprintf(dest, max_len, fmt, ap);
     va_end(ap);
-    if (writeLen < 0) {
-        //    rayfree((void*)dest);
+    if (write_len < 0 || write_len >= max_len) {
         dest[0] = rstr_end;
-        return NULL;
+        return rstr_empty;
     }
     return dest;
 }
 
 char* rstr_cpy(const void* data, size_t len){
     if (data == NULL) {
-        return NULL;
+        return rstr_empty;
     }
+	if (data == rstr_empty) {
+		return rstr_empty;
+	}
     unsigned int data_len = (unsigned int)strlen((char*)data);
     data_len = len > 0 && len < data_len ? len : data_len;
     char* data_copy = (char*)rstr_new(data_len + 1u);
     if (data_copy == NULL) {
-        return NULL;
+        return rstr_empty;
     }
     //rstr_init(data_copy);
     memcpy(data_copy, data, data_len);
@@ -196,41 +226,41 @@ size_t rstr_last_index(const char* src, const char* key) {
 }
 
 /** 不支持unicode，有中文截断危险，utf8编码可以使用 **/
-char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr) {
-    if (!newStr || !destStr) {
+char* rstr_repl(char *src, char *dest_str, int dest_len, char *old_str, char *new_str) {
+    if (!new_str || !dest_str) {
         return src;
     }
 
     const size_t strLen = strlen(src);
-    const size_t oldLen = strlen(oldStr);
-    const size_t newLen = strlen(oldStr);
+    const size_t oldLen = strlen(old_str);
+    const size_t newLen = strlen(old_str);
     //char bstr[strLen];//转换缓冲区
     //memset(bstr, 0, sizeof(bstr));
 
-    destStr[0] = rstr_end;
+    dest_str[0] = rstr_end;
 
     for (size_t i = 0; i < strLen; i++) {
-        if (!strncmp(src + i, oldStr, oldLen)) {//查找目标字符串
-            if (strlen(destStr) + newLen >= destLen) {
-                destStr[strlen(destStr)] = rstr_end;
+        if (!strncmp(src + i, old_str, oldLen)) {//查找目标字符串
+            if (strlen(dest_str) + newLen >= dest_len) {
+                dest_str[strlen(dest_str)] = rstr_end;
                 break;
             }
 
-            strcat(destStr, newStr);
+            strcat(dest_str, new_str);
             i += oldLen - 1;
         }
         else {
-            if (strlen(destStr) + 1 >= destLen) {
-                destStr[strlen(destStr)] = rstr_end;
+            if (strlen(dest_str) + 1 >= dest_len) {
+                dest_str[strlen(dest_str)] = rstr_end;
                 break;
             }
 
-            strncat(destStr, src + i, 1);//保存一字节进缓冲区
+            strncat(dest_str, src + i, 1);//保存一字节进缓冲区
         }
     }
     //strcpy(src, bstr);
 
-    return destStr;
+    return dest_str;
 }
 
 char** rstr_split(const char* src, const char* delim) {

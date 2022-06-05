@@ -35,6 +35,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("E:/workspace/funra/proj/vs2017/rbase/common/cmake_install.cmake")
+  include("E:/workspace/funra/proj/vs2017/rbase/ipc/cmake_install.cmake")
 
 endif()
 

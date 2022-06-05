@@ -77,7 +77,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -103,7 +103,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -129,7 +129,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -155,7 +155,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone

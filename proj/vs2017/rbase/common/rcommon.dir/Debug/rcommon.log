@@ -1,13 +1,28 @@
 ﻿  Building Custom Rule E:/workspace/funra/source/rbase/common/CMakeLists.txt
   CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp is up-to-date.
-  dict.c
-  mt19937-64.c
-E:\workspace\funra\source\rbase\common\src\dict.c(528): warning C4311: “类型强制转换”: 从“dictEntry **”到“long”的指针截断
-E:\workspace\funra\source\rbase\common\src\dict.c(531): warning C4311: “类型强制转换”: 从“dictEntry **”到“long”的指针截断
-  siphash.c
-  rlist.c
+  rfile.c
   rtime.c
+  rstring.c
+  rthread.c
+  rarray.c
   rlog.c
+  rdict.c
+  rlist.c
   Platform info: _WIN64=1
-E:\workspace\funra\source\rbase\common\src\rlog.c(21): warning C4091: “static ”: 没有声明变量时忽略“RTL_CRITICAL_SECTION”的左侧
+  Platform info: _WIN64=1
+  Platform info: _WIN64=1
+  Platform info: _WIN64=1
+  Platform info: _WIN64=1
+  Platform info: _WIN64=1
+E:\workspace\funra\source\rbase\common\src\rarray.c(29): warning C4090: “=”: 不同的“const”限定符
+E:\workspace\funra\source\rbase\common\src\rlog.c(219): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+E:\workspace\funra\source\rbase\common\src\rarray.c(130): warning C4047: “return”:“void *”与“int”的间接级别不同
+E:\workspace\funra\source\rbase\common\src\rfile.c(384): warning C4996: 'unlink': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _unlink. See online help for details.
+  E:\workspace\funra\source\rbase\common\src\rfile.c(24): note: 参见“unlink”的声明
+E:\workspace\funra\source\rbase\common\src\rfile.c(394): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+E:\workspace\funra\source\rbase\common\src\rfile.c(400): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+E:\workspace\funra\source\rbase\common\src\rfile.c(449): warning C4133: “函数”: 从“WIN32_FIND_DATA *”到“LPWIN32_FIND_DATAW”的类型不兼容
+E:\workspace\funra\source\rbase\common\src\rfile.c(455): warning C4133: “函数”: 从“CHAR [260]”到“const WCHAR *”的类型不兼容
+E:\workspace\funra\source\rbase\common\src\rfile.c(460): warning C4133: “函数”: 从“WIN32_FIND_DATA *”到“LPWIN32_FIND_DATAW”的类型不兼容
+E:\workspace\funra\source\rbase\common\src\rfile.c(462): warning C4133: “函数”: 从“CHAR [260]”到“const WCHAR *”的类型不兼容
   rcommon.vcxproj -> E:\workspace\funra\build\lib\Windows_AMD64\rcommond.lib

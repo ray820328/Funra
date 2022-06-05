@@ -7,4 +7,3 @@
 subdirs("include")
 subdirs("src")
 subdirs("doc")
-subdirs("example")

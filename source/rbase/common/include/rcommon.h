@@ -69,9 +69,13 @@ extern "C" {
 #pragma message("Platform info: "macro_print_macro(_WIN64))
 
 #if defined(_WIN32_WCE) || defined(WINNT)
+
 #define file_system_ansi            0
+
 #else
+
 #define file_system_ansi            1
+
 #endif
 
 #define rattribute_unused(declaration) declaration

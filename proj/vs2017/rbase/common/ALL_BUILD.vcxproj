@@ -63,7 +63,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rbase\ipc\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rbase\ipc\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -83,7 +83,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rbase\ipc\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\workspace\funra\source\rbase\..;E:\workspace\funra\source\rbase\..\3rd\lua\5.4.3\src;E:\workspace\funra\source\rbase\..\rbase\common\include;E:\workspace\funra\source\rbase\..\rbase\ipc\include;E:\workspace\funra\source\rbase\..\rserver\commonsvr\include;E:\workspace\funra\source\rbase\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -105,7 +105,7 @@
     <CustomBuild Include="E:\workspace\funra\source\rbase\common\CMakeLists.txt">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/funra/source/rbase/common/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -118,7 +118,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/funra/source/rbase/common/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -131,7 +131,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/funra/source/rbase/common/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -144,7 +144,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/funra/source/rbase/common/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/rbase -BE:/workspace/funra/proj/vs2017/rbase --check-stamp-file E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -169,6 +169,12 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="E:\workspace\funra\proj\vs2017\rbase\common\rcommon.vcxproj">
       <Project>{259915A6-752E-3C73-B8AA-7A0CA8F30BD5}</Project>
       <Name>rcommon</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\rbase\common\rcommon_test.vcxproj">
+      <Project>{CF224CF7-C568-34CC-9A1D-D751AFCFF8D3}</Project>
+      <Name>rcommon_test</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>

@@ -1,7 +1,7 @@
-The system is: Windows - 10.0.18363 - AMD64
+The system is: Windows - 10.0.19043 - AMD64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
 Compiler:  
-Build flags: /DWIN32;/D_WINDOWS;/W3
+Build flags: 
 Id flags:  
 
 The output was:
@@ -9,7 +9,7 @@ The output was:
 ���� .NET Framework �� Microsoft (R) ��������汾 15.9.21+g9802d43bc3
 ��Ȩ����(C) Microsoft Corporation����������Ȩ����
 
-��������ʱ��Ϊ 2021/11/25 19:03:00��
+��������ʱ��Ϊ 2022/4/5 22:03:04��
 �ڵ� 1 �ϵ���Ŀ��E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\3.13.4\CompilerIdC\CompilerIdC.vcxproj��(Ĭ��Ŀ��)��
 PrepareForBuild:
   ���ڴ���Ŀ¼��Debug\����
@@ -17,15 +17,15 @@ PrepareForBuild:
 InitializeBuildStatus:
   ���ڴ�����Debug\CompilerIdC.tlog\unsuccessfulbuild������Ϊ��ָ����AlwaysCreate����
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /nologo /W0 /WX- /diagnostics:classic /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc141.pdb" /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /nologo /W0 /WX- /diagnostics:classic /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc141.pdb" /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
   CMakeCCompilerId.c
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdC.lib" /MACHINE:X64 Debug\CMakeCCompilerId.obj
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdC.lib" /MACHINE:X64 Debug\CMakeCCompilerId.obj
   CompilerIdC.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\3.13.4\CompilerIdC\.\CompilerIdC.exe
 PostBuildEvent:
   for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
   :VCEnd
-  CMAKE_C_COMPILER=D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\Hostx86\x64\cl.exe
+  CMAKE_C_COMPILER=D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\Hostx86\x64\cl.exe
 FinalizeBuildStatus:
   ����ɾ���ļ���Debug\CompilerIdC.tlog\unsuccessfulbuild����
   ���ڶԡ�Debug\CompilerIdC.tlog\CompilerIdC.lastbuildstate��ִ�� Touch ����
@@ -35,7 +35,7 @@ FinalizeBuildStatus:
     0 ������
     0 ������
 
-����ʱ�� 00:00:01.32
+����ʱ�� 00:00:02.30
 
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -46,7 +46,7 @@ The C compiler identification is MSVC, found in "E:/workspace/funra/proj/vs2017/
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
 Compiler:  
-Build flags: /DWIN32;/D_WINDOWS;/W3;/GR;/EHsc
+Build flags: 
 Id flags:  
 
 The output was:
@@ -54,7 +54,7 @@ The output was:
 ���� .NET Framework �� Microsoft (R) ��������汾 15.9.21+g9802d43bc3
 ��Ȩ����(C) Microsoft Corporation����������Ȩ����
 
-��������ʱ��Ϊ 2021/11/25 19:03:01��
+��������ʱ��Ϊ 2022/4/5 22:03:07��
 �ڵ� 1 �ϵ���Ŀ��E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\3.13.4\CompilerIdCXX\CompilerIdCXX.vcxproj��(Ĭ��Ŀ��)��
 PrepareForBuild:
   ���ڴ���Ŀ¼��Debug\����
@@ -62,15 +62,15 @@ PrepareForBuild:
 InitializeBuildStatus:
   ���ڴ�����Debug\CompilerIdCXX.tlog\unsuccessfulbuild������Ϊ��ָ����AlwaysCreate����
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /nologo /W0 /WX- /diagnostics:classic /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc141.pdb" /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /nologo /W0 /WX- /diagnostics:classic /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc141.pdb" /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
   CMakeCXXCompilerId.cpp
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdCXX.lib" /MACHINE:X64 Debug\CMakeCXXCompilerId.obj
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdCXX.lib" /MACHINE:X64 Debug\CMakeCXXCompilerId.obj
   CompilerIdCXX.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\3.13.4\CompilerIdCXX\.\CompilerIdCXX.exe
 PostBuildEvent:
   for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
   :VCEnd
-  CMAKE_CXX_COMPILER=D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\Hostx86\x64\cl.exe
+  CMAKE_CXX_COMPILER=D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\Hostx86\x64\cl.exe
 FinalizeBuildStatus:
   ����ɾ���ļ���Debug\CompilerIdCXX.tlog\unsuccessfulbuild����
   ���ڶԡ�Debug\CompilerIdCXX.tlog\CompilerIdCXX.lastbuildstate��ִ�� Touch ����
@@ -80,7 +80,7 @@ FinalizeBuildStatus:
     0 ������
     0 ������
 
-����ʱ�� 00:00:01.07
+����ʱ�� 00:00:00.57
 
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -92,77 +92,77 @@ The CXX compiler identification is MSVC, found in "E:/workspace/funra/proj/vs201
 Determining if the C compiler works passed with the following output:
 Change Dir: E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp
 
-Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_1c6d8.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+Run Build Command:"D:/ENV/vs2017/comps/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_aa0f2.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
 用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2021/11/25 19:03:03。
-节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_1c6d8.vcxproj”(默认目标)。
+生成启动时间为 2022/4/5 22:03:08。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_aa0f2.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_1c6d8.dir\Debug\”。
+  正在创建目录“cmTC_aa0f2.dir\Debug\”。
   正在创建目录“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_1c6d8.dir\Debug\cmTC_1c6d8.tlog\”。
+  正在创建目录“cmTC_aa0f2.dir\Debug\cmTC_aa0f2.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_1c6d8.dir\Debug\cmTC_1c6d8.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_aa0f2.dir\Debug\cmTC_aa0f2.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /W3 /WX- /diagnostics:classic /MP /Od /Ob0 /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _DEBUG /D CHECK_MEM_LEAK /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /GF /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_1c6d8.dir\Debug\\" /Fd"cmTC_1c6d8.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCCompiler.c
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aa0f2.dir\Debug\\" /Fd"cmTC_aa0f2.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCCompiler.c
   用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /W3 /WX- /diagnostics:classic /MP /Od /Ob0 /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _DEBUG /D CHECK_MEM_LEAK /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /GF /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_1c6d8.dir\Debug\\" /Fd"cmTC_1c6d8.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCCompiler.c
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aa0f2.dir\Debug\\" /Fd"cmTC_aa0f2.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCCompiler.c
   testCCompiler.c
   
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_1c6d8.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_1c6d8.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_1c6d8.lib" /MACHINE:X64  /machine:x64 cmTC_1c6d8.dir\Debug\testCCompiler.obj
-  cmTC_1c6d8.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_1c6d8.exe
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_aa0f2.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_aa0f2.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_aa0f2.lib" /MACHINE:X64  /machine:x64 cmTC_aa0f2.dir\Debug\testCCompiler.obj
+  cmTC_aa0f2.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_aa0f2.exe
 FinalizeBuildStatus:
-  正在删除文件“cmTC_1c6d8.dir\Debug\cmTC_1c6d8.tlog\unsuccessfulbuild”。
-  正在对“cmTC_1c6d8.dir\Debug\cmTC_1c6d8.tlog\cmTC_1c6d8.lastbuildstate”执行 Touch 任务。
-已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_1c6d8.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_aa0f2.dir\Debug\cmTC_aa0f2.tlog\unsuccessfulbuild”。
+  正在对“cmTC_aa0f2.dir\Debug\cmTC_aa0f2.tlog\cmTC_aa0f2.lastbuildstate”执行 Touch 任务。
+已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_aa0f2.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:02.00
+已用时间 00:00:00.63
 
 
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp
 
-Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_b74b5.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+Run Build Command:"D:/ENV/vs2017/comps/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_7ed00.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
 用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2021/11/25 19:03:05。
-节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_b74b5.vcxproj”(默认目标)。
+生成启动时间为 2022/4/5 22:03:08。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_7ed00.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_b74b5.dir\Debug\”。
+  正在创建目录“cmTC_7ed00.dir\Debug\”。
   正在创建目录“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_b74b5.dir\Debug\cmTC_b74b5.tlog\”。
+  正在创建目录“cmTC_7ed00.dir\Debug\cmTC_7ed00.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_b74b5.dir\Debug\cmTC_b74b5.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_7ed00.dir\Debug\cmTC_7ed00.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /W3 /WX- /diagnostics:classic /MP /Od /Ob0 /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _DEBUG /D CHECK_MEM_LEAK /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /GF /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_b74b5.dir\Debug\\" /Fd"cmTC_b74b5.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CMakeCCompilerABI.c"
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7ed00.dir\Debug\\" /Fd"cmTC_7ed00.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\cmake3\share\cmake-3.13\Modules\CMakeCCompilerABI.c"
   用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /W3 /WX- /diagnostics:classic /MP /Od /Ob0 /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _DEBUG /D CHECK_MEM_LEAK /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /GF /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_b74b5.dir\Debug\\" /Fd"cmTC_b74b5.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CMakeCCompilerABI.c"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7ed00.dir\Debug\\" /Fd"cmTC_7ed00.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue "D:\tools\cmake3\share\cmake-3.13\Modules\CMakeCCompilerABI.c"
   CMakeCCompilerABI.c
   
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_b74b5.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_b74b5.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_b74b5.lib" /MACHINE:X64  /machine:x64 cmTC_b74b5.dir\Debug\CMakeCCompilerABI.obj
-  cmTC_b74b5.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_b74b5.exe
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_7ed00.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_7ed00.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_7ed00.lib" /MACHINE:X64  /machine:x64 cmTC_7ed00.dir\Debug\CMakeCCompilerABI.obj
+  cmTC_7ed00.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_7ed00.exe
 FinalizeBuildStatus:
-  正在删除文件“cmTC_b74b5.dir\Debug\cmTC_b74b5.tlog\unsuccessfulbuild”。
-  正在对“cmTC_b74b5.dir\Debug\cmTC_b74b5.tlog\cmTC_b74b5.lastbuildstate”执行 Touch 任务。
-已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_b74b5.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_7ed00.dir\Debug\cmTC_7ed00.tlog\unsuccessfulbuild”。
+  正在对“cmTC_7ed00.dir\Debug\cmTC_7ed00.tlog\cmTC_7ed00.lastbuildstate”执行 Touch 任务。
+已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_7ed00.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.45
+已用时间 00:00:00.62
 
 
 
@@ -170,39 +170,39 @@ FinalizeBuildStatus:
 Detecting C [] compiler features compiled with the following output:
 Change Dir: E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp
 
-Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_54108.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+Run Build Command:"D:/ENV/vs2017/comps/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_5653b.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
 用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2021/11/25 19:03:07。
-节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_54108.vcxproj”(默认目标)。
+生成启动时间为 2022/4/5 22:03:09。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_5653b.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_54108.dir\Debug\”。
+  正在创建目录“cmTC_5653b.dir\Debug\”。
   正在创建目录“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_54108.dir\Debug\cmTC_54108.tlog\”。
+  正在创建目录“cmTC_5653b.dir\Debug\cmTC_5653b.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_54108.dir\Debug\cmTC_54108.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_5653b.dir\Debug\cmTC_5653b.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /W3 /WX- /diagnostics:classic /MP /Od /Ob0 /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _DEBUG /D CHECK_MEM_LEAK /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /GF /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_54108.dir\Debug\\" /Fd"cmTC_54108.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.c
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5653b.dir\Debug\\" /Fd"cmTC_5653b.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.c
   用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /W3 /WX- /diagnostics:classic /MP /Od /Ob0 /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D _DEBUG /D CHECK_MEM_LEAK /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /GF /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_54108.dir\Debug\\" /Fd"cmTC_54108.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.c
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5653b.dir\Debug\\" /Fd"cmTC_5653b.dir\Debug\vc141.pdb" /Gd /TC /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.c
   feature_tests.c
   
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_54108.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_54108.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_54108.lib" /MACHINE:X64  /machine:x64 cmTC_54108.dir\Debug\feature_tests.obj
-  cmTC_54108.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_54108.exe
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_5653b.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_5653b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_5653b.lib" /MACHINE:X64  /machine:x64 cmTC_5653b.dir\Debug\feature_tests.obj
+  cmTC_5653b.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_5653b.exe
 FinalizeBuildStatus:
-  正在删除文件“cmTC_54108.dir\Debug\cmTC_54108.tlog\unsuccessfulbuild”。
-  正在对“cmTC_54108.dir\Debug\cmTC_54108.tlog\cmTC_54108.lastbuildstate”执行 Touch 任务。
-已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_54108.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_5653b.dir\Debug\cmTC_5653b.tlog\unsuccessfulbuild”。
+  正在对“cmTC_5653b.dir\Debug\cmTC_5653b.tlog\cmTC_5653b.lastbuildstate”执行 Touch 任务。
+已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_5653b.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.53
+已用时间 00:00:00.75
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -210,77 +210,77 @@ FinalizeBuildStatus:
 Determining if the CXX compiler works passed with the following output:
 Change Dir: E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp
 
-Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_baaca.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+Run Build Command:"D:/ENV/vs2017/comps/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_5cb37.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
 用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2021/11/25 19:03:09。
-节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_baaca.vcxproj”(默认目标)。
+生成启动时间为 2022/4/5 22:03:10。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_5cb37.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_baaca.dir\Debug\”。
+  正在创建目录“cmTC_5cb37.dir\Debug\”。
   正在创建目录“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_baaca.dir\Debug\cmTC_baaca.tlog\”。
+  正在创建目录“cmTC_5cb37.dir\Debug\cmTC_5cb37.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_baaca.dir\Debug\cmTC_baaca.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_5cb37.dir\Debug\cmTC_5cb37.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_baaca.dir\Debug\\" /Fd"cmTC_baaca.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_5cb37.dir\Debug\\" /Fd"cmTC_5cb37.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
   用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_baaca.dir\Debug\\" /Fd"cmTC_baaca.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_5cb37.dir\Debug\\" /Fd"cmTC_5cb37.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
   testCXXCompiler.cxx
   
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_baaca.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_baaca.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_baaca.lib" /MACHINE:X64  /machine:x64 cmTC_baaca.dir\Debug\testCXXCompiler.obj
-  cmTC_baaca.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_baaca.exe
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_5cb37.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_5cb37.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_5cb37.lib" /MACHINE:X64  /machine:x64 cmTC_5cb37.dir\Debug\testCXXCompiler.obj
+  cmTC_5cb37.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_5cb37.exe
 FinalizeBuildStatus:
-  正在删除文件“cmTC_baaca.dir\Debug\cmTC_baaca.tlog\unsuccessfulbuild”。
-  正在对“cmTC_baaca.dir\Debug\cmTC_baaca.tlog\cmTC_baaca.lastbuildstate”执行 Touch 任务。
-已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_baaca.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_5cb37.dir\Debug\cmTC_5cb37.tlog\unsuccessfulbuild”。
+  正在对“cmTC_5cb37.dir\Debug\cmTC_5cb37.tlog\cmTC_5cb37.lastbuildstate”执行 Touch 任务。
+已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_5cb37.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.06
+已用时间 00:00:00.68
 
 
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp
 
-Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_c09a7.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+Run Build Command:"D:/ENV/vs2017/comps/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_ab60c.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
 用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2021/11/25 19:03:10。
-节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_c09a7.vcxproj”(默认目标)。
+生成启动时间为 2022/4/5 22:03:11。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_ab60c.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_c09a7.dir\Debug\”。
+  正在创建目录“cmTC_ab60c.dir\Debug\”。
   正在创建目录“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_c09a7.dir\Debug\cmTC_c09a7.tlog\”。
+  正在创建目录“cmTC_ab60c.dir\Debug\cmTC_ab60c.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_c09a7.dir\Debug\cmTC_c09a7.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_ab60c.dir\Debug\cmTC_ab60c.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_c09a7.dir\Debug\\" /Fd"cmTC_c09a7.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CMakeCXXCompilerABI.cpp"
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_ab60c.dir\Debug\\" /Fd"cmTC_ab60c.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue "D:\tools\cmake3\share\cmake-3.13\Modules\CMakeCXXCompilerABI.cpp"
   用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_c09a7.dir\Debug\\" /Fd"cmTC_c09a7.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue "D:\tools\CMake\share\cmake-3.13\Modules\CMakeCXXCompilerABI.cpp"
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_ab60c.dir\Debug\\" /Fd"cmTC_ab60c.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue "D:\tools\cmake3\share\cmake-3.13\Modules\CMakeCXXCompilerABI.cpp"
   CMakeCXXCompilerABI.cpp
   
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_c09a7.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_c09a7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_c09a7.lib" /MACHINE:X64  /machine:x64 cmTC_c09a7.dir\Debug\CMakeCXXCompilerABI.obj
-  cmTC_c09a7.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_c09a7.exe
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_ab60c.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_ab60c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_ab60c.lib" /MACHINE:X64  /machine:x64 cmTC_ab60c.dir\Debug\CMakeCXXCompilerABI.obj
+  cmTC_ab60c.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_ab60c.exe
 FinalizeBuildStatus:
-  正在删除文件“cmTC_c09a7.dir\Debug\cmTC_c09a7.tlog\unsuccessfulbuild”。
-  正在对“cmTC_c09a7.dir\Debug\cmTC_c09a7.tlog\cmTC_c09a7.lastbuildstate”执行 Touch 任务。
-已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_c09a7.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_ab60c.dir\Debug\cmTC_ab60c.tlog\unsuccessfulbuild”。
+  正在对“cmTC_ab60c.dir\Debug\cmTC_ab60c.tlog\cmTC_ab60c.lastbuildstate”执行 Touch 任务。
+已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_ab60c.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.07
+已用时间 00:00:00.62
 
 
 
@@ -288,39 +288,39 @@ FinalizeBuildStatus:
 Detecting CXX [] compiler features compiled with the following output:
 Change Dir: E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp
 
-Run Build Command:"D:/ENV/vs2017/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_16003.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
+Run Build Command:"D:/ENV/vs2017/comps/MSBuild/15.0/Bin/MSBuild.exe" "cmTC_eecf4.vcxproj" "/p:Configuration=Debug" "/p:Platform=x64" "/p:VisualStudioVersion=15.0"
 用于 .NET Framework 的 Microsoft (R) 生成引擎版本 15.9.21+g9802d43bc3
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2021/11/25 19:03:12。
-节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_16003.vcxproj”(默认目标)。
+生成启动时间为 2022/4/5 22:03:12。
+节点 1 上的项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_eecf4.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_16003.dir\Debug\”。
+  正在创建目录“cmTC_eecf4.dir\Debug\”。
   正在创建目录“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_16003.dir\Debug\cmTC_16003.tlog\”。
+  正在创建目录“cmTC_eecf4.dir\Debug\cmTC_eecf4.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_16003.dir\Debug\cmTC_16003.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_eecf4.dir\Debug\cmTC_eecf4.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_16003.dir\Debug\\" /Fd"cmTC_16003.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.cxx
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\CL.exe /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_eecf4.dir\Debug\\" /Fd"cmTC_eecf4.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.cxx
   用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.16.27045 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_16003.dir\Debug\\" /Fd"cmTC_16003.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.cxx
+  cl /c /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_eecf4.dir\Debug\\" /Fd"cmTC_eecf4.dir\Debug\vc141.pdb" /Gd /TP /errorReport:queue E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\feature_tests.cxx
   feature_tests.cxx
   
 Link:
-  D:\ENV\vs2017\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_16003.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_16003.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_16003.lib" /MACHINE:X64  /machine:x64 cmTC_16003.dir\Debug\feature_tests.obj
-  cmTC_16003.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_16003.exe
+  D:\ENV\vs2017\comps\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_eecf4.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_eecf4.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/CMakeTmp/Debug/cmTC_eecf4.lib" /MACHINE:X64  /machine:x64 cmTC_eecf4.dir\Debug\feature_tests.obj
+  cmTC_eecf4.vcxproj -> E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\Debug\cmTC_eecf4.exe
 FinalizeBuildStatus:
-  正在删除文件“cmTC_16003.dir\Debug\cmTC_16003.tlog\unsuccessfulbuild”。
-  正在对“cmTC_16003.dir\Debug\cmTC_16003.tlog\cmTC_16003.lastbuildstate”执行 Touch 任务。
-已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_16003.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_eecf4.dir\Debug\cmTC_eecf4.tlog\unsuccessfulbuild”。
+  正在对“cmTC_eecf4.dir\Debug\cmTC_eecf4.tlog\cmTC_eecf4.lastbuildstate”执行 Touch 任务。
+已完成生成项目“E:\workspace\funra\proj\vs2017\rbase\CMakeFiles\CMakeTmp\cmTC_eecf4.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.08
+已用时间 00:00:00.65
 
 
     Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers

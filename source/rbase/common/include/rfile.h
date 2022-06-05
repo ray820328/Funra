@@ -20,9 +20,12 @@ extern "C" {
 /* ------------------------------- Macros ------------------------------------*/
 
 #define file_path_len_max 8192 
-
+#define rfile_seperator "/"
 
 /* ------------------------------- APIs ------------------------------------*/
+int rfile_make_dir(const char *path, bool recursive);
+
+int rfile_remove_dir(const char *path);
 
 int rfile_copy_file(const char* src, const char* dst);
 

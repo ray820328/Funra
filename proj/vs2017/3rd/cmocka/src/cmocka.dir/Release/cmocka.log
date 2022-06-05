@@ -1,6 +1,6 @@
 ﻿  Building Custom Rule E:/workspace/funra/source/3rd/cmocka/src/CMakeLists.txt
   CMake does not need to re-run because E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp is up-to-date.
   cmocka.c
-E:\workspace\funra\source\3rd\cmocka\include\cmocka.h(1812): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-    正在创建库 E:/workspace/funra/build/lib/Windows_AMD64/3rd/Release/cmocka.lib 和对象 E:/workspace/funra/build/lib/Windows_AMD64/3rd/Release/cmocka.exp
+E:\workspace\funra\source\3rd\cmocka\include\cmocka.h(1864): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+    正在创建库 E:/workspace/funra/build/lib/Windows_AMD64/3rd/cmocka.lib 和对象 E:/workspace/funra/build/lib/Windows_AMD64/3rd/cmocka.exp
   cmocka.vcxproj -> E:\workspace\funra\build\bin\Windows_AMD64\cmocka.dll

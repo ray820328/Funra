@@ -36,8 +36,7 @@ static int convert_utf8_to_ucs2(const char *in, size_t *inbytes, WCHAR *out, siz
     {
         ch = (unsigned char)(*in++);
         if (!(ch & 0200)) {
-            /* US-ASCII-7 plain text
-             */
+            /* US-ASCII-7 plain text */
             --*inbytes;
             --*outwords;
             *(out++) = ch;
@@ -45,14 +44,12 @@ static int convert_utf8_to_ucs2(const char *in, size_t *inbytes, WCHAR *out, siz
         else
         {
             if ((ch & 0300) != 0300) {
-                /* Multibyte Continuation is out of place
-                 */
+                /* Multibyte Continuation is out of place */
                 return -1;
             }
             else
             {
                 /* Multibyte Sequence Lead Character
-                 *
                  * Compute the expected bytes while adjusting
                  * or lead byte and leading zeros mask.
                  */
@@ -75,8 +72,7 @@ static int convert_utf8_to_ucs2(const char *in, size_t *inbytes, WCHAR *out, siz
                         return -1;
                 }
                 else {
-                    /* Reject values of excessive leading 0 bits
-                     */
+                    /* Reject values of excessive leading 0 bits */
                     if (!newch && !((unsigned char)*in & 0077 & (mask << 1)))
                         return -1;
                     if (expect == 2) {
@@ -87,8 +83,7 @@ static int convert_utf8_to_ucs2(const char *in, size_t *inbytes, WCHAR *out, siz
                             return -1;
                     }
                     else if (expect == 3) {
-                        /* Short circuit values > 110000
-                         */
+                        /* Short circuit values > 110000 */
                         if (newch > 4)
                             return -1;
                         if (newch == 4 && ((unsigned char)*in & 0060))
@@ -110,7 +105,6 @@ static int convert_utf8_to_ucs2(const char *in, size_t *inbytes, WCHAR *out, siz
                 }
                 *inbytes -= eating;
                 /* newch is now a true ucs-4 character
-                 *
                  * now we need to fold to ucs-2
                  */
                 if (newch < 0x10000)
@@ -199,8 +193,7 @@ static int convert_ucs2_to_utf8(const WCHAR *in, size_t *inwords, char *out, siz
                 *(--invout) = (unsigned char)(0200 | (newch & 0077));
                 newch >>= 6;
             }
-            /* Compute the lead utf-8 character and move the dest offset
-             */
+            /* Compute the lead utf-8 character and move the dest offset */
             *(--invout) = (unsigned char)(ch | newch);
         }
     }
@@ -267,9 +260,12 @@ static int path_utf8_to_unicode(WCHAR* retstr, size_t retlen, const char* srcstr
     if (srcremains) {
         return 1;
     }
-    for (; *t; ++t)
-        if (*t == L'/')
-            *t = L'\\';
+	for (; *t; ++t) {
+		if (*t == L'/') {
+			*t = L'\\';
+		}
+	}
+
     return rcode_ok;
 }
 
@@ -310,7 +306,7 @@ static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr
     return rcode_ok;
 }
 
-#else
+#else //_WIN64
 #include <unistd.h>
 #include <dirent.h>
 #include <cstdio>
@@ -318,6 +314,117 @@ static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr
 
 int unlink(const char *);
 #endif
+
+static int rfile_dir_make(const char *path)
+{
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef file_system_unicode
+	WCHAR wpath[MAX_PATH];
+	int rv = path_utf8_to_unicode(wpath, sizeof(wpath) / sizeof(WCHAR), path);
+	if (rv != rcode_ok) {
+		return rv;
+	}
+	if (!CreateDirectoryW(wpath, NULL)) {
+		return -1;//get_os_error();
+	}
+#else //file_system_ansi
+	if (!CreateDirectory(path, NULL)) {
+		return -1;//get_os_error();
+	}
+#endif //_WIN64
+#else
+
+#endif
+	return rcode_ok;
+}
+
+//static int rfile_dir_make_parent(char *path)
+//{
+//	int rv;
+//	char *ch = strrchr(path, '\\');
+//	if (!ch) {
+//		return -1;
+//	}
+//
+//	*ch = '\0';
+//	rv = rfile_dir_make(path); /* Try to make straight off */
+//
+//	if (APR_STATUS_IS_ENOENT(rv)) { /* Missing an intermediate dir */
+//		rv = rfile_dir_make_parent(path);
+//
+//		if (rv == APR_SUCCESS || APR_STATUS_IS_EEXIST(rv)) {
+//			rv = rfile_dir_make(path); /* And complete the path */
+//		}
+//	}
+//
+//	*ch = '\\'; /* Always replace the slash before returning */
+//	return rv;
+//}
+
+int rfile_make_dir(const char *path, bool recursive)
+{
+	int rv = rcode_ok;
+	//AccessMode = 00 表示只判断是否存在，02 是否可执行，_AccessMode = 04 是否可写，06 是否可读
+
+#if defined(_WIN32) || defined(_WIN64)
+	if (!recursive) {
+		rv = rfile_dir_make(path); /* Try to make PATH right out */
+	}
+	else {
+		int path_len = rstr_len(path);
+		int full_len = path_len * 2;
+		char* format_path = rstr_new(full_len);
+		format_path = rstr_repl(path, format_path, full_len, "\\", "/");
+		//format_path = rstr_repl(format_path, format_path2, path_len * 2, "//", "/");
+		char** dirs = rstr_split(format_path, "/");
+		rstr_reset(format_path);
+
+		char* dir_cur = NULL;
+		rstr_array_for(dirs, dir_cur) {
+			rstr_cat(format_path, dir_cur, full_len);
+			rstr_cat(format_path, rfile_seperator, full_len);
+			if (_access(format_path, 0) != 0) {
+				rv = rfile_dir_make(format_path);
+				if (rv != 0) {
+					break;
+				}
+			}
+		}
+
+		rstr_free(format_path);
+	}
+#else //_WIN64
+
+#endif
+	return rv;
+}
+
+int rfile_remove_dir(const char *path)
+{
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef file_system_unicode
+	WCHAR wpath[MAX_PATH];
+	int rv = path_utf8_to_unicode(wpath, sizeof(wpath) / sizeof(WCHAR), path);
+	if (rv != rcode_ok) {
+		return rv;
+	}
+	if (!RemoveDirectoryW(wpath)) {
+		return -1;//rerror_get_os_error();
+	}
+#else //file_system_ansi
+	if (!RemoveDirectory(path)) {
+		return -1;//rerror_get_os_error();
+	}
+#endif //file_system_unicode
+
+#else //_WIN64
+	if (rmdir(path) != 0) {
+		return errno;
+	}
+#endif
+	return rcode_ok;
+}
+
 
 int rfile_copy_file(const char *src, const char *dst) {
     FILE *sfp = NULL, *dfp = NULL;
@@ -375,7 +482,7 @@ int rfile_move_file(const char *src, const char *dst) {
 
     return rcode_ok;
 exit1:
-    return 1;
+    return -1;
 }
 
 int rfile_remove(const char *file) {
@@ -385,7 +492,7 @@ int rfile_remove(const char *file) {
 
     return rcode_ok;
 exit1:
-    return 1;
+    return -1;
 }
 
 int rfile_format_path(char* file_path) {
@@ -405,7 +512,7 @@ int rfile_format_path(char* file_path) {
 
         break;
     }
-    return 1;
+    return rcode_ok;
 }
 
 rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
@@ -516,19 +623,6 @@ exit0:
 
     return ret_list;
 }
-
-//int main(void) {
-//    struct dirent *files;
-//    DIR *dir = opendir(".");
-//    if (dir == NULL) {
-//        printf("Directory cannot be opened!");
-//        return rcode_ok;
-//    }
-//    while ((files = readdir(dir)) != NULL)
-//        printf("%s\n", files->d_name);
-//    closedir(dir);
-//    return rcode_ok;
-//}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

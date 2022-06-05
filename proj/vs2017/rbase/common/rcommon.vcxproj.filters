@@ -1,22 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\dict.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\mt19937-64.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\siphash.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rlist.c">
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rfile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rtime.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rstring.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rthread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rarray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rlog.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rdict.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\workspace\funra\source\rbase\common\src\rlist.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

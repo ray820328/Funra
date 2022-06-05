@@ -45,7 +45,6 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("E:/workspace/funra/proj/vs2017/3rd/cmocka/include/cmake_install.cmake")
   include("E:/workspace/funra/proj/vs2017/3rd/cmocka/src/cmake_install.cmake")
   include("E:/workspace/funra/proj/vs2017/3rd/cmocka/doc/cmake_install.cmake")
-  include("E:/workspace/funra/proj/vs2017/3rd/cmocka/example/cmake_install.cmake")
 
 endif()
 

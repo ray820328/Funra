@@ -1,3 +1,15 @@
 ﻿  Checking Build System
   CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rbase/CMakeFiles/generate.stamp is up-to-date.
-  CMake does not need to re-run because E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp is up-to-date.
+  CMake is re-running because E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp is out-of-date.
+    the file 'E:/workspace/funra/source/rbase/common/CMakeLists.txt'
+    is newer than 'E:/workspace/funra/proj/vs2017/rbase/common/CMakeFiles/generate.stamp.depend'
+    result='-1'
+  -- Selecting Windows SDK version 10.0.17763.0 to target Windows 10.0.19043.
+  -- Build as type [], set as Debug.
+  -- Arch type is 64.
+  -- Platform: Windows - E:/workspace/funra/source/rbase/common
+  -- Platform: Windows - E:/workspace/funra/source/rbase/common
+  -- Platform: Windows - E:/workspace/funra/source/rbase/ipc
+  -- Configuring done
+  -- Generating done
+  -- Build files have been written to: E:/workspace/funra/proj/vs2017/rbase

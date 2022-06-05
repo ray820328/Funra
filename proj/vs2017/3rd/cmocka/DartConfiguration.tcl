@@ -11,7 +11,7 @@ BuildDirectory: E:/workspace/funra/proj/vs2017/3rd/cmocka
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: RAY
+Site: DESKTOP-AQBVL1O
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Win32-MSBuild
@@ -30,14 +30,14 @@ DropSitePassword:
 DropSiteMode: 
 DropMethod: https
 TriggerSite: 
-ScpCommand: SCPCOMMAND-NOTFOUND
+ScpCommand: C:/Windows/System32/OpenSSH/scp.exe
 
 # Dashboard start time
 NightlyStartTime: 01:00:00 UTC
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "D:/tools/CMake/bin/cmake.exe" "E:/workspace/funra/source/3rd/cmocka"
-MakeCommand: D:\tools\CMake\bin\cmake.exe --build . --config "${CTEST_CONFIGURATION_TYPE}"
+ConfigureCommand: "D:/tools/cmake3/bin/cmake.exe" "E:/workspace/funra/source/3rd/cmocka"
+MakeCommand: D:\tools\cmake3\bin\cmake.exe --build . --config "${CTEST_CONFIGURATION_TYPE}"
 DefaultCTestConfigurationType: Release
 
 # version control
@@ -49,12 +49,12 @@ CVSCommand: CVSCOMMAND-NOTFOUND
 CVSUpdateOptions: -d -A -P
 
 # Subversion options
-SVNCommand: D:/workspace/abyss/trunk/Client/Tools/svn/svn.exe
+SVNCommand: SVNCOMMAND-NOTFOUND
 SVNOptions: 
 SVNUpdateOptions: 
 
 # Git options
-GITCommand: D:/tools/Git/bin/git.exe
+GITCommand: D:/tools/Git/cmd/git.exe
 GITInitSubmodules: 
 GITUpdateOptions: 
 GITUpdateCustom: 
@@ -72,7 +72,7 @@ UpdateOptions:
 UpdateType: true
 
 # Compiler info
-Compiler: D:/ENV/vs2017/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x64/cl.exe
+Compiler: D:/ENV/vs2017/comps/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x64/cl.exe
 CompilerVersion: 19.16.27045.0
 
 # Dynamic analysis (MemCheck)
@@ -86,7 +86,7 @@ MemoryCheckCommandOptions:
 MemoryCheckSuppressionFile: 
 
 # Coverage
-CoverageCommand: E:/tools/msys64/mingw64/bin/gcov.exe
+CoverageCommand: COVERAGE_COMMAND-NOTFOUND
 CoverageExtraFlags: -l
 
 # Cluster commands

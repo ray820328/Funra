@@ -86,24 +86,21 @@
       <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka\src;E:\workspace\funra\source\3rd\cmocka\src;E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <StringPooling>true</StringPooling>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;_DEBUG;CHECK_MEM_LEAK; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;CMAKE_INTDIR="Debug";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;CHECK_MEM_LEAK; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;CMAKE_INTDIR=\"Debug\";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka\src;E:\workspace\funra\source\3rd\cmocka\src;E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -133,24 +130,22 @@
     <ClCompile>
       <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka\src;E:\workspace\funra\source\3rd\cmocka\src;E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
-      <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>
+      </ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <StringPooling>true</StringPooling>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;NDEBUG; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;CMAKE_INTDIR="Release";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;LUA_COMPAT_BITLIB;LUA_COMPAT_APIINTCASTS;LUA_BUILD_AS_DLL;NDEBUG; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;CMAKE_INTDIR=\"Release\";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1; _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1; _CRT_NONSTDC_NO_WARNINGS=1; _CRT_SECURE_NO_WARNINGS=1;HAVE_CONFIG_H;OS_WIN;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\";CMOCKA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>E:\workspace\funra\proj\vs2017\3rd\cmocka\src;E:\workspace\funra\source\3rd\cmocka\src;E:\workspace\funra\proj\vs2017\3rd\cmocka;E:\workspace\funra\source\3rd\cmocka\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -167,7 +162,7 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/3rd/Release/cmocka.lib</ImportLibrary>
+      <ImportLibrary>E:/workspace/funra/build/lib/Windows_AMD64/3rd/cmocka.lib</ImportLibrary>
       <ModuleDefinitionFile>E:/workspace/funra/source/3rd/cmocka/src/cmocka.def</ModuleDefinitionFile>
       <ProgramDataBaseFile>E:/workspace/funra/build/bin/Windows_AMD64/cmocka.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
@@ -269,7 +264,7 @@
     <CustomBuild Include="E:\workspace\funra\source\3rd\cmocka\src\CMakeLists.txt">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -282,7 +277,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -295,7 +290,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -308,7 +303,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/workspace/funra/source/3rd/cmocka/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-D:\tools\CMake\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
+D:\tools\cmake3\bin\cmake.exe -SE:/workspace/funra/source/3rd -BE:/workspace/funra/proj/vs2017/3rd --check-stamp-file E:/workspace/funra/proj/vs2017/3rd/cmocka/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone

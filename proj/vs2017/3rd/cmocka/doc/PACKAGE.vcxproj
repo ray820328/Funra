@@ -77,7 +77,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -103,7 +103,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -129,7 +129,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -155,7 +155,7 @@ cd E:\workspace\funra\proj\vs2017\3rd
 if %errorlevel% neq 0 goto :cmEnd
 E:
 if %errorlevel% neq 0 goto :cmEnd
-D:\tools\CMake\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
+D:\tools\cmake3\bin\cpack.exe -C $(Configuration) --config ./CPackConfig.cmake
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -228,7 +228,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\lua\5.4.3\ALL_BUILD.vcxproj">
+    <ProjectReference Include="E:\workspace\funra\proj\vs2017\3rd\cmocka\src\ALL_BUILD.vcxproj">
       <Project>{97F6CADA-19C0-3FED-A988-87F17D33CFCB}</Project>
       <Name>ALL_BUILD</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
