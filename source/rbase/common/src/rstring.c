@@ -307,126 +307,12 @@ char** rstr_split(const char* src, const char* delim) {
     *token = rstr_sub(src, from_pos, sub_len, true);
 
     token = ret + data_len + 1;
-    *token = NULL;
+    *token = rstr_array_end;
 
     rarray_free(array_tokens);
 
     return ret;
 }
-//
-//char* rstr_token(char* str, const char* sep, char** last)
-//{
-//    char* token = NULL;
-//
-//    if (!str)           /* subsequent call */
-//        str = *last;    /* start where we left off */
-//
-//    /* skip characters in sep (will terminate at '\0') */
-//    while (*str && strchr(sep, *str))
-//        ++str;
-//
-//    if (!*str)          /* no more tokens */
-//        return NULL;
-//
-//    token = str;
-//
-//    /* skip valid token characters to terminate token and
-//     * prepare for the next call (will terminate at '\0') 
-//     */
-//    *last = token + 1;
-//    while (**last && !strchr(sep, **last))
-//        ++*last;
-//
-//    if (**last) {
-//        **last = '\0';
-//        ++*last;
-//    }
-//
-//    return token;
-//}
-//
-//int apr_filepath_list_split_impl(apr_array_header_t **pathelts, const char *liststr, char separator, apr_pool_t *p)
-//{
-//    char *path, *part, *ptr;
-//    char separator_string[2] = { '\0', '\0' };
-//    apr_array_header_t *elts;
-//    int nelts;
-//
-//    separator_string[0] = separator;
-//    /* Count the number of path elements. We know there'll be at least
-//       one even if path is an empty string. */
-//    path = apr_pstrdup(p, liststr);
-//    for (nelts = 0, ptr = path; ptr != NULL; ++nelts)
-//    {
-//        ptr = strchr(ptr, separator);
-//        if (ptr)
-//            ++ptr;
-//    }
-//
-//    /* Split the path into the array. */
-//    elts = apr_array_make(p, nelts, sizeof(char*));
-//    while ((part = rstr_token(path, separator_string, &ptr)) != NULL)
-//    {
-//        if (*part == '\0')      /* Ignore empty path components. */
-//            continue;
-//
-//        *(char**)apr_array_push(elts) = part;
-//        path = NULL;            /* For the next call to rstr_token */
-//    }
-//
-//    *pathelts = elts;
-//
-//    return rcode_ok;
-//}
-//
-//
-//apr_status_t apr_filepath_list_merge_impl(char **liststr,
-//                                          apr_array_header_t *pathelts,
-//                                          char separator,
-//                                          apr_pool_t *p)
-//{
-//    apr_size_t path_size = 0;
-//    char *path;
-//    int i;
-//
-//    /* This test isn't 100% certain, but it'll catch at least some
-//       invalid uses... */
-//    if (pathelts->elt_size != sizeof(char*))
-//        return APR_EINVAL;
-//
-//    /* Calculate the size of the merged path */
-//    for (i = 0; i < pathelts->nelts; ++i)
-//        path_size += strlen(((char**)pathelts->elts)[i]);
-//
-//    if (path_size == 0)
-//    {
-//        *liststr = NULL;
-//        return APR_SUCCESS;
-//    }
-//
-//    if (i > 0)                  /* Add space for the separators */
-//        path_size += (i - 1);
-//
-//    /* Merge the path components */
-//    path = *liststr = apr_palloc(p, path_size + 1);
-//    for (i = 0; i < pathelts->nelts; ++i)
-//    {
-//        /* ### Hmmmm. Calling strlen twice on the same string. Yuck.
-//               But is is better than reallocation in apr_pstrcat? */
-//        const char *part = ((char**)pathelts->elts)[i];
-//        apr_size_t part_size = strlen(part);
-//        if (part_size == 0)     /* Ignore empty path components. */
-//            continue;
-//
-//        if (i > 0)
-//            *path++ = separator;
-//        memcpy(path, part, part_size);
-//        path += part_size;
-//    }
-//    *path = '\0';
-//    return APR_SUCCESS;
-//}
-
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

@@ -65,7 +65,7 @@ static int setup(void **state) {
     *answer = 0;
     *state = answer;
 
-    test_full_str = "abcderghijklmnopqrstuvwxyz0恭喜123456789z0发财ABCDEFJHIJKLMNOPQRSTUVWXYZ";
+    test_full_str = "abcderghijklmnopqrstuvwxyz0//恭喜123456789z0//发财ABCDEFJHIJKLMNOPQRSTUVWXYZ";
 
     return rcode_ok;
 }

@@ -333,69 +333,48 @@ static int rfile_dir_make(const char *path)
 	}
 #endif //_WIN64
 #else
-
+    mode_t mode = 0;
+    if (mkdir(path, mode) != 0) {
+        return errno;
+    }
 #endif
 	return rcode_ok;
 }
 
-//static int rfile_dir_make_parent(char *path)
-//{
-//	int rv;
-//	char *ch = strrchr(path, '\\');
-//	if (!ch) {
-//		return -1;
-//	}
-//
-//	*ch = '\0';
-//	rv = rfile_dir_make(path); /* Try to make straight off */
-//
-//	if (APR_STATUS_IS_ENOENT(rv)) { /* Missing an intermediate dir */
-//		rv = rfile_dir_make_parent(path);
-//
-//		if (rv == APR_SUCCESS || APR_STATUS_IS_EEXIST(rv)) {
-//			rv = rfile_dir_make(path); /* And complete the path */
-//		}
-//	}
-//
-//	*ch = '\\'; /* Always replace the slash before returning */
-//	return rv;
-//}
-
 int rfile_make_dir(const char *path, bool recursive)
 {
-	int rv = rcode_ok;
-	//AccessMode = 00 表示只判断是否存在，02 是否可执行，_AccessMode = 04 是否可写，06 是否可读
+    if (!recursive) {
+        return rfile_dir_make(path); /* Try to make PATH right out */
+    }
 
-#if defined(_WIN32) || defined(_WIN64)
-	if (!recursive) {
-		rv = rfile_dir_make(path); /* Try to make PATH right out */
-	}
-	else {
-		int path_len = rstr_len(path);
-		int full_len = path_len * 2;
-		char* format_path = rstr_new(full_len);
-		format_path = rstr_repl(path, format_path, full_len, "\\", "/");
-		//format_path = rstr_repl(format_path, format_path2, path_len * 2, "//", "/");
-		char** dirs = rstr_split(format_path, "/");
-		rstr_reset(format_path);
+    int rv = rcode_ok;
+    //AccessMode = 00 表示只判断是否存在，02 是否可执行，_AccessMode = 04 是否可写，06 是否可读
+    int path_len = rstr_len(path);
+    int full_len = path_len * 2;
+    char* format_path = rstr_new(full_len);
+    format_path = rstr_repl(path, format_path, full_len, "\\", "/");
+    char** dirs = rstr_split(format_path, "/");
+    rstr_reset(format_path);
 
-		char* dir_cur = NULL;
-		rstr_array_for(dirs, dir_cur) {
-			rstr_cat(format_path, dir_cur, full_len);
-			rstr_cat(format_path, rfile_seperator, full_len);
-			if (_access(format_path, 0) != 0) {
-				rv = rfile_dir_make(format_path);
-				if (rv != 0) {
-					break;
-				}
-			}
-		}
+    char* dir_cur = NULL;
+    rstr_array_for(dirs, dir_cur) {
+        if (rstr_eq(dir_cur, rstr_empty)) {
+            continue;
+        }
 
-		rstr_free(format_path);
-	}
-#else //_WIN64
+        rstr_cat(format_path, dir_cur, full_len);
+        rstr_cat(format_path, rfile_seperator, full_len);
+        if (access(format_path, 0) != 0) {
+            rv = rfile_dir_make(format_path);
+            if (rv != 0) {
+                break;
+            }
+        }
+    }
 
-#endif
+    rstr_array_free(dirs);
+    rstr_free(format_path);
+
 	return rv;
 }
 
@@ -542,7 +521,7 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
 
     char* root_path = rstr_cpy(format_path, 0);
 
-#ifdef _WIN64
+#if defined(_WIN32) || defined(_WIN64)
 
     format_path[path_len + 1] = '*';//windows需要通配符
     format_path[path_len + 2] = rstr_end;
@@ -575,7 +554,6 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     FindClose(file_find_ret);
  
 #else //file_system_ansi
-    //ANSI
 
     WIN32_FIND_DATA file_find_data;
     HANDLE file_find_ret = FindFirstFileA(format_path, &file_find_data);
@@ -622,6 +600,60 @@ exit0:
     }
 
     return ret_list;
+}
+
+char* rdir_get_exe_root() {
+    char full_path[file_path_len_max + 1];
+
+#if defined(_WIN32) || defined(_WIN64)
+
+#ifdef file_system_unicode
+    WCHAR win_file_path[MAX_PATH];
+    GetModuleFileNameW(NULL, win_file_path, MAX_PATH);
+    path_unicode_to_utf8(full_path, file_path_len_max + 1, win_file_path);
+    char* path_last_part = strrchr(full_path, '\\');
+    if (path_last_part) {
+        path_last_part[1] = rstr_end;
+    }
+    return rstr_cpy(full_path, 0);
+#else //file_system_ansi
+
+    char* exe_path = rstr_new(MAX_PATH);
+    GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+    char* path_last_part = strrchr(exe_path, '\\');
+    if (path_last_part) {
+        path_last_part[1] = rstr_end;
+}   }
+    return exe_path;
+#endif
+
+#else //_WIN64
+    int rval;
+    char* path_last_part;
+    //size_t result_len;
+    char* result;
+
+    rval = readlink("/proc/self/exe", full_path, 4096);
+    if (rval < 0 || rval >= 1024)
+    {
+        return rstr_empty;
+    }
+    full_path[rval] = '\0';
+    path_last_part = strrchr(full_path, '/');
+    if (path_last_part) {
+        path_last_part[1] = rstr_end;
+    }
+
+    //result_len = path_last_part - full_path;
+    //result = rstr_new(result_len + 2);
+    result = rstr_cpy(full_path, 0);
+
+    //strncpy(result, full_path, result_len);
+    //result[result_len] = '/';
+    //result[result_len + 1] = rstr_end;
+
+    return result;
+#endif
 }
 
 #ifdef __GNUC__

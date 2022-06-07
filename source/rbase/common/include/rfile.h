@@ -37,6 +37,7 @@ int rfile_format_path(char* file);
 
 rlist_t* rdir_list(const char* dir, bool only_file, bool sub_dir);
 
+char* rdir_get_exe_root();
 
 #ifdef __cplusplus
 }

@@ -23,12 +23,13 @@ extern "C" {
 #define rstr_null "NULL"
 #define rstr_empty ""
 #define rstr_end '\0'
+#define rstr_array_end NULL
 
 #define rstr_new(size) raymalloc(size)
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_reset(rstr) rstr_init((rstr))
-#define rstr_free(rstr) rayfree(rstr)
+#define rstr_free(rstr) if ((rstr) != rstr_empty) rayfree(rstr)
 
 #define rstr_array_new(size) rnew_data_array(sizeof(char*), (size) + 1)
 #define rstr_array_count(rstr, count) \
@@ -40,14 +41,13 @@ extern "C" {
     } while(0)
 /** 确保非最后一个NULL都为rstr_empty，否则会提前结束遍历 **/
 #define rstr_array_for(rstr, item) \
-    for (size_t rstr##_index = 0; (char*)item = *((char**)rstr + rstr##_index), rstr != NULL && item != NULL; rstr##_index++)
+    for (size_t rstr##_index = 0; (char*)item = *((char**)rstr + rstr##_index), rstr != NULL && item != rstr_array_end; rstr##_index++)
 /** 确保非最后一个NULL都为rstr_empty，否则会内存泄露 **/
 #define rstr_array_free(rstr) \
     while(rstr) { \
         char* rstr##_free_item = NULL; \
-        for (size_t rstr##_free_index = 0; rstr##_free_item = *((char**)rstr + rstr##_free_index), rstr##_free_item != NULL; rstr##_free_index++) { \
-            if (rstr##_free_item != rstr_empty) \
-				rstr_free(rstr##_free_item); \
+        for (size_t rstr##_free_index = 0; rstr##_free_item = *((char**)rstr + rstr##_free_index), rstr##_free_item != rstr_array_end; rstr##_free_index++) { \
+            rstr_free(rstr##_free_item); \
         } \
         rfree_data_array(rstr); \
     }

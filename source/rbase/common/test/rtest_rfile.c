@@ -54,14 +54,14 @@ static int setup(void **state) {
     *answer = 0;
     *state = answer;
 
-    dir_path = "./logs/vm";
+    dir_path = "./logs/local";
 
 	rfile_make_dir(dir_path, true);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-	rfile_remove_dir(dir_path);
+	//rfile_remove_dir(dir_path);
     dir_path = NULL;
 
     free(*state);

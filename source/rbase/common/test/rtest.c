@@ -14,6 +14,8 @@
 #include "rbase/common/test/rtest.h"
 
 #include "rlist.h"
+#include "rstring.h"
+#include "rfile.h"
 
 static rlist_t *test_entries = NULL;
 
@@ -48,7 +50,11 @@ int main(int argc, char **argv) {
     wcsftime(local_time, 100, L"%A %c", localtime(&t));
     wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
 
-    rlog_init("RLog.txt", RLOG_ALL, false, "all");
+    rlog_init("rtest_log.txt", RLOG_ALL, false, "all");
+
+    char* exe_root = rdir_get_exe_root();
+    rinfo("当前路径: %s\n", exe_root);
+    rstr_free(exe_root);
 
     init_platform();
 
