@@ -82,7 +82,7 @@ extern "C" {
 
 #define rstr_eq(str1, str2) \
     strcmp((str1), (str2)) == 0 ? true : false
-#define rstr_len(str1) strlen((str1))
+#define rstr_len(str1) (str1) == NULL ? 0 : strlen((str1))
 
 #define rstr_2int(val) \
     atoi((val))
@@ -103,22 +103,22 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
 
-R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeofDest);
+R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeof_dest);
 R_API char* rstr_concat(const char** src, const char* delim, bool suffix);
 
-R_API char* rstr_fmt(char* dest, const char* fmt, const int maxLen, ...);
+R_API char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...);
 /** len为0时到src结尾 **/
 R_API char* rstr_cpy(const void *key, size_t len);
 
-R_API size_t rstr_index(const char* src, const char* key);
-R_API size_t rstr_last_index(const char* src, const char* key);
+R_API int rstr_index(const char* src, const char* key);
+R_API int rstr_last_index(const char* src, const char* key);
 
 /** ascii长度，如果new = false，整个from字符串，不仅仅dest **/
 R_API char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool new);
 R_API char* rstr_sub_str(const char* src, const char* key, bool new);
 
 /** 支持utf8，非unicode16 **/
-R_API char* rstr_repl(char *src, char *destStr, int destLen, char *oldStr, char *newStr);
+R_API char* rstr_repl(char *src, char *dest_str, int dest_len, char *old_str, char *new_str);
 /** 无匹配返回null **/
 R_API char** rstr_split(const char *src, const char *delim);
 

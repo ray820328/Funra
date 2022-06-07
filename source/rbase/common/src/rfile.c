@@ -628,13 +628,13 @@ char* rdir_get_exe_root() {
 #endif
 
 #else //_WIN64
-    int rval;
-    char* path_last_part;
+    int rval = 0;
+    char* path_last_part = NULL;
     //size_t result_len;
-    char* result;
+    char* result = NULL;
 
-    rval = readlink("/proc/self/exe", full_path, 4096);
-    if (rval < 0 || rval >= 1024)
+    rval = readlink("/proc/self/exe", full_path, file_path_len_max);
+    if (rval < 0 || rval >= file_path_len_max)
     {
         return rstr_empty;
     }

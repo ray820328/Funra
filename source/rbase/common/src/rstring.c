@@ -191,38 +191,54 @@ char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool 
 }
 
 char* rstr_sub_str(const char* src, const char* key, bool new) {
-    if (!src || !key) {
-        rassert(false, "invalid str.");
+    if (src == NULL || key == NULL) {
+        //rassert(false, "invalid str.");
         return rstr_empty;
     }
 
     char* sub = strstr(src, key);
-    if (sub != NULL) {
+    if (sub == NULL) {
         return rstr_empty;
     }
     if (!new) {
         return sub;
     }
 
-    size_t sub_len = rstr_len(sub);
-    char* dest = rstr_new(sub_len + 1u);
-
-    memcpy(dest, sub, sub_len);
-
-    dest[sub_len] = '\0';
-
-    return dest;
+    return rstr_cpy(sub, 0);
 }
 
 
-size_t rstr_index(const char* src, const char* key) {
+int rstr_index(const char* src, const char* key) {
     //kmp_search(src, key, 0);
-    return 0;
+    char* start = NULL;
+    
+    start = strstr(src, key);
+    if (start != NULL) {
+        return start - src;
+    }
+
+    return -1;
 }
 
-size_t rstr_last_index(const char* src, const char* key) {
+int rstr_last_index(const char* src, const char* key) {
+    int key_len = rstr_len(key);
+    char* last = NULL;
+    if (key_len == 1) {
+        last = strrchr(src, key[0]);
+        if (last != NULL) {
+            return last - src;
+        }
+        return -1;
+    }
 
-    return 0;
+    int index = -1;
+    last = strstr(src, key);
+    while (last != NULL) {
+        index = last - src;
+        last = strstr(last + sizeof(char), key);
+    }
+
+    return index;
 }
 
 /** 不支持unicode，有中文截断危险，utf8编码可以使用 **/

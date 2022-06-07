@@ -32,9 +32,22 @@ static void rstring_index_test(void **state) {
 
     init_benchmark(1024, "test rstring (%d)", count);
 
-    //start_benchmark(0);
-    //rstr_index(test_full_str, "cd");
-    //end_benchmark("rstring index.");
+    start_benchmark(0);
+    char* sub_str = rstr_sub_str("123456789", "67", false);
+    assert_true(rstr_eq(sub_str, "6789")); 
+    sub_str = rstr_sub_str("123456789", "67", true);
+    assert_true(rstr_eq(sub_str, "6789"));
+    rstr_free(sub_str);
+    end_benchmark("rstring sub string.");
+
+    start_benchmark(0);
+    int index = rstr_index(test_full_str, "z0");
+    assert_true(index > 0);
+    index = rstr_last_index(test_full_str, "/");
+    assert_true(index > 0);
+    index = rstr_last_index(test_full_str, "//");
+    assert_true(index > 0);
+    end_benchmark("rstring index.");
 
     start_benchmark(0);
     char** tokens = rstr_split(test_full_str, delim);
