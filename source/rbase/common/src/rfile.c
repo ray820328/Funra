@@ -474,18 +474,78 @@ exit1:
     return -1;
 }
 
+char* rdir_get_path_dir(char* dir) {
+	if (dir == NULL) {
+		return rstr_empty;
+	}
+
+	char* format_path = rstr_cpy(dir, 0);
+
+	rfile_format_path(format_path);
+
+	int index = rstr_last_index(format_path, rfile_seperator);
+	if (index < 0) {
+		rstr_free(format_path);
+		return rstr_empty;
+	}
+
+	format_path[index] = rstr_end;
+
+	return format_path;
+}
+char* rdir_get_path_filename(char* dir) {
+	if (dir == NULL) {
+		return rstr_empty;
+	}
+
+	char* format_path = rstr_cpy(dir, 0);
+
+	rfile_format_path(format_path);
+
+	int index = rstr_last_index(format_path, rfile_seperator);
+	if (index < 0) {
+		return format_path;
+	}
+
+	char* rett_path = rstr_cpy(format_path + index + 1, 0);
+	rstr_free(format_path);
+
+	return rett_path;
+}
+
 int rfile_format_path(char* file_path) {
+	char* format_str = file_path;
+	char* p = NULL;
+	char* q = NULL;
+
+	int index = rstr_index(format_str,"\\");
+	while (index >= 0) {
+		p = format_str + index;
+		*p = rfile_seperator[0];
+		format_str = p + 1;
+
+		if (format_str[0] == '\\') {
+			p = format_str;
+			q = p + 1;
+			while (p[0] != rstr_end) {
+				*p++ = *(q++);
+			}
+		}
+
+		index = rstr_index(format_str, "\\");
+	}
+
     size_t path_len = 0;
     while (true) {
-        path_len = rstr_len(file_path);
-        if (file_path[path_len] == '\\') {
-            file_path[path_len] = rstr_end;
-            continue;
-        }
+        //path_len = rstr_len(file_path);
+        //if (file_path[path_len] == '\\') {
+        //    file_path[path_len] = rstr_end;
+        //    continue;
+        //}
 
         path_len = rstr_len(file_path);
-        if (file_path[path_len] == '/') {
-            file_path[path_len] = rstr_end;
+        if (file_path[path_len - 1] == rfile_seperator[0]) {
+            file_path[path_len - 1] = rstr_end;
             continue;
         }
 

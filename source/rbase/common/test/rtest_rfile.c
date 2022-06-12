@@ -27,9 +27,17 @@ static void rfile_full_test(void **state) {
 	(void)state;
 	int count = 10000;
 	int j;
+	char* file_path = rstr_cpy("d:\\temp\\\\test\\", 0);
 
 	init_benchmark(1024, "test rlog (%d)", count);
 
+	start_benchmark(0);
+	rfile_format_path(file_path);
+	assert_true(rstr_eq(file_path, "d:/temp/test"));
+	rstr_free(file_path);
+	end_benchmark("rfile_format_path.");
+		
+	end_benchmark("print to file.");
 	start_benchmark(0);
 	rlist_t* file_list = rdir_list(dir_path, true, true);
 	rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);

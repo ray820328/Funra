@@ -110,10 +110,12 @@ R_API char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...);
 /** len为0时到src结尾 **/
 R_API char* rstr_cpy(const void *key, size_t len);
 
+/** -1: 无子串 **/
 R_API int rstr_index(const char* src, const char* key);
+/** -1: 无子串 **/
 R_API int rstr_last_index(const char* src, const char* key);
 
-/** ascii长度，如果new = false，整个from字符串，不仅仅dest **/
+/** ascii长度，如果new = false，整个from字符串，不仅仅dest，释放要特别注意 **/
 R_API char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool new);
 R_API char* rstr_sub_str(const char* src, const char* key, bool new);
 

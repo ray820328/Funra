@@ -21,6 +21,8 @@ extern "C" {
 
 #define file_path_len_max 8192 
 #define rfile_seperator "/"
+#define rfile_path_current "."
+#define rfile_path_parent ".."
 
 /* ------------------------------- APIs ------------------------------------*/
 int rfile_make_dir(const char *path, bool recursive);
@@ -38,6 +40,9 @@ int rfile_format_path(char* file);
 rlist_t* rdir_list(const char* dir, bool only_file, bool sub_dir);
 
 char* rdir_get_exe_root();
+
+char* rdir_get_path_dir(char* dir);
+char* rdir_get_path_filename(char* dir);
 
 #ifdef __cplusplus
 }

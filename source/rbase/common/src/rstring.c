@@ -244,7 +244,7 @@ int rstr_last_index(const char* src, const char* key) {
 /** 不支持unicode，有中文截断危险，utf8编码可以使用 **/
 char* rstr_repl(char *src, char *dest_str, int dest_len, char *old_str, char *new_str) {
     if (!new_str || !dest_str) {
-        return src;
+        return rstr_empty;
     }
 
     const size_t strLen = strlen(src);
