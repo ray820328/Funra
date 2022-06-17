@@ -33,6 +33,15 @@ static void rstring_index_test(void **state) {
     init_benchmark(1024, "test rstring (%d)", count);
 
     start_benchmark(0);
+    rstr_array_make(str_array, 3);
+    str_array[0] = "str";
+    str_array[1] = "array";
+    char* str_concat_array = rstr_concat(str_array, "_", false);
+    assert_true(rstr_eq(str_concat_array, "str_array"));
+    rstr_free(str_concat_array);
+    end_benchmark("rstring concat.");
+
+    start_benchmark(0);
     char* sub_str = rstr_sub_str("123456789", "67", false);
     assert_true(rstr_eq(sub_str, "6789")); 
     sub_str = rstr_sub_str("123456789", "67", true);
@@ -68,7 +77,6 @@ static void rstring_index_test(void **state) {
     rstr_array_free(tokens);
 
     end_benchmark("rstring token.");
-
 
 }
 

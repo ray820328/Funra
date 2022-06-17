@@ -27,17 +27,31 @@ static void rfile_full_test(void **state) {
 	(void)state;
 	int count = 10000;
 	int j;
-	char* file_path = rstr_cpy("d:\\temp\\\\test\\", 0);
-
 	init_benchmark(1024, "test rlog (%d)", count);
 
-	start_benchmark(0);
+    start_benchmark(0);
+    char* file_path = rstr_cpy("d:\\temp\\\\test\\", 0);
 	rfile_format_path(file_path);
 	assert_true(rstr_eq(file_path, "d:/temp/test"));
 	rstr_free(file_path);
 	end_benchmark("rfile_format_path.");
 		
-	end_benchmark("print to file.");
+    start_benchmark(0);
+    char* path_name = rdir_get_path_dir("d:\\temp\\\\test\\log_05.log");
+    assert_true(rstr_eq(path_name, "d:/temp/test"));
+    rstr_free(path_name);
+
+    char* file_name = rdir_get_path_filename("d:\\temp\\\\test\\log_05.log");
+    assert_true(rstr_eq(file_name, "log_05.log"));
+    rstr_free(file_name);
+    end_benchmark("get path dir and filename.");
+
+    start_benchmark(0);
+    char* file_path_concat = rfile_get_filepath("d:\\temp\\\\test", "log_05.log");
+    assert_true(rstr_eq(file_path_concat, "d:/temp/test/log_05.log"));
+    rstr_free(file_path_concat);
+    end_benchmark("get filepath.");
+
 	start_benchmark(0);
 	rlist_t* file_list = rdir_list(dir_path, true, true);
 	rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
@@ -46,7 +60,7 @@ static void rfile_full_test(void **state) {
 		rinfo("rfile_full_test filename: %s\n", (char*)(node->val));
 		//assert_true(test_entries != 0);
 	}
-	end_benchmark("print to file.");
+	end_benchmark("list dir.");
 	rlist_destroy(file_list);
 
 	start_benchmark(0);
@@ -62,14 +76,16 @@ static int setup(void **state) {
     *answer = 0;
     *state = answer;
 
-    dir_path = "./logs/local";
+    dir_path = "./test_dir/local";
 
 	rfile_make_dir(dir_path, true);
+    rfile_create(dir_path, "file01.txt");
+    rfile_create(dir_path, "file02.data");
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-	//rfile_remove_dir(dir_path);
+    //assert_true(rfile_remove_dir(dir_path) == rcode_ok);
     dir_path = NULL;
 
     free(*state);

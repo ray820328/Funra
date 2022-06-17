@@ -39,6 +39,8 @@ extern "C" {
             count += 1; \
         } \
     } while(0)
+#define rstr_array_make(rstr_arr, count) \
+    char* rstr_arr[count] = { [count - 1] = rstr_array_end }
 /** 确保非最后一个NULL都为rstr_empty，否则会提前结束遍历 **/
 #define rstr_array_for(rstr, item) \
     for (size_t rstr##_index = 0; (char*)item = *((char**)rstr + rstr##_index), rstr != NULL && item != rstr_array_end; rstr##_index++)
@@ -80,6 +82,8 @@ extern "C" {
             timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
     } while(0)
 
+#define rstr_compare(str1, str2) \
+    rstr_compare_func((str1), (str2))
 #define rstr_eq(str1, str2) \
     strcmp((str1), (str2)) == 0 ? true : false
 #define rstr_len(str1) (str1) == NULL ? 0 : strlen((str1))
@@ -103,12 +107,16 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
 
+R_API void rstr_free_func(char* dest);
+R_API int rstr_compare_func(const char* obj1, const char* obj2);
+
 R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeof_dest);
 R_API char* rstr_concat(const char** src, const char* delim, bool suffix);
 
 R_API char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...);
 /** len为0时到src结尾 **/
 R_API char* rstr_cpy(const void *key, size_t len);
+R_API char* rstr_cpy_full(const void *key);
 
 /** -1: 无子串 **/
 R_API int rstr_index(const char* src, const char* key);

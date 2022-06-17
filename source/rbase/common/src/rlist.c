@@ -9,39 +9,16 @@
 
 #include "rlist.h"
 
-/*
- * Allocate a new rlist_t. NULL on failure.
- */
-rlist_t* rlist_new(void* (*malloc_self)(size_t size)) {
-    rlist_t *self;
-    if (!malloc_self || !(self = malloc_self(sizeof(rlist_t)))) {
-        return NULL;
-    }
-
-    return rlist_init(self);
-}
-
-rlist_t* rlist_init(rlist_t* self) {
-    if (!self) {
-        return NULL;
-    }
+rlist_t* rlist_create() {
+    rlist_t* self = rnew_data(rlist_t);
+    rassert(self != NULL, "");
     self->head = NULL;
     self->tail = NULL;
-    self->malloc_node = NULL;
-    self->malloc_it = NULL;
-    self->free_node_val = NULL;
-    self->free_node = NULL;
-    self->free_self = NULL;
-    self->free_it = NULL;
-    self->match = NULL;
     self->len = 0;
 
     return self;
 }
 
-/*
- * Free the list.
- */
 void rlist_clear(rlist_t *self) {
     if (!self || self->len <= 0) {
         return;
@@ -52,13 +29,9 @@ void rlist_clear(rlist_t *self) {
 
     while (len--) {
         next = curr->next;
-        if (self->free_node_val) {
-            self->free_node_val(curr->val);
-        }
 
-        if (self->free_node) {
-            self->free_node(curr);
-        }
+        rlist_free_node(self, curr);
+
         curr = next;
     }
 
@@ -73,17 +46,11 @@ void rlist_destroy(rlist_t *self) {
 
     while (len--) {
         next = curr->next;
-        if (self->free_node_val) {
-            self->free_node_val(curr->val);
-        }
 
-        if (self->free_node) {
-            self->free_node(curr);
-        }
+        rlist_free_node(self, curr);
+
         curr = next;
     }
-
-    if (self->free_self) self->free_self(self);
 }
 
 /*
@@ -93,12 +60,16 @@ void rlist_destroy(rlist_t *self) {
 rlist_node_t* rlist_rpush(rlist_t *self, void* nodeValue) {
     if (!nodeValue) return NULL;//不支持空节点
 
-    rlist_node_t* node = self->malloc_node(sizeof(rlist_node_t));
+    rlist_node_t* node = rnew_data(rlist_node_t);
     if (!node) {
         return NULL;
     }
-    node->val = nodeValue;
-
+    if (self->malloc_node_val) {
+        node->val = self->malloc_node_val(nodeValue);
+    }
+    else {
+        node->val = nodeValue;
+    }
 
     if (self->len > 0) {
         node->prev = self->tail;
@@ -161,11 +132,17 @@ rlist_node_t* rlist_lpop(rlist_t *self) {
 rlist_node_t* rlist_lpush(rlist_t *self, void* nodeValue) {
     if (!nodeValue) return NULL;//不支持空节点
 
-    rlist_node_t* node = self->malloc_node(sizeof(rlist_node_t));
+    rlist_node_t* node = rnew_data(rlist_node_t);
     if (!node) {
         return NULL;
     }
-    node->val = nodeValue;
+
+    if (self->malloc_node_val) {
+        node->val = self->malloc_node_val(nodeValue);
+    }
+    else {
+        node->val = nodeValue;
+    }
 
     if (self->len) {
         node->next = self->head;
@@ -189,8 +166,8 @@ rlist_node_t* rlist_find(rlist_t *self, void *val) {
     rlist_node_t *node;
 
     while ((node = rlist_next(&it))) {
-        if (self->match) {
-            if (self->match(val, node->val)) {
+        if (self->compare_node_val) {
+            if (self->compare_node_val(val, node->val) == 0) {
                 return node;
             }
         }
@@ -239,38 +216,43 @@ void rlist_remove(rlist_t *self, rlist_node_t *node) {
 
     node->next ? (node->next->prev = node->prev) : (self->tail = node->prev);
 
-    if (node->val && self->free_node_val) {
-        self->free_node_val(node->val);
-    }
-
-    if (self->free_node) {
-        self->free_node(node);
-    }
+    rlist_free_node(self, node);
 
     --self->len;
 }
 
-void rlist_remove_alone(rlist_t *self, rlist_node_t *node) {
-    if (node->val && self->free_node_val) self->free_node_val(node->val);
-
-    if (self->free_node) self->free_node(node);
-}
-
-static inline rlist_iterator_t* rlist_iterator_new_from_node(rlist_t *list, rlist_direction_t direction, rlist_node_t *node) {
-    rlist_iterator_t *self;
-    if (!(self = list->malloc_it(sizeof(rlist_iterator_t)))) {
+rlist_t* rlist_clone(rlist_t* src, rlist_direction_t dir) {
+    if (src == NULL) {
         return NULL;
     }
-    self->next = node;
-    self->direction = direction;
 
-    return self;
+    rlist_t* dest = rlist_create();
+    dest->malloc_node_val = src->malloc_node_val;
+    dest->free_node_val = src->free_node_val;
+    dest->compare_node_val = src->compare_node_val;
+
+    rlist_iterator_t it = rlist_it(src, dir);
+    rlist_node_t *node = NULL;
+    while ((node = rlist_next(&it))) {
+        rlist_rpush(dest, node->val);
+    }
+
+    return dest;
 }
 
-rlist_iterator_t* rlist_iterator_new(rlist_t *list, rlist_direction_t direction) {
-    rlist_node_t *node = direction == rlist_dir_tail ? list->head : list->tail;
+int rlist_merge(rlist_t* dest, rlist_t* temp, rlist_direction_t dir) {
+    int count = 0;
+    if (dest == NULL || temp == NULL) {
+        return count;
+    }
 
-    return rlist_iterator_new_from_node(list, direction, node);
+    rlist_iterator_t it = rlist_it(temp, dir);
+    rlist_node_t *node = NULL;
+    while ((node = rlist_next(&it))) {
+        rlist_rpush(dest, node->val);
+    }
+
+    return count;
 }
 
 rlist_node_t* rlist_next(rlist_iterator_t *self) {

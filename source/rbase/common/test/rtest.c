@@ -30,13 +30,7 @@ static int run_tests(int output);
 
 static int init_platform() {
 
-    test_entries = rlist_new(raymalloc);
-    assert_true(test_entries != NULL);
-
-    rlist_init(test_entries);
-    test_entries->malloc_node = raymalloc;
-    test_entries->free_node = rayfree;
-    test_entries->free_self = rayfree;
+    rlist_init(test_entries, rdata_type_ptr);
 
     return rcode_ok;
 }

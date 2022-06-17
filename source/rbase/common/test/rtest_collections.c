@@ -13,6 +13,7 @@
 #include "rtime.h"
 #include "rlist.h"
 #include "dict.h"
+#include "rstring.h"
 
 #include "rbase/common/test/rtest.h"
 
@@ -60,54 +61,29 @@ int run_rcommon_tests(int benchmark_output) {
     return result == 0 ? rcode_ok : -1;
 }
 
-static int rlist_match_func(void* a, void* b) {
-    if (a == b) {
-        return 1;
-    }
-    if (a != NULL && b != NULL) {
-        if (strcmp((char*)a, (char*)b) == 0) {
-            return 1;
-        }
-    }
-    return rcode_ok;
-}
-
 static void rlist_test(void **state) {
     (void)state;
     int count = 10;
     count = count > 4 ? count : 5;
-    rlist_t *mylist = rlist_new(raymalloc);
 
-    assert_true(mylist != NULL);
+    rlist_t *ret_list = NULL;
+    rlist_init(ret_list, rdata_type_string);
 
-    rlist_init(mylist);
-    mylist->malloc_node = raymalloc;
-    mylist->malloc_it = raymalloc;
-    mylist->free_node_val = rayfree;
-    mylist->free_node = rayfree;
-    mylist->free_self = rayfree;
-    mylist->free_it = rayfree;
-    mylist->match = rlist_match_func;
-
-    assert_int_equal(mylist->len, 0);
+    assert_int_equal(ret_list->len, 0);
 
     for (int i = 0; i < count; i++) {
         char* value = raymalloc(50);
         if (value) {
             sprintf(value, "listNode - %d", i);
 
-            rlist_rpush(mylist, value);
-            //list->tail->val;
-
-            //rlist_lpush(mylist, node);
-            //list->head->val;
+            rlist_rpush(ret_list, value);
         }
     }
 
-    assert_int_equal(mylist->len, count);
+    assert_int_equal(ret_list->len, count);
 
     char* nodeValue = "listNode - 3";
-    rlist_node_t *nodeFind = rlist_find(mylist, nodeValue);
+    rlist_node_t *nodeFind = rlist_find(ret_list, nodeValue);
 
     assert_true(nodeFind);
 
@@ -115,35 +91,26 @@ static void rlist_test(void **state) {
 
     assert_string_equal(nodeFind->val, nodeValue);
 
-    rlist_remove(mylist, nodeFind);
+    rlist_remove(ret_list, nodeFind);
 
-    assert_int_equal(mylist->len, count - 1);
+    assert_int_equal(ret_list->len, count - 1);
 
-    assert_true(rlist_at(mylist, 0));  // first
-    assert_true(rlist_at(mylist, 1));  // second
-    assert_true(rlist_at(mylist, -1)); // last
-    assert_true(rlist_at(mylist, -3)); // third last
-    assert_false(rlist_at(mylist, count - 1));
+    assert_true(rlist_at(ret_list, 0));  // first
+    assert_true(rlist_at(ret_list, 1));  // second
+    assert_true(rlist_at(ret_list, -1)); // last
+    assert_true(rlist_at(ret_list, -3)); // third last
+    assert_false(rlist_at(ret_list, count - 1));
 
-    rlist_iterator_t *it_new = rlist_iterator_new(mylist, rlist_dir_head);
-    while ((nodeFind = rlist_next(it_new))) {
-        assert_true(nodeFind);
-        assert_true(nodeFind->val);
-    }
-    rlist_iterator_destroy(mylist, it_new);
-
-    assert_false(it_new);
-
-    rlist_iterator_t it = rlist_it(mylist, rlist_dir_tail);
+    rlist_iterator_t it = rlist_it(ret_list, rlist_dir_tail);
     rlist_node_t *node = rlist_next(&it);
     while (node) {
         assert_true(node->val);
         node = rlist_next(&it);
     }
 
-    rdestroy_object(mylist, rlist_destroy);
+    rdestroy_object(ret_list, rlist_destroy);
 
-    assert_false(mylist);
+    assert_false(ret_list);
 }
 
 static uint64_t dic_hash_callback(const void *key) {

@@ -348,6 +348,67 @@ extern "C" {
 #define rdata_type_string_inner_type char*
 #define rdata_type_ptr_inner_type void**
 
+#define rdata_type_unknown_copy_func NULL
+#define rdata_type_bool_copy_func NULL
+#define rdata_type_char_copy_func NULL
+#define rdata_type_uchar_copy_func NULL
+#define rdata_type_short_copy_func NULL
+#define rdata_type_ushort_copy_func NULL
+#define rdata_type_int_copy_func NULL
+#define rdata_type_uint_copy_func NULL
+#define rdata_type_long_copy_func NULL
+#define rdata_type_ulong_copy_func NULL
+#define rdata_type_long_long_copy_func NULL
+#define rdata_type_ulong_long_copy_func NULL
+#define rdata_type_float_copy_func NULL
+#define rdata_type_double_copy_func NULL
+#define rdata_type_long_double_copy_func NULL
+#define rdata_type_string_copy_func rstr_cpy_full
+#define rdata_type_ptr_copy_func NULL
+
+#define rdata_type_unknown_free_func NULL
+#define rdata_type_bool_free_func NULL
+#define rdata_type_char_free_func NULL
+#define rdata_type_uchar_free_func NULL
+#define rdata_type_short_free_func NULL
+#define rdata_type_ushort_free_func NULL
+#define rdata_type_int_free_func NULL
+#define rdata_type_uint_free_func NULL
+#define rdata_type_long_free_func NULL
+#define rdata_type_ulong_free_func NULL
+#define rdata_type_long_long_free_func NULL
+#define rdata_type_ulong_long_free_func NULL
+#define rdata_type_float_free_func NULL
+#define rdata_type_double_free_func NULL
+#define rdata_type_long_double_free_func NULL
+#define rdata_type_string_free_func rstr_free_func
+#define rdata_type_ptr_free_func NULL
+
+#define rdata_type_unknown_compare_func NULL
+#define rdata_type_bool_compare_func NULL
+#define rdata_type_char_compare_func NULL
+#define rdata_type_uchar_compare_func NULL
+#define rdata_type_short_compare_func NULL
+#define rdata_type_ushort_compare_func NULL
+#define rdata_type_int_compare_func NULL
+#define rdata_type_uint_compare_func NULL
+#define rdata_type_long_compare_func NULL
+#define rdata_type_ulong_compare_func NULL
+#define rdata_type_long_long_compare_func NULL
+#define rdata_type_ulong_long_compare_func NULL
+#define rdata_type_float_compare_func NULL
+#define rdata_type_double_compare_func NULL
+#define rdata_type_long_double_compare_func NULL
+#define rdata_type_string_compare_func rstr_compare_func
+#define rdata_type_ptr_compare_func NULL
+
+#define rdata_type_declare_compare_func(T) \
+    int T##_compare_func(const T##_inner_type obj1, const T##_inner_type obj2)
+
+/* ------------------------------- APIs ------------------------------------*/
+    
+    /** 1 - 相等; 具体参见上文定义 rcode_eq 等 **/
+    typedef int(*rcom_compare_func_type)(const void* obj1, const void* obj2);
 
 #ifdef __cplusplus
 }

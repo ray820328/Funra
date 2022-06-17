@@ -93,9 +93,6 @@ extern "C" {
         rarray_code_index_out4_capacity,
     } rarray_code_t;
 
-    /** 0 - 不相等; !0 - 相等 **/
-    typedef int(*rarray_compare_func_type)(const void* obj1, const void* obj2);
-
     typedef struct rarray_t {
         rarray_size_t value_size;
         rarray_size_t size;
@@ -107,7 +104,7 @@ extern "C" {
         void* (*get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
         void* (*copy_value_func)(const void* obj);
         int (*remove_value_func)(struct rarray_t* ar, const rarray_size_t index);
-        rarray_compare_func_type compare_value_func;
+        rcom_compare_func_type compare_value_func;
         void(*free_value_func)(void* obj);
 
         void** items;

@@ -388,7 +388,8 @@ int rfile_remove_dir(const char *path)
 		return rv;
 	}
 	if (!RemoveDirectoryW(wpath)) {
-		return -1;//rerror_get_os_error();
+        DWORD errorno = GetLastError();
+		return (int)errorno;//rerror_get_os_error();
 	}
 #else //file_system_ansi
 	if (!RemoveDirectory(path)) {
@@ -404,6 +405,23 @@ int rfile_remove_dir(const char *path)
 	return rcode_ok;
 }
 
+int rfile_create(const char *path, const char *filename) {
+    char* file_path = rfile_get_filepath(path, filename);
+    FILE* file;
+
+    file = fopen(file_path, "r");
+
+    if (file == NULL)
+    {
+        file = fopen(file_path, "w"); //使用“写入”方式创建文件
+    }
+
+    rstr_free(file_path);
+
+    fclose(file);
+
+    return rcode_ok;
+}
 
 int rfile_copy_file(const char *src, const char *dst) {
     FILE *sfp = NULL, *dfp = NULL;
@@ -554,14 +572,25 @@ int rfile_format_path(char* file_path) {
     return rcode_ok;
 }
 
-rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
-    rlist_t* ret_list = rlist_new(raymalloc);
+char* rfile_get_filepath(const char *path, const char *filename) {
+    char* format_path = rstr_cpy(path, 0);
+    rfile_format_path(format_path);
 
-    rlist_init(ret_list);
-    ret_list->malloc_node = raymalloc;
-    ret_list->free_node = rayfree;
-    ret_list->free_node_val = rayfree;
-    ret_list->free_self = rayfree;
+    rstr_array_make(paths, 3);
+    paths[0] = format_path;
+    paths[1] = filename;
+
+    char* file_path = rstr_concat(paths, rfile_seperator, false);
+
+    rstr_free(format_path);
+
+    return file_path;
+}
+
+/** 保留结构，node可能包含详细信息 **/
+rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
+    rlist_t* ret_list = NULL;
+    rlist_init(ret_list, rdata_type_string);
 
     size_t path_len = rstr_len(path);
     char* format_path = rstr_new(path_len + 3);
@@ -599,20 +628,28 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
         rgoto(0);
     }
     path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
-    if (!rstr_eq(file_full_name, ".") && !rstr_eq(file_full_name, "..")) {
-        rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
+    if (!rstr_eq(file_full_name, rfile_path_current) && !rstr_eq(file_full_name, rfile_path_parent)) {
+        if (file_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            if (!only_file) {
+                rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
+            }
+            if (sub_dir) {
+                rdir_list(file_full_name, only_file, sub_dir);
+            }
+        }
+        else {
+            rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
+        }
     }
 
     while (FindNextFileW(file_find_ret, &file_find_data))
     {
         path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
-        if (!rstr_eq(file_full_name, ".") && !rstr_eq(file_full_name, "..")) {
+        if (!rstr_eq(file_full_name, rfile_path_current) && !rstr_eq(file_full_name, rfile_path_parent)) {
             rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
         }
     }
 
-    FindClose(file_find_ret);
- 
 #else //file_system_ansi
 
     WIN32_FIND_DATA file_find_data;
@@ -621,37 +658,42 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
         rerror("Unable to scan ansi directory: %s, error: %lu \n", format_path, GetLastError());
         rgoto(0);
     }
-    if (!rstr_eq(file_find_data.cFileName, ".") && !rstr_eq(file_find_data.cFileName, "..")) {
+    if (!rstr_eq(file_find_data.cFileName, rfile_path_current) && !rstr_eq(file_find_data.cFileName, rfile_path_parent)) {
         rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName, 0));
     }
 
     while (FindNextFileA(file_find_ret, &file_find_data))
     {
-        if (!rstr_eq(file_find_data.cFileName, ".") && !rstr_eq(file_find_data.cFileName, "..")) {
+        if (!rstr_eq(file_find_data.cFileName, rfile_path_current) && !rstr_eq(file_find_data.cFileName, rfile_path_parent)) {
             rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName, 0));
         }
     }
 
-    FindClose(file_find_ret);
-
 #endif //file_system_unicode
 
 #else /* linux */
-    DIR *dir_ptr;
+    DIR* dir_ptr;
     struct dirent* ptr;
     if (!(dir_ptr = opendir(format_path))) {
         rerror("Unable to scan directory: %s\n", format_path);
         rgoto(0);
     }
     while ((ptr = readdir(dir_ptr)) != 0) {
-        if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0) {
+        if (strcmp(ptr->d_name, rfile_path_current) != 0 && strcmp(ptr->d_name, rfile_path_parent) != 0) {
             rlist_rpush(ret_list, rstr_cpy(ptr->d_name, 0));
         }
     }
-    closedir(dir_ptr);
+    
 #endif // WIN32
 
 exit0:
+
+#if defined(_WIN32) || defined(_WIN64)
+    FindClose(file_find_ret);
+#else /* linux */
+    closedir(dir_ptr);
+#endif // WIN32
+
     if (format_path) {
         rstr_free(format_path);
     }

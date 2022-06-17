@@ -21,63 +21,6 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-// static int setup(void **state) {
-//     int *answer = malloc(sizeof(int));
-//     assert_non_null(answer);
-//     *answer = 42;
-//     *state = answer;
-//     return rcode_ok;
-// }
-// static int teardown(void **state) {
-//     free(*state);
-//     return rcode_ok;
-// }
-// const struct CMUnitTest test_group2[] = {
-//     cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
-// };
-//int result = 0;
-//result += cmocka_run_group_tests(test_group2, NULL, NULL);
-
-static int init();
-static int uninit();
-
-static void rlog_full_test(void **state);
-
-const static struct CMUnitTest tests[] = {
-    cmocka_unit_test(rlog_full_test),
-};
-
-static int init() {
-    int total;
-
-    rcount_array(tests, total);
-
-    fprintf(stdout, "total: %d\n", total);
-    fflush(stdout);
-
-    return rcode_ok;
-}
-
-static int uninit() {
-
-    return rcode_ok;
-}
-
-int run_rlog_tests(int benchmark_output) {
-    init();
-
-    int64_t timeNow = nanosec_r();
-
-    int result = 0;
-    result += cmocka_run_group_tests(tests, NULL, NULL);
-
-    printf("run_rlog_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
-
-    uninit();
-
-    return result == 0 ? rcode_ok : -1;
-}
-
 static void rlog_full_test(void **state) {
     (void)state;
     int count = 10000;
@@ -96,6 +39,41 @@ static void rlog_full_test(void **state) {
 	rlog_rolling_file();
 	end_benchmark("rolling files.");
 
+}
+
+static char* dir_path;
+static int setup(void **state) {
+    int *answer = malloc(sizeof(int));
+    assert_non_null(answer);
+    *answer = 0;
+    *state = answer;
+
+    dir_path = "./logs/local";
+
+    rfile_make_dir(dir_path, true);
+
+    return rcode_ok;
+}
+static int teardown(void **state) {
+    //rfile_remove_dir(dir_path);
+    dir_path = NULL;
+
+    free(*state);
+    return rcode_ok;
+}
+static struct CMUnitTest test_group2[] = {
+    cmocka_unit_test_setup_teardown(rlog_full_test, NULL, NULL),
+};
+
+int run_rlog_tests(int benchmark_output) {
+    int64_t timeNow = nanosec_r();
+
+    int result = 0;
+    result += cmocka_run_group_tests(test_group2, setup, teardown);
+
+    printf("run_rlog_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
+
+    return result == 0 ? rcode_ok : -1;
 }
 
 #ifdef __GNUC__

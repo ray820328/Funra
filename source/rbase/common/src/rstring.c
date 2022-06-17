@@ -87,6 +87,13 @@ static rarray_t* _kmp_search(char* str, char* pattern, int count) {
 }
 
 
+void rstr_free_func(char* dest) {
+    rstr_free(dest);
+}
+int rstr_compare_func(const char* obj1, const char* obj2) {
+    return strcmp(obj1, obj2);
+}
+
 size_t rstr_cat(char* dest, const char* src, const size_t dest_size) {
     size_t position = rstr_len(dest);
     size_t src_len = rstr_len(src);
@@ -162,6 +169,10 @@ char* rstr_cpy(const void* data, size_t len){
     memcpy(data_copy, data, data_len);
     data_copy[data_len] = rstr_end;
     return data_copy;
+}
+
+char* rstr_cpy_full(const void* data) {
+    return rstr_cpy(data, 0);
 }
 
 char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool new) {
