@@ -70,6 +70,7 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int testResult;
 
+    rtest_add_test_entry(run_rpool_tests);
     rtest_add_test_entry(run_rstring_tests);
     rtest_add_test_entry(run_rthread_tests);
     rtest_add_test_entry(run_rarray_tests);

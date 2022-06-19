@@ -64,9 +64,6 @@ typedef struct rlist_iterator_t {
 #define rlist_define_set_value_func(T) \
     T##_inner_type rlist_copy_value_func_##T(T##_inner_type obj)
 
-#define rlist_define_set_value_func(T) \
-    void rlist_free_value_func_##T(void* obj)
-
 #define rlist_init(self, T) \
     do { \
         if ((self) == NULL) { \
