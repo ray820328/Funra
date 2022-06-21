@@ -405,12 +405,11 @@ int rfile_remove_dir(const char *path)
 	return rcode_ok;
 }
 
-int rfile_create(const char *path, const char *filename) {
+int rfile_create_in(const char *path, const char *filename) {
     char* file_path = rfile_get_filepath(path, filename);
     FILE* file;
 
     file = fopen(file_path, "r");
-
     if (file == NULL)
     {
         file = fopen(file_path, "w"); //使用“写入”方式创建文件
@@ -422,6 +421,38 @@ int rfile_create(const char *path, const char *filename) {
 
     return rcode_ok;
 }
+int rfile_create(const char* file_path) {
+    FILE* file;
+
+    file = fopen(file_path, "r");
+    if (file == NULL)
+    {
+        file = fopen(file_path, "w"); //使用“写入”方式创建文件
+    }
+
+    fclose(file);
+
+    return rcode_ok;
+}
+
+//int rlog_read_file(const char* filename) {
+//    FILE *fp;
+//    //文件以追加的方式打开
+//    if ((fp = fopen(filename, "a+")) == NULL) {
+//        printdbgr("Cannot open file, press any key to exit!\n");
+//        return -1;
+//    }
+//    //while (!feof(fp))
+//    //{
+//    //    int a = 0;
+//    //    int b = 0;
+//    //    fscanf(fp, "%d + %d", &a, &b);
+//    //    printdbgr("a = %d, b = %d\n", a, b);
+//    //    //输出a = 1, b = 2
+//    //}
+//    //fclose(fp);
+//    return rcode_ok;
+//}
 
 int rfile_copy_file(const char *src, const char *dst) {
     FILE *sfp = NULL, *dfp = NULL;

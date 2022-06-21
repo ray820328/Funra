@@ -19,8 +19,8 @@ extern "C" {
 //#undef print2file
 #endif
 
-#define rtrace(format, ...) rlog_printf(RLOG_DEBUG, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)
-#define rdebug(format, ...) rlog_printf(RLOG_TRACE, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)
+#define rtrace(format, ...) rlog_printf(RLOG_TRACE, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)
+#define rdebug(format, ...) rlog_printf(RLOG_DEBUG, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)
 #define rinfo(format, ...) rlog_printf(RLOG_INFO, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)
 #define rwarn(format, ...) rlog_printf(RLOG_WARN, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)
 #define rerror(format, ...) rlog_printf(RLOG_ERROR, "%s:%s:%d %ld "format"", get_filename(__FILE__), __FUNCTION__, __LINE__, get_cur_thread_id(), ##__VA_ARGS__)

@@ -59,10 +59,10 @@ int run_rthread_tests(int benchmark_output) {
 
 static void rthread_full_test(void **state) {
     (void)state;
- //    int count = 10000;
+    int count = 10000;
  //    int j;
 
- //    init_benchmark(1024, "test rlog (%d)", count);
+    init_benchmark(1024, "test rlog (%d)", count);
 
  //    start_benchmark(0);
  //    rlist_t* file_list = rdir_list(dir_path, true, true);
@@ -79,6 +79,7 @@ static void rthread_full_test(void **state) {
 	
 	// end_benchmark("rolling files.");
 
+    uninit_benchmark();
 }
 
 #ifdef __GNUC__

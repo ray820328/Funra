@@ -27,7 +27,8 @@ static void rtools_full_test(void **state) {
     start_benchmark(0);
 
 	end_benchmark("rtools.");
-		
+
+    uninit_benchmark();
 }
 
 

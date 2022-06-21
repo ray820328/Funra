@@ -23,22 +23,23 @@
 
 static void rlog_full_test(void **state) {
     (void)state;
-    int count = 10000;
+    int count = 1000;
     int j;
 
     init_benchmark(1024, "test rlog (%d)", count);
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-		rdebug("范德萨发三个\n");
-		rinfo("噶士大夫胜多负少\n");
+		//rdebug("范德萨发三个\n");
+		//rinfo("噶士大夫胜多负少\n");
     }
     end_benchmark("print to file.");
 
 	start_benchmark(0);
-	rlog_rolling_file();
+	//rlog_rolling_file();
 	end_benchmark("rolling files.");
 
+    uninit_benchmark();
 }
 
 static char* dir_path;

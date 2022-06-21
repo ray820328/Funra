@@ -113,6 +113,8 @@ static void rarray_int_test(void **state) {
 
     rarray_release(array_ins);
 
+
+    uninit_benchmark();
 }
 
 static void rarray_string_test(void **state) {
@@ -197,6 +199,8 @@ static void rarray_string_test(void **state) {
 
     rarray_release(array_ins);
 
+
+    uninit_benchmark();
 }
 
 static struct data_test
@@ -289,6 +293,8 @@ static void rarray_ptr_test(void **state) {
 
     rarray_release(array_ins);
 
+
+    uninit_benchmark();
 }
 
 #ifdef __GNUC__

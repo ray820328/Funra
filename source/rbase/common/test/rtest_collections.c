@@ -232,4 +232,6 @@ static void dict_test(void **state) {
     }
     end_benchmark("Removing and adding");
     dictRelease(dict);
+
+    uninit_benchmark();
 }

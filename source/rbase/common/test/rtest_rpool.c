@@ -47,14 +47,13 @@ static void rpool_full_test(void **state) {
     end_benchmark("rpool init.");
 
     start_benchmark(0);
-    //rpool_get(rtest_pool_struct_t, rget_pool(rtest_pool_struct_t));
-    rtest_pool_struct_t* dd = rpool_rtest_pool_struct_t_get(data_rtest_pool_struct_t_pool);
     for (int i = 0; i < count; i++) {
         datas[i] = rpool_new_data(rtest_pool_struct_t);
         datas[i]->index = i;
         datas[i]->value = count + i;
     }
     assert_true(datas[count / 2]->value == count + count / 2);
+    assert_true(rpool_get_capacity(rtest_pool_struct_t) >= count);
     end_benchmark("rpool new data.");
 
     start_benchmark(0);
@@ -69,9 +68,18 @@ static void rpool_full_test(void **state) {
     end_benchmark("rpool travel all pools.");
 
     start_benchmark(0);
+    for (int i = 0; i < count; i++) {
+        rpool_free_data(rtest_pool_struct_t, datas[i]);
+    }
+    assert_true(rpool_get_capacity(rtest_pool_struct_t) == rpool_get_free_count(rtest_pool_struct_t));
+    end_benchmark("rpool new data.");
+
+    start_benchmark(0);
     rdestroy_pool(rtest_pool_struct_t);
     assert_true(rget_pool(rtest_pool_struct_t) == NULL);
     end_benchmark("rpool destroy pool.");
+
+    uninit_benchmark();
 }
 
 static int setup(void **state) {

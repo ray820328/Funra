@@ -30,13 +30,17 @@ int rfile_make_dir(const char *path, bool recursive);
 
 int rfile_remove_dir(const char *path);
 
-int rfile_create(const char *path, const char *filename);
+int rfile_create(const char *file_path);
+int rfile_create_in(const char *dir, const char *filename);
 
 int rfile_copy_file(const char* src, const char* dst);
 
 int rfile_move_file(const char* src, const char* dst);
 
 int rfile_remove(const char* file);
+
+//int rfile_open(const char* file_path);
+//int rfile_close(const char* file_path);
 
 int rfile_format_path(char* file);
 

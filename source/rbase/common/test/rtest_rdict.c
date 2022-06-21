@@ -192,6 +192,8 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     start_benchmark(0);
     rdict_free(dict_ins);
     end_benchmark("Release map");
+
+    uninit_benchmark();
 }
 
 
@@ -332,6 +334,9 @@ static void rdict_string_test(void **state) {// string类型 k-v
     start_benchmark(0);
     rdict_free(dict_ins);
     end_benchmark("Release map");
+
+
+    uninit_benchmark();
 }
 
 

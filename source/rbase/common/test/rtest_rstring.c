@@ -78,6 +78,7 @@ static void rstring_index_test(void **state) {
 
     end_benchmark("rstring token.");
 
+    uninit_benchmark();
 }
 
 static int setup(void **state) {

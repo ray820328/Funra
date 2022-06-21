@@ -244,7 +244,7 @@ Exit1:
 	return rcode_ok;
 }
 
-int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
+static int _rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     if (logLevel < rlog_level) {
         return rcode_ok;
     }
@@ -258,15 +258,14 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     }
 #endif
 
+    rmutex_lock(&rlog_mutex);
+
     static int64_t rlogFlushLast = 0;
-    //static char logItemData[rlog_temp_data_size] = { '\0' };
-    //static char logData[rlog_cache_data_size] = { '\0' };
-    //static char fmtDest[rlog_temp_data_size] = { '\0' };
     char* logItemData = rlog_infos[logLevel]->logItemData;
     char* logData = rlog_infos[logLevel]->logData;
     char* fmtDest = rlog_infos[logLevel]->fmtDest;
     char* levelStr = RLOG_TOSTR(logLevel);
-    static char timeStr[32];
+    char timeStr[32];
     int64_t timeNow = millisec_r();
     rformat_time_s_full(timeStr, timeNow);
     strcat(fmtDest, timeStr);
@@ -299,7 +298,9 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
 		rlogFlushLast = timeNow;
 		logData[0] = '\0';
 		logItemData[0] = '\0';
-		return 1;
+
+        rmutex_unlock(&rlog_mutex);
+        return 1;
 	}
 
     static size_t freeLen = 0;
@@ -322,28 +323,54 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     }
     logItemData[0] = '\0';
 
+    rmutex_unlock(&rlog_mutex);
     return rcode_ok;
 }
 
-//int rlog_read_file(const char* filename) {
-//    FILE *fp;
-//    //文件以追加的方式打开
-//    if ((fp = fopen(filename, "a+")) == NULL) {
-//        printdbgr("Cannot open file, press any key to exit!\n");
-//        return -1;
-//    }
-//    //while (!feof(fp))
-//    //{
-//    //    int a = 0;
-//    //    int b = 0;
-//    //    fscanf(fp, "%d + %d", &a, &b);
-//    //    printdbgr("a = %d, b = %d\n", a, b);
-//    //    //输出a = 1, b = 2
-//    //}
-//    //fclose(fp);
-//    return rcode_ok;
-//}
-/**/
+int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
+    if (logLevel < rlog_level) {
+        return rcode_ok;
+    }
+#ifdef print2file
+    if (unlikely(rlog_infos[logLevel] == NULL)) {
+        return -1;
+    }
+#endif
+
+    rmutex_lock(&rlog_mutex);
+
+    static int64_t rlogFlushLast = 0;
+    char* logItemData = rlog_infos[logLevel]->logItemData;
+    char* logData = rlog_infos[logLevel]->logData;
+    char* fmtDest = rlog_infos[logLevel]->fmtDest;
+    char* levelStr = RLOG_TOSTR(logLevel);
+    char timeStr[32];
+    int64_t timeNow = millisec_r();
+    rformat_time_s_full(timeStr, timeNow);
+    strcat(fmtDest, timeStr);
+    strcat(fmtDest, " [");
+    strcat(fmtDest, levelStr);//strupr(levelStr)
+    strcat(fmtDest, "] %s");
+
+    va_list ap;
+    va_start(ap, fmt);
+    int writeLen = vsnprintf(logItemData, rlog_temp_data_size - 1, fmt, ap);
+    va_end(ap);
+    rassert(writeLen < rlog_temp_data_size, "");
+
+#ifdef print2file
+    fprintf(rlog_infos[logLevel]->file_ptr, fmtDest, logItemData);
+    //fflush(rlog_infos[logLevel]->file_ptr);
+#else
+    printf(fmtDest, logItemData);
+#endif // print2file
+    fmtDest[0] = '\0';
+    //logItemData[0] = '\0';
+
+    rmutex_unlock(&rlog_mutex);
+    return rcode_ok;
+}
+
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

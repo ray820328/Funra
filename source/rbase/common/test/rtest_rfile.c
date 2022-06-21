@@ -67,6 +67,7 @@ static void rfile_full_test(void **state) {
 
 	end_benchmark("rolling files.");
 
+    uninit_benchmark();
 }
 
 
@@ -79,8 +80,8 @@ static int setup(void **state) {
     dir_path = "./test_dir/local";
 
 	rfile_make_dir(dir_path, true);
-    rfile_create(dir_path, "file01.txt");
-    rfile_create(dir_path, "file02.data");
+    rfile_create_in(dir_path, "file01.txt");
+    rfile_create_in(dir_path, "file02.data");
 
     return rcode_ok;
 }
