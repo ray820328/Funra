@@ -91,7 +91,17 @@ void rstr_free_func(char* dest) {
     rstr_free(dest);
 }
 int rstr_compare_func(const char* obj1, const char* obj2) {
-    return strcmp(obj1, obj2);
+    int ret = strcmp(obj1, obj2);
+    if (ret == 0) {
+        return rcode_eq;
+    }
+    else if (ret == 1)
+    {
+        return rcode_gt;
+    }
+    else {
+        return rcode_lt;
+    }
 }
 
 size_t rstr_cat(char* dest, const char* src, const size_t dest_size) {

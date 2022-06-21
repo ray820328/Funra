@@ -1,6 +1,7 @@
 ﻿#ifndef RAY_POOL_H
 #define RAY_POOL_H
 
+#include "rlog.h"
 #include "rlist.h"
 
 #ifdef __cplusplus
@@ -16,16 +17,23 @@ extern "C" {
 #define rpool_free(TYPE, OBJ, POOL) rpool_##TYPE##_free(OBJ, POOL)
 
 #define rdefine_pool_name(T) data_##T##_pool
-#define rdefine_pool(T, SIZE_INIT, SIZE_ADJUST) RPOOL_INIT(T, SIZE_INIT, SIZE_ADJUST)
+#define rdefine_pool(T, size_init, size_adjust) rpool_init(T, size_init, size_adjust)
 #define rdeclare_pool(T) rpool_t(T)* rdefine_pool_name(T)
 #define rget_pool(T) rdefine_pool_name(T)
 #define rcreate_pool(T) rpool_create(T)
 #define rdestroy_pool(T) \
-            do { \
-                rpool_destroy(T, rdefine_pool_name(T)); \
-                rdefine_pool_name(T) = NULL; \
-            } while(0)
-            
+        do { \
+            rpool_destroy(T, rdefine_pool_name(T)); \
+            rdefine_pool_name(T) = NULL; \
+        } while(0)
+
+#define rpool_new_data(T) rpool_get(T, rget_pool(T))
+#define rpool_free_data(T, data) \
+        do { \
+            rpool_free(T, data, rget_pool(T)); \
+            data = NULL; \
+        } while(0)
+
 typedef struct rdata_pool_block {
     uint64_t used_bits;//0:free 1:used
     unsigned int data_total_size;
@@ -41,53 +49,60 @@ typedef struct rdata_pool {
 } rdata_pool;
 
 typedef struct rpool_chain_node_t {
-    void (*travelRPool)(void (*doFn)(void* item));
+    void (*rpool_travel_block_func)(void (*do_action)(void* item));
     struct rpool_chain_node_t* prev;
     struct rpool_chain_node_t* next;
 } rpool_chain_node_t;
 
 extern rpool_chain_node_t* rpool_chain;
 
-#define RPOOL_INIT(TYPE, SIZE_INIT, SIZE_ADJUST)	\
-  typedef union rpool_##TYPE##_item_u rpool_##TYPE##_item_t; \
-  union rpool_##TYPE##_item_u \
+#define rpool_declare(TYPE)\
+    typedef union rpool_##TYPE##_item_u rpool_##TYPE##_item_t; \
+    union rpool_##TYPE##_item_u \
+    { \
+        rpool_##TYPE##_item_t* next; \
+        TYPE data; \
+    }; \
+    typedef struct rpool_block_##TYPE##_t \
+    { \
+        int totalCount; \
+        int freeCount; \
+        int64_t itemFirst; \
+        int64_t itemLast; \
+        struct rpool_block_##TYPE##_t* nextBlock; \
+        struct rpool_block_##TYPE##_t* prevBlock; \
+        rpool_##TYPE##_item_t* head; \
+        rpool_##TYPE##_item_t* items; \
+    } rpool_block_##TYPE##_t; \
+    typedef struct rpool_##TYPE##_t \
+    { \
+        int64_t capacity; \
+        int64_t totalFree; \
+        rpool_block_##TYPE##_t* freeHeadBlock; \
+    } rpool_##TYPE##_t; \
+    rpool_##TYPE##_t* rpool_##TYPE##_create(); \
+    void rpool_##TYPE##_destroy(rpool_##TYPE##_t* pool); \
+    TYPE* rpool_##TYPE##_get(rpool_##TYPE##_t* poolTemp); \
+    int rpool_##TYPE##_free(TYPE* data, rpool_##TYPE##_t* pool)
+
+#define rpool_init(TYPE, size_init, size_adjust) \
+    rdeclare_pool(TYPE) = NULL; \
+  static void travel_##TYPE##_info(void (*action_func)(void* item)) \
   { \
-    rpool_##TYPE##_item_t* next; \
-    TYPE data; \
-  }; \
-  typedef struct rpool_block_##TYPE##_t \
-  { \
-    int totalCount; \
-    int freeCount; \
-    int64_t itemFirst; \
-    int64_t itemLast; \
-    struct rpool_block_##TYPE##_t* nextBlock; \
-    struct rpool_block_##TYPE##_t* prevBlock; \
-    rpool_##TYPE##_item_t* head; \
-    rpool_##TYPE##_item_t* items; \
-  } rpool_block_##TYPE##_t; \
-  typedef struct rpool_##TYPE##_t \
-  { \
-    int64_t capacity; \
-    int64_t totalFree; \
-    rpool_block_##TYPE##_t* freeHeadBlock; \
-  } rpool_##TYPE##_t; \
-  static void travel_##TYPE##_info(void (*doFn)(void* item)) \
-  { \
-    printdbgr("pool "#TYPE": [%%"PRId64", %%"PRId64"]\n", rget_pool(TYPE)->capacity, rget_pool(TYPE)->totalFree); \
-    if (doFn) \
-        doFn(rget_pool(TYPE)); \
+    rinfo("pool "#TYPE": [%"PRId64", %"PRId64"]\n", rget_pool(TYPE)->capacity, rget_pool(TYPE)->totalFree); \
+    if (action_func) \
+        action_func(rget_pool(TYPE)); \
   } \
-  static RPROFILER_INLINE rpool_block_##TYPE##_t* rpool_##TYPE##_expand(rpool_##TYPE##_t* poolTemp, int num) \
+  static inline rpool_block_##TYPE##_t* rpool_##TYPE##_expand(rpool_##TYPE##_t* poolTemp, int num) \
   { \
     if (!poolTemp) { \
-	    printdbgr(#TYPE" pool is NULL\n"); \
+	    rinfo(#TYPE" pool is NULL\n"); \
         return NULL; \
     } \
     rpool_block_##TYPE##_t* poolBlock = raymalloc(sizeof(rpool_block_##TYPE##_t)); \
     if (!poolBlock) \
     { \
-		printdbgr(#TYPE" poolBlock is NULL\n"); \
+		rinfo(#TYPE" poolBlock is NULL\n"); \
         return NULL; /* malloc failed */ \
     } \
     poolBlock->items = calloc(num, sizeof(rpool_##TYPE##_item_t)); \
@@ -95,7 +110,7 @@ extern rpool_chain_node_t* rpool_chain;
     { \
         rayfree(poolBlock); \
         poolBlock = NULL; \
-		printdbgr(#TYPE" poolBlock->items is NULL\n"); \
+		rinfo(#TYPE" poolBlock->items is NULL\n"); \
         return NULL; /* calloc failed */ \
     } \
     poolBlock->head = &poolBlock->items[0]; \
@@ -112,11 +127,11 @@ extern rpool_chain_node_t* rpool_chain;
     poolBlock->prevBlock = NULL; \
     poolTemp->capacity += num; \
     poolTemp->totalFree += num; \
-    printdbgr("expand block "#TYPE"(%%"PRId64", %d, %%"PRId64", %%"PRId64") success, (%p)\n", \
+    rinfo("expand block "#TYPE"(%"PRId64", %d, %"PRId64", %"PRId64") success, (%p)\n", \
 		poolTemp->capacity, num, poolBlock->itemFirst, poolBlock->itemLast, poolBlock); \
     return poolBlock; \
   } \
-  static RPROFILER_INLINE rpool_##TYPE##_t* rpool_##TYPE##_create() \
+  rpool_##TYPE##_t* rpool_##TYPE##_create() \
   { \
     rpool_##TYPE##_t* poolTemp = raymalloc(sizeof(rpool_##TYPE##_t)); \
     if (!poolTemp) \
@@ -126,7 +141,7 @@ extern rpool_chain_node_t* rpool_chain;
     poolTemp->capacity = 0; \
     poolTemp->totalFree = 0; \
     poolTemp->freeHeadBlock = NULL; \
-    rpool_block_##TYPE##_t* poolBlock = rpool_##TYPE##_expand(poolTemp, SIZE_INIT); \
+    rpool_block_##TYPE##_t* poolBlock = rpool_##TYPE##_expand(poolTemp, size_init); \
     if (!poolBlock) { \
         rayfree(poolTemp); \
         poolTemp = NULL; \
@@ -135,20 +150,20 @@ extern rpool_chain_node_t* rpool_chain;
     poolTemp->freeHeadBlock = poolBlock; \
     rpool_chain_node_t* chainNode = raymalloc(sizeof(rpool_chain_node_t)); \
     if (!chainNode) { \
-        printdbgr("create pool "#TYPE"(%d, %d) failed add to chain, (%p)\n", SIZE_INIT, SIZE_ADJUST, poolTemp); \
+        rinfo("create pool "#TYPE"(%d, %d) failed add to chain, (%p)\n", size_init, size_adjust, poolTemp); \
         return NULL; \
     } \
     chainNode->next = rpool_chain->next; \
     chainNode->prev = rpool_chain; \
-    chainNode->travelRPool = travel_##TYPE##_info; \
+    chainNode->rpool_travel_block_func = travel_##TYPE##_info; \
     rpool_chain->next = chainNode; \
-    printdbgr("create pool "#TYPE"(%d, %d) success, (%p)\n", SIZE_INIT, SIZE_ADJUST, poolTemp); \
+    rinfo("create pool "#TYPE"(%d, %d) success, (%p)\n", size_init, size_adjust, poolTemp); \
     return poolTemp; \
   } \
-  static RPROFILER_INLINE void rpool_##TYPE##_destroy(rpool_##TYPE##_t* poolTemp) \
+  void rpool_##TYPE##_destroy(rpool_##TYPE##_t* poolTemp) \
   { \
     if (!poolTemp || !rget_pool(TYPE)) { \
-        printdbgr("destroy "#TYPE"(%d, %d), pool is NULL, (%p)\n", SIZE_INIT, SIZE_ADJUST, poolTemp); \
+        rinfo("destroy "#TYPE"(%d, %d), pool is NULL, (%p)\n", size_init, size_adjust, poolTemp); \
         return; \
     } \
     rpool_block_##TYPE##_t* poolBlock = poolTemp->freeHeadBlock; \
@@ -164,7 +179,7 @@ extern rpool_chain_node_t* rpool_chain;
 	if (rpool_chain) { \
 		rpool_chain_node_t* tempChainNode = rpool_chain; \
 		while ((tempChainNode = tempChainNode->next) != NULL) { \
-			if (tempChainNode->travelRPool == travel_##TYPE##_info) { \
+			if (tempChainNode->rpool_travel_block_func == travel_##TYPE##_info) { \
 				if (tempChainNode->prev) { \
 					tempChainNode->prev->next = tempChainNode->next; \
 				} else { \
@@ -179,14 +194,14 @@ extern rpool_chain_node_t* rpool_chain;
 			} \
 		} \
 	} \
-    printdbgr("destroy pool "#TYPE"(%d, %d) success, (%p)\n", SIZE_INIT, SIZE_ADJUST, poolTemp); \
+    rinfo("destroy pool "#TYPE"(%d, %d) success, (%p)\n", size_init, size_adjust, poolTemp); \
     rayfree(poolTemp); \
     rget_pool(TYPE) = NULL; \
   } \
-  static RPROFILER_INLINE TYPE* rpool_##TYPE##_get(rpool_##TYPE##_t* poolTemp) \
+  TYPE* rpool_##TYPE##_get(rpool_##TYPE##_t* poolTemp) \
   { \
     if (!rget_pool(TYPE)) { \
-        printdbgr("get from "#TYPE"(%d, %d), pool is NULL, (%p)\n", SIZE_INIT, SIZE_ADJUST, poolTemp); \
+        rinfo("get from "#TYPE"(%d, %d), pool is NULL, (%p)\n", size_init, size_adjust, poolTemp); \
         return NULL; \
     } \
     rpool_block_##TYPE##_t* poolBlock = poolTemp->freeHeadBlock; \
@@ -200,9 +215,9 @@ extern rpool_chain_node_t* rpool_chain;
                 break; \
         } \
         if(!item) { \
-            poolBlock = rpool_##TYPE##_expand(poolTemp, SIZE_ADJUST); \
+            poolBlock = rpool_##TYPE##_expand(poolTemp, size_adjust); \
             if (!poolBlock) { \
-                printdbgr("malloc from pool "#TYPE"(%d, %d) failed.\n", SIZE_INIT, SIZE_ADJUST); \
+                rinfo("malloc from pool "#TYPE"(%d, %d) failed.\n", size_init, size_adjust); \
                 return NULL; \
             } \
             rpool_block_##TYPE##_t* blockSecond = poolTemp->freeHeadBlock->nextBlock; \
@@ -218,42 +233,42 @@ extern rpool_chain_node_t* rpool_chain;
     poolBlock->head = item->next; \
     poolBlock->freeCount -= 1; \
     poolTemp->totalFree -= 1; \
-    /** printdbgr("malloc, "#TYPE"(%p)\n", item); **/ \
+    /** rinfo("malloc, "#TYPE"(%p)\n", item); **/ \
     return &item->data; \
   } \
-  static RPROFILER_INLINE bool rpool_##TYPE##_free(TYPE* data, rpool_##TYPE##_t* poolTemp) \
+  int rpool_##TYPE##_free(TYPE* data, rpool_##TYPE##_t* poolTemp) \
   { \
     if (!rget_pool(TYPE)) { \
-        printdbgr("free to "#TYPE"(%d, %d), pool is NULL, (%p)\n", SIZE_INIT, SIZE_ADJUST, poolTemp); \
-        return false; \
+        rinfo("free to "#TYPE"(%d, %d), pool is NULL, (%p)\n", size_init, size_adjust, poolTemp); \
+        return -1; \
     } \
     rpool_block_##TYPE##_t* poolBlock = poolTemp->freeHeadBlock; \
     rpool_##TYPE##_item_t* itemData = (rpool_##TYPE##_item_t*)data;\
-	/** printdbgr("free from pool "#TYPE" block[%p, [%p], %p), %s\n", poolBlock->items, data, (poolBlock->items + poolBlock->totalCount), __FUNCTION__); **/ \
+	/** rinfo("free from pool "#TYPE" block[%p, [%p], %p), %s\n", poolBlock->items, data, (poolBlock->items + poolBlock->totalCount), __FUNCTION__); **/ \
     if((itemData < poolBlock->items) || (itemData >= (poolBlock->items + poolBlock->totalCount))) \
     { \
         while ((poolBlock = poolBlock->nextBlock) != NULL) { \
-			/** printdbgr("free to "#TYPE" pool block(%d,%d) [%p, {%p}, %p)\n", \
+			/** rinfo("free to "#TYPE" pool block(%d,%d) [%p, {%p}, %p)\n", \
 				poolBlock->totalCount, poolBlock->freeCount, poolBlock->items, data, (poolBlock->items + poolBlock->totalCount)); **/ \
             if((itemData >= poolBlock->items) && (itemData < (poolBlock->items + poolBlock->totalCount))) { \
                 break; \
             } \
         } \
         if (!poolBlock) { \
-            printdbgr("free to pool "#TYPE"(%d, %d) failed, %p\n", SIZE_INIT, SIZE_ADJUST, data); \
-            return false; \
+            rinfo("free to pool "#TYPE"(%d, %d) failed, %p\n", size_init, size_adjust, data); \
+            return -1; \
         } \
     } \
     itemData->next = poolBlock->head; \
     poolBlock->head = itemData; \
     poolBlock->freeCount++; \
     poolTemp->totalFree++; \
-    /** printdbgr("free success: (%d,%d) [%p, {%p}, %p)\n", \
+    /** rinfo("free success: (%d,%d) [%p, {%p}, %p)\n", \
 			poolBlock->totalCount, poolBlock->freeCount, poolBlock->items, data, poolBlock->items + poolBlock->totalCount); **/ \
     if (poolTemp->freeHeadBlock != poolBlock) { \
         if (poolTemp->totalFree > 2 * poolBlock->freeCount) { \
             if (unlikely(poolBlock->totalCount == poolBlock->freeCount)) { \
-                printdbgr("free block: "#TYPE"(%%"PRId64", %%"PRId64") [%p, %d]\n", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); \
+                rinfo("free block: "#TYPE"(%%"PRId64", %%"PRId64") [%p, %d]\n", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); \
                 poolTemp->capacity -= poolBlock->totalCount; \
                 poolTemp->totalFree -= poolBlock->totalCount; \
                 poolBlock->prevBlock->nextBlock = poolBlock->nextBlock; \
@@ -265,7 +280,7 @@ extern rpool_chain_node_t* rpool_chain;
 /**        } else { **if ((poolTemp->capacity - poolTemp->totalFree) < (poolTemp->capacity / RAY_PROFILER_POOL_SHRINK)) { **\
                 if (poolBlock = poolBlock->nextBlock) { \
                     if (poolBlock->prevBlock->freeCount > poolBlock->freeCount) { \
-                        ** printdbgr("change block: "#TYPE"(%%"PRId64", %%"PRId64") [%p, %d] \n", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); ** \
+                        ** rinfo("change block: "#TYPE"(%%"PRId64", %%"PRId64") [%p, %d] \n", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); ** \
                         rpool_block_##TYPE##_t* b1 = poolBlock->prevBlock; \
                         b1->nextBlock = poolBlock->nextBlock; \
                         poolBlock->nextBlock = b1; \
@@ -276,7 +291,7 @@ extern rpool_chain_node_t* rpool_chain;
 **/        } \
         } \
     } \
-    return true; \
+    return rcode_ok; \
   } \
   rattribute_unused(static TYPE* malloc_##TYPE##_data (size_t size) \
   { \
@@ -288,7 +303,7 @@ extern rpool_chain_node_t* rpool_chain;
   })
 
 
-#define POOL_BLOCK_ITEM_COUNT 64
+#define pool_block_item_count 64
 #define dada_from_block(block, T, datasize, index) (T)(((rdata_pool_block*)(block))->data_buffer + index * datasize * sizeof(char))
 #define dada_check_block(block, ptr) (ptr && ((int64_t)(ptr - ((rdata_pool_block*)(block))->data_buffer) < ((rdata_pool_block*)(block))->data_total_size))
 #define dada_free_flag_block(block, T, index) ((rdata_pool_block*)(block))->used_bits = (((rdata_pool_block*)(block))->used_bits & (~(1ull << index)))
@@ -296,16 +311,16 @@ extern rpool_chain_node_t* rpool_chain;
 #define dada_full_block(block) (~(((rdata_pool_block*)(block))->used_bits) == 0)
 #define dada_empty_block(block) ((((rdata_pool_block*)(block))->used_bits) == 0)
 #define data_index_block(block, used_bits, index) \
-            do { \
-                index = rtools_startindex1(used_bits); \
-                index += 1; \
-                if (index > POOL_BLOCK_ITEM_COUNT - 1) { \
-                        index = rtools_endindex1(used_bits); \
-                        index -= 1; \
-                } \
-            } while(0)
+        do { \
+            index = rtools_startindex1(used_bits); \
+            index += 1; \
+            if (index > pool_block_item_count - 1) { \
+                    index = rtools_endindex1(used_bits); \
+                    index -= 1; \
+            } \
+        } while(0)
 
-#define rconcat(PRE, NEXT0) PRE##NEXT0
+#define rmacro_concat(PRE, NEXT0) PRE##NEXT0
 //ELE_SIZE不小于8字节，需要至少放下一个指针空间用于初始化
 #define def_ranonymous_pool(ELE_SIZE)	\
   typedef struct ralloc_anon_##ELE_SIZE##_t \
@@ -313,46 +328,36 @@ extern rpool_chain_node_t* rpool_chain;
     char data[ELE_SIZE]; \
   } ralloc_anon_##ELE_SIZE##_t; \
   static struct rdeclare_pool(ralloc_anon_##ELE_SIZE##_t)
-  /* rdefine_pool(ralloc_anon_##ELE_SIZE##_t, SIZE_INIT, SIZE_ADJUST) 外面有对齐*/
+  /* rdefine_pool(ralloc_anon_##ELE_SIZE##_t, size_init, size_adjust) 外面有对齐*/
 
+#define rpool_define_global() \
+extern rpool_chain_node_t* rpool_chain; \
+rpool_chain_node_t* rpool_chain = NULL \
+
+#define rpool_init_global() \
+if (rpool_chain == NULL) { \
+    rpool_chain = raymalloc(sizeof(rpool_chain_node_t)); \
+    rpool_chain->next = NULL; \
+    rpool_chain->prev = NULL; \
+    rpool_chain->rpool_travel_block_func = NULL; \
+}
+
+#define rpool_uninit_global() \
+extern rpool_chain_node_t* rpool_chain; \
+if (rpool_chain) { \
+    rpool_chain_node_t* tempChainNode = NULL; \
+    while (tempChainNode = rpool_chain->next) { \
+        rinfo("rpool_chain must be NULL.\n"); \
+        rpool_chain->next = tempChainNode->next; \
+        rayfree(tempChainNode); \
+        tempChainNode = NULL; \
+    } \
+    rayfree(rpool_chain); \
+    rpool_chain = NULL; \
+    rinfo("rpool_chain finished.\n"); \
+}
 
 #pragma endregion "自定义内存池"
-
-#pragma region "其他"
-
-static inline int rtools_endindex1(uint64_t val) {//1 end index (0x1-0x8000000000000000返回0-63, val==0返回-1)
-    if (val == 0) {
-        return -1;
-    }
-#ifdef WIN32
-    int index = 0;
-    _BitScanForward64(&index, val);
-    return index;
-#else
-    return __builtin_ctzll(val);//__builtin_ffsll - 前导1 //__builtin_ctz - 后导0个数，__builtin_clz - 前导0个数
-#endif
-    }
-static inline int rtools_startindex1(uint64_t val) {//1 start index (0x1-0x8000000000000000返回0-63, val==0返回-1)
-    if (val == 0) {
-        return -1;
-    }
-#ifdef WIN32
-    int index = 0;
-    _BitScanReverse64(&index, val);
-    return index;
-#else
-    return 63 - __builtin_clzll(val);// __builtin_clzll(val);//前导的0的个数
-#endif
-}
-static inline int rtools_popcount1(uint64_t val) {//1bits
-#ifdef WIN32
-    return -1;
-#else
-    return __builtin_popcountll(val);
-#endif
-}
-
-#pragma endregion "其他"
 
 
 #ifdef __cplusplus

@@ -410,6 +410,8 @@ extern "C" {
     /** 1 - 相等; 具体参见上文定义 rcode_eq 等 **/
     typedef int(*rcom_compare_func_type)(const void* obj1, const void* obj2);
 
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -53,7 +53,7 @@ static void rfile_full_test(void **state) {
     end_benchmark("get filepath.");
 
 	start_benchmark(0);
-	rlist_t* file_list = rdir_list(dir_path, true, true);
+	rlist_t* file_list = rdir_list("./", true, true);//dir_path
 	rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
 	rlist_node_t *node = NULL;
 	while ((node = rlist_next(&it))) {

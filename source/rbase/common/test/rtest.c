@@ -78,7 +78,7 @@ static int run_tests(int output) {
 	rtest_add_test_entry(run_rdict_tests);
     rtest_add_test_entry(run_rlog_tests);
     rtest_add_test_entry(run_rfile_tests);
-	
+    rtest_add_test_entry(run_rtools_tests);
 
     testResult = 0;
 

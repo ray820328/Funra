@@ -85,8 +85,9 @@ extern "C" {
 #define rstr_compare(str1, str2) \
     rstr_compare_func((str1), (str2))
 #define rstr_eq(str1, str2) \
-    strcmp((str1), (str2)) == 0 ? true : false
-#define rstr_len(str1) (str1) == NULL ? 0 : strlen((str1))
+    (strcmp((str1), (str2)) == 0 ? true : false)
+#define rstr_len(str1) \
+    ((str1) == NULL ? 0 : strlen((str1)))
 
 #define rstr_2int(val) \
     atoi((val))

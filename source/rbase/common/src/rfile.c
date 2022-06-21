@@ -587,11 +587,7 @@ char* rfile_get_filepath(const char *path, const char *filename) {
     return file_path;
 }
 
-/** 保留结构，node可能包含详细信息 **/
-rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
-    rlist_t* ret_list = NULL;
-    rlist_init(ret_list, rdata_type_string);
-
+int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir) {
     size_t path_len = rstr_len(path);
     char* format_path = rstr_new(path_len + 3);
     rstr_init(format_path);
@@ -631,14 +627,14 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     if (!rstr_eq(file_full_name, rfile_path_current) && !rstr_eq(file_full_name, rfile_path_parent)) {
         if (file_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             if (!only_file) {
-                rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
+                rlist_rpush(ret_list, file_full_name);
             }
             if (sub_dir) {
-                rdir_list(file_full_name, only_file, sub_dir);
+                _rdir_list(ret_list, file_full_name, only_file, sub_dir);
             }
         }
         else {
-            rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
+            rlist_rpush(ret_list, file_full_name);
         }
     }
 
@@ -646,7 +642,17 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     {
         path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
         if (!rstr_eq(file_full_name, rfile_path_current) && !rstr_eq(file_full_name, rfile_path_parent)) {
-            rlist_rpush(ret_list, rstr_cpy(file_full_name, 0));
+            if (file_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                if (!only_file) {
+                    rlist_rpush(ret_list, file_full_name);
+                }
+                if (sub_dir) {
+                    _rdir_list(ret_list, file_full_name, only_file, sub_dir);
+                }
+            }
+            else {
+                rlist_rpush(ret_list, file_full_name);
+            }
         }
     }
 
@@ -659,13 +665,33 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
         rgoto(0);
     }
     if (!rstr_eq(file_find_data.cFileName, rfile_path_current) && !rstr_eq(file_find_data.cFileName, rfile_path_parent)) {
-        rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName, 0));
+        if (file_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            if (!only_file) {
+                rlist_rpush(ret_list, file_find_data.cFileName);
+            }
+            if (sub_dir) {
+                _rdir_list(ret_list, file_find_data.cFileName, only_file, sub_dir);
+            }
+        }
+        else {
+            rlist_rpush(ret_list, file_find_data.cFileName);
+        }
     }
 
     while (FindNextFileA(file_find_ret, &file_find_data))
     {
         if (!rstr_eq(file_find_data.cFileName, rfile_path_current) && !rstr_eq(file_find_data.cFileName, rfile_path_parent)) {
-            rlist_rpush(ret_list, rstr_cpy(file_find_data.cFileName, 0));
+            if (file_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                if (!only_file) {
+                    rlist_rpush(ret_list, file_find_data.cFileName);
+                }
+                if (sub_dir) {
+                    _rdir_list(ret_list, file_find_data.cFileName, only_file, sub_dir);
+                }
+            }
+            else {
+                rlist_rpush(ret_list, file_find_data.cFileName);
+            }
         }
     }
 
@@ -674,13 +700,25 @@ rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
 #else /* linux */
     DIR* dir_ptr;
     struct dirent* ptr;
+    //struct stat sb;
+    //if (stat(file->d_name, &sb) >= 0 && S_ISDIR(sb.st_mode))
+
     if (!(dir_ptr = opendir(format_path))) {
         rerror("Unable to scan directory: %s\n", format_path);
         rgoto(0);
     }
     while ((ptr = readdir(dir_ptr)) != 0) {
-        if (strcmp(ptr->d_name, rfile_path_current) != 0 && strcmp(ptr->d_name, rfile_path_parent) != 0) {
-            rlist_rpush(ret_list, rstr_cpy(ptr->d_name, 0));
+        if (!rstr_eq(ptr->d_name, rfile_path_current) && !rstr_eq(ptr->d_name, rfile_path_parent)) {
+            if (ptr->d_type == DT_DIR) {
+                if (!only_file) {
+                    rlist_rpush(ret_list, ptr->d_name);
+                }
+                if (sub_dir) {
+                    _rdir_list(ret_list, ptr->d_name, only_file, sub_dir);
+                }
+            } else {
+                rlist_rpush(ret_list, ptr->d_name);
+            }
         }
     }
     
@@ -700,6 +738,16 @@ exit0:
     if (root_path) {
         rstr_free(root_path);
     }
+
+    return rcode_ok;
+}
+
+/** 保留结构，node可能包含详细信息 **/
+rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
+    rlist_t* ret_list = NULL;
+    rlist_init(ret_list, rdata_type_string);
+
+    _rdir_list(ret_list, path, only_file, sub_dir);
 
     return ret_list;
 }

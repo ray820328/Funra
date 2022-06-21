@@ -59,6 +59,6 @@ int run_rdict_tests(int benchmark_output);
 int run_rcommon_tests(int benchmark_output);
 int run_rlog_tests(int benchmark_output);
 int run_rfile_tests(int benchmark_output);
-
+int run_rtools_tests(int benchmark_output);
 
 #endif /* RTEST_H */

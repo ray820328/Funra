@@ -15,6 +15,7 @@ SET(SRC_LIB
         src/rlog.c
         src/rdict.c
         src/rlist.c
+        src/rtools.c
         )
 
 #LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
@@ -32,6 +33,7 @@ SET(SRC_BIN
     test/rtest_rdict.c
     test/rtest_rlog.c
     test/rtest_rfile.c
+    test/rtest_rtools.c
     test/rtest.c
     )
 

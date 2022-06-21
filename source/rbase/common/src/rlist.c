@@ -167,7 +167,7 @@ rlist_node_t* rlist_find(rlist_t *self, void *val) {
 
     while ((node = rlist_next(&it))) {
         if (self->compare_node_val) {
-            if (self->compare_node_val(val, node->val) == 0) {
+            if (self->compare_node_val(val, node->val) == rcode_eq) {
                 return node;
             }
         }
@@ -250,6 +250,7 @@ int rlist_merge(rlist_t* dest, rlist_t* temp, rlist_direction_t dir) {
     rlist_node_t *node = NULL;
     while ((node = rlist_next(&it))) {
         rlist_rpush(dest, node->val);
+        count++;
     }
 
     return count;
