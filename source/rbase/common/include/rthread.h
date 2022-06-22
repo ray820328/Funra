@@ -18,11 +18,35 @@ extern "C" {
 
 /* ------------------------------- Macros ------------------------------------*/
 
+#if defined(_WIN32) || defined(_WIN64)
 
+#define rmutex_t_def CRITICAL_SECTION
+#define rmutex_init(rmutexObj) \
+    InitializeCriticalSection(rmutexObj)
+#define rmutex_uninit(rmutexObj) \
+    
+#define rmutex_lock(rmutexObj) \
+    EnterCriticalSection(rmutexObj)
+#define rmutex_unlock(rmutexObj) \
+    LeaveCriticalSection(rmutexObj)
 
+#else /* defined(_WIN32) || defined(_WIN64) */
+
+#define rmutex_t_def pthread_mutex_t
+#define rmutex_init(rmutexObj) \
+    pthread_mutex_init(rmutexObj, NULL)
+#define rmutex_uninit(rmutexObj) \
+    
+#define rmutex_lock(rmutexObj) \
+    pthread_mutex_lock(rmutexObj)
+#define rmutex_unlock(rmutexObj) \
+    pthread_mutex_unlock(rmutexObj) 
+
+#endif /* defined(_WIN32) || defined(_WIN64) */
 
 /* ------------------------------- APIs ------------------------------------*/
 
+long get_cur_thread_id();
 
 #ifdef __cplusplus
 }

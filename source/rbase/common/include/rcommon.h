@@ -211,56 +211,6 @@ extern "C" {
 
 #define rgoto(code_int) goto exit##code_int
 
-#if defined(_WIN32) || defined(_WIN64)
-#define rmutex_t_def CRITICAL_SECTION
-#else
-#define rmutex_t_def pthread_mutex_t
-#endif /* defined(_WIN32) || defined(_WIN64) */
-
-    static inline void rmutex_init(void* rmutexObj)
-    {
-#if defined(_WIN32) || defined(_WIN64)
-        InitializeCriticalSection(rmutexObj);
-#else
-        pthread_mutex_init(rmutexObj, NULL);
-#endif /* defined(_WIN32) || defined(_WIN64) */
-    }
-
-	static inline void rmutex_uninit(void* rmutexObj){
-
-	}
-
-    static inline void rmutex_lock(void* rmutexObj)
-    {
-#if defined(_WIN32) || defined(_WIN64)
-        EnterCriticalSection(rmutexObj);
-#else
-        pthread_mutex_lock(rmutexObj);
-#endif /* defined(_WIN32) || defined(_WIN64) */
-    }
-
-    static inline void rmutex_unlock(void* rmutexObj)
-    {
-#if defined(_WIN32) || defined(_WIN64)
-        LeaveCriticalSection(rmutexObj);
-#else
-        pthread_mutex_unlock(rmutexObj);
-#endif /* defined(_WIN32) || defined(_WIN64) */
-    }
-
-    static inline long get_cur_thread_id(void)
-    {
-#if defined(_WIN32) || defined(_WIN64)
-        return GetCurrentThreadId();
-#elif __linux__
-        return (long)syscall(SYS_gettid);
-#elif defined(__APPLE__) && defined(__MACH__)
-        return (long)syscall(SYS_thread_selfid);
-#else
-        return (long)pthread_self();
-#endif /* defined(_WIN32) || defined(_WIN64) */
-    }
-
     static inline void wait_millsec(int ms)
     {   // Pretty crossplatform, both ALL POSIX compliant systems AND Windows
 #if defined(_WIN32) || defined(_WIN64)

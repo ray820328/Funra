@@ -13,6 +13,7 @@
 #include "rstring.h"
 #include "rtime.h"
 #include "rlog.h"
+#include "rthread.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -50,6 +51,7 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
     //char* filename[rlog_filename_length];
     char timeStr[32];
     int retCode = 1;
+    char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
 
     if (logLevel != RLOG_ALL && rlog_infos[logLevel]) {
 		printf("rlog_init already inited, level = %d.\n", logLevel);
@@ -112,7 +114,13 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
         log->fmtDest = raymalloc(rlog_temp_data_size);
         log->fmtDest[0] = '\0';
 
-		log->file_ptr = fopen(log->filename, "w+");
+        if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log->filename)) {
+            last_filepath = log->filename;
+            log->file_ptr = fopen(log->filename, "w+");
+        }
+        else {
+            log->file_ptr = rlog_infos[rLevel - 1]->file_ptr;
+        }
 		if (!log->file_ptr) {
 			printf("Cannot open file [%s], check file is opening or not!\n", log->filename);
 			goto Exit1;
@@ -139,11 +147,16 @@ void rlog_uninit() {
 
 	rlog_inited = false;
 
+    char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
+
 	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
         if (rlog_infos[rLevel]) {
             if (rlog_infos[rLevel]->file_ptr) {
-                fflush(rlog_infos[rLevel]->file_ptr);
-                fclose(rlog_infos[rLevel]->file_ptr);
+                if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, rlog_infos[rLevel]->filename)) {
+                    last_filepath = rlog_infos[rLevel]->filename;
+                    fflush(rlog_infos[rLevel]->file_ptr);
+                    fclose(rlog_infos[rLevel]->file_ptr);
+                }
                 rlog_infos[rLevel]->file_ptr = NULL;
             }
 
@@ -244,7 +257,7 @@ Exit1:
 	return rcode_ok;
 }
 
-static int _rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
+int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
     if (logLevel < rlog_level) {
         return rcode_ok;
     }
@@ -268,6 +281,7 @@ static int _rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     char timeStr[32];
     int64_t timeNow = millisec_r();
     rformat_time_s_full(timeStr, timeNow);
+    //get_cur_thread_id()
     strcat(fmtDest, timeStr);
     strcat(fmtDest, " [");
     strcat(fmtDest, levelStr);//strupr(levelStr)

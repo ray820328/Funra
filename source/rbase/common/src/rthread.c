@@ -7,9 +7,7 @@
  * @author: Ray
  */
 
-#include "rfile.h"
-#include "rlog.h"
-#include "rstring.h"
+#include "rthread.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -22,6 +20,19 @@
 
 #endif
 
+
+long get_cur_thread_id()
+{
+#if defined(_WIN32) || defined(_WIN64)
+    return GetCurrentThreadId();
+#elif __linux__
+    return (long)syscall(SYS_gettid);
+#elif defined(__APPLE__) && defined(__MACH__)
+    return (long)syscall(SYS_thread_selfid);
+#else
+    return (long)pthread_self();
+#endif /* defined(_WIN32) || defined(_WIN64) */
+}
 
 
 #ifdef __GNUC__
