@@ -22,9 +22,6 @@ SET(SRC_LIB
 
 SET(SRC_BIN
     ${SRC_LIB}
-    test/dict.c
-    test/mt19937-64.c
-    test/siphash.c
     test/rtest_rpool.c
     test/rtest_collections.c
     test/rtest_rstring.c

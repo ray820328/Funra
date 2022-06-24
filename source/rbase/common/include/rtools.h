@@ -7,8 +7,8 @@
  * @author: Ray
  */
 
-#ifndef RFILE_H
-#define RFILE_H
+#ifndef RTOOLS_H
+#define RTOOLS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,4 +33,4 @@ int rtools_popcount1(uint64_t val);
 }
 #endif
 
-#endif //RFILE_H
+#endif //RTOOLS_H

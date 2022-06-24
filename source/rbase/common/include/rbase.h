@@ -30,17 +30,6 @@ extern "C" {
 		abort(); \
 	} while (0)
 
-#define raymalloc malloc
-#define rayfree free
-
-#define fn_raymalloc(x) raymalloc((x))
-#define fn_raycmalloc(x, elem_type) (elem_type*) calloc((x), sizeof(elem_type))
-#define fn_rayfree(x) \
-    do { \
-        rayfree((x)); \
-        (x) = NULL; \
-    } while (0)
-
 
 #ifdef __cplusplus
 }

@@ -100,7 +100,7 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
     rdict_size_t bucket_count = capacity % d->bucket_capacity == 0 ? capacity / d->bucket_capacity : capacity / d->bucket_capacity + 1;
     rdict_size_t dest_capacity = bucket_count * d->bucket_capacity;
     rdict_entry_t *new_entry = NULL;
-    new_entry = fn_raycmalloc(dest_capacity, rdict_entry_t);// (d->entry)));
+    new_entry = raycmalloc(dest_capacity, rdict_entry_t);// (d->entry)));
     if (new_entry == NULL) {
 		rerror("invalid malloc.");
         return rdict_code_error;

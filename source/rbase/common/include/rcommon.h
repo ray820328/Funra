@@ -25,6 +25,7 @@ extern "C" {
 #include <assert.h>
 
 #include "rbase.h"
+#include "rmemory.h"
 
 #define rcode_ok 0
 
