@@ -16,8 +16,8 @@
 
 #define rlog_filename_length 1024
 //不能小于64
-#define rlog_temp_data_size 51200
-#define rlog_cache_data_size 409600
+#define rlog_temp_data_size 5120
+#define rlog_cache_data_size 40960
 
 //#define print2file
 

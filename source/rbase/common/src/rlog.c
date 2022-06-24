@@ -83,7 +83,7 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 		char* levelStr = RLOG_TOSTR(rLevel);
          //_strlwr(levelStr);
 
-		rlog_info_t* log = raymalloc(sizeof(rlog_info_t));
+		rlog_info_t* log = rnew_data(rlog_info_t);
 		if (!log) {
 			printf("rlog_init init failed, %s.\n", levelStr);
 			exit(1);
@@ -92,7 +92,7 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 		log->level = rLevel;
 
         size_t nSize = strlen(logFilename) + strlen(levelStr) + strlen(timeStr);
-		log->filename = raymalloc(nSize + file_serail_num_len);//add suffix no. n digitals
+		log->filename = rstr_new(nSize + file_serail_num_len);//add suffix no. n digitals
 		if (!log->filename) {
 			printf("rlog_init init failed, %s.\n", levelStr);
             goto Exit1;
@@ -107,11 +107,11 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
             sprintf(log->filename, logFilename, RLOG_TOSTR(RLOG_ALL), timeStr);//all lt than level str defined
         }
         //todo Ray ...
-        log->logItemData = raymalloc(rlog_temp_data_size);
+        log->logItemData = rstr_new(rlog_temp_data_size);
         log->logItemData[0] = '\0';
-        log->logData = raymalloc(rlog_cache_data_size);
+        log->logData = rstr_new(rlog_cache_data_size);
         log->logData[0] = '\0';
-        log->fmtDest = raymalloc(rlog_temp_data_size);
+        log->fmtDest = rstr_new(rlog_temp_data_size);
         log->fmtDest[0] = '\0';
 
         if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log->filename)) {
@@ -257,6 +257,7 @@ Exit1:
 	return rcode_ok;
 }
 
+//日期会乱序
 int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
     if (logLevel < rlog_level) {
         return rcode_ok;
@@ -351,7 +352,7 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     }
 #endif
 
-    rmutex_lock(&rlog_mutex);
+    rmutex_lock(&rlog_mutex);//todo Ray 后期改 ring buffer
 
     static int64_t rlogFlushLast = 0;
     char* logItemData = rlog_infos[logLevel]->logItemData;
