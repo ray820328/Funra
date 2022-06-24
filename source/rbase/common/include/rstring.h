@@ -29,7 +29,7 @@ extern "C" {
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_reset(rstr) rstr_init((rstr))
-#define rstr_free(rstr) if ((rstr) != rstr_empty) rayfree(rstr)
+#define rstr_free(rstr) if ((rstr) != NULL && (rstr) != rstr_empty) rayfree(rstr)
 
 #define rstr_array_new(size) rnew_data_array(sizeof(char*), (size) + 1)
 #define rstr_array_count(rstr, count) \

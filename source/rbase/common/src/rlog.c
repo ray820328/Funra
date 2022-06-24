@@ -195,15 +195,26 @@ int rlog_flush_file(bool close_file) {
     bool last_flag = rlog_force_flush;
     rlog_force_flush = true;
 	rlog_printf(RLOG_INFO, "log file flushed.\n");
+
+    FILE* last_file = NULL;
 	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
-		if (rlog_infos[rLevel] && rlog_infos[rLevel]->file_ptr) {
-			fflush(rlog_infos[rLevel]->file_ptr);
-			if (close_file) {
-				fclose(rlog_infos[rLevel]->file_ptr);
-				rlog_infos[rLevel]->file_ptr = NULL;
-			}
+		if (rlog_infos[rLevel] != NULL && rlog_infos[rLevel]->file_ptr != NULL) {
+            if (rlog_infos[rLevel]->file_ptr != last_file) {
+                fflush(rlog_infos[rLevel]->file_ptr);
+                if (close_file) {
+                    fclose(rlog_infos[rLevel]->file_ptr);
+                    last_file = rlog_infos[rLevel]->file_ptr;
+                    rlog_infos[rLevel]->file_ptr = NULL;
+                }
+            }
+            else {
+                if (close_file) {
+                    rlog_infos[rLevel]->file_ptr = NULL;
+                }
+            }
 		}
 	}
+
     rlog_force_flush = last_flag;
 
     return rcode_ok;
@@ -212,7 +223,8 @@ int rlog_flush_file(bool close_file) {
 int rlog_rolling_file() {
 	rlog_info_t* log = NULL;
 	char* temp_filename = NULL;
-	bool changed = false;
+    bool changed = false;
+    char* last_filepath = NULL;//只支持两种，全散和单独一个文件
 
 	if (!rlog_inited) {
 		rlog_printf(RLOG_INFO, "rolling rlog failed, not inited.\n");
@@ -220,13 +232,17 @@ int rlog_rolling_file() {
 	}
 	rmutex_lock(&rlog_mutex);
 
-	rlog_flush_file(true);
+	rlog_flush_file(true);//已经关闭了filepath对应的文件
 
 	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
 		log = rlog_infos[cur_level];
-		if (!log) {
+		if (log == NULL || rstr_eq(log->filename, rstr_empty)) {
 			continue;
 		}
+
+        if (!rstr_eq(last_filepath, rstr_empty) && !rstr_eq(last_filepath, log->filename)) {
+
+        }
 
 		temp_filename = rstr_cpy(log->filename, 0);
 		temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
@@ -253,6 +269,8 @@ int rlog_rolling_file() {
 
 Exit1:
 	rmutex_unlock(&rlog_mutex);
+
+    rstr_free(temp_filename);
 
 	return rcode_ok;
 }
