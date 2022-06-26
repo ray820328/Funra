@@ -107,7 +107,7 @@ int rstr_compare_func(const char* obj1, const char* obj2) {
 size_t rstr_cat(char* dest, const char* src, const size_t dest_size) {
     size_t position = rstr_len(dest);
     size_t src_len = rstr_len(src);
-    size_t copy_len = rmin(src_len, dest_size - position);
+    size_t copy_len = dest_size == 0 ? src_len : rmin(src_len, dest_size - position);
     memcpy(dest + position, src, copy_len);
     position += copy_len;
 

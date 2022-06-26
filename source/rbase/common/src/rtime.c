@@ -18,7 +18,7 @@ static const long long NANOSECOND_PER_SECOND = 1000000000LL;
 #define SEC_PER_MIN     60
 
  /* 每个月的天数 */
-const unsigned char g_day_per_mon[MONTH_PER_YEAR] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+static unsigned char g_day_per_mon[MONTH_PER_YEAR] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 // #include <lua5.3/lua.h>
 // #include <lua5.3/lauxlib.h>
@@ -53,7 +53,7 @@ const unsigned char g_day_per_mon[MONTH_PER_YEAR] = { 31, 28, 31, 30, 31, 30, 31
 //  return (0);
 //}
 
-int gettimeofdayfix(struct timeval * tp, struct timezone * tzp)
+int rtime_gettimeofdayfix(struct timeval * tp, struct timezone * tzp)
 {
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
     // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
@@ -83,7 +83,7 @@ int gettimeofdayfix(struct timeval * tp, struct timezone * tzp)
 #endif
 
 // 获取纳秒值，windows只能取到相对值，只能做比较不能转毫秒等
-int64_t nanosec_r() {
+int64_t rtime_nanosec() {
 #ifdef WIN32
     static LARGE_INTEGER frequency = {0};
     if (frequency.QuadPart == 0) {
@@ -104,10 +104,10 @@ int64_t nanosec_r() {
 
 static struct timezone* rtime_zone = NULL;
 // 获取微秒值，注意不是时间戳
-int64_t microsec_r() {
+int64_t rtime_microsec() {
   struct timeval tv;
 #ifdef WIN32
-  gettimeofdayfix(&tv, NULL);
+  rtime_gettimeofdayfix(&tv, NULL);
 #else
   gettimeofday(&tv, rtime_zone);
 #endif
@@ -117,10 +117,10 @@ int64_t microsec_r() {
 }
 
 // 获取毫秒时间戳（没带时区）
-int64_t millisec_r() {
+int64_t rtime_millisec() {
   struct timeval tv;
 #ifdef WIN32
-  gettimeofdayfix(&tv, NULL);
+  rtime_gettimeofdayfix(&tv, NULL);
   time_t clock;
   struct tm tm;
   SYSTEMTIME wtm;
@@ -207,16 +207,15 @@ static unsigned char rlib_last_day_of_mon(unsigned char month, unsigned short ye
 
 
 static int rtime_zone_int = 8;
-extern void rdate_set_time_zone(int timeZone) {
+extern void rtime_set_time_zone(int timeZone) {
     rtime_zone_int = timeZone;
 }
-extern int rdate_get_time_zone() {
+extern int rtime_get_time_zone() {
     return rtime_zone_int;
 }
 
-
-static int rtime_datas[7];
-extern int* rdate_from_time_millis_security(int64_t timeMillis, int* datas) {
+extern int* rtime_from_time_millis_security(int64_t timeMillis, int* datas) {
+	static int rtime_datas[7] = { 0 ,0, 0, 0, 0, 0, 0 };
     if (!datas) {
         datas = rtime_datas;
     }
@@ -286,8 +285,8 @@ extern int* rdate_from_time_millis_security(int64_t timeMillis, int* datas) {
 }
 
 //不支持多线程
-extern int* rdate_from_time_millis(int64_t timeMillis) {
-    return rdate_from_time_millis_security(timeMillis, rtime_datas);
+extern int* rtime_from_time_millis(int64_t timeMillis) {
+    return rtime_from_time_millis_security(timeMillis, NULL);
 }
 
 

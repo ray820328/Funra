@@ -11,6 +11,7 @@
 
 #include "rcommon.h"
 #include "rstring.h"
+#include "rfile.h"
 #include "rtime.h"
 #include "rlog.h"
 #include "rthread.h"
@@ -48,10 +49,13 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 	rlog_level = logLevel == RLOG_ALL ? RLOG_VERB : logLevel;
 	file2seperate = seperateFile;
 
+	rlog_info_t* log = NULL;
     //char* filename[rlog_filename_length];
     char timeStr[32];
     int retCode = 1;
     char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
+	size_t filename_len = 0;
+	char* levelStr = NULL;
 
     if (logLevel != RLOG_ALL && rlog_infos[logLevel]) {
 		printf("rlog_init already inited, level = %d.\n", logLevel);
@@ -80,10 +84,10 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 			printf("log item already finished, level = %d.\n", rLevel);
 			continue;//初始优先级更高，不覆盖
 		}
-		char* levelStr = RLOG_TOSTR(rLevel);
+		levelStr = RLOG_TOSTR(rLevel);
          //_strlwr(levelStr);
 
-		rlog_info_t* log = rnew_data(rlog_info_t);
+		log = rnew_data(rlog_info_t);
 		if (!log) {
 			printf("rlog_init init failed, %s.\n", levelStr);
 			exit(1);
@@ -91,9 +95,9 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 		rlog_infos[rLevel] = log;
 		log->level = rLevel;
 
-        size_t nSize = strlen(logFilename) + strlen(levelStr) + strlen(timeStr);
-		log->filename = rstr_new(nSize + file_serail_num_len);//add suffix no. n digitals
-		if (!log->filename) {
+		filename_len = strlen(logFilename) + strlen(levelStr) + strlen(timeStr);
+		log->filename = rstr_new(filename_len + file_serail_num_len);//add suffix no. n digitals
+		if (log->filename == NULL) {
 			printf("rlog_init init failed, %s.\n", levelStr);
             goto Exit1;
 		}
@@ -106,6 +110,8 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
 		else {
             sprintf(log->filename, logFilename, RLOG_TOSTR(RLOG_ALL), timeStr);//all lt than level str defined
         }
+		rfile_format_path(log->filename);
+
         //todo Ray ...
         log->logItemData = rstr_new(rlog_temp_data_size);
         log->logItemData[0] = '\0';
@@ -225,6 +231,9 @@ int rlog_rolling_file() {
 	char* temp_filename = NULL;
     bool changed = false;
     char* last_filepath = NULL;//只支持两种，全散和单独一个文件
+	int underline_index = -1;
+	int dot_index = -1;
+	char time_str[20];
 
 	if (!rlog_inited) {
 		rlog_printf(RLOG_INFO, "rolling rlog failed, not inited.\n");
@@ -244,8 +253,37 @@ int rlog_rolling_file() {
 
         }
 
-		temp_filename = rstr_cpy(log->filename, 0);
+		char* path_name = rdir_get_path_dir(log->filename);
+		char* file_name = rdir_get_path_filename(log->filename);
 		temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
+		//underline_index = rstr_last_index(file_name, "_");//必须保证 _ 后面一定是數字，xxx_1.xx
+		dot_index = rstr_last_index(file_name, ".");
+		if (dot_index > 0) {
+			char* path1 = rstr_empty;
+			int file_index = 0;
+			if (underline_index > 0) {
+				path1 = rstr_sub(file_name, underline_index + 1, dot_index - underline_index, true);
+				file_index = rstr_2int(path1);
+				rstr_free(path1);
+			}
+			else {
+				underline_index = dot_index;
+			}
+			file_index += 1;
+
+			char* path2 = rstr_sub(file_name, 0, underline_index, true);
+			char* path3 = rstr_sub(file_name, dot_index, rstr_len(file_name) - dot_index, true);
+
+			sprintf(log->filename, "%s/%s_%d%s", path_name, path2, file_index, path3);
+
+			rstr_free(path1);
+			rstr_free(path2);
+			rstr_free(path3);
+		}
+		else {
+			rformat_time_s_yyyymmddhhMMss(time_str, 0);
+			rstr_cat(log->filename, time_str, 0);
+		}
 		
 		if (file2seperate) {
 			(void)rename(log->filename, temp_filename);

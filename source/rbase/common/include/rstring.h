@@ -71,13 +71,13 @@ extern "C" {
     } while(0)
 #define rformat_time_s_full(timeStr, timeValue) \
     do { \
-        int* timeNowDatas = rdate_from_time_millis((timeValue) ? (timeValue) : millisec_r()); \
+        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : millisec_r()); \
         rformat_s((timeStr), "%.4d-%.2d-%.2d %.2d:%.2d:%.2d %.3d", \
             timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5], timeNowDatas[6]); \
     } while(0)
 #define rformat_time_s_yyyymmddhhMMss(timeStr, timeValue) \
     do { \
-        int* timeNowDatas = rdate_from_time_millis((timeValue) ? (timeValue) : millisec_r()); \
+        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : millisec_r()); \
         rformat_s((timeStr), "%.4d%.2d%.2d%.2d%.2d%.2d", \
             timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
     } while(0)
