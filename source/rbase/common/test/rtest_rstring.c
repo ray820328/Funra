@@ -27,18 +27,21 @@ static void rstring_index_test(void **state) {
     (void)state;
 
     int count = 100;
-    int j;
 	char* delim = "z0";
 
     init_benchmark(1024, "test rstring (%d)", count);
 
     start_benchmark(0);
-    rstr_array_make(str_array, 3);
-    str_array[0] = "str";
-    str_array[1] = "array";
-    char* str_concat_array = rstr_concat(str_array, "_", false);
+    char* str_join = rstr_join("test", "_", "join", " string", rstr_array_end);
+    assert_true(rstr_eq(str_join, "test_join string"));
+    end_benchmark("rstring join.");
+
+    start_benchmark(0);
+    char** str_array = rstr_make_array(2, "str", "array");
+    char* str_concat_array = rstr_concat_array(str_array, "_", false);
     assert_true(rstr_eq(str_concat_array, "str_array"));
     rstr_free(str_concat_array);
+    rstr_array_free(str_array);
     end_benchmark("rstring concat.");
 
     start_benchmark(0);
@@ -70,7 +73,7 @@ static void rstring_index_test(void **state) {
         assert_true(cur_len > 0);
     } 
 
-	char* str_concat_full = rstr_concat(tokens, delim, false);
+	char* str_concat_full = rstr_concat_array(tokens, delim, false);
 	assert_true(rstr_eq(str_concat_full, test_full_str));
 
 	rstr_free(str_concat_full);
@@ -104,11 +107,11 @@ static struct CMUnitTest test_group2[] = {
 int run_rstring_tests(int benchmark_output) {
     int result = 0;
 
-    int64_t timeNow = nanosec_r();
+    int64_t timeNow = rtime_nanosec();
 
     result += cmocka_run_group_tests(test_group2, NULL, NULL);
 
-    printf("run_rstring_tests, failed: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
+    printf("run_rstring_tests, failed: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
 }

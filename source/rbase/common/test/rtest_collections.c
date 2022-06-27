@@ -46,12 +46,12 @@ static int uninit() {
 int run_rcommon_tests(int benchmark_output) {
     init();
 
-    int64_t timeNow = nanosec_r();
+    int64_t timeNow = rtime_nanosec();
 
     int result = 0;
     result += cmocka_run_group_tests(tests, NULL, NULL);
 
-    printf("run_rcommon_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
+    printf("run_rcommon_tests all time: %"PRId64" us\n", (rtime_nanosec() - timeNow));
 
     uninit();
 

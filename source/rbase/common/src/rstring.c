@@ -115,7 +115,7 @@ size_t rstr_cat(char* dest, const char* src, const size_t dest_size) {
     return copy_len;
 }
 
-char* rstr_concat(const char** src, const char* delim, bool suffix) {
+char* rstr_concat_array(const char** src, const char* delim, bool suffix) {
 	if (src == NULL || delim == NULL) {
 		return rstr_empty;
 	}

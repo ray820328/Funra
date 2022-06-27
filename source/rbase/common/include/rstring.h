@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 #include "rcommon.h"
+#include "rarray.h"
 
 /* ------------------------------- Macros ------------------------------------*/
 
@@ -71,13 +72,13 @@ extern "C" {
     } while(0)
 #define rformat_time_s_full(timeStr, timeValue) \
     do { \
-        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : millisec_r()); \
+        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : rtime_millisec()); \
         rformat_s((timeStr), "%.4d-%.2d-%.2d %.2d:%.2d:%.2d %.3d", \
             timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5], timeNowDatas[6]); \
     } while(0)
 #define rformat_time_s_yyyymmddhhMMss(timeStr, timeValue) \
     do { \
-        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : millisec_r()); \
+        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : rtime_millisec()); \
         rformat_s((timeStr), "%.4d%.2d%.2d%.2d%.2d%.2d", \
             timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
     } while(0)
@@ -111,8 +112,13 @@ extern "C" {
 R_API void rstr_free_func(char* dest);
 R_API int rstr_compare_func(const char* obj1, const char* obj2);
 
+/** rstr_array_end结尾 **/
+R_API char** rstr_make_array(const int count, ...);
+
 R_API size_t rstr_cat(char* dest, const char* src, const size_t sizeof_dest);
-R_API char* rstr_concat(const char** src, const char* delim, bool suffix);
+R_API char* rstr_concat_array(const char** src, const char* delim, bool suffix);
+/** rstr_array_end结尾 **/
+R_API char* rstr_join(const char* src, ...);
 
 R_API char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...);
 /** len为0时到src结尾 **/

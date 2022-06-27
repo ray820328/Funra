@@ -52,11 +52,11 @@ static struct CMUnitTest test_group2[] = {
 int run_rarray_tests(int benchmark_output) {
     int result = 0;
 
-    int64_t timeNow = nanosec_r();
+    int64_t timeNow = rtime_nanosec();
 
     result += cmocka_run_group_tests(test_group2, NULL, NULL);
 
-    printf("run_rarray_tests, failed: %d, all time: %"PRId64" us\n", result, (nanosec_r() - timeNow));
+    printf("run_rarray_tests, failed: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
 }

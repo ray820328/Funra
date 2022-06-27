@@ -67,12 +67,12 @@ static struct CMUnitTest test_group2[] = {
 };
 
 int run_rlog_tests(int benchmark_output) {
-    int64_t timeNow = nanosec_r();
+    int64_t timeNow = rtime_nanosec();
 
     int result = 0;
     result += cmocka_run_group_tests(test_group2, setup, teardown);
 
-    printf("run_rlog_tests all time: %"PRId64" us\n", (nanosec_r() - timeNow));
+    printf("run_rlog_tests all time: %"PRId64" us\n", (rtime_nanosec() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
 }

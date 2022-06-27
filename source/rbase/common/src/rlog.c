@@ -37,6 +37,26 @@ rattribute_unused(static int rlog_rollback_size = 0);//rolling文件大小
 
 static rlog_info_t* rlog_infos[RLOG_ALL];
 
+static char* rlog_filepath_format = NULL;
+const static char* rlog_param_date = "${date}";
+const static char* rlog_param_file_index = "${index}";
+
+static int _rlog_format_filepath() {
+    rmutex_lock(&rlog_mutex);
+
+    if (rlog_filepath_format == NULL) {
+        rlog_filepath_format = ".${index}.log";
+    }
+
+    if (rstr_index(rlog_filepath_format, "${index}") < 0) {
+
+    }
+
+    rmutex_unlock(&rlog_mutex);
+
+    return rcode_ok;
+}
+
 //"XXX_%s_%s.log"
 void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool seperateFile, const char* fileSuffix) {//字符长度都有保证
     if (rlog_inited) {
@@ -255,8 +275,8 @@ int rlog_rolling_file() {
 
 		char* path_name = rdir_get_path_dir(log->filename);
 		char* file_name = rdir_get_path_filename(log->filename);
-		temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
-		//underline_index = rstr_last_index(file_name, "_");//必须保证 _ 后面一定是數字，xxx_1.xx
+		//temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
+		underline_index = rstr_last_index(file_name, "_");//必须保证 _ 后面一定是數字，xxx_1.xx
 		dot_index = rstr_last_index(file_name, ".");
 		if (dot_index > 0) {
 			char* path1 = rstr_empty;
@@ -336,7 +356,7 @@ int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
     char* fmtDest = rlog_infos[logLevel]->fmtDest;
     char* levelStr = RLOG_TOSTR(logLevel);
     char timeStr[32];
-    int64_t timeNow = millisec_r();
+    int64_t timeNow = rtime_millisec();
     rformat_time_s_full(timeStr, timeNow);
     //get_cur_thread_id()
     strcat(fmtDest, timeStr);
@@ -416,8 +436,8 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     char* fmtDest = rlog_infos[logLevel]->fmtDest;
     char* levelStr = RLOG_TOSTR(logLevel);
     char timeStr[32];
-    int64_t timeNow = millisec_r();
-    rformat_time_s_full(timeStr, timeNow);
+    int64_t time_now = rtime_millisec();
+    rformat_time_s_full(timeStr, time_now);
     strcat(fmtDest, timeStr);
     strcat(fmtDest, " [");
     strcat(fmtDest, levelStr);//strupr(levelStr)

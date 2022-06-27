@@ -10,6 +10,7 @@ SET(SRC_LIB
         src/rfile.c
         src/rtime.c
         src/rstring.c
+        src/rstring_ext.c
         src/rthread.c
         src/rarray.c
         src/rlog.c

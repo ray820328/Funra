@@ -611,7 +611,7 @@ char* rfile_get_filepath(const char *path, const char *filename) {
     paths[0] = format_path;
     paths[1] = filename;
 
-    char* file_path = rstr_concat(paths, rfile_seperator, false);
+    char* file_path = rstr_concat_array(paths, rfile_seperator, false);
 
     rstr_free(format_path);
 

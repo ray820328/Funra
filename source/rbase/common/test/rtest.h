@@ -40,12 +40,12 @@
     benchmarkTitle = NULL
 
 #define start_benchmark(benchmarkMsgTitle) do { \
-    benchmarkStart = millisec_r(); \
+    benchmarkStart = rtime_millisec(); \
     if (benchmarkMsgTitle) benchmarkTitle = benchmarkMsgTitle; \
 } while(0)
 
 #define end_benchmark(benchmarkMsgSuffix) do { \
-    benchmarkElapsed = millisec_r() - benchmarkStart; \
+    benchmarkElapsed = rtime_millisec() - benchmarkStart; \
     printf("%s: elapsed %"PRId64" ms, " benchmarkMsgSuffix "\n", benchmarkTitle, benchmarkElapsed); \
 } while(0)
 
