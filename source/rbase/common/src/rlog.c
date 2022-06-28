@@ -37,19 +37,43 @@ rattribute_unused(static int rlog_rollback_size = 0);//rolling文件大小
 
 static rlog_info_t* rlog_infos[RLOG_ALL];
 
-static char* rlog_filepath_format = NULL;
+static char* rlog_filepath_format = NULL;//不允许初始静态值
 const static char* rlog_param_date = "${date}";
 const static char* rlog_param_file_index = "${index}";
+const static char* rlog_param_level = "${level}";
+const static char* rlog_param_filename = "${filename}";
+const static char* rlog_param_file_suffix = "log";
 
 static int _rlog_format_filepath() {
     rmutex_lock(&rlog_mutex);
 
-    if (rlog_filepath_format == NULL) {
-        rlog_filepath_format = ".${index}.log";
+    rlog_filepath_format = rstr_cpy("/aaa/bbb", 0);
+
+    if (rlog_filepath_format == NULL || rstr_eq(rlog_filepath_format, rstr_empty)) {
+        rlog_filepath_format = rstr_cpy("${date}/${filename}_${level}.${index}.log", 0);
     }
 
-    if (rstr_index(rlog_filepath_format, "${index}") < 0) {
+    char* temp_path = NULL;
+    int file_suffix = rstr_last_index(rlog_filepath_format, ".");
 
+    if (rstr_index(rlog_filepath_format, rlog_param_file_index) < 0) {
+        if (file_suffix < 0) {
+            temp_path = rlog_filepath_format;
+            rlog_filepath_format = rstr_join(rlog_filepath_format, ".", rlog_param_file_index, rstr_array_end);
+            rstr_free(temp_path);
+        }
+        else {
+            temp_path = rlog_filepath_format;
+            temp_path[file_suffix] = rstr_end;
+            rlog_filepath_format = rstr_join(temp_path, ".${index}.", temp_path + file_suffix + 1, rstr_array_end);
+            rstr_free(temp_path);
+        }
+    }
+
+    if (file_suffix < 0) {
+        temp_path = rlog_filepath_format;
+        rlog_filepath_format = rstr_join(temp_path, ".", rlog_param_file_suffix, rstr_array_end);
+        rstr_free(temp_path);
     }
 
     rmutex_unlock(&rlog_mutex);
@@ -63,6 +87,9 @@ void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool 
         return;
     }
     rmutex_init(&rlog_mutex);
+
+    rlog_filepath_format = logFilename == NULL ? NULL : rstr_cpy(logFilename, 0);
+    _rlog_format_filepath();
 
     rmutex_lock(&rlog_mutex);
 
@@ -275,7 +302,7 @@ int rlog_rolling_file() {
 
 		char* path_name = rdir_get_path_dir(log->filename);
 		char* file_name = rdir_get_path_filename(log->filename);
-		//temp_filename = rstr_repl(log->filename, temp_filename, rstr_len(temp_filename) + file_serail_num_len, ".txt", "_111.txt");
+		//temp_filename = rstr_repl(log->filename, ".txt", "_111.txt");
 		underline_index = rstr_last_index(file_name, "_");//必须保证 _ 后面一定是數字，xxx_1.xx
 		dot_index = rstr_last_index(file_name, ".");
 		if (dot_index > 0) {

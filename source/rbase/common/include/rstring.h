@@ -122,7 +122,7 @@ R_API char* rstr_join(const char* src, ...);
 
 R_API char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...);
 /** len为0时到src结尾 **/
-R_API char* rstr_cpy(const void *key, size_t len);
+R_API char* rstr_cpy(const void *src, size_t len);
 R_API char* rstr_cpy_full(const void *key);
 
 /** -1: 无子串 **/
@@ -135,7 +135,7 @@ R_API char* rstr_sub(const char* src, const size_t from, const size_t dest_size,
 R_API char* rstr_sub_str(const char* src, const char* key, bool new);
 
 /** 支持utf8，非unicode16 **/
-R_API char* rstr_repl(char *src, char *dest_str, int dest_len, char *old_str, char *new_str);
+R_API char* rstr_repl(char *src, char *old_str, char *new_str);
 /** 无匹配返回null **/
 R_API char** rstr_split(const char *src, const char *delim);
 

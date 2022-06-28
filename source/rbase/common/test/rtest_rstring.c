@@ -81,6 +81,13 @@ static void rstring_index_test(void **state) {
 
     end_benchmark("rstring token.");
 
+    start_benchmark(0);
+    char* repl_str = rstr_repl("1234567896770000000000000000000000", "67", "_67_");
+    assert_true(rstr_eq(repl_str, "12345_67_89_67_70000000000000000000000"));
+    rstr_free(repl_str);
+    end_benchmark("rstring replace.");
+
+
     uninit_benchmark();
 }
 

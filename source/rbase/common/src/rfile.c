@@ -349,11 +349,23 @@ int rfile_make_dir(const char *path, bool recursive)
 
     int rv = rcode_ok;
     //AccessMode = 00 表示只判断是否存在，02 是否可执行，_AccessMode = 04 是否可写，06 是否可读
-    int path_len = rstr_len(path);
-    int full_len = path_len * 2;
-    char* format_path = rstr_new(full_len);
-    format_path = rstr_repl(path, format_path, full_len, "\\", "/");
-    char** dirs = rstr_split(format_path, "/");
+    char* temp_path = NULL;
+    if (rstr_index(path, "\\\\") > -1) {
+        temp_path = rstr_repl(path, "\\\\", "/");
+    }
+    char* temp_path2 = NULL;
+    if (rstr_index(temp_path == NULL ? path : temp_path, "\\") > -1) {
+        temp_path2 = rstr_repl(temp_path == NULL ? path : temp_path, "\\", "/");
+    }
+
+    char* dest_path = temp_path2 ? temp_path2 : (temp_path ? temp_path : path);
+    char** dirs = rstr_split(dest_path, "/");
+    int path_len = rstr_len(dest_path);
+
+    rstr_free(temp_path);
+    rstr_free(temp_path2);
+
+    char* format_path = rstr_new(path_len + 1);
     rstr_reset(format_path);
 
     char* dir_cur = NULL;
@@ -362,8 +374,8 @@ int rfile_make_dir(const char *path, bool recursive)
             continue;
         }
 
-        rstr_cat(format_path, dir_cur, full_len);
-        rstr_cat(format_path, rfile_seperator, full_len);
+        rstr_cat(format_path, dir_cur, path_len);
+        rstr_cat(format_path, rfile_seperator, path_len);
         if (access(format_path, 0) != 0) {
             rv = rfile_dir_make(format_path);
             if (rv != 0) {

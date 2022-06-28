@@ -42,6 +42,7 @@ int rfile_remove(const char* file);
 //int rfile_open(const char* file_path);
 //int rfile_close(const char* file_path);
 
+/** 不带后缀，形如：/temp/test **/
 int rfile_format_path(char* file);
 
 char* rfile_get_filepath(const char *path, const char *filename);

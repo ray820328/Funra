@@ -163,18 +163,17 @@ char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...) {
 }
 
 char* rstr_cpy(const void* data, size_t len){
-    if (data == NULL) {
-        return rstr_empty;
-    }
-	if (data == rstr_empty) {
+    if (data == NULL || data == rstr_empty) {
 		return rstr_empty;
 	}
+
     unsigned int data_len = (unsigned int)strlen((char*)data);
     data_len = len > 0 && len < data_len ? len : data_len;
     char* data_copy = (char*)rstr_new(data_len + 1u);
     if (data_copy == NULL) {
         return rstr_empty;
     }
+
     //rstr_init(data_copy);
     memcpy(data_copy, data, data_len);
     data_copy[data_len] = rstr_end;
@@ -263,41 +262,83 @@ int rstr_last_index(const char* src, const char* key) {
 }
 
 /** 不支持unicode，有中文截断危险，utf8编码可以使用 **/
-char* rstr_repl(char *src, char *dest_str, int dest_len, char *old_str, char *new_str) {
-    if (!new_str || !dest_str) {
+char* rstr_repl(char *src, char *old_str, char *new_str) {
+    if (src == NULL || old_str == NULL) {
         return rstr_empty;
     }
+    new_str = new_str == NULL ? rstr_empty : new_str;
 
-    const size_t strLen = strlen(src);
-    const size_t oldLen = strlen(old_str);
-    const size_t newLen = strlen(old_str);
-    //char bstr[strLen];//转换缓冲区
-    //memset(bstr, 0, sizeof(bstr));
-
-    dest_str[0] = rstr_end;
-
-    for (size_t i = 0; i < strLen; i++) {
-        if (!strncmp(src + i, old_str, oldLen)) {//查找目标字符串
-            if (strlen(dest_str) + newLen >= dest_len) {
-                dest_str[strlen(dest_str)] = rstr_end;
-                break;
-            }
-
-            strcat(dest_str, new_str);
-            i += oldLen - 1;
+    const size_t old_len = rstr_len(old_str);
+    const size_t new_len = rstr_len(new_str);
+    char buf[256];//转换缓冲区
+    int max_len = 256;
+    char* buf_ext = buf;
+    char* buf_temp = NULL;
+    int expand_count = 1;
+    int buf_pos = 0;
+    int last_len = 0;
+    int find_index = rstr_index(src, old_str);
+    
+    while (find_index >= 0) {
+        if (buf_pos + find_index + new_len < max_len * expand_count) {
+            memcpy(buf_ext + buf_pos, src, find_index);
+            memcpy(buf_ext + buf_pos + find_index, new_str, new_len);
         }
         else {
-            if (strlen(dest_str) + 1 >= dest_len) {
-                dest_str[strlen(dest_str)] = rstr_end;
-                break;
+            do {
+                expand_count *= 2;
+            } while (max_len * expand_count < buf_pos + find_index + new_len);
+
+            buf_temp = rstr_new(max_len * expand_count);
+            memcpy(buf_temp, buf_ext, buf_pos);
+            memcpy(buf_temp + buf_pos, src, find_index);
+            memcpy(buf_temp + buf_pos + find_index, new_str, new_len);
+
+            if (buf_ext != buf) {
+                rstr_free(buf_ext);
             }
 
-            strncat(dest_str, src + i, 1);//保存一字节进缓冲区
+            buf_ext = buf_temp;
+            buf_temp = NULL;
         }
-    }
-    //strcpy(src, bstr);
+        buf_pos += find_index + new_len;
 
-    return dest_str;
+        src += find_index + old_len;
+        find_index = rstr_index(src, old_str);
+    }
+
+    if (!rstr_eq(src, rstr_empty)) {
+        last_len = rstr_len(src);
+
+        if (buf_pos + last_len < max_len * expand_count) {
+            memcpy(buf_ext + buf_pos, src, last_len);
+        }
+        else {
+            do {
+                expand_count *= 2;
+            } while (max_len * expand_count < buf_pos + last_len);
+
+            buf_temp = rstr_new(max_len * expand_count);
+            memcpy(buf_temp, buf_ext, buf_pos);
+            memcpy(buf_temp + buf_pos, src, last_len);
+
+            if (buf_ext != buf) {
+                rstr_free(buf_ext);
+            }
+
+            buf_ext = buf_temp;
+            buf_temp = NULL;
+        }
+        buf_pos += last_len;
+    }
+
+    buf_ext[buf_pos] = rstr_end;
+
+    if (expand_count == 1) {
+        return rstr_cpy(buf, 0);
+    }
+
+    return buf_ext;
 }
 
 char** rstr_split(const char* src, const char* delim) {
