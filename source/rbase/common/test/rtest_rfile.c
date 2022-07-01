@@ -79,14 +79,14 @@ static int setup(void **state) {
 
     dir_path = "./test_dir/local";
 
-	rfile_make_dir(dir_path, true);
+    rdir_make(dir_path, true);
     rfile_create_in(dir_path, "file01.txt");
     rfile_create_in(dir_path, "file02.data");
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-    //assert_true(rfile_remove_dir(dir_path) == rcode_ok);
+    //assert_true(rdir_remove(dir_path) == rcode_ok);
     dir_path = NULL;
 
     free(*state);

@@ -13,6 +13,7 @@
 #include "string.h"
 
 #include "rcommon.h"
+#include "rthread.h"
 
 #define rlog_filename_length 1024
 //不能小于64
@@ -22,7 +23,7 @@
 //#define print2file
 
 
-#define RLOG_TOSTR(RLOG_E)    \
+#define rlog_level_2str(RLOG_E)    \
 		((RLOG_E) == RLOG_VERB ? "VEBR" : \
 		((RLOG_E) == RLOG_TRACE ? "TRACE" : \
 		((RLOG_E) == RLOG_DEBUG ? "DEBUG" : \
@@ -58,13 +59,24 @@ extern "C" {
         char* fmtDest;
     } rlog_info_t;
 
-    R_API void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool seperateFile, const char* fileSuffix);
-    R_API void rlog_uninit();
+    typedef struct rlog_t
+    {
+        rmutex_t_def mutex;
+        bool inited;
+        rlog_level_t level;
+        rlog_info_t* log_items[RLOG_ALL];
+    } rlog_t;
 
-    R_API int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...);
-    R_API int rlog_printf(rlog_level_t logLevel, const char* fmtStr, ...);
-    R_API int rlog_flush_file(bool close_file);
-    R_API int rlog_rolling_file();
+    R_API int rlog_init(const char* log_default_filename, const rlog_level_t log_default_level, const bool log_default_seperate_file);
+    R_API int rlog_uninit();
+
+    R_API int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, const bool seperate_file);
+    R_API int rlog_uninit_log(rlog_t* rlog);
+
+    R_API int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...);
+    R_API int rlog_printf(rlog_t* rlog, rlog_level_t evel, const char* fmt, ...);
+    R_API int rlog_flush_file(rlog_t* rlog, bool close_file);
+    R_API int rlog_rolling_file(rlog_t* rlog);
 
 
 #ifdef __cplusplus

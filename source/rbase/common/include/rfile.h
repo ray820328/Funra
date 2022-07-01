@@ -26,16 +26,14 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
 
-int rfile_make_dir(const char *path, bool recursive);
-
-int rfile_remove_dir(const char *path);
-
 int rfile_create(const char *file_path);
 int rfile_create_in(const char *dir, const char *filename);
+int rfile_exists(const char* path);
 
 int rfile_copy_file(const char* src, const char* dst);
 
 int rfile_move_file(const char* src, const char* dst);
+int rfile_rename(const char* src, const char* dst);
 
 int rfile_remove(const char* file);
 
@@ -46,6 +44,10 @@ int rfile_remove(const char* file);
 int rfile_format_path(char* file);
 
 char* rfile_get_filepath(const char *path, const char *filename);
+
+int rdir_make(const char *path, bool recursive);
+
+int rdir_remove(const char *path);
 
 rlist_t* rdir_list(const char* dir, bool only_file, bool sub_dir);
 

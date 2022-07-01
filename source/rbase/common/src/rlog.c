@@ -14,7 +14,6 @@
 #include "rfile.h"
 #include "rtime.h"
 #include "rlog.h"
-#include "rthread.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -23,246 +22,418 @@
 
 #define file_serail_num_len 20
 
-rattribute_unused(static volatile bool rlog_inited = false);
 rattribute_unused(static volatile int64_t timeLast = 0);
 rattribute_unused(static int64_t timeMax = 0);
 
 static rmutex_t_def rlog_mutex;
-static rlog_level_t rlog_level;
-static bool file2seperate;
+static rlog_t** rlog_all = NULL;
 
 static bool rlog_force_flush = false;//false启用日志buffer
 static int rlog_flush_max = 30000;//n秒刷一次缓存
 rattribute_unused(static int rlog_rollback_size = 0);//rolling文件大小
 
-static rlog_info_t* rlog_infos[RLOG_ALL];
+static char* rlog_filepath_format = "${date}/funra_${level}_${time}_${index}.log";
+const static char* rlog_param_date = "${date}";//"${date}"
+const static char* rlog_param_file_index = "${index}";//"${index}"
+const static char* rlog_param_level = "${level}";//"${level}"
+const static char* rlog_param_time = "${time}";//"${time}"
+const static char* rlog_param_file_suffix = "log";//"log"
+const static char* rlog_param_file_suffix_gap = ".";// "."
+const static char* rlog_param_file_index_gap = "_";//"_" 形如：xxx_0.log
+const static char* rlog_param_file_index_default = "";//"" 形如：xxx_.log
 
-static char* rlog_filepath_format = NULL;//不允许初始静态值
-const static char* rlog_param_date = "${date}";
-const static char* rlog_param_file_index = "${index}";
-const static char* rlog_param_level = "${level}";
-const static char* rlog_param_filename = "${filename}";
-const static char* rlog_param_file_suffix = "log";
-
-static int _rlog_format_filepath() {
+static int _rlog_format_filepath_template(char* filepath_template) {
     rmutex_lock(&rlog_mutex);
-
-    rlog_filepath_format = rstr_cpy("/aaa/bbb", 0);
-
-    if (rlog_filepath_format == NULL || rstr_eq(rlog_filepath_format, rstr_empty)) {
-        rlog_filepath_format = rstr_cpy("${date}/${filename}_${level}.${index}.log", 0);
-    }
-
+    
+    rlog_filepath_format = (filepath_template == NULL || rstr_eq(rlog_filepath_format, rstr_empty)) ? 
+        rstr_cpy(rlog_filepath_format, 0) : rstr_cpy(filepath_template, 0);
+    
     char* temp_path = NULL;
-    int file_suffix = rstr_last_index(rlog_filepath_format, ".");
+    int file_suffix = rstr_last_index(rlog_filepath_format, rlog_param_file_suffix_gap);
 
     if (rstr_index(rlog_filepath_format, rlog_param_file_index) < 0) {
         if (file_suffix < 0) {
             temp_path = rlog_filepath_format;
-            rlog_filepath_format = rstr_join(rlog_filepath_format, ".", rlog_param_file_index, rstr_array_end);
+            rlog_filepath_format = rstr_join(rlog_filepath_format, rlog_param_file_index_gap, rlog_param_file_index, rstr_array_end);
             rstr_free(temp_path);
         }
         else {
             temp_path = rlog_filepath_format;
             temp_path[file_suffix] = rstr_end;
-            rlog_filepath_format = rstr_join(temp_path, ".${index}.", temp_path + file_suffix + 1, rstr_array_end);
+            rlog_filepath_format = rstr_join(temp_path, rlog_param_file_index_gap, rlog_param_file_index, 
+                rlog_param_file_suffix_gap, temp_path + file_suffix + 1, rstr_array_end);
             rstr_free(temp_path);
         }
     }
 
     if (file_suffix < 0) {
         temp_path = rlog_filepath_format;
-        rlog_filepath_format = rstr_join(temp_path, ".", rlog_param_file_suffix, rstr_array_end);
+        rlog_filepath_format = rstr_join(temp_path, rlog_param_file_suffix_gap, rlog_param_file_suffix, rstr_array_end);
         rstr_free(temp_path);
     }
+
+    rfile_format_path(rlog_filepath_format);//路径格式化
 
     rmutex_unlock(&rlog_mutex);
 
     return rcode_ok;
 }
+static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index) {
+    char date_str_temp[16];
+    char time_str_temp[16];
+    char* filepath_str_temp = NULL;
+    char* fileidx_str_temp = NULL;
+    char* ret_str = NULL;
+    int fileidx_index = 0;
+    int suffix_index = 0;
 
-//"XXX_%s_%s.log"
-void rlog_init(const char* logFilename, const rlog_level_t logLevel, const bool seperateFile, const char* fileSuffix) {//字符长度都有保证
-    if (rlog_inited) {
-        return;
+    rformat_time_s_yyyymmdd(date_str_temp, 0, 0);
+    rformat_time_s_hhMMss(time_str_temp, 0, 0);
+
+    filepath_str_temp = rstr_repl(rlog_filepath_format, rlog_param_date, date_str_temp);
+
+    ret_str = rstr_repl(filepath_str_temp, rlog_param_time, time_str_temp);
+    rstr_free(filepath_str_temp);
+    filepath_str_temp = ret_str;
+
+    ret_str = rstr_repl(filepath_str_temp, rlog_param_level, log_level_str);
+    rstr_free(filepath_str_temp);
+    filepath_str_temp = ret_str;
+
+    //index，取当前目录同前缀文件下标，默认无
+    int file_index_gap_len = rstr_len(rlog_param_file_index_gap);
+    char* path_name = rdir_get_path_dir(ret_str);
+    char* file_name = rdir_get_path_filename(ret_str);
+    char* file_prefix = rstr_sub(file_name, 0, rstr_last_index(file_name, rlog_param_file_index_gap) + file_index_gap_len, true);
+    int file_prefix_len = rstr_len(file_prefix);
+    int file_id_max = 0;
+
+    rassert(rdir_make(path_name, true) == rcode_ok, path_name);//确保目录存在
+
+    if (need_file_index) {
+        rlist_t* file_list = rdir_list(path_name, true, false);//dir_path
+        rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
+        rlist_node_t *node = NULL;
+        while ((node = rlist_next(&it))) {
+            char* temp_file_name = (char*)(node->val);
+            int prefix_index = rstr_index(temp_file_name, file_prefix);
+            int file_id = 0;
+            if (prefix_index != 0) {//start with
+                continue;
+            }
+            file_id_max = file_id_max == 0 ? 1 : file_id_max;
+
+            suffix_index = rstr_index(temp_file_name + file_prefix_len, rlog_param_file_suffix_gap);//文件名后缀开始位置
+
+            if (suffix_index > 0 && rstr_is_digit(temp_file_name + file_prefix_len, suffix_index)) {
+                temp_file_name[suffix_index] = rstr_end;
+                file_id = rstr_2int(temp_file_name + file_prefix_len);
+                file_id_max = file_id_max < file_id ? file_id : file_id_max;
+            }
+        }
+        rlist_destroy(file_list);
     }
-    rmutex_init(&rlog_mutex);
 
-    rlog_filepath_format = logFilename == NULL ? NULL : rstr_cpy(logFilename, 0);
-    _rlog_format_filepath();
-
-    rmutex_lock(&rlog_mutex);
-
-	rlog_level = logLevel == RLOG_ALL ? RLOG_VERB : logLevel;
-	file2seperate = seperateFile;
-
-	rlog_info_t* log = NULL;
-    //char* filename[rlog_filename_length];
-    char timeStr[32];
-    int retCode = 1;
-    char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
-	size_t filename_len = 0;
-	char* levelStr = NULL;
-
-    if (logLevel != RLOG_ALL && rlog_infos[logLevel]) {
-		printf("rlog_init already inited, level = %d.\n", logLevel);
-		goto Exit0;
-	}
-
-	if (!logFilename || strlen(logFilename) > rlog_filename_length - 32) {
-		printf("rlog_init logFilename is too long.\n");
-        goto Exit1;
-	}
-
-    if (!fileSuffix) {
-        rformat_time_s_yyyymmddhhMMss(timeStr, 0);
+    if (file_id_max > 0) {
+        rnum2str(fileidx_str_temp, file_id_max + 1, 0);
     }
     else {
-        if (sprintf(timeStr, "%s", fileSuffix) >= (int)sizeof(timeStr)) {
-            printf("rlog_init logFilename is too long.\n");
-            timeStr[(int)sizeof(timeStr) - 1] = '\0';
-        }
+        fileidx_str_temp = rstr_empty;
     }
-	//strcpy(filename, time_str);
-	//strcat(filename, logFilename);
+    
+    ret_str = rstr_repl(filepath_str_temp, rlog_param_file_index, fileidx_str_temp);
+    rstr_free(filepath_str_temp);
 
-	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
-		if (rlog_infos[rLevel]) {
-			printf("log item already finished, level = %d.\n", rLevel);
-			continue;//初始优先级更高，不覆盖
-		}
-		levelStr = RLOG_TOSTR(rLevel);
-         //_strlwr(levelStr);
+    rstr_free(path_name);
+    rstr_free(file_name);
+    rstr_free(file_prefix);
+    
+    return ret_str;
+}
 
-		log = rnew_data(rlog_info_t);
-		if (!log) {
-			printf("rlog_init init failed, %s.\n", levelStr);
-			exit(1);
-		}
-		rlog_infos[rLevel] = log;
-		log->level = rLevel;
+static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file2seperate) {
+    int code_ret = rcode_ok;
+    rlog_info_t* log_item;
+    char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
+    char* roll_filepath = NULL;
+    char* log_level_str = NULL;
 
-		filename_len = strlen(logFilename) + strlen(levelStr) + strlen(timeStr);
-		log->filename = rstr_new(filename_len + file_serail_num_len);//add suffix no. n digitals
-		if (log->filename == NULL) {
-			printf("rlog_init init failed, %s.\n", levelStr);
-            goto Exit1;
-		}
-		if (file2seperate) {
-			//strcpy(log->filename, rlogStr);
-			//strcat(log->filename, filename);
-            sprintf(log->filename, logFilename, levelStr, timeStr);
-            //printf("rlog_init init, p = %p, len = %d. size = %d, filename = '%s'\n", log->filename, strlen(log->filename), nSize, log->filename);
-		}
-		else {
-            sprintf(log->filename, logFilename, RLOG_TOSTR(RLOG_ALL), timeStr);//all lt than level str defined
+    for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
+        if (is_init && rlog->log_items[cur_level]) {
+            printf("log item already finished, level = %d.\n", cur_level);
+            continue;//初始优先级更高，不覆盖
         }
-		rfile_format_path(log->filename);
+        log_level_str = rlog_level_2str(cur_level);
 
-        //todo Ray ...
-        log->logItemData = rstr_new(rlog_temp_data_size);
-        log->logItemData[0] = '\0';
-        log->logData = rstr_new(rlog_cache_data_size);
-        log->logData[0] = '\0';
-        log->fmtDest = rstr_new(rlog_temp_data_size);
-        log->fmtDest[0] = '\0';
+        log_item = rnew_data(rlog_info_t);
+        if (log_item == NULL) {
+            printf("rlog_init init failed, %s.\n", log_level_str);
+            rassert(false, "");
+        }
+        rlog->log_items[cur_level] = log_item;
+        log_item->level = cur_level;
 
-        if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log->filename)) {
-            last_filepath = log->filename;
-            log->file_ptr = fopen(log->filename, "w+");
+
+        if (file2seperate) {
+            log_item->filename = _rlog_get_filepath(log_level_str, false);//初始都不带递增后缀
         }
         else {
-            log->file_ptr = rlog_infos[rLevel - 1]->file_ptr;
+            log_item->filename = _rlog_get_filepath(rlog_level_2str(RLOG_ALL), false);//一个文件
         }
-		if (!log->file_ptr) {
-			printf("Cannot open file [%s], check file is opening or not!\n", log->filename);
-			goto Exit1;
-		}
+        rfile_format_path(log_item->filename);
+
+        printf("rlog_init init, filename = '%s'\n", log_item->filename);
+
+        //todo Ray ...
+        log_item->logItemData = rstr_new(rlog_temp_data_size);
+        log_item->logItemData[0] = '\0';
+        log_item->logData = rstr_new(rlog_cache_data_size);
+        log_item->logData[0] = '\0';
+        log_item->fmtDest = rstr_new(rlog_temp_data_size);
+        log_item->fmtDest[0] = '\0';
+
+        if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log_item->filename)) {
+            if (rfile_exists(log_item->filename)) {
+                roll_filepath = _rlog_get_filepath(log_level_str, true);
+                rfile_rename(log_item->filename, roll_filepath);
+                rstr_free(roll_filepath);
+            }
+
+            last_filepath = log_item->filename;
+            log_item->file_ptr = fopen(log_item->filename, "w+");
+        }
+        else {
+            log_item->file_ptr = rlog->log_items[cur_level - 1]->file_ptr;
+        }
+
+        if (log_item->file_ptr == NULL) {
+            printf("Cannot open file [%s], check file is opening or not!\n", log_item->filename);
+            goto Exit1;
+        }
     }
-	
+
 Exit0:
-	rlog_inited = true;
+    code_ret = 0;
 
-    retCode = 0;
-
-	rlog_printf(RLOG_INFO, "init rlog finished.\n");
+    printf("init rlog finished.\n");
 Exit1:
-    if (retCode != 0) {
-        printf("init rlog failed. code = %d\n", retCode);
+    if (code_ret != 0) {
+        printf("init rlog failed. code = %d\n", code_ret);
     }
 
     rmutex_unlock(&rlog_mutex);
 }
-void rlog_uninit() {
-	rlog_printf(RLOG_INFO, "uninit rlog finished.\n");
+
+
+int rlog_init(const char* log_default_filename, const rlog_level_t log_default_level, const bool log_default_seperate_file) {
+    int ret_code = 0;
+    rmutex_init(&rlog_mutex);
+
+    rlog_t* rlog = rnew_data(rlog_t);
+    ret_code = rlog_init_log(rlog, log_default_filename, log_default_level, log_default_seperate_file);
+    rgoto(1);
+
+    rmutex_lock(&rlog_mutex);
+
+    rlog_all = rnew_data_array(sizeof(rlog_t*), 2);
+    rlog_all[0] = rlog;
+    rlog_all[1] = NULL;
+
+    rmutex_unlock(&rlog_mutex);
+    
+    ret_code = rcode_ok;
+
+exit1:
+    if (ret_code != rcode_ok && rlog != NULL) {
+        rfree_data(rlog_t, rlog);
+    }
+
+    return ret_code;
+}
+
+int rlog_uninit() {
+    rmutex_uninit(&rlog_mutex);
+
+    while (rlog_all) {
+        rfree_data(rlog_t, rlog_all);
+        ++rlog_all;
+    }
+
+    rfree_data_array(rlog_all);
+
+    return rcode_ok;
+}
+
+int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, const bool seperate_file) {
+    rlog_info_t* log_item = NULL;
+    int code_ret = 1;
+    char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
+    char* roll_filepath = NULL;
+    char* log_level_str = NULL;
+
+    if (rlog == NULL || rlog->inited) {
+        code_ret = 1;
+        rgoto(1);
+    }
+
+    rmutex_lock(&rlog_mutex);
+
+    rlog->level = level == RLOG_ALL ? RLOG_VERB : level;
+
+    if (level != RLOG_ALL && rlog->log_items[level]) {
+        printf("rlog_init already inited, level = %d.\n", level);
+        rgoto(0);
+	}
+
+	if (!filename || rstr_len(filename) > rlog_filename_length) {
+        printf("rlog_init filename is too long.\n");
+        code_ret = 1;
+        rgoto(1);
+	}
+
+	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
+		if (rlog->log_items[cur_level]) {
+			printf("log item already finished, level = %d.\n", cur_level);
+			continue;//初始优先级更高，不覆盖
+		}
+		log_level_str = rlog_level_2str(cur_level);
+         //_strlwr(log_level_str);
+
+        log_item = rnew_data(rlog_info_t);
+		if (log_item == NULL) {
+            printf("rlog_init init failed, %s.\n", log_level_str);
+            code_ret = 1;
+            rgoto(1);
+		}
+		rlog->log_items[cur_level] = log_item;
+		log_item->level = cur_level;
+
+
+		if (seperate_file) {
+            log_item->filename = _rlog_get_filepath(log_level_str, false);//初始都不带递增后缀
+		}
+		else {
+            log_item->filename = _rlog_get_filepath(rlog_level_2str(RLOG_ALL), false);//一个文件
+        }
+        rfile_format_path(log_item->filename);
+
+        printf("rlog_init init, filename = '%s'\n", log_item->filename);
+
+        //todo Ray ...
+        log_item->logItemData = rstr_new(rlog_temp_data_size);
+        log_item->logItemData[0] = '\0';
+        log_item->logData = rstr_new(rlog_cache_data_size);
+        log_item->logData[0] = '\0';
+        log_item->fmtDest = rstr_new(rlog_temp_data_size);
+        log_item->fmtDest[0] = '\0';
+
+        if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log_item->filename)) {
+            if (rfile_exists(log_item->filename)) {
+                roll_filepath = _rlog_get_filepath(log_level_str, true);
+                rfile_rename(log_item->filename, roll_filepath);
+                rstr_free(roll_filepath);
+            }
+
+            last_filepath = log_item->filename;
+            log_item->file_ptr = fopen(log_item->filename, "w+");
+        }
+        else {
+            log_item->file_ptr = rlog->log_items[cur_level - 1]->file_ptr;
+        }
+
+		if (log_item->file_ptr == NULL) {
+			printf("Cannot open file [%s], check file is opening or not!\n", log_item->filename);
+            code_ret = 1;
+			rgoto(1);
+		}
+    }
+	
+exit0:
+	rlog->inited = true;
+
+    code_ret = 0;
+
+    printf("init rlog finished.\n");
+exit1:
+    if (code_ret != 0) {
+        printf("init rlog failed. code = %d\n", code_ret);
+    }
+
+    rmutex_unlock(&rlog_mutex);
+
+    return code_ret;
+}
+
+int rlog_uninit_log(rlog_t* rlog) {
+	printf("uninit rlog finished.\n");
 
 	rmutex_lock(&rlog_mutex);
 
-	rlog_inited = false;
+	rlog->inited = false;
 
     char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
 
-	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
-        if (rlog_infos[rLevel]) {
-            if (rlog_infos[rLevel]->file_ptr) {
-                if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, rlog_infos[rLevel]->filename)) {
-                    last_filepath = rlog_infos[rLevel]->filename;
-                    fflush(rlog_infos[rLevel]->file_ptr);
-                    fclose(rlog_infos[rLevel]->file_ptr);
+	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
+        if (rlog->log_items[cur_level] != NULL) {
+            if (rlog->log_items[cur_level]->file_ptr) {
+                if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, rlog->log_items[cur_level]->filename)) {
+                    last_filepath = rlog->log_items[cur_level]->filename;
+                    fflush(rlog->log_items[cur_level]->file_ptr);
+                    fclose(rlog->log_items[cur_level]->file_ptr);
                 }
-                rlog_infos[rLevel]->file_ptr = NULL;
+                rlog->log_items[cur_level]->file_ptr = NULL;
             }
 
-            if (rlog_infos[rLevel]->filename) {
-                //printf("rlog_uninit free filename, p = %p, filename = %s\n", rlog_infos[rLevel]->filename, rlog_infos[rLevel]->filename);
-                rayfree(rlog_infos[rLevel]->filename);
-                rlog_infos[rLevel]->filename = NULL;
+            if (rlog->log_items[cur_level]->filename) {
+                //printf("rlog_uninit free filename, p = %p, filename = %s\n", rlog->log_items[cur_level]->filename, rlog->log_items[cur_level]->filename);
+                rayfree(rlog->log_items[cur_level]->filename);
+                rlog->log_items[cur_level]->filename = NULL;
             }
 
-            if (rlog_infos[rLevel]->logItemData) {
-                rayfree(rlog_infos[rLevel]->logItemData);
-                rlog_infos[rLevel]->logItemData = NULL;
+            if (rlog->log_items[cur_level]->logItemData) {
+                rayfree(rlog->log_items[cur_level]->logItemData);
+                rlog->log_items[cur_level]->logItemData = NULL;
             }
 
-            if (rlog_infos[rLevel]->logData) {
-                rayfree(rlog_infos[rLevel]->logData);
-                rlog_infos[rLevel]->logData = NULL;
+            if (rlog->log_items[cur_level]->logData) {
+                rayfree(rlog->log_items[cur_level]->logData);
+                rlog->log_items[cur_level]->logData = NULL;
             }
 
-            if (rlog_infos[rLevel]->fmtDest) {
-                rayfree(rlog_infos[rLevel]->fmtDest);
-                rlog_infos[rLevel]->fmtDest = NULL;
+            if (rlog->log_items[cur_level]->fmtDest) {
+                rayfree(rlog->log_items[cur_level]->fmtDest);
+                rlog->log_items[cur_level]->fmtDest = NULL;
             }
 
-			rayfree(rlog_infos[rLevel]);
-			rlog_infos[rLevel] = NULL;
+			rfree_data(rlog_info_t, rlog->log_items[cur_level]);
+			rlog->log_items[cur_level] = NULL;
 		}
 	}
 
-	rmutex_unlock(&rlog_mutex);
+    rfree_data(rlog_t, rlog);
 
-	rmutex_uninit(&rlog_mutex);
+	rmutex_unlock(&rlog_mutex);
 }
 
-int rlog_flush_file(bool close_file) {
+int rlog_flush_file(rlog_t* rlog, bool close_file) {
     bool last_flag = rlog_force_flush;
     rlog_force_flush = true;
-	rlog_printf(RLOG_INFO, "log file flushed.\n");
+	rlog_printf(NULL, RLOG_INFO, "log file flushed.\n");
 
     FILE* last_file = NULL;
-	for (int rLevel = RLOG_VERB; rLevel < RLOG_ALL; ++rLevel) {
-		if (rlog_infos[rLevel] != NULL && rlog_infos[rLevel]->file_ptr != NULL) {
-            if (rlog_infos[rLevel]->file_ptr != last_file) {
-                fflush(rlog_infos[rLevel]->file_ptr);
+	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
+		if (rlog->log_items[cur_level] != NULL && rlog->log_items[cur_level]->file_ptr != NULL) {
+            if (rlog->log_items[cur_level]->file_ptr != last_file) {
+                fflush(rlog->log_items[cur_level]->file_ptr);
                 if (close_file) {
-                    fclose(rlog_infos[rLevel]->file_ptr);
-                    last_file = rlog_infos[rLevel]->file_ptr;
-                    rlog_infos[rLevel]->file_ptr = NULL;
+                    fclose(rlog->log_items[cur_level]->file_ptr);
+                    last_file = rlog->log_items[cur_level]->file_ptr;
+                    rlog->log_items[cur_level]->file_ptr = NULL;
                 }
             }
             else {
                 if (close_file) {
-                    rlog_infos[rLevel]->file_ptr = NULL;
+                    rlog->log_items[cur_level]->file_ptr = NULL;
                 }
             }
 		}
@@ -273,100 +444,69 @@ int rlog_flush_file(bool close_file) {
     return rcode_ok;
 }
 
-int rlog_rolling_file() {
-	rlog_info_t* log = NULL;
-	char* temp_filename = NULL;
-    bool changed = false;
+int rlog_rolling_file(rlog_t* rlog) {
+	rlog_info_t* log_item = NULL;
+	char* roll_filepath = NULL;
     char* last_filepath = NULL;//只支持两种，全散和单独一个文件
-	int underline_index = -1;
-	int dot_index = -1;
-	char time_str[20];
 
-	if (!rlog_inited) {
-		rlog_printf(RLOG_INFO, "rolling rlog failed, not inited.\n");
+	if (!rlog->inited) {
+		rlog_printf(NULL, RLOG_INFO, "rolling rlog failed, not inited.\n");
 		goto Exit1;
 	}
 	rmutex_lock(&rlog_mutex);
 
-	rlog_flush_file(true);//已经关闭了filepath对应的文件
+	rlog_flush_file(rlog, true);//已经关闭了filepath对应的文件
 
 	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
-		log = rlog_infos[cur_level];
-		if (log == NULL || rstr_eq(log->filename, rstr_empty)) {
+        log_item = rlog->log_items[cur_level];
+		if (log_item == NULL || rstr_eq(log_item->filename, rstr_empty)) {
 			continue;
 		}
 
-        if (!rstr_eq(last_filepath, rstr_empty) && !rstr_eq(last_filepath, log->filename)) {
+        roll_filepath = _rlog_get_filepath(rlog_level_2str(cur_level), true);
+        rfile_rename(log_item->filename, roll_filepath);
+        rstr_free(roll_filepath);
+		
+        if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log_item->filename)) {
+            if (rfile_exists(log_item->filename)) {
+                roll_filepath = _rlog_get_filepath(rlog_level_2str(cur_level), true);
+                rfile_rename(log_item->filename, roll_filepath);
+                rstr_free(roll_filepath);
+            }
 
+            last_filepath = log_item->filename;
+            log_item->file_ptr = fopen(log_item->filename, "w+");
+        }
+        else {
+            log_item->file_ptr = rlog->log_items[cur_level - 1]->file_ptr;
         }
 
-		char* path_name = rdir_get_path_dir(log->filename);
-		char* file_name = rdir_get_path_filename(log->filename);
-		//temp_filename = rstr_repl(log->filename, ".txt", "_111.txt");
-		underline_index = rstr_last_index(file_name, "_");//必须保证 _ 后面一定是數字，xxx_1.xx
-		dot_index = rstr_last_index(file_name, ".");
-		if (dot_index > 0) {
-			char* path1 = rstr_empty;
-			int file_index = 0;
-			if (underline_index > 0) {
-				path1 = rstr_sub(file_name, underline_index + 1, dot_index - underline_index, true);
-				file_index = rstr_2int(path1);
-				rstr_free(path1);
-			}
-			else {
-				underline_index = dot_index;
-			}
-			file_index += 1;
-
-			char* path2 = rstr_sub(file_name, 0, underline_index, true);
-			char* path3 = rstr_sub(file_name, dot_index, rstr_len(file_name) - dot_index, true);
-
-			sprintf(log->filename, "%s/%s_%d%s", path_name, path2, file_index, path3);
-
-			rstr_free(path1);
-			rstr_free(path2);
-			rstr_free(path3);
-		}
-		else {
-			rformat_time_s_yyyymmddhhMMss(time_str, 0);
-			rstr_cat(log->filename, time_str, 0);
-		}
-		
-		if (file2seperate) {
-			(void)rename(log->filename, temp_filename);
-		}
-		else if (!changed) {
-			(void)rename(log->filename, temp_filename);
-			changed = true;
-		}
-
-		log->file_ptr = fopen(log->filename, "w+");
-		if (!log->file_ptr) {
-			printf("Cannot open file [%s], check file is opening or not!\n", log->filename);
+		if (log_item->file_ptr == NULL) {
+			printf("Cannot open file [%s], check file is opening or not!\n", log_item->filename);
 			goto Exit1;
 		}
 	}
 
 //Exit0:
-	rlog_inited = true;
+	rlog->inited = true;
 
-	rlog_printf(RLOG_INFO, "rolling rlog finished.\n");
+	rlog_printf(NULL, RLOG_INFO, "rolling rlog finished.\n");
 
 Exit1:
 	rmutex_unlock(&rlog_mutex);
-
-    rstr_free(temp_filename);
 
 	return rcode_ok;
 }
 
 //日期会乱序
-int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
-    if (logLevel < rlog_level) {
+int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
+    rlog = rlog == NULL ? rlog_all : rlog;
+
+    if (rlog == NULL || level < rlog->level) {
         return rcode_ok;
     }
 #ifdef print2file
-    if (!unlikely(rlog_infos[logLevel])) {
+    if (!unlikely(rlog->log_items[level])) {
         //va_list ap0;
         //va_start(ap0, fmt);
         //printf(fmt, ap0);
@@ -378,17 +518,17 @@ int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
     rmutex_lock(&rlog_mutex);
 
     static int64_t rlogFlushLast = 0;
-    char* logItemData = rlog_infos[logLevel]->logItemData;
-    char* logData = rlog_infos[logLevel]->logData;
-    char* fmtDest = rlog_infos[logLevel]->fmtDest;
-    char* levelStr = RLOG_TOSTR(logLevel);
+    char* logItemData = rlog->log_items[level]->logItemData;
+    char* logData = rlog->log_items[level]->logData;
+    char* fmtDest = rlog->log_items[level]->fmtDest;
+    char* log_level_str = rlog_level_2str(level);
     char timeStr[32];
     int64_t timeNow = rtime_millisec();
-    rformat_time_s_full(timeStr, timeNow);
+    rformat_time_s_full(timeStr, timeNow, 0);
     //get_cur_thread_id()
     strcat(fmtDest, timeStr);
     strcat(fmtDest, " [");
-    strcat(fmtDest, levelStr);//strupr(levelStr)
+    strcat(fmtDest, log_level_str);//strupr(log_level_str)
     strcat(fmtDest, "] ");
     //size_t maxChars = sizeof(fmtDest) - strlen(fmtDest) - 1;
     //maxChars = maxChars > strlen(fmt) ? strlen(fmt) : maxChars;
@@ -408,8 +548,8 @@ int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
 		logItemData[rlog_temp_data_size - 4] = '.';
 		logItemData[rlog_temp_data_size - 5] = '.';
 #ifdef print2file
-		fprintf(rlog_infos[logLevel]->file_ptr, "%s%s\nlog item data exceed of max len(%d - %d).\n", logData, logItemData, rlog_temp_data_size, writeLen);
-		fflush(rlog_infos[logLevel]->file_ptr);
+		fprintf(rlog->log_items[level]->file_ptr, "%s%s\nlog item data exceed of max len(%d - %d).\n", logData, logItemData, rlog_temp_data_size, writeLen);
+		fflush(rlog->log_items[level]->file_ptr);
 #else
 		printf("%s%s\nlog item data exceed of max len(%d - %d).\n", logData, logItemData, rlog_temp_data_size, writeLen);
 #endif // print2file
@@ -426,8 +566,8 @@ int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
     //printf("%%"PRId64" ms, len(%d - %d - %d) [%s]\n", (timeNow - rlogFlushLast), (int)strlen(logData), (int)freeLen, (int)strlen(logItemData), logItemData);
     if (rlog_force_flush || ((timeNow - rlogFlushLast) > rlog_flush_max) || strlen(logItemData) >= freeLen) {
 #ifdef print2file
-        fprintf(rlog_infos[logLevel]->file_ptr, "%s%s", logData, logItemData);
-        fflush(rlog_infos[logLevel]->file_ptr);
+        fprintf(rlog->log_items[level]->file_ptr, "%s%s", logData, logItemData);
+        fflush(rlog->log_items[level]->file_ptr);
 #else
         printf("%s%s", logData, logItemData);
 #endif // print2file
@@ -445,12 +585,14 @@ int rlog_printf_cached(rlog_level_t logLevel, const char* fmt, ...) {
     return rcode_ok;
 }
 
-int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
-    if (logLevel < rlog_level) {
+int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
+    rlog = rlog == NULL ? rlog_all : rlog;
+
+    if (rlog == NULL || level < rlog->level) {
         return rcode_ok;
     }
 #ifdef print2file
-    if (unlikely(rlog_infos[logLevel] == NULL)) {
+    if (unlikely(rlog->log_items[level] == NULL)) {
         return -1;
     }
 #endif
@@ -458,16 +600,16 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     rmutex_lock(&rlog_mutex);//todo Ray 后期改 ring buffer
 
     static int64_t rlogFlushLast = 0;
-    char* logItemData = rlog_infos[logLevel]->logItemData;
-    char* logData = rlog_infos[logLevel]->logData;
-    char* fmtDest = rlog_infos[logLevel]->fmtDest;
-    char* levelStr = RLOG_TOSTR(logLevel);
+    char* logItemData = rlog->log_items[level]->logItemData;
+    char* logData = rlog->log_items[level]->logData;
+    char* fmtDest = rlog->log_items[level]->fmtDest;
+    char* log_level_str = rlog_level_2str(level);
     char timeStr[32];
     int64_t time_now = rtime_millisec();
-    rformat_time_s_full(timeStr, time_now);
+    rformat_time_s_full(timeStr, time_now, 0);
     strcat(fmtDest, timeStr);
     strcat(fmtDest, " [");
-    strcat(fmtDest, levelStr);//strupr(levelStr)
+    strcat(fmtDest, log_level_str);//strupr(log_level_str)
     strcat(fmtDest, "] %s");
 
     va_list ap;
@@ -477,8 +619,8 @@ int rlog_printf(rlog_level_t logLevel, const char* fmt, ...) {
     rassert(writeLen < rlog_temp_data_size, "");
 
 #ifdef print2file
-    fprintf(rlog_infos[logLevel]->file_ptr, fmtDest, logItemData);
-    //fflush(rlog_infos[logLevel]->file_ptr);
+    fprintf(rlog->log_items[level]->file_ptr, fmtDest, logItemData);
+    //fflush(rlog->log_items[level]->file_ptr);
 #else
     printf(fmtDest, logItemData);
 #endif // print2file

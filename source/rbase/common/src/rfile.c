@@ -315,107 +315,6 @@ static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr
 int unlink(const char *);
 #endif
 
-static int rfile_dir_make(const char *path)
-{
-#if defined(_WIN32) || defined(_WIN64)
-#ifdef file_system_unicode
-	WCHAR wpath[MAX_PATH];
-	int rv = path_utf8_to_unicode(wpath, sizeof(wpath) / sizeof(WCHAR), path);
-	if (rv != rcode_ok) {
-		return rv;
-	}
-	if (!CreateDirectoryW(wpath, NULL)) {
-		return -1;//get_os_error();
-	}
-#else //file_system_ansi
-	if (!CreateDirectory(path, NULL)) {
-		return -1;//get_os_error();
-	}
-#endif //_WIN64
-#else
-    mode_t mode = 0;
-    if (mkdir(path, mode) != 0) {
-        return errno;
-    }
-#endif
-	return rcode_ok;
-}
-
-int rfile_make_dir(const char *path, bool recursive)
-{
-    if (!recursive) {
-        return rfile_dir_make(path); /* Try to make PATH right out */
-    }
-
-    int rv = rcode_ok;
-    //AccessMode = 00 表示只判断是否存在，02 是否可执行，_AccessMode = 04 是否可写，06 是否可读
-    char* temp_path = NULL;
-    if (rstr_index(path, "\\\\") > -1) {
-        temp_path = rstr_repl(path, "\\\\", "/");
-    }
-    char* temp_path2 = NULL;
-    if (rstr_index(temp_path == NULL ? path : temp_path, "\\") > -1) {
-        temp_path2 = rstr_repl(temp_path == NULL ? path : temp_path, "\\", "/");
-    }
-
-    char* dest_path = temp_path2 ? temp_path2 : (temp_path ? temp_path : path);
-    char** dirs = rstr_split(dest_path, "/");
-    int path_len = rstr_len(dest_path);
-
-    rstr_free(temp_path);
-    rstr_free(temp_path2);
-
-    char* format_path = rstr_new(path_len + 1);
-    rstr_reset(format_path);
-
-    char* dir_cur = NULL;
-    rstr_array_for(dirs, dir_cur) {
-        if (rstr_eq(dir_cur, rstr_empty)) {
-            continue;
-        }
-
-        rstr_cat(format_path, dir_cur, path_len);
-        rstr_cat(format_path, rfile_seperator, path_len);
-        if (access(format_path, 0) != 0) {
-            rv = rfile_dir_make(format_path);
-            if (rv != 0) {
-                break;
-            }
-        }
-    }
-
-    rstr_array_free(dirs);
-    rstr_free(format_path);
-
-	return rv;
-}
-
-int rfile_remove_dir(const char *path)
-{
-#if defined(_WIN32) || defined(_WIN64)
-#ifdef file_system_unicode
-	WCHAR wpath[MAX_PATH];
-	int rv = path_utf8_to_unicode(wpath, sizeof(wpath) / sizeof(WCHAR), path);
-	if (rv != rcode_ok) {
-		return rv;
-	}
-	if (!RemoveDirectoryW(wpath)) {
-        DWORD errorno = GetLastError();
-		return (int)errorno;//rerror_get_os_error();
-	}
-#else //file_system_ansi
-	if (!RemoveDirectory(path)) {
-		return -1;//rerror_get_os_error();
-	}
-#endif //file_system_unicode
-
-#else //_WIN64
-	if (rmdir(path) != 0) {
-		return errno;
-	}
-#endif
-	return rcode_ok;
-}
 
 int rfile_create_in(const char *path, const char *filename) {
     char* file_path = rfile_get_filepath(path, filename);
@@ -445,6 +344,19 @@ int rfile_create(const char* file_path) {
     fclose(file);
 
     return rcode_ok;
+}
+
+
+int rfile_exists(const char* path) {
+    if (path == NULL || rstr_eq(path, rstr_empty)) {
+        return -1;
+    }
+
+    if (access(path, 0) == 0) {
+        return rcode_ok;
+    }
+
+    return 1;
 }
 
 //int rlog_read_file(const char* filename) {
@@ -525,6 +437,10 @@ exit1:
     return -1;
 }
 
+int rfile_rename(const char* src, const char* dst) {
+    return rename(src, dst);
+}
+
 int rfile_remove(const char *file) {
     rassert_goto(file != NULL, "", 1);
 
@@ -535,8 +451,112 @@ exit1:
     return -1;
 }
 
+
+
+static int _rdir_make_self(const char *path) {
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef file_system_unicode
+    WCHAR wpath[MAX_PATH];
+    int rv = path_utf8_to_unicode(wpath, sizeof(wpath) / sizeof(WCHAR), path);
+    if (rv != rcode_ok) {
+        return rv;
+    }
+    if (!CreateDirectoryW(wpath, NULL)) {
+        return -1;//get_os_error();
+    }
+#else //file_system_ansi
+    if (!CreateDirectory(path, NULL)) {
+        return -1;//get_os_error();
+    }
+#endif //_WIN64
+#else
+    mode_t mode = 0;
+    if (mkdir(path, mode) != 0) {
+        return errno;
+    }
+#endif
+    return rcode_ok;
+}
+
+int rdir_make(const char *path, bool recursive) {
+    if (path == NULL || rstr_eq(path, rstr_empty)) {
+        return rcode_ok;
+    }
+    if (!recursive) {
+        return _rdir_make_self(path); /* Try to make PATH right out */
+    }
+
+    int rv = rcode_ok;
+    //AccessMode = 00 表示只判断是否存在，02 是否可执行，_AccessMode = 04 是否可写，06 是否可读
+    char* temp_path = NULL;
+    if (rstr_index(path, "\\\\") > -1) {
+        temp_path = rstr_repl(path, "\\\\", "/");
+    }
+    char* temp_path2 = NULL;
+    if (rstr_index(temp_path == NULL ? path : temp_path, "\\") > -1) {
+        temp_path2 = rstr_repl(temp_path == NULL ? path : temp_path, "\\", "/");
+    }
+
+    char* dest_path = temp_path2 ? temp_path2 : (temp_path ? temp_path : path);
+    char** dirs = rstr_split(dest_path, "/");
+    int path_len = rstr_len(dest_path);
+
+    rstr_free(temp_path);
+    rstr_free(temp_path2);
+
+    char* format_path = rstr_new(path_len + 1);
+    rstr_reset(format_path);
+
+    char* dir_cur = NULL;
+    rstr_array_for(dirs, dir_cur) {
+        if (rstr_eq(dir_cur, rstr_empty)) {
+            continue;
+        }
+
+        rstr_cat(format_path, dir_cur, path_len);
+        rstr_cat(format_path, rfile_seperator, path_len);
+        if (access(format_path, 0) != 0) {
+            rv = _rdir_make_self(format_path);
+            if (rv != 0) {
+                break;
+            }
+        }
+    }
+
+    rstr_array_free(dirs);
+    rstr_free(format_path);
+
+    return rv;
+}
+
+int rdir_remove(const char *path) {
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef file_system_unicode
+    WCHAR wpath[MAX_PATH];
+    int rv = path_utf8_to_unicode(wpath, sizeof(wpath) / sizeof(WCHAR), path);
+    if (rv != rcode_ok) {
+        return rv;
+    }
+    if (!RemoveDirectoryW(wpath)) {
+        DWORD errorno = GetLastError();
+        return (int)errorno;//rerror_get_os_error();
+    }
+#else //file_system_ansi
+    if (!RemoveDirectory(path)) {
+        return -1;//rerror_get_os_error();
+    }
+#endif //file_system_unicode
+
+#else //_WIN64
+    if (rmdir(path) != 0) {
+        return errno;
+    }
+#endif
+    return rcode_ok;
+}
+
 char* rdir_get_path_dir(char* dir) {
-	if (dir == NULL) {
+	if (dir == NULL || rstr_eq(dir, rstr_empty)) {
 		return rstr_empty;
 	}
 
@@ -789,6 +809,8 @@ exit0:
 rlist_t* rdir_list(const char* path, bool only_file, bool sub_dir) {
     rlist_t* ret_list = NULL;
     rlist_init(ret_list, rdata_type_string);
+
+    path = (path == NULL || rstr_eq(path, rstr_empty)) ? rfile_path_current : path;
 
     _rdir_list(ret_list, path, only_file, sub_dir);
 

@@ -392,6 +392,72 @@ char** rstr_split(const char* src, const char* delim) {
     return ret;
 }
 
+bool rstr_is_digit(char* src, int end_index) {
+    if (src == NULL || rstr_eq(src, rstr_empty)) {
+        return false;
+    }
+
+    end_index = (end_index <= 0 || end_index > rstr_len(src)) ? rstr_len(src) : end_index;
+    for (int i = 0; i < end_index; ++i) {
+        if (src[i] < '0' || src[i] > '9') { // 48 - 57
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int rstr_trim(char* src) {
+    if (src == NULL) {
+        return rcode_ok;
+    }
+
+
+    return rcode_ok;
+}
+int rstr_trim_begin(char* src) {
+    if (src == NULL) {
+        return rcode_ok;
+    }
+
+    char* p = src;
+    char* q = src;
+    bool checking = true;
+    while(q) {
+        if (checking && (*q == rstr_blank || *q == rstr_tab)) {
+            q++;
+            continue;
+        }
+        checking = false;
+
+        *p++ = *(++q);
+    }
+
+    return rcode_ok;
+}
+int rstr_trim_end(char* src) {
+    if (src == NULL) {
+        return rcode_ok;
+    }
+
+    char* p = src + rstr_len(src);
+    while (true) {
+        if (src == p) {
+            break;
+        }
+
+        p--;
+        if (*p == rstr_blank || *p == rstr_tab) {
+            *p = rstr_end;
+            continue;
+        }
+
+        break;
+    }
+
+    return rcode_ok;
+}
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop

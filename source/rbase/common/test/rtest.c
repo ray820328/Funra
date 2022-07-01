@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     wcsftime(local_time, 100, L"%A %c", localtime(&t));
     wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
 
-    rlog_init("rtest_log.txt", RLOG_ALL, false, "all");
+    rlog_init("${date}/rtest_${index}.log", RLOG_ALL, false);
 
     char* exe_root = rdir_get_exe_root();
     rinfo("当前路径: %s\n", exe_root);

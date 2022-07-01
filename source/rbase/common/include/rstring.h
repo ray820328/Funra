@@ -24,6 +24,8 @@ extern "C" {
 #define rstr_null "NULL"
 #define rstr_empty ""
 #define rstr_end '\0'
+#define rstr_tab '\t'
+#define rstr_blank ' '
 #define rstr_array_end NULL
 
 #define rstr_new(size) raymalloc(size)
@@ -56,31 +58,43 @@ extern "C" {
     }
     
 
-#define rnum2str(retNumStr, num, base) \
+#define rnum2str(ret_num_str, num, fmt_str) \
     do { \
-        char retTempStr[32]; \
-        int lenNumStr = sprintf((retTempStr), "%"PRId64, (int64_t)(num)); \
-        (retTempStr)[lenNumStr] = '\0'; \
-        (retNumStr) = (retTempStr); \
+        char ret_temp_str[32]; \
+        int len_num_str = sprintf((ret_temp_str), (fmt_str) ? (fmt_str) : "%"PRId64, (fmt_str) ? (num) : (int64_t)(num)); \
+        (ret_temp_str)[len_num_str] = '\0'; \
+        (ret_num_str) = (ret_temp_str); \
     } while(0)
-#define rformat_s(strBuffer, fmt, ...) \
+#define rformat_s(buffer_str, fmt_str, ...) \
     do { \
-        if (sprintf((strBuffer), (fmt), ##__VA_ARGS__) >= (int)sizeof((strBuffer))) { \
-            rlog_printf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((strBuffer))); \
-            (strBuffer)[(int)sizeof((strBuffer)) - 1] = '\0'; \
+        if (sprintf((buffer_str), (fmt_str), ##__VA_ARGS__) >= (int)sizeof((buffer_str))) { \
+            rlog_printf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((buffer_str))); \
+            (buffer_str)[(int)sizeof((buffer_str)) - 1] = '\0'; \
         } \
     } while(0)
-#define rformat_time_s_full(timeStr, timeValue) \
+#define rformat_time_s_full(time_str, time_value, fmt_str) \
     do { \
-        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : rtime_millisec()); \
-        rformat_s((timeStr), "%.4d-%.2d-%.2d %.2d:%.2d:%.2d %.3d", \
-            timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5], timeNowDatas[6]); \
+        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d-%.2d-%.2d %.2d:%.2d:%.2d %.3d", \
+            time_now_datas[0], time_now_datas[1], time_now_datas[2], time_now_datas[3], time_now_datas[4], time_now_datas[5], time_now_datas[6]); \
     } while(0)
-#define rformat_time_s_yyyymmddhhMMss(timeStr, timeValue) \
+#define rformat_time_s_yyyymmddhhMMss(time_str, time_value, fmt_str) \
     do { \
-        int* timeNowDatas = rtime_from_time_millis((timeValue) ? (timeValue) : rtime_millisec()); \
-        rformat_s((timeStr), "%.4d%.2d%.2d%.2d%.2d%.2d", \
-            timeNowDatas[0], timeNowDatas[1], timeNowDatas[2], timeNowDatas[3], timeNowDatas[4], timeNowDatas[5]); \
+        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d%.2d%.2d%.2d%.2d%.2d", \
+            time_now_datas[0], time_now_datas[1], time_now_datas[2], time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
+    } while(0)
+#define rformat_time_s_yyyymmdd(time_str, time_value, fmt_str) \
+    do { \
+        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d%.2d%.2d", \
+            time_now_datas[0], time_now_datas[1], time_now_datas[2]); \
+    } while(0)
+#define rformat_time_s_hhMMss(time_str, time_value, fmt_str) \
+    do { \
+        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d%.2d%.2d", \
+            time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
     } while(0)
 
 #define rstr_compare(str1, str2) \
@@ -139,6 +153,11 @@ R_API char* rstr_repl(char *src, char *old_str, char *new_str);
 /** 无匹配返回null **/
 R_API char** rstr_split(const char *src, const char *delim);
 
+R_API bool rstr_is_digit(char* src, int end_index);
+
+R_API int rstr_trim(char* src);
+R_API int rstr_trim_begin(char* src);
+R_API int rstr_trim_end(char* src);
 
 #ifdef __cplusplus
 }
