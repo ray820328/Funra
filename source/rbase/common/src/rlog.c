@@ -126,7 +126,7 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
             //if (prefix_index != 0) {//start with
             //    continue;
             //}
-            file_id_max = file_id_max == 0 ? 1 : file_id_max;
+            file_id_max = file_id_max == 0 ? 0 : file_id_max;
 
             //suffix_index = rstr_index(temp_file_name + file_prefix_len, rlog_param_file_suffix_gap);//文件名后缀开始位置
 
