@@ -595,10 +595,10 @@ char* rdir_get_path_filename(char* dir) {
 		return format_path;
 	}
 
-	char* rett_path = rstr_cpy(format_path + index + 1, 0);
+	char* ret_path = rstr_cpy(format_path + index + 1, 0);
 	rstr_free(format_path);
 
-	return rett_path;
+	return ret_path;
 }
 
 int rfile_format_path(char* file_path) {

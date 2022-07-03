@@ -61,14 +61,14 @@ extern "C" {
 #define rnum2str(ret_num_str, num, fmt_str) \
     do { \
         char _num_temp_str_[32]; \
-		int len_num_str = 0; \
+		int _len_num_str_ = 0; \
 		if (!fmt_str) { \
 			int64_t _num_temp_value_ = (num); \
-			len_num_str = sprintf((_num_temp_str_), "%"PRId64, _num_temp_value_); \
+			_len_num_str_ = sprintf((_num_temp_str_), "%"PRId64, _num_temp_value_); \
 		} else{  \
-			len_num_str = sprintf((_num_temp_str_), (fmt_str), (num)); \
+			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str), (num)); \
 		} \
-        rassert(len_num_str < 32, "rnum2str"); \
+        rassert(_len_num_str_ < 32, "rnum2str"); \
         (ret_num_str) = (_num_temp_str_); \
     } while(0)
 #define rformat_s(buffer_str, fmt_str, ...) \
@@ -86,21 +86,21 @@ extern "C" {
     } while(0)
 #define rformat_time_s_yyyymmddhhMMss(time_str, time_value, fmt_str) \
     do { \
-        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        int* _datetime_datas_ = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
         rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d%.2d%.2d%.2d%.2d%.2d", \
-            time_now_datas[0], time_now_datas[1], time_now_datas[2], time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
+            _datetime_datas_[0], _datetime_datas_[1], _datetime_datas_[2], _datetime_datas_[3], _datetime_datas_[4], _datetime_datas_[5]); \
     } while(0)
 #define rformat_time_s_yyyymmdd(time_str, time_value, fmt_str) \
     do { \
-        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        int* _date_datas_ = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
         rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d%.2d%.2d", \
-            time_now_datas[0], time_now_datas[1], time_now_datas[2]); \
+            _date_datas_[0], _date_datas_[1], _date_datas_[2]); \
     } while(0)
 #define rformat_time_s_hhMMss(time_str, time_value, fmt_str) \
     do { \
-        int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
+        int* _time_datas_ = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
         rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.2d%.2d%.2d", \
-            time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
+            _time_datas_[3], _time_datas_[4], _time_datas_[5]); \
     } while(0)
 
 #define rstr_compare(str1, str2) \

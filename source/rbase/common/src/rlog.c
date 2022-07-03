@@ -111,27 +111,32 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
     rassert(rdir_make(path_name, true) == rcode_ok, path_name);//确保目录存在
 
     if (need_file_index) {
-        rlist_t* file_list = rdir_list(path_name, true, false);//dir_path
-        rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
-        rlist_node_t* node = NULL;
-        while ((node = rlist_next(&it))) {
-            char* temp_file_name = (char*)(node->val);
-            int prefix_index = rstr_index(temp_file_name, file_prefix);
-            int file_id = 0;
-            if (prefix_index != 0) {//start with
-                continue;
-            }
+        //rlist_t* file_list = rdir_list(path_name, true, false);//dir_path
+  //      rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
+  //      rlist_node_t* node = NULL;
+
+		//char* temp_file_name = NULL;
+		//int prefix_index = 0;
+		//int file_id = 0;
+
+        //while ((node = rlist_next(&it))) {
+            //temp_file_name = (char*)(node->val);
+            //prefix_index = rstr_index(temp_file_name, file_prefix);
+            //file_id = 0;
+            //if (prefix_index != 0) {//start with
+            //    continue;
+            //}
             file_id_max = file_id_max == 0 ? 1 : file_id_max;
 
-            suffix_index = rstr_index(temp_file_name + file_prefix_len, rlog_param_file_suffix_gap);//文件名后缀开始位置
+            //suffix_index = rstr_index(temp_file_name + file_prefix_len, rlog_param_file_suffix_gap);//文件名后缀开始位置
 
-            if (suffix_index > 0 && rstr_is_digit(temp_file_name + file_prefix_len, suffix_index)) {
-                temp_file_name[suffix_index] = rstr_end;
-                file_id = rstr_2int(temp_file_name + file_prefix_len);
-                file_id_max = file_id_max < file_id ? file_id : file_id_max;
-            }
-        }
-        rlist_destroy(file_list);
+            //if (suffix_index > 0 && rstr_is_digit(temp_file_name + file_prefix_len, suffix_index)) {
+            //    temp_file_name[suffix_index] = rstr_end;
+            //    file_id = rstr_2int(temp_file_name + file_prefix_len);
+            //    file_id_max = file_id_max < file_id ? file_id : file_id_max;
+            //}
+        //}
+        //rlist_destroy(file_list);
     }
 
     if (file_id_max > 0) {
