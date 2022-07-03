@@ -134,7 +134,7 @@ static void rarray_string_test(void **state) {
     start_benchmark(0);
     char* temp_str = NULL;
     for (j = 0; j < count * 3; j++) {
-        rnum2str(temp_str, j + count, 0);
+        rnum2str(temp_str, j + count, "%ul");
         rarray_add(array_ins, temp_str);
         temp = rarray_at(array_ins, j);
         assert_true(rstr_2int(temp) == j + count);

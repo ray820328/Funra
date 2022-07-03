@@ -353,10 +353,10 @@ int rfile_exists(const char* path) {
     }
 
     if (access(path, 0) == 0) {
-        return rcode_ok;
+        return 1;//不存在
     }
 
-    return 1;
+    return 0;//已存在
 }
 
 //int rlog_read_file(const char* filename) {
@@ -454,6 +454,9 @@ exit1:
 
 
 static int _rdir_make_self(const char *path) {
+	if (access(path, 0) == 0) {
+		return rcode_ok;
+	}
 #if defined(_WIN32) || defined(_WIN64)
 #ifdef file_system_unicode
     WCHAR wpath[MAX_PATH];
@@ -504,27 +507,31 @@ int rdir_make(const char *path, bool recursive) {
     rstr_free(temp_path);
     rstr_free(temp_path2);
 
-    char* format_path = rstr_new(path_len + 1);
-    rstr_reset(format_path);
+	if (dirs != NULL) {
+		char* format_path = rstr_new(path_len + 1);
+		rstr_reset(format_path);
 
-    char* dir_cur = NULL;
-    rstr_array_for(dirs, dir_cur) {
-        if (rstr_eq(dir_cur, rstr_empty)) {
-            continue;
-        }
+		char* dir_cur = NULL;
+		rstr_array_for(dirs, dir_cur) {
+			if (rstr_eq(dir_cur, rstr_empty)) {
+				continue;
+			}
 
-        rstr_cat(format_path, dir_cur, path_len);
-        rstr_cat(format_path, rfile_seperator, path_len);
-        if (access(format_path, 0) != 0) {
-            rv = _rdir_make_self(format_path);
-            if (rv != 0) {
-                break;
-            }
-        }
-    }
+			rstr_cat(format_path, dir_cur, path_len);
+			rstr_cat(format_path, rfile_seperator, path_len);
+			
+			rv = _rdir_make_self(format_path);
+			if (rv != 0) {
+				break;
+			}
+		}
 
-    rstr_array_free(dirs);
-    rstr_free(format_path);
+		rstr_array_free(dirs);
+		rstr_free(format_path);
+	}
+	else {
+		rv = _rdir_make_self(dest_path);
+	}
 
     return rv;
 }

@@ -52,9 +52,7 @@ static rarray_t* _kmp_search(char* str, char* pattern, int count) {
     _kmp_next_array_init(pattern, len_pattern, array_key);
 
     rarray_t* array_ret = NULL;
-    if (array_ret == NULL) {
-        rarray_init(array_ret, rdata_type_int, 10);
-    }
+    rarray_init(array_ret, rdata_type_int, 10);
 
     int i = 0;
     int j = 0;

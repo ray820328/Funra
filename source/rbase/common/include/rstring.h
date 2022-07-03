@@ -46,7 +46,7 @@ extern "C" {
     char* rstr_arr[count] = { [count - 1] = rstr_array_end }
 /** 确保非最后一个NULL都为rstr_empty，否则会提前结束遍历 **/
 #define rstr_array_for(rstr, item) \
-    for (size_t rstr##_index = 0; (char*)item = *((char**)rstr + rstr##_index), rstr != NULL && item != rstr_array_end; rstr##_index++)
+    for (size_t rstr##_index = 0; (char*)item = rstr == NULL ? NULL : *((char**)rstr + rstr##_index), rstr != NULL && item != rstr_array_end; rstr##_index++)
 /** 确保非最后一个NULL都为rstr_empty，否则会内存泄露 **/
 #define rstr_array_free(rstr) \
     while(rstr) { \
@@ -57,18 +57,24 @@ extern "C" {
         rfree_data_array(rstr); \
     }
     
-
+//注意类型长度默认lld，num为int等溢出
 #define rnum2str(ret_num_str, num, fmt_str) \
     do { \
-        char ret_temp_str[32]; \
-        int len_num_str = sprintf((ret_temp_str), (fmt_str) ? (fmt_str) : "%"PRId64, (fmt_str) ? (num) : (int64_t)(num)); \
-        (ret_temp_str)[len_num_str] = '\0'; \
-        (ret_num_str) = (ret_temp_str); \
+        char _num_temp_str_[32]; \
+		int len_num_str = 0; \
+		if (!fmt_str) { \
+			int64_t _num_temp_value_ = (num); \
+			len_num_str = sprintf((_num_temp_str_), "%"PRId64, _num_temp_value_); \
+		} else{  \
+			len_num_str = sprintf((_num_temp_str_), (fmt_str), (num)); \
+		} \
+        rassert(len_num_str < 32, "rnum2str"); \
+        (ret_num_str) = (_num_temp_str_); \
     } while(0)
 #define rformat_s(buffer_str, fmt_str, ...) \
     do { \
         if (sprintf((buffer_str), (fmt_str), ##__VA_ARGS__) >= (int)sizeof((buffer_str))) { \
-            rlog_printf(RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((buffer_str))); \
+            rlog_printf(NULL, RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((buffer_str))); \
             (buffer_str)[(int)sizeof((buffer_str)) - 1] = '\0'; \
         } \
     } while(0)
@@ -93,7 +99,7 @@ extern "C" {
 #define rformat_time_s_hhMMss(time_str, time_value, fmt_str) \
     do { \
         int* time_now_datas = rtime_from_time_millis((time_value) ? (time_value) : rtime_millisec()); \
-        rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.4d%.2d%.2d", \
+        rformat_s((time_str), (fmt_str) ? (fmt_str) : "%.2d%.2d%.2d", \
             time_now_datas[3], time_now_datas[4], time_now_datas[5]); \
     } while(0)
 

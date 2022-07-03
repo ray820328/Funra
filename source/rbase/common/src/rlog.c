@@ -32,7 +32,7 @@ static bool rlog_force_flush = false;//false启用日志buffer
 static int rlog_flush_max = 30000;//n秒刷一次缓存
 rattribute_unused(static int rlog_rollback_size = 0);//rolling文件大小
 
-static char* rlog_filepath_format = "${date}/funra_${level}_${time}_${index}.log";
+static char* rlog_filepath_format = "${date}/funra_${level}_${index}.log";
 const static char* rlog_param_date = "${date}";//"${date}"
 const static char* rlog_param_file_index = "${index}";//"${index}"
 const static char* rlog_param_level = "${level}";//"${level}"
@@ -79,7 +79,7 @@ static int _rlog_format_filepath_template(char* filepath_template) {
     return rcode_ok;
 }
 static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index) {
-    char date_str_temp[16];
+	char date_str_temp[16];
     char time_str_temp[16];
     char* filepath_str_temp = NULL;
     char* fileidx_str_temp = NULL;
@@ -113,7 +113,7 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
     if (need_file_index) {
         rlist_t* file_list = rdir_list(path_name, true, false);//dir_path
         rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
-        rlist_node_t *node = NULL;
+        rlist_node_t* node = NULL;
         while ((node = rlist_next(&it))) {
             char* temp_file_name = (char*)(node->val);
             int prefix_index = rstr_index(temp_file_name, file_prefix);
@@ -135,7 +135,7 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
     }
 
     if (file_id_max > 0) {
-        rnum2str(fileidx_str_temp, file_id_max + 1, 0);
+        rnum2str(fileidx_str_temp, file_id_max + 1, "%d");
     }
     else {
         fileidx_str_temp = rstr_empty;
@@ -163,7 +163,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file2seperate) {
             printf("log item already finished, level = %d.\n", cur_level);
             continue;//初始优先级更高，不覆盖
         }
-        log_level_str = rlog_level_2str(cur_level);
+		log_level_str = rlog_level_2str(cur_level);
 
         log_item = rnew_data(rlog_info_t);
         if (log_item == NULL) {
@@ -226,12 +226,15 @@ Exit1:
 
 
 int rlog_init(const char* log_default_filename, const rlog_level_t log_default_level, const bool log_default_seperate_file) {
-    int ret_code = 0;
+    int ret_code = rcode_ok;
     rmutex_init(&rlog_mutex);
 
     rlog_t* rlog = rnew_data(rlog_t);
+	memset(rlog, 0, sizeof(rlog_t));
     ret_code = rlog_init_log(rlog, log_default_filename, log_default_level, log_default_seperate_file);
-    rgoto(1);
+	if (ret_code != rcode_ok) {
+		rgoto(1);
+	}
 
     rmutex_lock(&rlog_mutex);
 
@@ -254,9 +257,8 @@ exit1:
 int rlog_uninit() {
     rmutex_uninit(&rlog_mutex);
 
-    while (rlog_all) {
-        rfree_data(rlog_t, rlog_all);
-        ++rlog_all;
+	for (int i = 0; rlog_all && rlog_all[i]; i++) {
+        rfree_data(rlog_t, rlog_all[i]);
     }
 
     rfree_data_array(rlog_all);
@@ -296,8 +298,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
 			printf("log item already finished, level = %d.\n", cur_level);
 			continue;//初始优先级更高，不覆盖
 		}
-		log_level_str = rlog_level_2str(cur_level);
-         //_strlwr(log_level_str);
+		log_level_str = seperate_file ? rlog_level_2str(cur_level) : rlog_level_2str(RLOG_ALL);
 
         log_item = rnew_data(rlog_info_t);
 		if (log_item == NULL) {
@@ -308,13 +309,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
 		rlog->log_items[cur_level] = log_item;
 		log_item->level = cur_level;
 
-
-		if (seperate_file) {
-            log_item->filename = _rlog_get_filepath(log_level_str, false);//初始都不带递增后缀
-		}
-		else {
-            log_item->filename = _rlog_get_filepath(rlog_level_2str(RLOG_ALL), false);//一个文件
-        }
+		log_item->filename = _rlog_get_filepath(log_level_str, false);//初始都不带递增后缀
         rfile_format_path(log_item->filename);
 
         printf("rlog_init init, filename = '%s'\n", log_item->filename);
@@ -351,7 +346,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
 exit0:
 	rlog->inited = true;
 
-    code_ret = 0;
+    code_ret = rcode_ok;
 
     printf("init rlog finished.\n");
 exit1:
@@ -586,16 +581,19 @@ int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
 }
 
 int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
-    rlog = rlog == NULL ? rlog_all : rlog;
+    rlog = rlog == NULL ? rlog_all[0] : rlog;
 
     if (rlog == NULL || level < rlog->level) {
         return rcode_ok;
     }
-#ifdef print2file
+
     if (unlikely(rlog->log_items[level] == NULL)) {
+		va_list print_params;
+		va_start(print_params, fmt);
+		printf(fmt, print_params);
+		va_end(print_params);
         return -1;
     }
-#endif
 
     rmutex_lock(&rlog_mutex);//todo Ray 后期改 ring buffer
 

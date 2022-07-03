@@ -74,7 +74,7 @@ rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
 
 int rarray_add(rarray_t* ar, void* val) {
     if (ar->size >= ar->capacity) {
-        rassert(_rarray_alloc(ar, ar->capacity * ar->scale_factor) == rcode_ok, "oom");
+        rassert(_rarray_alloc(ar, (rarray_size_t)(ar->capacity * ar->scale_factor)) == rcode_ok, "oom");
     }
 
     int code = ar->set_value_func(ar, ar->size, val);
