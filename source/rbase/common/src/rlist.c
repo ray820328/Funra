@@ -51,6 +51,8 @@ void rlist_destroy(rlist_t *self) {
 
         curr = next;
     }
+
+    rfree_data(rlist_t, self);
 }
 
 /*

@@ -19,7 +19,7 @@ extern "C" {
 
 /* ------------------------------- Macros ------------------------------------*/
 
-#define file_path_len_max 8192 
+#define file_path_len_max 2048 
 #define rfile_seperator "/"
 #define rfile_path_current "."
 #define rfile_path_parent ".."

@@ -685,7 +685,7 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
     char file_full_name[file_path_len_max * 3 + 1];
     WCHAR win_file_path[MAX_PATH];
     WIN32_FIND_DATA file_find_data;
-    //PCWSTR win_file_path = L"E:\\Temp\\TxGameDownload\\MobileGamePCShared\\*.conf";
+    win_file_path[0] = rstr_end;
     path_utf8_to_unicode(win_file_path, sizeof(win_file_path) / sizeof(WCHAR), format_path);
     HANDLE file_find_ret = FindFirstFileW(win_file_path, &file_find_data);//FindFirstFile没有自动转换成 W !!
     if (file_find_ret == INVALID_HANDLE_VALUE) {
@@ -710,6 +710,7 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
 
     while (FindNextFileW(file_find_ret, &file_find_data))
     {
+        file_full_name[0] = rstr_end;
         path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
         if (!rstr_eq(file_full_name, rfile_path_current) && !rstr_eq(file_full_name, rfile_path_parent)) {
             if (file_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -725,6 +726,9 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
             }
         }
     }
+
+    win_file_path[0] = rstr_end;
+    file_full_name[0] = rstr_end;
 
 #else //file_system_ansi
 
