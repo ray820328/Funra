@@ -106,7 +106,7 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
     char* file_name = rdir_get_path_filename(ret_str);
     char* file_prefix = rstr_sub(file_name, 0, rstr_last_index(file_name, rlog_param_file_index_gap) + file_index_gap_len, true);
     int file_prefix_len = rstr_len(file_prefix);
-    int file_id_max = 0;
+    int file_id_max = -1;
 
     rassert(rdir_make(path_name, true) == rcode_ok, path_name);//确保目录存在
 
@@ -126,6 +126,7 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
             if (prefix_index != 0) {//start with
                 continue;
             }
+            file_id_max = file_id_max == -1 ? 0 : file_id_max;
 
             suffix_index = rstr_index(temp_file_name + file_prefix_len, rlog_param_file_suffix_gap);//文件名后缀开始位置
 
@@ -138,7 +139,7 @@ static char* _rlog_get_filepath(const char* log_level_str, bool need_file_index)
         rlist_destroy(file_list);
     }
 
-    if (file_id_max > 0) {
+    if (file_id_max > -1) {
         rnum2str(fileidx_str_temp, file_id_max + 1, "%d");
     }
     else {
