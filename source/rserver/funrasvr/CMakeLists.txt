@@ -2,6 +2,8 @@
 
 PROJECT(funrasvr)
 
+INCLUDE_DIRECTORIES(include)
+
 SET(SRC_BIN
     src/main.c
     )

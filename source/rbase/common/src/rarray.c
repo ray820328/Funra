@@ -174,7 +174,7 @@ void* rarray_next(rarray_iterator_t* it) {
 
 
 
-int rarray_set_value_func_rdata_type_ptr(rarray_t* ar, const rarray_size_t offset, void* obj) {
+int rarray_set_value_func_rdata_type_ptr(rarray_t* ar, const rarray_size_t offset, rdata_type_ptr_inner_type obj) {
     void** dest_ptr = (void**)(ar)->items + offset;
     if (*dest_ptr) {//位置已经存在对象，直接释放
         ar->free_value_func(*dest_ptr);

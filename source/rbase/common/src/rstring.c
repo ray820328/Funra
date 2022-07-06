@@ -18,22 +18,24 @@
 #pragma GCC diagnostic ignored "-Wdangling-else"
 #endif //__GNUC__
 
+extern char* rstr_empty_const = "";
+
 static void _kmp_next_array_init(char* pat, int len_pattern, rarray_t* array_ins) {
     int length = 0;
-    rarray_add(array_ins, 0);
+    rarray_add(array_ins, (int)0);
     int i = 1;
     while (i < len_pattern) {
         if (pat[i] == pat[length]) {
             length++;
-            rarray_add(array_ins, length);
+            rarray_add(array_ins, (int)length);
             i++;
         }
         else {
             if (length != 0) {
-                rarray_add(array_ins, length - 1);
+                rarray_add(array_ins, (int)(length - 1));
             }
             else {
-                rarray_add(array_ins, 0);
+                rarray_add(array_ins, (int)0);
                 i++;
             }
         }
@@ -62,7 +64,7 @@ static rarray_t* _kmp_search(char* str, char* pattern, int count) {
             i++;
         }
         if (j == len_pattern) {
-            rarray_add(array_ret, i - j);
+            rarray_add(array_ret, (int)(i - j));
             if (count > 0) {
                 if (--count == 0) {
                     return array_ret;
@@ -371,13 +373,13 @@ char** rstr_split(const char* src, const char* delim) {
     *token = rstr_sub(src, from_pos, sub_len, true);
 
     for (int index = 1; index < data_len; index++) {
-        from_pos = (rdata_type_int_inner_type)rarray_at(array_tokens, index - 1) + delim_len;
-        sub_len = (rdata_type_int_inner_type)rarray_at(array_tokens, index) - from_pos;
+        from_pos = (size_t)rarray_at(array_tokens, index - 1) + delim_len;//rdata_type_int_inner_type
+        sub_len = (size_t)rarray_at(array_tokens, index) - from_pos;//rdata_type_int_inner_type
         token = ret + index;
         *token = rstr_sub(src, from_pos, sub_len, true);
     }
 
-    from_pos = (rdata_type_int_inner_type)rarray_at(array_tokens, data_len - 1) + delim_len;
+    from_pos = (size_t)rarray_at(array_tokens, data_len - 1) + delim_len;//rdata_type_int_inner_type
     sub_len = src_len - from_pos;
     token = ret + data_len;
     *token = rstr_sub(src, from_pos, sub_len, true);

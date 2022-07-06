@@ -67,7 +67,7 @@ static void rarray_int_test(void **state) {
     int j;
     int temp;
 
-    init_benchmark(1024, "test rarray (%d)", count);
+    init_benchmark(1024, "test rarray (%ld)", count);
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;
@@ -123,7 +123,7 @@ static void rarray_string_test(void **state) {
     int j;
     char* temp;
 
-    init_benchmark(1024, "test rarray (%d)", count);
+    init_benchmark(1024, "test rarray (%ld)", count);
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;
@@ -134,7 +134,7 @@ static void rarray_string_test(void **state) {
     start_benchmark(0);
     char* temp_str = NULL;
     for (j = 0; j < count * 3; j++) {
-        rnum2str(temp_str, j + count, "%ul");
+        rnum2str(temp_str, j + count, 0);
         rarray_add(array_ins, temp_str);
         temp = rarray_at(array_ins, j);
         assert_true(rstr_2int(temp) == j + count);
@@ -228,7 +228,7 @@ static void rarray_ptr_test(void **state) {
     int j;
     struct data_test* temp;
 
-    init_benchmark(1024, "test rarray (%d)", count);
+    init_benchmark(1024, "test rarray (%ld)", count);
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;

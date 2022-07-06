@@ -86,16 +86,15 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
 else()
     LINK_DIRECTORIES(
         /usr/local/lib
-        ${RSERVER_LIB_ROOT}/3rd
         ${RSERVER_LIB_ROOT}
     )
     SET(LINK_LIBS 
         dl 
         m 
         pthread
-        liblua${RBUILD_TYPE_POSTFIX}.a 
-        libuv${RBUILD_TYPE_POSTFIX}.a 
-        libuv_a${RBUILD_TYPE_POSTFIX}.a 
+        3rd/liblua${RBUILD_TYPE_POSTFIX}.a 
+        3rd/libuv${RBUILD_TYPE_POSTFIX}.a 
+        3rd/libuv_a${RBUILD_TYPE_POSTFIX}.a 
         librcommon${RBUILD_TYPE_POSTFIX}.a
         libripc${RBUILD_TYPE_POSTFIX}.a    
     )
@@ -107,6 +106,7 @@ else()
     )
 endif()
 
+MESSAGE(STATUS "Build system: ${CMAKE_HOST_SYSTEM_NAME}")
 MESSAGE(STATUS "Link dirs: ${RSERVER_LIB_ROOT}")
 MESSAGE(STATUS "Link libs: ${LINK_LIBS}")
 MESSAGE(STATUS "Link opts: ${PROJECT_LINK_OPTIONS}")

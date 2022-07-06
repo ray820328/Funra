@@ -307,10 +307,11 @@ static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr
 }
 
 #else //_WIN64
+
 #include <unistd.h>
 #include <dirent.h>
-#include <cstdio>
-#include <cstdlib>
+//#include <cstdio>
+//#include <cstdlib>
 
 int unlink(const char *);
 #endif
@@ -380,7 +381,7 @@ int rfile_exists(const char* path) {
 
 int rfile_copy_file(const char *src, const char *dst) {
     FILE *sfp = NULL, *dfp = NULL;
-    size_t c;
+    size_t count;
     char buf[4096];
 
     rassert_goto(src != NULL, "", 1);
@@ -392,9 +393,9 @@ int rfile_copy_file(const char *src, const char *dst) {
     dfp = fopen(dst, "wb+");
     rassert_goto(dfp == NULL, "unable to open for writing", 1);
 
-    while ((c = fread(buf, 1, sizeof(buf), sfp)) > 0)
+    while ((count = fread(buf, 1, sizeof(buf), sfp)) > 0)
     {
-        rassert_goto(fwrite(buf, 1, c, dfp) != 0, "error writing to dest", 1);
+        rassert_goto(fwrite(buf, 1, count, dfp) != 0, "error writing to dest", 1);
     }
 
     rassert_goto(!fclose(sfp), "close source failed.", 1);
@@ -413,8 +414,6 @@ exit1:
 }
 
 int rfile_move_file(const char *src, const char *dst) {
-    int rc;
-
     rassert_goto(src != NULL, "", 1);
     rassert_goto(dst != NULL, "", 1);
 
@@ -425,7 +424,6 @@ int rfile_move_file(const char *src, const char *dst) {
         rassert_goto(rfile_copy_file(src, dst) == 0, "", 1); /* copy */
     }
 #else
-    rattribute_unused(rc);
 
     rassert_goto(rfile_copy_file(src, dst) == 0, "", 1);
 #endif
@@ -475,7 +473,7 @@ static int _rdir_make_self(const char *path) {
 #else
     mode_t mode = 0;
     if (mkdir(path, mode) != 0) {
-        return errno;
+        return rerror_get_os_err();
     }
 #endif
     return rcode_ok;
@@ -545,8 +543,8 @@ int rdir_remove(const char *path) {
         return rv;
     }
     if (!RemoveDirectoryW(wpath)) {
-        DWORD errorno = GetLastError();
-        return (int)errorno;//rerror_get_os_error();
+        DWORD errorno = rerror_get_os_err();
+        return (int)errorno;
     }
 #else //file_system_ansi
     if (!RemoveDirectory(path)) {
@@ -556,7 +554,7 @@ int rdir_remove(const char *path) {
 
 #else //_WIN64
     if (rmdir(path) != 0) {
-        return errno;
+        return rerror_get_os_err();
     }
 #endif
     return rcode_ok;

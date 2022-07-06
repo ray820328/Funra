@@ -20,7 +20,7 @@ extern "C" {
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#define rmutex_t_def CRITICAL_SECTION
+#define rmutex_t CRITICAL_SECTION
 #define rmutex_init(rmutexObj) \
     InitializeCriticalSection(rmutexObj)
 #define rmutex_uninit(rmutexObj) \
@@ -32,7 +32,7 @@ extern "C" {
 
 #else /* defined(_WIN32) || defined(_WIN64) */
 
-#define rmutex_t_def pthread_mutex_t
+#define rmutex_t pthread_mutex_t
 #define rmutex_init(rmutexObj) \
     pthread_mutex_init(rmutexObj, NULL)
 #define rmutex_uninit(rmutexObj) \

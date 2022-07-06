@@ -19,10 +19,12 @@ extern "C" {
 #include "rcommon.h"
 #include "rarray.h"
 
+extern char* rstr_empty_const;
+
 /* ------------------------------- Macros ------------------------------------*/
 
 #define rstr_null "NULL"
-#define rstr_empty ""
+#define rstr_empty rstr_empty_const
 #define rstr_end '\0'
 #define rstr_tab '\t'
 #define rstr_blank ' '
@@ -32,7 +34,7 @@ extern "C" {
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_reset(rstr) rstr_init((rstr))
-#define rstr_free(rstr) if ((rstr) != NULL && (rstr) != rstr_empty) rayfree(rstr)
+#define rstr_free(rstr) if ((rstr) != NULL && (rstr) != rstr_empty_const) rayfree(rstr)
 
 #define rstr_array_new(size) rnew_data_array(sizeof(char*), (size) + 1)
 #define rstr_array_count(rstr, count) \
@@ -46,7 +48,7 @@ extern "C" {
     char* rstr_arr[count] = { [count - 1] = rstr_array_end }
 /** 确保非最后一个NULL都为rstr_empty，否则会提前结束遍历 **/
 #define rstr_array_for(rstr, item) \
-    for (size_t rstr##_index = 0; (char*)item = rstr == NULL ? NULL : *((char**)rstr + rstr##_index), rstr != NULL && item != rstr_array_end; rstr##_index++)
+    for (size_t rstr##_index = 0; (item) = ((rstr) == NULL ? NULL : ((char**)(rstr))[rstr##_index]), ((rstr) != NULL && (item) != rstr_array_end); rstr##_index ++)
 /** 确保非最后一个NULL都为rstr_empty，否则会内存泄露 **/
 #define rstr_array_free(rstr) \
     while(rstr) { \

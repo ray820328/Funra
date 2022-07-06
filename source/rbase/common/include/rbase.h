@@ -14,6 +14,16 @@
 extern "C" {
 #endif
 
+#if defined(_WIN32) || defined(_WIN64)
+
+#define ros_windows
+
+#else //_WIN64
+
+#define ros_linux
+
+#endif //_WIN64
+
 #define print2file
 #ifdef print2file
 //#undef print2file

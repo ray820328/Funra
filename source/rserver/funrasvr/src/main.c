@@ -22,12 +22,12 @@
 #include "rlog.h"
 
 int main(int argc, char **argv) {
-    init_rlog("rserver_%s_%s.log", RLOG_ALL, false, "all");// NULL);// 
-    printdbgr("starting rserver...\n");
+    rlog_init("${date}/rserver_${index}.log", RLOG_ALL, false, 100);
+    rinfo("starting rserver...\n");
 
-    int64_t timeNowNano = nanosec_r();
-    int64_t timeNowMicro = microsec_r();
-    int64_t timeNowMill = millisec_r();
+    int64_t timeNowNano = rtime_nanosec();
+    int64_t timeNowMicro = rtime_microsec();
+    int64_t timeNowMill = rtime_millisec();
 
     ripc_init(NULL);
 
@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
         wait_millsec(50);
 
     }
-    printdbgr("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us\n",
-        (millisec_r() - timeNowMill), (microsec_r() - timeNowMicro), (nanosec_r() - timeNowNano), timeNowNano);
+    rinfo("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us\n",
+        (rtime_millisec() - timeNowMill), (rtime_microsec() - timeNowMicro), (rtime_nanosec() - timeNowNano), timeNowNano);
 
     //char* dataStr = char[64];
     //rformat_time_s_full(dataStr, timeNow);

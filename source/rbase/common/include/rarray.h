@@ -62,7 +62,7 @@ extern "C" {
         rassert((ar) == NULL, ""); \
         (ar) = rarray_create(T##_size, (size)); \
         rassert((ar) != NULL, ""); \
-        (ar)->set_value_func = rarray_set_value_func_##T; \
+        (ar)->set_value_func = (rarray_set_value_func) rarray_set_value_func_##T; \
         (ar)->get_value_func = rarray_get_value_func_##T; \
         (ar)->remove_value_func = rarray_remove_value_func_##T; \
         (ar)->free_value_func = rarray_free_value_func_##T; \
@@ -84,6 +84,8 @@ extern "C" {
 
 /* ------------------------------- Structs ------------------------------------*/
 
+    typedef int(*rarray_set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
+
     typedef enum rarray_code_t {
         rarray_code_error = 1,
         rarray_code_equal,
@@ -100,7 +102,7 @@ extern "C" {
         float scale_factor;
         bool keep_serial;
 
-        int (*set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
+        rarray_set_value_func set_value_func;
         void* (*get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
         void* (*copy_value_func)(const void* obj);
         int (*remove_value_func)(struct rarray_t* ar, const rarray_size_t index);

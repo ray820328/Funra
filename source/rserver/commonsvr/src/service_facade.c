@@ -9,8 +9,8 @@
 
 #include "assert.h"
 
-static int rtest_init() {
+// static int rtest_init() {
     
-	return 0;
-}
+// 	return 0;
+// }
 
