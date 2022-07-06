@@ -16,9 +16,14 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdangling-else"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-conversion"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 #endif //__GNUC__
 
-extern char* rstr_empty_const = "";
+extern char* rstr_empty_const;
+char* rstr_empty_const = "";
 
 static void _kmp_next_array_init(char* pat, int len_pattern, rarray_t* array_ins) {
     int length = 0;
@@ -146,7 +151,7 @@ char* rstr_concat_array(const char** src, const char* delim, bool suffix) {
 	return dest;
 }
 
-char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...) {
+char* rstr_fmt(char* dest, const char* fmt, int max_len, ...) {
     if (!dest || !fmt) {
         return rstr_empty;
     }
@@ -184,14 +189,14 @@ char* rstr_cpy_full(const void* data) {
     return rstr_cpy(data, 0);
 }
 
-char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool new) {
+char* rstr_sub(const char* src, size_t from, size_t dest_size, bool new) {
     if (!src || from  < 0 || dest_size < 0 || rstr_len(src) < (from + dest_size)) {
         rassert(false, "invalid str.");
         return rstr_empty;
     }
 
     if (!new) {
-        return src + from;//整个from字符串，不仅仅dest
+        return (char*)(src + from);//整个from字符串，不仅仅dest
     }
 
     char* dest = rstr_new(dest_size + 1u);
@@ -262,7 +267,7 @@ int rstr_last_index(const char* src, const char* key) {
 }
 
 /** 不支持unicode，有中文截断危险，utf8编码可以使用 **/
-char* rstr_repl(char *src, char *old_str, char *new_str) {
+char* rstr_repl(const char* src, const char* old_str, const char* new_str) {
     if (src == NULL || old_str == NULL) {
         return rstr_empty;
     }
@@ -392,7 +397,7 @@ char** rstr_split(const char* src, const char* delim) {
     return ret;
 }
 
-bool rstr_is_digit(char* src, int end_index) {
+bool rstr_is_digit(const char* src, int end_index) {
     if (src == NULL || rstr_eq(src, rstr_empty)) {
         return false;
     }
@@ -459,6 +464,8 @@ int rstr_trim_end(char* src) {
 }
 
 #ifdef __GNUC__
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif //__GNUC__

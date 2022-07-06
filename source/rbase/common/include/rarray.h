@@ -62,10 +62,10 @@ extern "C" {
         rassert((ar) == NULL, ""); \
         (ar) = rarray_create(T##_size, (size)); \
         rassert((ar) != NULL, ""); \
-        (ar)->set_value_func = (rarray_set_value_func) rarray_set_value_func_##T; \
-        (ar)->get_value_func = rarray_get_value_func_##T; \
-        (ar)->remove_value_func = rarray_remove_value_func_##T; \
-        (ar)->free_value_func = rarray_free_value_func_##T; \
+        (ar)->set_value_func = (rarray_type_set_value_func)rarray_set_value_func_##T; \
+        (ar)->get_value_func = (rarray_type_get_value_func)rarray_get_value_func_##T; \
+        (ar)->remove_value_func = (rarray_type_remove_value_func)rarray_remove_value_func_##T; \
+        (ar)->free_value_func = (rarray_type_free_value_func)rarray_free_value_func_##T; \
     } while(0)
 
     //rarray_iterator* rarray_it(rarray* d);
@@ -83,8 +83,12 @@ extern "C" {
     }
 
 /* ------------------------------- Structs ------------------------------------*/
-
-    typedef int(*rarray_set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
+    struct rarray_t* ar;
+    typedef int(*rarray_type_set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
+    typedef void* (*rarray_type_get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
+    typedef void* (*rarray_type_copy_value_func)(const void* obj);
+    typedef int (*rarray_type_remove_value_func)(struct rarray_t* ar, const rarray_size_t index);
+    typedef void (*rarray_type_free_value_func)(void* obj);
 
     typedef enum rarray_code_t {
         rarray_code_error = 1,
@@ -102,12 +106,12 @@ extern "C" {
         float scale_factor;
         bool keep_serial;
 
-        rarray_set_value_func set_value_func;
-        void* (*get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
-        void* (*copy_value_func)(const void* obj);
-        int (*remove_value_func)(struct rarray_t* ar, const rarray_size_t index);
+        rarray_type_set_value_func set_value_func;
+        rarray_type_get_value_func get_value_func;
+        rarray_type_copy_value_func copy_value_func;
+        rarray_type_remove_value_func remove_value_func;
         rcom_compare_func_type compare_value_func;
-        void(*free_value_func)(void* obj);
+        rarray_type_free_value_func free_value_func;
 
         void** items;
     } rarray_t;

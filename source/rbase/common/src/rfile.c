@@ -310,8 +310,8 @@ static int path_unicode_to_utf8(char* retstr, size_t retlen, const WCHAR* srcstr
 
 #include <unistd.h>
 #include <dirent.h>
-//#include <cstdio>
-//#include <cstdlib>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 int unlink(const char *);
 #endif
@@ -479,7 +479,7 @@ static int _rdir_make_self(const char *path) {
     return rcode_ok;
 }
 
-int rdir_make(const char *path, bool recursive) {
+int rdir_make(const char* path, bool recursive) {
     if (path == NULL || rstr_eq(path, rstr_empty)) {
         return rcode_ok;
     }
@@ -498,7 +498,7 @@ int rdir_make(const char *path, bool recursive) {
         temp_path2 = rstr_repl(temp_path == NULL ? path : temp_path, "\\", "/");
     }
 
-    char* dest_path = temp_path2 ? temp_path2 : (temp_path ? temp_path : path);
+    char* dest_path = temp_path2 ? temp_path2 : (temp_path ? temp_path : (char*)path);
     char** dirs = rstr_split(dest_path, "/");
     int path_len = rstr_len(dest_path);
 
@@ -646,9 +646,9 @@ char* rfile_get_filepath(const char *path, const char *filename) {
 
     rstr_array_make(paths, 3);
     paths[0] = format_path;
-    paths[1] = filename;
+    paths[1] = (char*)filename;
 
-    char* file_path = rstr_concat_array(paths, rfile_seperator, false);
+    char* file_path = rstr_concat_array((const char**)paths, rfile_seperator, false);
 
     rstr_free(format_path);
 

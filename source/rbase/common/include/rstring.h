@@ -64,13 +64,25 @@ extern char* rstr_empty_const;
     do { \
         char _num_temp_str_[32]; \
 		int _len_num_str_ = 0; \
-		if (!fmt_str) { \
+        int64_t _num_temp_value_ = 0; \
+		if (fmt_str == NULL) { \
+			_num_temp_value_ = (num); \
+		} \
+		_len_num_str_ = sprintf((_num_temp_str_), (fmt_str) ? (fmt_str) : "%"PRId64, (fmt_str) ? (num) : _num_temp_value_); \
+        rassert((_len_num_str_ < 32), "rnum2str"); \
+        (ret_num_str) = (_num_temp_str_); \
+    } while(0)
+#define rnum2str_2(ret_num_str, num, fmt_str) \
+    do { \
+        char _num_temp_str_[32]; \
+		int _len_num_str_ = 0; \
+		if (fmt_str != NULL) { \
+			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str), (num)); \
+		} else{  \
 			int64_t _num_temp_value_ = (num); \
 			_len_num_str_ = sprintf((_num_temp_str_), "%"PRId64, _num_temp_value_); \
-		} else{  \
-			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str), (num)); \
 		} \
-        rassert(_len_num_str_ < 32, "rnum2str"); \
+        rassert((_len_num_str_ < 32), "rnum2str"); \
         (ret_num_str) = (_num_temp_str_); \
     } while(0)
 #define rformat_s(buffer_str, fmt_str, ...) \
@@ -142,7 +154,7 @@ R_API char* rstr_concat_array(const char** src, const char* delim, bool suffix);
 /** rstr_array_end结尾 **/
 R_API char* rstr_join(const char* src, ...);
 
-R_API char* rstr_fmt(char* dest, const char* fmt, const int max_len, ...);
+R_API char* rstr_fmt(char* dest, const char* fmt, int max_len, ...);
 /** len为0时到src结尾 **/
 R_API char* rstr_cpy(const void *src, size_t len);
 R_API char* rstr_cpy_full(const void *key);
@@ -153,15 +165,15 @@ R_API int rstr_index(const char* src, const char* key);
 R_API int rstr_last_index(const char* src, const char* key);
 
 /** ascii长度，如果new = false，整个from字符串，不仅仅dest，释放要特别注意 **/
-R_API char* rstr_sub(const char* src, const size_t from, const size_t dest_size, bool new);
+R_API char* rstr_sub(const char* src, size_t from, size_t dest_size, bool new);
 R_API char* rstr_sub_str(const char* src, const char* key, bool new);
 
 /** 支持utf8，非unicode16 **/
-R_API char* rstr_repl(char *src, char *old_str, char *new_str);
+R_API char* rstr_repl(const char* src, const char* old_str, const char* new_str);
 /** 无匹配返回null **/
-R_API char** rstr_split(const char *src, const char *delim);
+R_API char** rstr_split(const char* src, const char* delim);
 
-R_API bool rstr_is_digit(char* src, int end_index);
+R_API bool rstr_is_digit(const char* src, int end_index);
 
 R_API int rstr_trim(char* src);
 R_API int rstr_trim_begin(char* src);

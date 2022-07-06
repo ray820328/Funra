@@ -38,7 +38,7 @@ char* rstr_join(const char* src, ...) {
     int pos = 0;
 
     va_start(argp, src);
-    temp = src;
+    temp = (char*)src;
 
     while (temp != rstr_array_end) {
         temp_len = rstr_len(temp);
@@ -99,7 +99,7 @@ char** rstr_make_array(const int count, ...) {
 }
 
 /** src: "ray820328@163.com" pat = "h{3,9}(.*)@.{3}.(.*)" */
-static int _regex(char* src, char* pat, rarray_t* array_ins) {
+//static int _regex(char* src, char* pat, rarray_t* array_ins) {
     //char errbuf[1024];
     //regex_t reg;
    
@@ -134,8 +134,8 @@ static int _regex(char* src, char* pat, rarray_t* array_ins) {
     //    }
     //}
 
-    return rcode_ok;
-}
+//    return rcode_ok;
+//}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

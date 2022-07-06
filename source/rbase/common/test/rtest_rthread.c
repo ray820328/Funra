@@ -50,17 +50,16 @@ int run_rthread_tests(int benchmark_output) {
 
     int64_t timeNow = rtime_nanosec();
 
-    result + cmocka_run_group_tests(test_group2, NULL, NULL);
+    result += cmocka_run_group_tests(test_group2, NULL, NULL);
 
     printf("run_rthread_tests, pass: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
 
-    return rcode_ok;// result == sizeof(test_group2) ? rcode_ok : -1;
+    return result == 0 ? rcode_ok : -1;
 }
 
 static void rthread_full_test(void **state) {
     (void)state;
     int count = 10000;
- //    int j;
 
     init_benchmark(1024, "test rlog (%d)", count);
 
@@ -75,9 +74,9 @@ static void rthread_full_test(void **state) {
  //    end_benchmark("print to file.");
  //    rlist_destroy(file_list);
 
-	// start_benchmark(0);
+	start_benchmark(0);
 	
-	// end_benchmark("rolling files.");
+	end_benchmark("thread lock.");
 
     uninit_benchmark();
 }

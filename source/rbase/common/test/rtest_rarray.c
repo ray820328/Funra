@@ -150,7 +150,7 @@ static void rarray_string_test(void **state) {
     end_benchmark("Clear rarray.");
 
     for (j = 0; j < count; j++) {
-        rnum2str(temp_str, j + count, 0);
+        rnum2str(temp_str, (j + count), 0);
         rarray_add(array_ins, temp_str);
         temp = rarray_at(array_ins, j);
         assert_true(rstr_2int(temp) == j + count);
@@ -209,7 +209,7 @@ static struct data_test
     char* value;
 } data_test;
 static struct data_test* copy_value_func_obj(const struct data_test* obj) {
-    struct data_test* dest = rnew_data(struct data_test);
+    struct data_test* dest = rnew_data(data_test);
     dest->index = obj->index;
     dest->value = rstr_cpy(obj->value, 0);
     return dest;
@@ -233,8 +233,8 @@ static void rarray_ptr_test(void **state) {
     start_benchmark(0);
     rarray_t* array_ins = NULL;
     rarray_init(array_ins, rdata_type_ptr, count);
-    array_ins->copy_value_func = copy_value_func_obj;
-    array_ins->free_value_func = free_value_func_obj;
+    array_ins->copy_value_func = (rarray_type_copy_value_func)copy_value_func_obj;
+    array_ins->free_value_func = (rarray_type_free_value_func)free_value_func_obj;
     assert_true(array_ins);
     end_benchmark("create rarray.");
 

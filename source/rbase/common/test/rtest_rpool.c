@@ -13,6 +13,7 @@
 
 #include "rcommon.h"
 #include "rtime.h"
+#include "rstring.h"
 
 #include "rbase/common/test/rtest.h"
 

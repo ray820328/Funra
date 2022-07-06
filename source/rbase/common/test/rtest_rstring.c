@@ -38,7 +38,7 @@ static void rstring_index_test(void **state) {
 
     start_benchmark(0);
     char** str_array = rstr_make_array(2, "str", "array");
-    char* str_concat_array = rstr_concat_array(str_array, "_", false);
+    char* str_concat_array = rstr_concat_array((const char**)str_array, "_", false);
     assert_true(rstr_eq(str_concat_array, "str_array"));
     rstr_free(str_concat_array);
     rstr_array_free(str_array);
@@ -73,7 +73,7 @@ static void rstring_index_test(void **state) {
         assert_true(cur_len > 0);
     } 
 
-	char* str_concat_full = rstr_concat_array(tokens, delim, false);
+	char* str_concat_full = rstr_concat_array((const char**)tokens, delim, false);
 	assert_true(rstr_eq(str_concat_full, test_full_str));
 
 	rstr_free(str_concat_full);

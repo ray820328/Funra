@@ -13,6 +13,7 @@
 #include "rtime.h"
 #include "rlist.h"
 #include "rdict.h"
+#include "rfile.h"
 
 #include "rbase/common/test/rtest.h"
 

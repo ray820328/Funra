@@ -31,22 +31,22 @@
 #include "3rd/cmocka/include/cmocka.h"
 #include "3rd/cmocka/include/cmocka_pbc.h"
 
-#define init_benchmark(bufferSize, fmtStr, ...) \
-    char* benchmarkTitle = raymalloc(bufferSize); \
-    assert_true(sprintf(benchmarkTitle, fmtStr, ##__VA_ARGS__) < bufferSize); \
-    int64_t benchmarkStart = 0, benchmarkElapsed = 0
+#define init_benchmark(buffer_size, fmt_str, ...) \
+    char* benchmark_title = rstr_new(buffer_size); \
+    assert_true(sprintf(benchmark_title, fmt_str, ##__VA_ARGS__) < buffer_size); \
+    int64_t benchmark_start = 0, benchmark_elapsed = 0
 #define uninit_benchmark() \
-    rayfree(benchmarkTitle); \
-    benchmarkTitle = NULL
+    rstr_free(benchmark_title); \
+    benchmark_title = NULL
 
-#define start_benchmark(benchmarkMsgTitle) do { \
-    benchmarkStart = rtime_millisec(); \
-    if (benchmarkMsgTitle) benchmarkTitle = benchmarkMsgTitle; \
+#define start_benchmark(benchmark_msg_title) do { \
+    benchmark_start = rtime_millisec(); \
+    if (benchmark_msg_title) benchmark_title = benchmark_msg_title; \
 } while(0)
 
-#define end_benchmark(benchmarkMsgSuffix) do { \
-    benchmarkElapsed = rtime_millisec() - benchmarkStart; \
-    printf("%s: elapsed %"PRId64" ms, " benchmarkMsgSuffix "\n", benchmarkTitle, benchmarkElapsed); \
+#define end_benchmark(benchmark_msg_suffix) do { \
+    benchmark_elapsed = rtime_millisec() - benchmark_start; \
+    printf("%s: elapsed %"PRId64" ms, " benchmark_msg_suffix "\n", benchmark_title, benchmark_elapsed); \
 } while(0)
 
 

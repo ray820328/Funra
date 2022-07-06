@@ -45,7 +45,7 @@ int rfile_format_path(char* file);
 
 char* rfile_get_filepath(const char *path, const char *filename);
 
-int rdir_make(const char *path, bool recursive);
+int rdir_make(const char* path, bool recursive);
 
 int rdir_remove(const char *path);
 

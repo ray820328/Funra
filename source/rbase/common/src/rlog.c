@@ -78,7 +78,7 @@ static char* _rlog_get_filepath(char* rlog_filepath_template, char* log_level_st
     char* filepath_str_temp = NULL;
     char* fileidx_str_temp = NULL;
     char* ret_str = NULL;
-    int fileidx_index = 0;
+    //int fileidx_index = 0;
     int suffix_index = 0;
 
     rformat_time_s_yyyymmdd(date_str_temp, 0, 0);
@@ -124,7 +124,7 @@ static char* _rlog_get_filepath(char* rlog_filepath_template, char* log_level_st
 
             suffix_index = rstr_index(temp_file_name + file_prefix_len, rlog_param_file_suffix_gap);//文件名后缀开始位置
 
-            if (suffix_index > 0 && rstr_is_digit(temp_file_name + file_prefix_len, suffix_index)) {
+            if (suffix_index > 0 && rstr_is_digit((const char*)(temp_file_name + file_prefix_len), suffix_index)) {
                 temp_file_name[suffix_index] = rstr_end;
                 file_id = rstr_2int(temp_file_name + file_prefix_len);
                 file_id_max = file_id_max < file_id ? file_id : file_id_max;

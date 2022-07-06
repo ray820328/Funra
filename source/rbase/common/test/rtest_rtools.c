@@ -10,6 +10,7 @@
 #include "rlog.h"
 #include "rcommon.h"
 #include "rtime.h"
+#include "rstring.h"
 #include "rtools.h"
 
 #include "rbase/common/test/rtest.h"

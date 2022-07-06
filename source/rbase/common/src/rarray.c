@@ -64,7 +64,7 @@ rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
     ar->get_value_func = NULL;
     ar->copy_value_func = NULL;
     ar->remove_value_func = NULL;
-    ar->compare_value_func = compare_func_default;
+    ar->compare_value_func = (rcom_compare_func_type)compare_func_default;
     ar->free_value_func = NULL;
 
     rassert(_rarray_alloc(ar, ar->capacity) == rcode_ok, "oom");

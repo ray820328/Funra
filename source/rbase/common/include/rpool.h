@@ -36,6 +36,9 @@ extern "C" {
 #define rpool_get_capacity(T) (rget_pool(T) == NULL ? 0 : rget_pool(T)->capacity)
 #define rpool_get_free_count(T) (rget_pool(T) == NULL ? 0 : rget_pool(T)->totalFree)
 
+typedef void (*rpool_type_travel_block_func)(void(*do_action)(void* item));
+typedef void (*rpool_type_destroy_pool_func)(void* pool);
+
 typedef struct rdata_pool_block {
     uint64_t used_bits;//0:free 1:used
     unsigned int data_total_size;
@@ -52,8 +55,8 @@ typedef struct rdata_pool {
 
 typedef struct rpool_chain_node_t {
     void* pool_self;
-    void (*rpool_travel_block_func)(void (*do_action)(void* item));
-    void (*rpool_destroy_pool)(void* pool);
+    rpool_type_travel_block_func rpool_travel_block_func;
+    rpool_type_destroy_pool_func rpool_destroy_pool_func;
     struct rpool_chain_node_t* prev;
     struct rpool_chain_node_t* next;
 } rpool_chain_node_t;
@@ -160,8 +163,8 @@ extern rpool_chain_node_t* rpool_chain;
     chainNode->next = rpool_chain->next; \
     chainNode->prev = rpool_chain; \
     chainNode->pool_self = poolTemp; \
-    chainNode->rpool_travel_block_func = travel_##TYPE##_info; \
-    chainNode->rpool_destroy_pool = rpool_##TYPE##_destroy; \
+    chainNode->rpool_travel_block_func = (rpool_type_travel_block_func)travel_##TYPE##_info; \
+    chainNode->rpool_destroy_pool_func = (rpool_type_destroy_pool_func)rpool_##TYPE##_destroy; \
     rpool_chain->next = chainNode; \
     rinfo("create pool "#TYPE"(%d, %d) success, (%p)\n", size_init, size_adjust, poolTemp); \
     return poolTemp; \
@@ -354,11 +357,11 @@ if (rpool_chain == NULL) { \
 extern rpool_chain_node_t* rpool_chain; \
 if (rpool_chain) { \
     rpool_chain_node_t* tempChainNode = NULL; \
-    while (tempChainNode = rpool_chain->next) { \
+    while ((tempChainNode = rpool_chain->next)) { \
         rinfo("rpool_chain must be NULL.\n"); \
         rpool_chain->next = tempChainNode->next; \
-        if (tempChainNode->rpool_destroy_pool != NULL) { \
-            tempChainNode->rpool_destroy_pool(tempChainNode->pool_self); \
+        if (tempChainNode->rpool_destroy_pool_func != NULL) { \
+            tempChainNode->rpool_destroy_pool_func(tempChainNode->pool_self); \
         } \
         rayfree(tempChainNode); \
         tempChainNode = NULL; \
