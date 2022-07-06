@@ -45,17 +45,42 @@
 # 编译和运行
 支持Windows环境和Linux环境，编译后可执行文件位于目录 build/bin 下
 ## Windows（测试环境为Win 10）
-- vs2017
+### 打开 VS 工程编译
 - 工程位于目录 proj\vs2017 下
 - lib位于目录 build\lib\Windows_AMD64 下（可直接使用或重新编译各模块，cmocka建议本地重新编译一次）
+
+### 命令行编译
+- 开始菜单打开以下命令行工具
+适用于 VS 2017的x64 本级工具命令行
+- 执行source目录下cmd文件
+build.cmd
 
 ## Linux（测试环境为CentOS 7）
 - gcc 4.6+
 - cmake 3.10+
 - 重新编译（脚本位于目录 source 下）
 ./build.sh build [level] [Debug/Release/All]
-level: 2（重新编译全部，第一次编译建议使用此值）
+- level
+level: 2（重新编译全部，第一次编译必须使用此值）
+level: 1（rbase + rserver）
 level: 0（仅rserver）
+- 样例
+./build.sh build 2 All
+
+## 目录说明
+- build
+bin: 生成可执行文件
+lib： 生成库文件
+- proj
+生成工程文件，ide工程，目前仅支持 VS2017
+- source
+3rd： 第三方库
+rbase： 框架基础库实现
+rserver： 服务器整合实现
+-tools
+工具文件集合
+- 其他
+test： 每个主目录下包含单元测试用例文件夹
 
 # 关于测试
 - 有限的单元和性能测试；
