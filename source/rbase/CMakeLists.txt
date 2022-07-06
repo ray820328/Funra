@@ -74,8 +74,8 @@ SET(RSERVER_BINARY_ROOT ${RBASE_BINARY_ROOT})
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     LINK_DIRECTORIES(
-        ${RSERVER_LIB_ROOT}/3rd
         ${RBASE_LIB_ROOT}
+        ${RBASE_LIB_ROOT}/3rd
     )
     
     SET(LINK_LIBS 
@@ -84,14 +84,18 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
 	)
 else()
     LINK_DIRECTORIES(
-        ${RSERVER_LIB_ROOT}/3rd
+        /usr/local/lib
         ${RBASE_LIB_ROOT}
+        ${RBASE_LIB_ROOT}/3rd
     )
     SET(LINK_LIBS 
         dl 
         m 
         pthread
-		rcommon${RBUILD_TYPE_POSTFIX}
+        liblua${RBUILD_TYPE_POSTFIX}.a 
+        libuv${RBUILD_TYPE_POSTFIX}.a 
+        libuv_a${RBUILD_TYPE_POSTFIX}.a 
+        librcommon${RBUILD_TYPE_POSTFIX}.a
     )
 endif()
 

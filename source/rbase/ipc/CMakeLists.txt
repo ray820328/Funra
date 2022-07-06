@@ -10,9 +10,9 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(SRC_LIB
-        src/ripc.c
-        src/rsocket.c
-        )
+    src/ripc.c
+    src/rsocket.c
+)
 
 #LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
 
@@ -22,6 +22,9 @@ ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})
 #SET(LIBRARY_OUTPUT_PATH ${RBASE_LIB_ROOT}) 
 
 MESSAGE(STATUS "Platform: ${CMAKE_HOST_SYSTEM_NAME} - ${CMAKE_CURRENT_SOURCE_DIR}")
+MESSAGE(STATUS "Link dirs (${PROJECT_NAME}): ${RSERVER_LIB_ROOT}")
+MESSAGE(STATUS "Link libs (${PROJECT_NAME}): ${LINK_LIBS}")
+MESSAGE(STATUS "Link opts (${PROJECT_NAME}): ${PROJECT_LINK_OPTIONS}")
 
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src

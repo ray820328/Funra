@@ -87,19 +87,21 @@ else()
     LINK_DIRECTORIES(
         /usr/local/lib
         ${RSERVER_LIB_ROOT}
+        ${RSERVER_LIB_ROOT}/3rd
     )
     SET(LINK_LIBS 
         dl 
         m 
         pthread
-        3rd/liblua${RBUILD_TYPE_POSTFIX}.a 
-        3rd/libuv${RBUILD_TYPE_POSTFIX}.a 
-        3rd/libuv_a${RBUILD_TYPE_POSTFIX}.a 
+        liblua${RBUILD_TYPE_POSTFIX}.a 
+        libuv${RBUILD_TYPE_POSTFIX}.a 
+        libuv_a${RBUILD_TYPE_POSTFIX}.a 
         librcommon${RBUILD_TYPE_POSTFIX}.a
         libripc${RBUILD_TYPE_POSTFIX}.a    
     )
     SET(PROJECT_LINK_OPTIONS
         #-ljemalloc 
+        -luv
         -lstdc++
         -static-libgcc
         -static-libstdc++

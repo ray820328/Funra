@@ -37,13 +37,10 @@ char* rstr_join(const char* src, ...) {
     char* buf_temp = NULL;
     int pos = 0;
 
-    va_start(argp, 0);
-    while (1) {
-        temp = va_arg(argp, char*);
-        if (temp == rstr_array_end) {
-            break;
-        }
+    va_start(argp, src);
+    temp = src;
 
+    while (temp != rstr_array_end) {
         temp_len = rstr_len(temp);
         pos += temp_len;
 
@@ -66,6 +63,8 @@ char* rstr_join(const char* src, ...) {
             buf_ext = buf_temp;
             buf_temp = NULL;
         }
+
+        temp = va_arg(argp, char*);
     }
     va_end(argp);
 
