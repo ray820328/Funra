@@ -64,26 +64,14 @@ extern char* rstr_empty_const;
     do { \
         char _num_temp_str_[32]; \
 		int _len_num_str_ = 0; \
-        int64_t _num_temp_value_ = 0; \
-		if (fmt_str == NULL) { \
-			_num_temp_value_ = (num); \
-		} \
-		_len_num_str_ = sprintf((_num_temp_str_), (fmt_str) ? (fmt_str) : "%"PRId64, (fmt_str) ? (num) : _num_temp_value_); \
-        rassert((_len_num_str_ < 32), "rnum2str"); \
-        (ret_num_str) = (_num_temp_str_); \
-    } while(0)
-#define rnum2str_2(ret_num_str, num, fmt_str) \
-    do { \
-        char _num_temp_str_[32]; \
-		int _len_num_str_ = 0; \
-		if (fmt_str != NULL) { \
-			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str), (num)); \
-		} else{  \
+		if ((fmt_str) != NULL) { \
+			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str) ? (fmt_str) : "", (num));/**警告不会执行**/ \
+		} else {  \
 			int64_t _num_temp_value_ = (num); \
-			_len_num_str_ = sprintf((_num_temp_str_), "%"PRId64, _num_temp_value_); \
+			_len_num_str_ = sprintf(_num_temp_str_, "%"PRId64, _num_temp_value_); \
 		} \
         rassert((_len_num_str_ < 32), "rnum2str"); \
-        (ret_num_str) = (_num_temp_str_); \
+        (ret_num_str) = _num_temp_str_; \
     } while(0)
 #define rformat_s(buffer_str, fmt_str, ...) \
     do { \

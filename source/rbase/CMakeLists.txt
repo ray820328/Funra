@@ -69,19 +69,20 @@ ADD_DEFINITIONS(${PROJECT_DEFINES})
 SET(RBASE_LIB_ROOT ${PROJECT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM})
 SET(RBASE_BINARY_ROOT ${PROJECT_SOURCE_DIR}/../../build/bin/${DIR_PLATFORM})
 
-SET(RSERVER_LIB_ROOT ${RBASE_LIB_ROOT})
-SET(RSERVER_BINARY_ROOT ${RBASE_BINARY_ROOT})
-
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     LINK_DIRECTORIES(
         ${RBASE_LIB_ROOT}
-        ${RBASE_LIB_ROOT}/3rd
     )
     
     SET(LINK_LIBS 
-		legacy_stdio_definitions
-		rcommon${RBUILD_TYPE_POSTFIX} 
-	)
+        legacy_stdio_definitions
+        3rd/cmocka${RBUILD_TYPE_POSTFIX}
+        3rd/lua${RBUILD_TYPE_POSTFIX} 
+        3rd/uv${RBUILD_TYPE_POSTFIX}
+        3rd/uv_a${RBUILD_TYPE_POSTFIX} 
+        rcommon${RBUILD_TYPE_POSTFIX} 
+        ripc${RBUILD_TYPE_POSTFIX}  
+    )
 else()
     LINK_DIRECTORIES(
         /usr/local/lib
@@ -96,8 +97,18 @@ else()
         libuv${RBUILD_TYPE_POSTFIX}.a 
         libuv_a${RBUILD_TYPE_POSTFIX}.a 
         librcommon${RBUILD_TYPE_POSTFIX}.a
+        libripc${RBUILD_TYPE_POSTFIX}.a    
+    )
+    SET(PROJECT_LINK_OPTIONS
+        #-ljemalloc 
+        -luv
+        -lstdc++
+        -static-libgcc
+        -static-libstdc++
     )
 endif()
+
+ADD_LINK_OPTIONS(${PROJECT_LINK_OPTIONS})
 
 SET(CMAKE_INSTALL_PREFIX					${RBASE_BINARY_ROOT})
 

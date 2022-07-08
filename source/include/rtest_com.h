@@ -19,21 +19,40 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef RTEST_H
-#define RTEST_H
+#ifndef RTEST_COM_H
+#define RTEST_COM_H
 
 #include "rcommon.h"
 
-#include "include/rtest_com.h"
+#include <stddef.h>
+#include <setjmp.h>
+#include <stdint.h>
 
-int run_rpool_tests(int benchmark_output);
-int run_rstring_tests(int benchmark_output);
-int run_rthread_tests(int benchmark_output);
-int run_rarray_tests(int benchmark_output);
-int run_rdict_tests(int benchmark_output);
-int run_rcommon_tests(int benchmark_output);
-int run_rlog_tests(int benchmark_output);
-int run_rfile_tests(int benchmark_output);
-int run_rtools_tests(int benchmark_output);
+#include "3rd/cmocka/include/cmocka.h"
+#include "3rd/cmocka/include/cmocka_pbc.h"
 
-#endif /* RTEST_H */
+#define init_benchmark(buffer_size, fmt_str, ...) \
+    char* benchmark_title = rstr_new(buffer_size); \
+    assert_true(sprintf(benchmark_title, fmt_str, ##__VA_ARGS__) < buffer_size); \
+    int64_t benchmark_start = 0, benchmark_elapsed = 0
+#define uninit_benchmark() \
+    rstr_free(benchmark_title); \
+    benchmark_title = NULL
+
+#define start_benchmark(benchmark_msg_title) do { \
+    benchmark_start = rtime_millisec(); \
+    if (benchmark_msg_title) benchmark_title = benchmark_msg_title; \
+} while(0)
+
+#define end_benchmark(benchmark_msg_suffix) do { \
+    benchmark_elapsed = rtime_millisec() - benchmark_start; \
+    printf("%s: elapsed %"PRId64" ms, " benchmark_msg_suffix "\n", benchmark_title, benchmark_elapsed); \
+} while(0)
+
+
+typedef int(*rtest_entry_type)(int benchmark_output);
+
+int rtest_add_test_entry(rtest_entry_type entry_func);
+
+
+#endif /* RTEST_COM_H */

@@ -24,28 +24,8 @@
 
 #include "rcommon.h"
 
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdint.h>
+#include "include/rtest_com.h"
 
-#include "3rd/cmocka/include/cmocka.h"
-#include "3rd/cmocka/include/cmocka_pbc.h"
+int run_rcodec_default_tests(int benchmark_output);
 
-#define init_benchmark(bufferSize, fmtStr, ...) \
-    char* benchmarkTitle = raymalloc(bufferSize); \
-    assert_true(sprintf(benchmarkTitle, fmtStr, ##__VA_ARGS__) < bufferSize); \
-    int64_t benchmarkStart = 0, benchmarkElapsed = 0
-
-#define start_benchmark(benchmarkMsgTitle) do { \
-    benchmarkStart = millisec_r(); \
-    if (benchmarkMsgTitle) benchmarkTitle = benchmarkMsgTitle; \
-} while(0)
-
-#define end_benchmark(benchmarkMsgSuffix) do { \
-    benchmarkElapsed = millisec_r() - benchmarkStart; \
-    printf("%s: elapsed %"PRId64" ms, " benchmarkMsgSuffix "\n", benchmarkTitle, benchmarkElapsed); \
-} while(0)
-
-
-int run_rcommon_tests(int benchmark_output);
 #endif /* RTEST_H */
