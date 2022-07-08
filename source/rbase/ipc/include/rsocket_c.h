@@ -7,8 +7,8 @@
  * @author: Ray
  */
 
-#ifndef RSOCKET_S_H
-#define RSOCKET_S_H
+#ifndef RSOCKET_C_H
+#define RSOCKET_C_H
 
 #include "rcommon.h"
 #include "ripc.h"
@@ -19,11 +19,11 @@ extern "C" {
 #endif
 
 
-extern const ripc_item rsocket_s;
+extern const ripc_item rsocket_c;
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // RSOCKET_S_H
+#endif // RSOCKET_C_H

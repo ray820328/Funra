@@ -9,157 +9,156 @@
 
 #include "uv.h"
 
-#include "rinterface.h"
 #include "rstring.h"
-
-#include "ripc.h"
-#include "rsocket.h"
 #include "rlog.h"
+#include "rsocket_s.h"
 
-static int init_tcp_server();
-static void on_new_conn(uv_stream_t *server, int status);
-static void on_file_open(uv_fs_t *req);
-static void on_file_read(uv_fs_t *req);
+static uv_loop_t *loop;
+static void on_new_connection(uv_stream_t *server, int status);
+static void setup_workers();
 
-int rsocket_init(const void* cfg_data) {
+// static int init_tcp_server();
+// static void on_new_conn(uv_stream_t *server, int status);
+// static void on_file_open(uv_fs_t *req);
+// static void on_file_read(uv_fs_t *req);
 
-    init_tcp_server();
+// int rsocket_init(const void* cfg_data) {
 
-    return rcode_ok;
-}
+//     init_tcp_server();
 
-int rsocket_uninit() {
+//     return rcode_ok;
+// }
 
-    return rcode_ok;
-}
+// int rsocket_uninit() {
 
-ripc_item* get_ipc_item(const char* key) {
+//     return rcode_ok;
+// }
 
-    return NULL;
-}
+// ripc_item* get_ipc_item(const char* key) {
+
+//     return NULL;
+// }
 
 
-const int backlog = 128;
-const int buffer_size = 1024;
-static uv_fs_t open_req;
-static uv_fs_t read_req;
-static uv_tcp_t *client;
+static int ripc_open() {
+    loop = uv_default_loop();
 
-static int init_tcp_server() {
-    uv_loop_t* loop = uv_default_loop();
+    setup_workers();
+
     uv_tcp_t server;
-
     uv_tcp_init(loop, &server);
 
-    struct sockaddr_in addr_ip4; //struct sockaddr_in6
-    uv_ip4_addr("0.0.0.0", 7000, &addr_ip4);
-    //if (uv_ip6_addr("::", 0, &uv_addr_ip6_any_)) {
-    //    abort();
-    //}
-    uv_tcp_bind(&server, (const struct sockaddr*)&addr_ip4, 0);
-
-    // listen
-    int r = uv_listen((uv_stream_t*)&server, backlog, on_new_conn);
-    if (r) {
-        rerror("error init_tcp_server\n");
-        return 1;
+    struct sockaddr_in bind_addr;
+    uv_ip4_addr("0.0.0.0", 7000, &bind_addr);
+    uv_tcp_bind(&server, (const struct sockaddr *)&bind_addr, 0);
+    int r;
+    if ((r = uv_listen((uv_stream_t*)&server, 128, on_new_connection))) {
+        fprintf(stderr, "Listen error %s\n", uv_err_name(r));
+        return 2;
     }
-
     return uv_run(loop, UV_RUN_DEFAULT);
 }
 
-static uv_buf_t alloc_buffer(uv_handle_t *handle, size_t suggested_size) {
-    return uv_buf_init((char*)malloc(suggested_size), suggested_size);
+struct child_worker {
+    uv_process_t req;
+    uv_process_options_t options;
+    uv_pipe_t pipe;
+} *workers;
+
+int round_robin_counter;
+int child_worker_count;
+
+uv_buf_t dummy_buf;
+char worker_path[500];
+
+static void close_process_handle(uv_process_t *req, int64_t exit_status, int term_signal) {
+    fprintf(stderr, "Process exited with status %" PRId64 ", signal %d\n", exit_status, term_signal);
+    uv_close((uv_handle_t*)req, NULL);
 }
 
-static void on_file_open(uv_fs_t *req) {
-    if (req->result == -1) {
-        rerror("error on_file_read");
-        uv_close((uv_handle_t*)client, NULL);
-        return;
-    }
-
-    char *buffer = (char *)malloc(sizeof(char) * buffer_size);//todo Ray 没有释放
-
-    int offset = -1;
-    read_req.data = (void*)buffer;
-    uv_fs_read(uv_default_loop(), &read_req, req->result, buffer, sizeof(char) * buffer_size, offset, on_file_read);
-    uv_fs_req_cleanup(req);
+static void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
+    buf->base = malloc(suggested_size);
+    buf->len = suggested_size;
 }
 
-static void on_client_write(uv_write_t *req, int status) {
+static void on_new_connection(uv_stream_t *server, int status) {
     if (status == -1) {
-        rerror("error on_client_write");
-        uv_close((uv_handle_t*)client, NULL);
+        // error!
         return;
     }
 
-    free(req);
-    char *buffer = (char*)req->data;
-    free(buffer);
-
-    uv_close((uv_handle_t*)client, NULL);
-}
-
-static void on_file_read(uv_fs_t *req) {
-    if (req->result < 0) {
-        rerror("error on_file_read");
-        uv_close((uv_handle_t*)client, NULL);
+    uv_tcp_t *client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(server, (uv_stream_t*)client) == 0) {
+        uv_write_t *write_req = (uv_write_t*)malloc(sizeof(uv_write_t));
+        dummy_buf = uv_buf_init("a", 1);
+        struct child_worker *worker = &workers[round_robin_counter];
+        uv_write2(write_req, (uv_stream_t*)&worker->pipe, &dummy_buf, 1, (uv_stream_t*)client, NULL);
+        round_robin_counter = (round_robin_counter + 1) % child_worker_count;
     }
-    else if (req->result == 0) { //
-        uv_fs_t close_req;
-        uv_fs_close(uv_default_loop(), &close_req, open_req.result, NULL);
-        uv_close((uv_handle_t*)client, NULL);
-    }
-    else { // 
-        uv_write_t *write_req = (uv_write_t *)malloc(sizeof(uv_write_t));
-
-        char *message = (char*)req->data;
-
-        uv_buf_t buf = uv_buf_init(message, sizeof(message));
-        buf.len = req->result;
-        buf.base = message;
-        int buf_count = 1;
-
-        write_req->data = (void*)message;
-
-        uv_write(write_req, (uv_stream_t*)client, &buf, buf_count, on_client_write);
-    }
-
-    uv_fs_req_cleanup(req);
-}
-
-static void on_client_read(uv_stream_t *_client, ssize_t nread, uv_buf_t buf) {
-    if (nread == -1) {
-        rerror("error on_client_read");
-        uv_close((uv_handle_t*)client, NULL);
-        return;
-    }
-
-    char *filename = buf.base;
-    int mode = 0;
-
-    uv_fs_open(uv_default_loop(), &open_req, filename, O_RDONLY, mode, on_file_open);
-}
-
-static void on_new_conn(uv_stream_t *server, int status) {
-    if (status == -1) {
-        rerror("error on_new_connection");
-        uv_close((uv_handle_t*)client, NULL);
-        return;
-    }
-
-    client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
-    uv_tcp_init(uv_default_loop(), client);
-
-    // accept
-    int result = uv_accept(server, (uv_stream_t*)client);
-
-    if (result == 0) { // success
-        uv_read_start((uv_stream_t*)client, alloc_buffer, on_client_read);
-    }
-    else { // error
+    else {
         uv_close((uv_handle_t*)client, NULL);
     }
 }
 
+static void setup_workers() {
+    size_t path_size = 500;
+    uv_exepath(worker_path, &path_size);
+    strcpy(worker_path + (strlen(worker_path) - strlen("multi-echo-server")), "worker");
+    fprintf(stderr, "Worker path: %s\n", worker_path);
+
+    char* args[2];
+    args[0] = worker_path;
+    args[1] = NULL;
+
+    round_robin_counter = 0;
+
+    // ...
+
+    // launch same number of workers as number of CPUs
+    uv_cpu_info_t *info;
+    int cpu_count;
+    uv_cpu_info(&info, &cpu_count);
+    uv_free_cpu_info(info, cpu_count);
+
+    child_worker_count = cpu_count;
+
+    workers = calloc(cpu_count, sizeof(struct child_worker));
+    while (cpu_count--) {
+        struct child_worker *worker = &workers[cpu_count];
+        uv_pipe_init(loop, &worker->pipe, 1);
+
+        uv_stdio_container_t child_stdio[3];
+        child_stdio[0].flags = UV_CREATE_PIPE | UV_READABLE_PIPE;
+        child_stdio[0].data.stream = (uv_stream_t*)&worker->pipe;
+        child_stdio[1].flags = UV_IGNORE;
+        child_stdio[2].flags = UV_INHERIT_FD;
+        child_stdio[2].data.fd = 2;
+
+        worker->options.stdio = child_stdio;
+        worker->options.stdio_count = 3;
+
+        worker->options.exit_cb = close_process_handle;
+        worker->options.file = args[0];
+        worker->options.args = args;
+
+        uv_spawn(loop, &worker->req, &worker->options);
+        fprintf(stderr, "Started worker %d\n", worker->req.pid);
+    }
+}
+
+
+const ripc_item rsocket_s = {
+    NULL,// rdata_handler* handler;
+
+    NULL,// ripc_init_func init;
+    NULL,// ripc_uninit_func uninit;
+    ripc_open,// ripc_open_func open;
+    NULL,// ripc_close_func close;
+    NULL,// ripc_start_func start;
+    NULL,// ripc_stop_func stop;
+    NULL,// ripc_send_func send;
+    NULL,// ripc_check_func check;
+    NULL,// ripc_receive_func receive;
+    NULL// ripc_error_func error;
+};

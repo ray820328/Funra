@@ -19,9 +19,9 @@ extern "C" {
 
 typedef enum ripc_session_type {
     ripc_session_type_unknown = 0,           /** no type */
-    ripc_session_type_TCP,
-    ripc_session_type_UDP,
-    ripc_session_type_MIX,
+    ripc_session_type_tcp,
+    ripc_session_type_udp,
+    ripc_session_type_mix
 } ripc_session_type;
 
 typedef struct ripc_session {

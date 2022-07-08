@@ -12,6 +12,8 @@ INCLUDE_DIRECTORIES(
 SET(SRC_LIB
     src/ripc.c
     src/rsocket.c
+    src/rsocket_s.c
+    src/rsocket_c.c
     src/rcodec_default.c
 )
 

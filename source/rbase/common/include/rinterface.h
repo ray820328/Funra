@@ -14,22 +14,25 @@
 extern "C" {
 #endif
 
-typedef int (*rdata_on_before_func)(void* data);
-typedef int (*rdata_on_process_func)(void* data);
-typedef int (*rdata_on_after_func)(void* data);
-typedef void (*rdata_on_next_func)(void* data);
+typedef int (*rdata_handler_on_before_func)(void* data);
+typedef int (*rdata_handler_process_func)(void* data);
+typedef int (*rdata_handler_on_after_func)(void* data);
+typedef void (*rdata_handler_on_next_func)(void* data);
+
+typedef void (*rdata_handler_on_notify)(void* data);
+typedef void (*rdata_handler_notify)(void* data);
 
 typedef struct rdata_handler {
     struct rdata_handler* prev;
     struct rdata_handler* next;
 
-    int (*on_before)(void* data);
-    int (*on_process)(void* data);
-    int (*on_after)(void* data);
-    void (*on_next)(void* data);
+    rdata_handler_on_before_func on_before;
+    rdata_handler_process_func process;
+    rdata_handler_on_after_func on_after;
+    rdata_handler_on_next_func on_next;
 
-    void (*on_notify)(void* data);
-    void (*notify)(void* data);
+    rdata_handler_on_notify on_notify;// 被通知
+    rdata_handler_notify notify; // 通知其他
 } rdata_handler;
 
 #ifdef __cplusplus
