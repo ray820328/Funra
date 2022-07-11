@@ -17,48 +17,6 @@ static uv_loop_t *loop;
 static void on_new_connection(uv_stream_t *server, int status);
 static void setup_workers();
 
-// static int init_tcp_server();
-// static void on_new_conn(uv_stream_t *server, int status);
-// static void on_file_open(uv_fs_t *req);
-// static void on_file_read(uv_fs_t *req);
-
-// int rsocket_init(const void* cfg_data) {
-
-//     init_tcp_server();
-
-//     return rcode_ok;
-// }
-
-// int rsocket_uninit() {
-
-//     return rcode_ok;
-// }
-
-// ripc_item* get_ipc_item(const char* key) {
-
-//     return NULL;
-// }
-
-
-static int ripc_open() {
-    loop = uv_default_loop();
-
-    setup_workers();
-
-    uv_tcp_t server;
-    uv_tcp_init(loop, &server);
-
-    struct sockaddr_in bind_addr;
-    uv_ip4_addr("0.0.0.0", 7000, &bind_addr);
-    uv_tcp_bind(&server, (const struct sockaddr *)&bind_addr, 0);
-    int r;
-    if ((r = uv_listen((uv_stream_t*)&server, 128, on_new_connection))) {
-        fprintf(stderr, "Listen error %s\n", uv_err_name(r));
-        return 2;
-    }
-    return uv_run(loop, UV_RUN_DEFAULT);
-}
-
 struct child_worker {
     uv_process_t req;
     uv_process_options_t options;
@@ -67,12 +25,13 @@ struct child_worker {
 
 int round_robin_counter;
 int child_worker_count;
+int backlog = 128;
 
 uv_buf_t dummy_buf;
-char worker_path[500];
+char worker_path[1024];
 
 static void close_process_handle(uv_process_t *req, int64_t exit_status, int term_signal) {
-    fprintf(stderr, "Process exited with status %" PRId64 ", signal %d\n", exit_status, term_signal);
+    rinfo("Process exited with status %" PRId64 ", signal %d\n", exit_status, term_signal);
     uv_close((uv_handle_t*)req, NULL);
 }
 
@@ -83,7 +42,7 @@ static void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *b
 
 static void on_new_connection(uv_stream_t *server, int status) {
     if (status == -1) {
-        // error!
+        rerror("accept error, code = %d\n", status);
         return;
     }
 
@@ -102,10 +61,10 @@ static void on_new_connection(uv_stream_t *server, int status) {
 }
 
 static void setup_workers() {
-    size_t path_size = 500;
+    size_t path_size = 1024;
     uv_exepath(worker_path, &path_size);
-    strcpy(worker_path + (strlen(worker_path) - strlen("multi-echo-server")), "worker");
-    fprintf(stderr, "Worker path: %s\n", worker_path);
+    rstr_cat(worker_path, "workers", 0);
+    rinfo("Worker path: %s\n", worker_path);
 
     char* args[2];
     args[0] = worker_path;
@@ -121,7 +80,7 @@ static void setup_workers() {
     uv_cpu_info(&info, &cpu_count);
     uv_free_cpu_info(info, cpu_count);
 
-    child_worker_count = cpu_count;
+    child_worker_count = cpu_count / 2 + 1;
 
     workers = calloc(cpu_count, sizeof(struct child_worker));
     while (cpu_count--) {
@@ -143,20 +102,69 @@ static void setup_workers() {
         worker->options.args = args;
 
         uv_spawn(loop, &worker->req, &worker->options);
-        fprintf(stderr, "Started worker %d\n", worker->req.pid);
+        rinfo("Started worker %d\n", worker->req.pid);
     }
 }
 
 
+static int ripc_init(const void* cfg_data) {
+    loop = uv_default_loop();
+
+    setup_workers();
+
+    return rcode_ok;
+}
+
+static int ripc_uninit() {
+
+    return rcode_ok;
+}
+
+static int ripc_open() {
+
+    uv_tcp_t server;
+    uv_tcp_init(loop, &server);
+
+    struct sockaddr_in bind_addr;
+    uv_ip4_addr("0.0.0.0", 13000, &bind_addr);
+    uv_tcp_bind(&server, (const struct sockaddr *)&bind_addr, 0);
+    int r;
+    if ((r = uv_listen((uv_stream_t*)&server, backlog, on_new_connection))) {
+        rerror("Listen error %s\n", uv_err_name(r));
+        return 2;
+    }
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+
+static int ripc_close() {
+
+    return rcode_ok;
+}
+
+static int ripc_start() {
+
+    return rcode_ok;
+}
+
+static int ripc_stop() {
+
+    return rcode_ok;
+}
+
+static ripc_item* get_ipc_item(const char* key) {
+
+    return NULL;
+}
+
 const ripc_item rsocket_s = {
     NULL,// rdata_handler* handler;
 
-    NULL,// ripc_init_func init;
-    NULL,// ripc_uninit_func uninit;
+    ripc_init,// ripc_init_func init;
+    ripc_uninit,// ripc_uninit_func uninit;
     ripc_open,// ripc_open_func open;
-    NULL,// ripc_close_func close;
-    NULL,// ripc_start_func start;
-    NULL,// ripc_stop_func stop;
+    ripc_close,// ripc_close_func close;
+    ripc_start,// ripc_start_func start;
+    ripc_stop,// ripc_stop_func stop;
     NULL,// ripc_send_func send;
     NULL,// ripc_check_func check;
     NULL,// ripc_receive_func receive;

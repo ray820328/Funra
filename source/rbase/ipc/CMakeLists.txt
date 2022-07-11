@@ -21,6 +21,8 @@ SET(SRC_BIN
     ${SRC_LIB}
     test/rtest_rcodec_default.c
     test/rtest.c
+    test/rtest_rsocket_s.c
+    test/rtest_rsocket_c.c
 )
 
 #LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}

@@ -213,74 +213,46 @@ extern "C" {
 
 #define rgoto(code_int) goto exit##code_int
 
-    static inline void wait_millsec(int ms)
-    {   // Pretty crossplatform, both ALL POSIX compliant systems AND Windows
-#if defined(_WIN32) || defined(_WIN64)
-        Sleep(ms);
-#else
-        usleep(ms * 1000); //延迟挂起进程。进程被挂起放到reday queue, 库函数中实现的，调用alarm()
-        //sleep(seconds);//秒
 
-        //static struct timespec req;
-        //static struct timespec rem;
-        //int res = -1;
+typedef enum rdata_plain_type_t {
+    rdata_type_unknown = 0,           /** no type */
+    rdata_type_bool,                  /** bool */
+    rdata_type_char,                  /** char */
+    rdata_type_uchar,                 /** unsigned char */
+    rdata_type_short,                 /** short int */
+    rdata_type_ushort,                /** unsigned short int */
+    rdata_type_int,                   /** int */
+    rdata_type_uint,                  /** unsigned int */
+    rdata_type_long,                  /** long int */
+    rdata_type_ulong,                 /** unsigned long int */
+    rdata_type_long_long,             /** long long */
+    rdata_type_ulong_long,            /** unsigned long long */
+    rdata_type_float,                 /** float */
+    rdata_type_double,                /** double */
+    rdata_type_long_double,           /** long double */
+    rdata_type_string,                /** string */
+    rdata_type_ptr                    /** generic pointer */
+} rdata_plain_type_t;
 
-        //req.tv_sec = ms / 1000;
-        //req.tv_nsec = ms % 1000 * 1000000;
-
-        //while (res < 0) {
-        //    res = clock_nanosleep(CLOCK_MONOTONIC, 0, &req, &rem); //多个系统时钟，需要使用相对于特定时钟的延迟
-        //    if (res < 0) {
-        //        if (errno == EINTR) {
-        //            req = rem;
-        //        }
-        //        else {
-        //            break;
-        //        }
-        //    }
-        //}
-#endif /* defined(_WIN32) || defined(_WIN64) */
-    }
-
-    typedef enum rdata_plain_type_t {
-        rdata_type_unknown = 0,           /** no type */
-        rdata_type_bool,                  /** bool */
-        rdata_type_char,                  /** char */
-        rdata_type_uchar,                 /** unsigned char */
-        rdata_type_short,                 /** short int */
-        rdata_type_ushort,                /** unsigned short int */
-        rdata_type_int,                   /** int */
-        rdata_type_uint,                  /** unsigned int */
-        rdata_type_long,                  /** long int */
-        rdata_type_ulong,                 /** unsigned long int */
-        rdata_type_long_long,             /** long long */
-        rdata_type_ulong_long,            /** unsigned long long */
-        rdata_type_float,                 /** float */
-        rdata_type_double,                /** double */
-        rdata_type_long_double,           /** long double */
-        rdata_type_string,                /** string */
-        rdata_type_ptr                    /** generic pointer */
-    } rdata_plain_type_t;
-
-    typedef enum rdata_plain_type_size_t {
-        rdata_type_unknown_size = 0,                          /** no type */
-        rdata_type_bool_size = sizeof(bool),                  /** bool */
-        rdata_type_char_size = sizeof(char),                  /** char */
-        rdata_type_uchar_size = sizeof(unsigned char),        /** unsigned char */
-        rdata_type_short_size = sizeof(short),                /** short int */
-        rdata_type_ushort_size = sizeof(unsigned short),      /** unsigned short int */
-        rdata_type_int_size = sizeof(int),                    /** int */
-        rdata_type_uint_size = sizeof(unsigned int),          /** unsigned int */
-        rdata_type_long_size = sizeof(long),                  /** long int */
-        rdata_type_ulong_size = sizeof(unsigned long),        /** unsigned long int */
-        rdata_type_long_long_size = sizeof(long long),        /** long long */
-        rdata_type_ulong_long_size = sizeof(unsigned long long),           /** unsigned long long */
-        rdata_type_float_size = sizeof(float),                /** float */
-        rdata_type_double_size = sizeof(double),              /** double */
-        rdata_type_long_double_size = sizeof(long double),    /** long double */
-        rdata_type_string_size = sizeof(char*),               /** string */
-        rdata_type_ptr_size = sizeof(void*)                   /** generic pointer */
-    } rdata_plain_type_size_t;
+typedef enum rdata_plain_type_size_t {
+    rdata_type_unknown_size = 0,                          /** no type */
+    rdata_type_bool_size = sizeof(bool),                  /** bool */
+    rdata_type_char_size = sizeof(char),                  /** char */
+    rdata_type_uchar_size = sizeof(unsigned char),        /** unsigned char */
+    rdata_type_short_size = sizeof(short),                /** short int */
+    rdata_type_ushort_size = sizeof(unsigned short),      /** unsigned short int */
+    rdata_type_int_size = sizeof(int),                    /** int */
+    rdata_type_uint_size = sizeof(unsigned int),          /** unsigned int */
+    rdata_type_long_size = sizeof(long),                  /** long int */
+    rdata_type_ulong_size = sizeof(unsigned long),        /** unsigned long int */
+    rdata_type_long_long_size = sizeof(long long),        /** long long */
+    rdata_type_ulong_long_size = sizeof(unsigned long long),           /** unsigned long long */
+    rdata_type_float_size = sizeof(float),                /** float */
+    rdata_type_double_size = sizeof(double),              /** double */
+    rdata_type_long_double_size = sizeof(long double),    /** long double */
+    rdata_type_string_size = sizeof(char*),               /** string */
+    rdata_type_ptr_size = sizeof(void*)                   /** generic pointer */
+} rdata_plain_type_size_t;
 
 #define rdata_type_unknown_inner_type
 #define rdata_type_bool_inner_type bool

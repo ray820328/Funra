@@ -13,28 +13,6 @@
 #include "rlog.h"
 #include "rsocket_c.h"
 
-// static int init_tcp_server();
-// static void on_new_conn(uv_stream_t *server, int status);
-// static void on_file_open(uv_fs_t *req);
-// static void on_file_read(uv_fs_t *req);
-
-// int rsocket_init(const void* cfg_data) {
-
-//     init_tcp_server();
-
-//     return rcode_ok;
-// }
-
-// int rsocket_uninit() {
-
-//     return rcode_ok;
-// }
-
-// ripc_item* get_ipc_item(const char* key) {
-
-//     return NULL;
-// }
-
 
 static uv_loop_t *loop;
 static uv_pipe_t queue;
@@ -56,41 +34,43 @@ static void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *b
     buf->len = suggested_size;
 }
 
-static void echo_write(uv_write_t *req, int status) {
+static void on_write(uv_write_t *req, int status) {
     if (status) {
-        fprintf(stderr, "Write error %s\n", uv_err_name(status));
+        rerror("write error, code = %d, err = %s\n", status, uv_err_name(status));
     }
     free_write_req(req);
 }
 
-static void echo_read(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) {
+static void on_read(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) {
     if (nread > 0) {
         write_req_t *req = (write_req_t*)malloc(sizeof(write_req_t));
         req->buf = uv_buf_init(buf->base, nread);
-        uv_write((uv_write_t*)req, client, &req->buf, 1, echo_write);
+        uv_write((uv_write_t*)req, client, &req->buf, 1, on_write);
         return;
     }
 
     if (nread < 0) {
-        if (nread != UV_EOF)
-            fprintf(stderr, "Read error %s\n", uv_err_name(nread));
+        if (nread != UV_EOF) {
+            rerror("read error %s\n", uv_err_name(nread));
+        }
         uv_close((uv_handle_t*)client, NULL);
     }
 
     free(buf->base);
 }
 
-static void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
+static void on_connected(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
     if (nread < 0) {
-        if (nread != UV_EOF)
-            fprintf(stderr, "Read error %s\n", uv_err_name(nread));
+        if (nread != UV_EOF) {
+            rerror("read error %s\n", uv_err_name(nread));
+        }
         uv_close((uv_handle_t*)q, NULL);
         return;
     }
 
     uv_pipe_t *pipe = (uv_pipe_t*)q;
     if (!uv_pipe_pending_count(pipe)) {
-        fprintf(stderr, "No pending count\n");
+        rerror("No pending count\n");
         return;
     }
 
@@ -102,8 +82,8 @@ static void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf
     if (uv_accept(q, (uv_stream_t*)client) == 0) {
         uv_os_fd_t fd;
         uv_fileno((const uv_handle_t*)client, &fd);
-        fprintf(stderr, "Worker %d: Accepted fd %d\n", getpid(), fd);
-        uv_read_start((uv_stream_t*)client, alloc_buffer, echo_read);
+        rinfo("worker %d: accepted fd %d\n", getpid(), fd);
+        uv_read_start((uv_stream_t*)client, alloc_buffer, on_read);
     }
     else {
         uv_close((uv_handle_t*)client, NULL);
@@ -111,25 +91,54 @@ static void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf
 }
 
 
-static int ripc_open() {
+
+static int ripc_init(const void* cfg_data) {
     loop = uv_default_loop();
 
     uv_pipe_init(loop, &queue, 1 /* ipc */);
     uv_pipe_open(&queue, 0);
-    uv_read_start((uv_stream_t*)&queue, alloc_buffer, on_new_connection);
+
+    return rcode_ok;
+}
+
+static int ripc_uninit() {
+
+    return rcode_ok;
+}
+
+static int ripc_open() {
+
+    uv_read_start((uv_stream_t*)&queue, alloc_buffer, on_connected);
+
     return uv_run(loop, UV_RUN_DEFAULT);
 }
 
+static int ripc_close() {
+
+    uv_stop(loop);
+
+    return rcode_ok;
+}
+
+static int ripc_start() {
+
+    return rcode_ok;
+}
+
+static int ripc_stop() {
+
+    return rcode_ok;
+}
 
 const ripc_item rsocket_c = {
     NULL,// rdata_handler* handler;
 
-    NULL,// ripc_init_func init;
-    NULL,// ripc_uninit_func uninit;
+    ripc_init,// ripc_init_func init;
+    ripc_uninit,// ripc_uninit_func uninit;
     ripc_open,// ripc_open_func open;
-    NULL,// ripc_close_func close;
-    NULL,// ripc_start_func start;
-    NULL,// ripc_stop_func stop;
+    ripc_close,// ripc_close_func close;
+    ripc_start,// ripc_start_func start;
+    ripc_stop,// ripc_stop_func stop;
     NULL,// ripc_send_func send;
     NULL,// ripc_check_func check;
     NULL,// ripc_receive_func receive;

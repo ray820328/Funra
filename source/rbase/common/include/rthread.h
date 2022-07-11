@@ -48,6 +48,59 @@ extern "C" {
 
 long get_cur_thread_id();
 
+#if defined(_WIN32) || defined(_WIN64)
+
+#include <windows.h>
+
+typedef struct rthread {
+    HANDLE id;
+    void *(*rfunc)(void *);
+    void *arg;
+    void *ret;
+    char err[128];
+} rthread;
+
+#else // _WIN64
+
+#include <pthread.h>
+
+typedef struct rthread {
+    pthread_t id;
+    char err[128];
+} rthread;
+
+#endif // _WIN64
+
+void rthread_init(rthread *t);
+
+/**
+ * @param t thread
+ * @return  '0' on success,
+ *          '-1' on error, call 'sc_thread_err()' for error string.
+ */
+int rthread_uninit(rthread *t);
+
+/**
+ * @param t thread
+ * @return  last error message
+ */
+char* rthread_err(rthread *t);
+
+/**
+ * @param t thread
+ * @return  '0' on success,
+ *          '-1' on error, call 'sc_thread_err()' for error string.
+ */
+int rthread_start(rthread *t, void *(*rfunc)(void *), void *arg);
+
+/**
+ * @param t thread
+ * @return  '0' on success,
+ *          '-1' on error, call 'sc_thread_err()' for error string.
+ */
+int rthread_join(rthread *t, void **ret);
+
+
 #ifdef __cplusplus
 }
 #endif

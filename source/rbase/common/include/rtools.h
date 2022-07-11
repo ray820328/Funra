@@ -20,6 +20,13 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
 
+int rtools_init();
+
+/** [start, end] */
+int rtools_rand_int(int start, int end);
+
+void rtools_wait_mills(int ms);
+
 /** 1 end index (0x1-0x8000000000000000返回0-63, val==0返回-1) */
 int rtools_endindex1(uint64_t val);
 

@@ -16,6 +16,7 @@
 #include "rlist.h"
 #include "rstring.h"
 #include "rfile.h"
+#include "rtools.h"
 
 static rlist_t *test_entries = NULL;
 
@@ -36,6 +37,8 @@ static int init_platform() {
 }
 
 int main(int argc, char **argv) {
+    rtools_init();
+
     rlog_init("${date}/rtest_ipc_${index}.log", RLOG_ALL, false, 100);
 
     char* exe_root = rdir_get_exe_root();
@@ -62,9 +65,15 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int testResult;
 
+    rtest_add_test_entry(run_rsocket_c_tests);
     rtest_add_test_entry(run_rcodec_default_tests);
 
     testResult = 0;
+
+    testResult = run_rsocket_s_tests(output);
+    if (testResult != rcode_ok) {
+        return testResult;
+    }
 
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
     rlist_node_t *node = NULL;

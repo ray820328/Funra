@@ -7,59 +7,56 @@
  * @author: Ray
  */
 
+#include "rstring.h"
 #include "rlog.h"
 #include "rcommon.h"
 #include "rtime.h"
-#include "rstring.h"
-#include "rtools.h"
+#include "rlist.h"
+#include "rfile.h"
 
-#include "rbase/common/test/rtest.h"
+#include "rbase/ipc/test/rtest.h"
+#include "rsocket_c.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static void rtools_full_test(void **state) {
+static void rsocket_c_full_test(void **state) {
 	(void)state;
-	int count = 10;
-	init_benchmark(1024, "test rtools (%d)", count);
+	int count = 10000;
+	init_benchmark(1024, "test rsocket_c (%d)", count);
 
     start_benchmark(0);
-    int rand_val = 0;
-    printf("rand_val = ", rand_val);
-    for (int i = 0; i < count; i++) {
-        rand_val = rtools_rand_int(100, 200);
-        printf("%d, ", rand_val);
-        assert_true(rand_val >= 100 && rand_val <= 200);
-    }
-    printf("end rand\n");
-	end_benchmark("rtools rand.");
-
+    rsocket_c.open();
+	end_benchmark("open connection.");
+		
     uninit_benchmark();
 }
 
 
 static int setup(void **state) {
+    rsocket_c.init(NULL);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
+    rsocket_c.uninit();
 
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rtools_full_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rsocket_c_full_test, NULL, NULL),
 };
 
-int run_rtools_tests(int benchmark_output) {
+int run_rsocket_c_tests(int benchmark_output) {
     int result = 0;
 
     int64_t timeNow = rtime_nanosec();
 
     result += cmocka_run_group_tests(test_group2, setup, teardown);
 
-    printf("run_rtools_tests, failed: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
+    printf("run_rsocket_c_tests, failed: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
 }

@@ -13,9 +13,11 @@
 #include "rlog.h"
 #include "rbase/common/test/rtest.h"
 
+#include "rtime.h"
 #include "rlist.h"
 #include "rstring.h"
 #include "rfile.h"
+#include "rtools.h"
 
 static rlist_t *test_entries = NULL;
 
@@ -40,6 +42,8 @@ int main(int argc, char **argv) {
     setlocale(LC_NUMERIC, "zh_CN");
     setlocale(LC_TIME, "zh_CN");
 
+    rtools_init();
+
 #ifdef ros_windows
     wchar_t local_time[100];
     time_t t = time(NULL);
@@ -47,7 +51,7 @@ int main(int argc, char **argv) {
     wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
 #endif //_WIN64
 
-    rlog_init("${date}/rtest_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rtest_common_${index}.log", RLOG_ALL, false, 100);
 
     char* exe_root = rdir_get_exe_root();
     rinfo("当前路径: %s\n", exe_root);

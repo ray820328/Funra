@@ -39,8 +39,8 @@ ripc_item* get_ipc_item(const char* key) {
 }
 
 
-const int backlog = 128;
-const int buffer_size = 1024;
+const static int backlog = 128;
+const static int buffer_size = 1024;
 static uv_fs_t open_req;
 static uv_fs_t read_req;
 static uv_tcp_t *client;
