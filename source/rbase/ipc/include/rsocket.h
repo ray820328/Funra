@@ -17,22 +17,23 @@
 extern "C" {
 #endif
 
-typedef enum ripc_session_type {
-    ripc_session_type_unknown = 0,           /** no type */
-    ripc_session_type_tcp,
-    ripc_session_type_udp,
-    ripc_session_type_mix
-} ripc_session_type;
+#define rsocket_session_fields \
+    ripc_type_t type; \
+    uint64_t id; \
+    void* userdata; \
+    void* context; \
+    int state; \
+    bool is_encrypt
 
-typedef struct ripc_session {
-    ripc_session_type type;
+typedef struct rsocket_cfg_t {
     uint64_t id;
 
-    void* userdata;
-    void* context;
-    bool is_working;
-    bool is_encrypt;
-} ripc_session;
+    char ip[20];
+    int port;
+    int backlog;
+    uint32_t sock_flag;
+    bool encrypt_msg;
+} rsocket_cfg_t;
 
 R_API int rsocket_init(const void* cfg_data);
 R_API int rsocket_uninit();

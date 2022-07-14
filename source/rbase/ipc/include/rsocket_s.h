@@ -11,6 +11,7 @@
 #define RSOCKET_S_H
 
 #include "rcommon.h"
+#include "rdict.h"
 #include "ripc.h"
 #include "rsocket.h"
 
@@ -18,6 +19,11 @@
 extern "C" {
 #endif
 
+typedef struct rsocket_context_t {
+    uint64_t id;
+
+    rsocket_cfg_t* cfg;
+} rsocket_context_t;
 
 extern const ripc_item rsocket_s;
 

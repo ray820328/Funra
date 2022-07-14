@@ -33,7 +33,7 @@ static void rcodec_full_test(void **state) {
     // rfile_format_path(file_path);
     // assert_true(rstr_eq(file_path, "d:/temp/test"));
     // rstr_free(file_path);
-    end_benchmark("rfile_format_path.");
+    end_benchmark("rcodec_full_test.");
         
     uninit_benchmark();
 }

@@ -68,7 +68,7 @@ static int run_tests(int output) {
     rtest_add_test_entry(run_rsocket_c_tests);
     rtest_add_test_entry(run_rcodec_default_tests);
 
-    testResult = 0;
+    testResult = rcode_ok;
 
     testResult = run_rsocket_s_tests(output);
     if (testResult != rcode_ok) {

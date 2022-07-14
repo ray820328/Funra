@@ -17,6 +17,14 @@
 extern "C" {
 #endif
 
+typedef enum ripc_type_t {
+    ripc_type_unknown = 0,           /** no type */
+    ripc_type_tcp,
+    ripc_type_udp,
+    ripc_type_pipe,
+    ripc_type_mix,
+} ripc_type_t;
+
 typedef int (*ripc_init_func)(const void* cfg_data);
 typedef int (*ripc_uninit_func)();
 typedef int (*ripc_open_func)();

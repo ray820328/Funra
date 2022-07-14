@@ -22,13 +22,25 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
+static rthread socket_thread;
+
+static void* run_client(void* arg) {
+    rsocket_c.open();
+    rinfo("end, run_client: %s\n", (char *)arg);
+
+    return arg;
+}
+
 static void rsocket_c_full_test(void **state) {
 	(void)state;
 	int count = 10000;
 	init_benchmark(1024, "test rsocket_c (%d)", count);
 
+    int ret_code = 0;
+
     start_benchmark(0);
-    rsocket_c.open();
+    //ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
+    run_client("socket_thread");
 	end_benchmark("open connection.");
 		
     uninit_benchmark();
@@ -41,6 +53,11 @@ static int setup(void **state) {
     return rcode_ok;
 }
 static int teardown(void **state) {
+    //void* param;
+    //int ret_code = rthread_join(&socket_thread, &param);
+    //assert_true(ret_code == 0);
+    //assert_true(rstr_eq((char *)param, "socket_thread"));
+    
     rsocket_c.uninit();
 
     return rcode_ok;

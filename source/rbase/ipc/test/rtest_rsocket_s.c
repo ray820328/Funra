@@ -32,7 +32,7 @@ static void* run_server(void* arg) {
     //{
     //    rtools_wait_mills(10);
     //}
-    printf("stop, run_server: %s\n", (char *)arg);
+    rinfo("end, run_server: %s\n", (char *)arg);
 
     return arg;
 }
@@ -45,8 +45,8 @@ static void rsocket_s_full_test(void **state) {
     int ret_code = 0;
 
     start_benchmark(0);
-    ret_code = 0;// rthread_start(&socket_thread, run_server, "socket_thread");
-    run_server("socket_thread");
+    ret_code = rthread_start(&socket_thread, run_server, "socket_thread"); // 0;// 
+    //run_server("socket_thread");
     assert_true(ret_code == 0);
     
 	end_benchmark("start listening.");
@@ -62,12 +62,13 @@ static int setup(void **state) {
     return rcode_ok;
 }
 static int teardown(void **state) {
-    //rsocket_s.uninit();
 
-    //void* param;
-    //int ret_code = rthread_join(&socket_thread, &param);
-    //assert_true(ret_code == 0);
-    //assert_true(rstr_eq((char *)param, "socket_thread"));
+    void* param;
+    int ret_code = rthread_join(&socket_thread, &param);
+    assert_true(ret_code == 0);
+    assert_true(rstr_eq((char *)param, "socket_thread"));
+
+    rsocket_s.uninit();
 
     return rcode_ok;
 }
