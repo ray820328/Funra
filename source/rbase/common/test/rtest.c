@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 }
 
 static int run_tests(int output) {
-    int testResult;
+    int ret_code;
 
     rtest_add_test_entry(run_rpool_tests);
     rtest_add_test_entry(run_rstring_tests);
@@ -87,17 +87,17 @@ static int run_tests(int output) {
     rtest_add_test_entry(run_rfile_tests);
     rtest_add_test_entry(run_rtools_tests);
 
-    testResult = 0;
+    ret_code = 0;
 
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
     rlist_node_t *node = NULL;
     while ((node = rlist_next(&it))) {
-		testResult = ((rtest_entry_type)(node->val))(output);
-        if (testResult != rcode_ok) {
+        ret_code = ((rtest_entry_type)(node->val))(output);
+        if (ret_code != rcode_ok) {
             break;
         }
     }
 
-    return testResult;
+    return ret_code;
 }
 

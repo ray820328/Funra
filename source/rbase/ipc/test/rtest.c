@@ -63,27 +63,27 @@ int main(int argc, char **argv) {
 }
 
 static int run_tests(int output) {
-    int testResult;
+    int ret_code;
 
     rtest_add_test_entry(run_rsocket_c_tests);
     rtest_add_test_entry(run_rcodec_default_tests);
 
-    testResult = rcode_ok;
+    ret_code = rcode_ok;
 
-    testResult = run_rsocket_s_tests(output);
-    if (testResult != rcode_ok) {
-        return testResult;
+    //testResult = run_rsocket_s_tests(output);
+    if (ret_code != rcode_ok) {
+        return ret_code;
     }
 
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
     rlist_node_t *node = NULL;
     while ((node = rlist_next(&it))) {
-		testResult = ((rtest_entry_type)(node->val))(output);
-        if (testResult != rcode_ok) {
+        ret_code = ((rtest_entry_type)(node->val))(output);
+        if (ret_code != rcode_ok) {
             break;
         }
     }
 
-    return testResult;
+    return ret_code;
 }
 
