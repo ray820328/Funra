@@ -17,12 +17,11 @@
 extern "C" {
 #endif
 
-    typedef struct rcodec
-    {
-        // rdata_handler* handler;
+    typedef struct rcodec_s {
+        // rdata_handler_t* handler;
 
-        int (*init)(const void* cfg_data);
-        int (*uninit)();
+        int (*init)(void* ctx, const void* cfg_data);
+        int (*uninit)(void* ctx);
         // int (*open)();
         // int (*close)();
         // int (*start)();
@@ -31,9 +30,9 @@ extern "C" {
         // int (*check)(void* data);
         // int (*receive)(void* data);
         // int (*error)(void* data);
-    } rcodec;
+    } rcodec_t;
 
-    extern const rcodec rcodec_default;
+    extern const rdata_handler_t rcodec_default;
 
 #ifdef __cplusplus
 }

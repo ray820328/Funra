@@ -33,7 +33,7 @@ int rsocket_uninit() {
     return rcode_ok;
 }
 
-ripc_item* get_ipc_item(const char* key) {
+ripc_entry_t* get_ipc_entry(const char* key) {
 
     return NULL;
 }

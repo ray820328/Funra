@@ -25,8 +25,10 @@ extern "C" {
     int state; \
     bool is_encrypt
 
-typedef struct rsocket_cfg_t {
+typedef struct rsocket_cfg_s {
     uint64_t id;
+    uint64_t sid_min;
+    uint64_t sid_max;
 
     char ip[20];
     int port;
@@ -38,7 +40,7 @@ typedef struct rsocket_cfg_t {
 R_API int rsocket_init(const void* cfg_data);
 R_API int rsocket_uninit();
 
-R_API ripc_item* get_ipc_item(const char* key);
+R_API ripc_entry_t* get_ipc_entry(const char* key);
 
 #ifdef __cplusplus
 }

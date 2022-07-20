@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 
-extern const ripc_item rsocket_c;
+extern const ripc_entry_t rsocket_c;
 
 
 #ifdef __cplusplus

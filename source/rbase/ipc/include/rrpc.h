@@ -19,7 +19,7 @@ extern "C" {
 
     typedef struct rrpc_i
     {
-        rdata_handler* handler;
+        rdata_handler_t* handler;
 
         int (*init)(const void* cfg_data);
         int (*uninit)();

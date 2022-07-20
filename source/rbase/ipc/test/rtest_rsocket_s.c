@@ -18,16 +18,18 @@
 
 #include "rbase/ipc/test/rtest.h"
 #include "rsocket_s.h"
+#include "rcodec_default.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
+static rsocket_ctx_uv_t rsocket_ctx;
 static rthread socket_thread;
 
 static void* run_server(void* arg) {
-    rsocket_s.open();
+    rsocket_s.open(&rsocket_ctx);
     //while (true)
     //{
     //    rtools_wait_mills(10);
@@ -54,9 +56,35 @@ static void rsocket_s_full_test(void **state) {
     uninit_benchmark();
 }
 
-
 static int setup(void **state) {
-    rsocket_s.init(NULL);
+    //初始化配置
+    rsocket_ctx.id = 1;
+    rsocket_ctx.server_type = ripc_type_tcp;
+    rsocket_ctx.server = (uv_handle_t*)rnew_data(uv_tcp_t);
+    ((uv_tcp_t*)(rsocket_ctx.server))->data = &rsocket_ctx;
+    rsocket_ctx.loop = uv_default_loop();
+    rsocket_ctx.server_state = 1;
+
+    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rnew_data(rsocket_cfg_t);
+    rsocket_ctx.cfg = cfg;
+    cfg->id = 1;
+    cfg->sid_min = 100000;
+    cfg->sid_max = 200000;
+    rstr_set(cfg->ip, "0.0.0.0");
+    cfg->port = 23000;
+
+    rdata_handler_t* handler = (rdata_handler_t*)rnew_data(rdata_handler_t);
+    rsocket_ctx.handler = handler;
+    handler->prev = NULL;
+    handler->next = NULL;
+    handler->on_before = rcodec_default.on_before;
+    handler->process = rcodec_default.process;
+    handler->on_after = rcodec_default.on_after;
+    handler->on_next = rcodec_default.on_next;
+    handler->on_notify = rcodec_default.on_notify;
+    handler->notify = rcodec_default.notify;
+
+    rsocket_s.init(&rsocket_ctx, rsocket_ctx.cfg);
     rthread_init(&socket_thread);
 
     return rcode_ok;
@@ -68,7 +96,9 @@ static int teardown(void **state) {
     assert_true(ret_code == 0);
     assert_true(rstr_eq((char *)param, "socket_thread"));
 
-    rsocket_s.uninit();
+    rsocket_s.uninit(&rsocket_ctx);
+
+    //todo Ray 释放ctx资源配置
 
     return rcode_ok;
 }

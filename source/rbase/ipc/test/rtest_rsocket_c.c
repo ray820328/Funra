@@ -13,6 +13,7 @@
 #include "rtime.h"
 #include "rlist.h"
 #include "rfile.h"
+#include "rtools.h"
 
 #include "rbase/ipc/test/rtest.h"
 #include "rsocket_c.h"
@@ -25,7 +26,7 @@
 static rthread socket_thread;
 
 static void* run_client(void* arg) {
-    rsocket_c.open();
+    rsocket_c.open(NULL);
     rinfo("end, run_client: %s\n", (char *)arg);
 
     return arg;
@@ -39,26 +40,37 @@ static void rsocket_c_full_test(void **state) {
     int ret_code = 0;
 
     start_benchmark(0);
-    //ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
+    ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
     run_client("socket_thread");
 	end_benchmark("open connection.");
+
+    rtools_wait_mills(1000);
+
+    start_benchmark(0);
+    ripc_data_t data;
+    data.data = rstr_cpy("send test", 0);
+    data.len = rstr_len(data.data);
+    rsocket_c.send(NULL, &data);//发送数据
+    end_benchmark("send data.");
+
+    rtools_wait_mills(1000);
 		
     uninit_benchmark();
 }
 
 
 static int setup(void **state) {
-    rsocket_c.init(NULL);
+    rsocket_c.init(NULL, NULL);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-    //void* param;
-    //int ret_code = rthread_join(&socket_thread, &param);
-    //assert_true(ret_code == 0);
-    //assert_true(rstr_eq((char *)param, "socket_thread"));
+    void* param;
+    int ret_code = rthread_join(&socket_thread, &param);
+    assert_true(ret_code == 0);
+    assert_true(rstr_eq((char *)param, "socket_thread"));
     
-    rsocket_c.uninit();
+    rsocket_c.uninit(NULL);
 
     return rcode_ok;
 }

@@ -17,6 +17,14 @@
 extern "C" {
 #endif
 
+#define ripc_data_len_max 2048000
+
+#define ripc_head_len_len 4
+#define ripc_head_cmd_len 4
+#define ripc_head_sid_len 8
+#define ripc_head_crc_len 4
+#define ripc_head_reserve0_len 8
+
 typedef enum ripc_type_t {
     ripc_type_unknown = 0,           /** no type */
     ripc_type_tcp,
@@ -25,20 +33,18 @@ typedef enum ripc_type_t {
     ripc_type_mix,
 } ripc_type_t;
 
-typedef int (*ripc_init_func)(const void* cfg_data);
-typedef int (*ripc_uninit_func)();
-typedef int (*ripc_open_func)();
-typedef int (*ripc_close_func)();
-typedef int (*ripc_start_func)();
-typedef int (*ripc_stop_func)();
-typedef int (*ripc_send_func)(void* data);
-typedef int (*ripc_check_func)(void* data);
-typedef int (*ripc_receive_func)(void* data);
-typedef int (*ripc_error_func)(void* data);
+typedef int (*ripc_init_func)(void* ctx, const void* cfg_data);
+typedef int (*ripc_uninit_func)(void* ctx);
+typedef int (*ripc_open_func)(void* ctx);
+typedef int (*ripc_close_func)(void* ctx);
+typedef int (*ripc_start_func)(void* ctx);
+typedef int (*ripc_stop_func)(void* ctx);
+typedef int (*ripc_send_func)(void* ctx, void* data);
+typedef int (*ripc_check_func)(void* ctx, void* data);
+typedef int (*ripc_receive_func)(void* ctx, void* data);
+typedef int (*ripc_error_func)(void* ctx, void* data);
 
-typedef struct ripc_item {
-    rdata_handler* handler;
-
+typedef struct ripc_entry_s {
     ripc_init_func init;
     ripc_uninit_func uninit;
     ripc_open_func open;
@@ -49,7 +55,22 @@ typedef struct ripc_item {
     ripc_check_func check;
     ripc_receive_func receive;
     ripc_error_func error;
-} ripc_item;
+} ripc_entry_t;
+
+typedef struct ripc_data_raw_s {
+    uint32_t len;
+    char* data;
+} ripc_data_raw_t;
+
+
+typedef struct ripc_data_s {
+    uint32_t len;
+    int32_t cmd;
+    uint64_t sid;
+    int32_t crc;
+    uint64_t reserve0;
+    char* data;
+} ripc_data_t;
 
 R_API int ripc_init(const void* cfg_data);
 R_API int ripc_uninit();

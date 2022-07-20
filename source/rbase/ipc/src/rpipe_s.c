@@ -201,7 +201,7 @@ static ripc_item* get_ipc_item(const char* key) {
 }
 
 const ripc_item rsocket_s = {
-    NULL,// rdata_handler* handler;
+    NULL,// rdata_handler_t* handler;
 
     ripc_init,// ripc_init_func init;
     ripc_uninit,// ripc_uninit_func uninit;

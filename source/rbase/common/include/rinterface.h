@@ -22,9 +22,9 @@ typedef void (*rdata_handler_on_next_func)(void* data);
 typedef void (*rdata_handler_on_notify)(void* data);
 typedef void (*rdata_handler_notify)(void* data);
 
-typedef struct rdata_handler {
-    struct rdata_handler* prev;
-    struct rdata_handler* next;
+typedef struct rdata_handler_s {
+    struct rdata_handler_s* prev;
+    struct rdata_handler_s* next;
 
     rdata_handler_on_before_func on_before;
     rdata_handler_process_func process;
@@ -33,7 +33,7 @@ typedef struct rdata_handler {
 
     rdata_handler_on_notify on_notify;// 被通知
     rdata_handler_notify notify; // 通知其他
-} rdata_handler;
+} rdata_handler_t;
 
 #ifdef __cplusplus
 }
