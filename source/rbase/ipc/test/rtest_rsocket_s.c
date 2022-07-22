@@ -61,9 +61,15 @@ static int setup(void **state) {
     rsocket_ctx.id = 1;
     rsocket_ctx.server_type = ripc_type_tcp;
     rsocket_ctx.server = (uv_handle_t*)rnew_data(uv_tcp_t);
-    ((uv_tcp_t*)(rsocket_ctx.server))->data = &rsocket_ctx;
     rsocket_ctx.loop = uv_default_loop();
     rsocket_ctx.server_state = 1;
+
+    ripc_data_source_t* ds = rnew_data(ripc_data_source_t);
+    ds->ds_type = ripc_data_source_type_server;
+    ds->ds_id = rsocket_ctx.id;
+    ds->ds = &rsocket_ctx;
+
+    ((uv_tcp_t*)(rsocket_ctx.server))->data = ds;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rnew_data(rsocket_cfg_t);
     rsocket_ctx.cfg = cfg;

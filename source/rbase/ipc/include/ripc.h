@@ -25,7 +25,15 @@ extern "C" {
 #define ripc_head_crc_len 4
 #define ripc_head_reserve0_len 8
 
-typedef enum ripc_type_t {
+typedef enum {
+    ripc_data_source_type_unknown = 0,
+    ripc_data_source_type_server,
+    ripc_data_source_type_client,
+    ripc_data_source_type_peer,
+    ripc_data_source_type_mix,
+} ripc_data_source_type_t;
+
+typedef enum {
     ripc_type_unknown = 0,           /** no type */
     ripc_type_tcp,
     ripc_type_udp,
@@ -71,6 +79,16 @@ typedef struct ripc_data_s {
     uint64_t reserve0;
     char* data;
 } ripc_data_t;
+
+typedef struct ripc_data_source_s {
+    uint64_t ds_id;
+    ripc_data_source_type_t ds_type;
+    char* cache_read;
+    int read_pos;
+    char* buff_write;
+    int write_pos;
+    void* ds;
+} ripc_data_source_t;
 
 R_API int ripc_init(const void* cfg_data);
 R_API int ripc_uninit();

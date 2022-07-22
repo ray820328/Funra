@@ -11,6 +11,9 @@
 #include "rlog.h"
 #include "rsocket_s.h"
 
+#define read_cache_size 16 * 102400
+#define write_buff_size 16 * 102400
+
 typedef struct {
     uv_write_t req;
     uv_buf_t buf;
@@ -30,13 +33,18 @@ static void send_data(uv_stream_t* handle, ripc_data_t* data) {
 
     rdebug("send_data: %d\n", data->len);
 
-    wr = (local_write_req_t*)malloc(sizeof *wr);
+    wr = rnew_data(local_write_req_t);
     wr->buf = uv_buf_init(data->data, data->len);
 
     ret_code = uv_write(&wr->req, handle, &wr->buf, 1, after_write);
     if (ret_code != 0) {
         rerror("uv_write failed. code: %d\n", ret_code);
-        return;
+        rgoto(1);
+    }
+
+exit1:
+    if (wr != NULL) {
+        //rfree_data(local_write_req_t, wr);//释放在after_write里面
     }
 }
 
@@ -48,8 +56,8 @@ static void after_write(local_write_req_t* req, int status) {
     /* Free the read/write buffer and the request */
     wr = (local_write_req_t*)req;
 
-    free(wr->buf.base);
-    free(wr);
+    rstr_free(wr->buf.base);
+    rfree_data(local_write_req_t, wr);
 
     if (status == 0) {
         return;
@@ -58,32 +66,24 @@ static void after_write(local_write_req_t* req, int status) {
     rerror("uv_write error: %s - %s\n", uv_err_name(status), uv_strerror(status));
 }
 
-static void after_shutdown(uv_shutdown_t* req, int status) {
+static void after_shutdown_client(uv_shutdown_t* req, int status) {
     if (status == 0) {
-        rinfo("after_shutdown success.\n");
+        rinfo("after_shutdown_client success.\n");
     }
     else {
-        rerror("error after_shutdown: %d\n", status);
+        rerror("error after_shutdown_client: %d\n", status);
     }
 
     uv_close((uv_handle_t*)req->handle, on_close);
-    free(req);
-}
 
-static void on_shutdown(uv_shutdown_t* req, int status) {
-    if (status == 0) {
-        rinfo("shutdown success.\n");
-    }
-    else {
-        rerror("error on shutdown: %d\n", status);
-    }
-
-    free(req);
+    rfree_data(uv_shutdown_t, req);
 }
 
 static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
     int ret_code = 0;
-    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(handle->data);
+
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(handle->data);
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ds);
     ripc_data_raw_t data_raw;//直接在栈上
 
     local_write_req_t *wr;
@@ -93,17 +93,18 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
     rinfo("after read: %d\n", nread);
 
     if (nread < 0) {
-        free(buf->base);
+        rstr_free(((uv_buf_t*)buf)->base);
 
         /* Error or EOF */
         if (nread != UV_EOF) {//异常，未主动关闭等
             rerror("error on read: %d\n", nread);
+            uv_close(handle, on_close);
             return;
         }
 
         if (uv_is_writable(handle)) {
-            sreq = malloc(sizeof* sreq);
-            ret_code = uv_shutdown(sreq, handle, after_shutdown);
+            sreq = rnew_data(uv_shutdown_t);
+            ret_code = uv_shutdown(sreq, handle, after_shutdown_client);
             if (ret_code != 0) {
                 rerror("error on shutdown, code: %d\n", ret_code);
                 return;
@@ -114,13 +115,20 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
 
     if (nread == 0) {
         /* Everything OK, but nothing read. */
-        free(buf->base);
+        //rstr_free(((uv_buf_t*)buf)->base);//buffer
         return;
     }
 
     if (rsocket_ctx->handler) {
-        data_raw.len = nread;
-        data_raw.data = buf->base;
+        //if (datasource->read_type == append_new) { //没一次都是new一个空间去读
+            //data_raw.len = nread;
+            //data_raw.data = buf->base;
+        //} else if (append_cache) {//
+
+        datasource->read_pos += nread;
+        data_raw.len = datasource->read_pos;
+        data_raw.data = datasource->cache_read;
+        //}
 
         ret_code = rsocket_ctx->handler->on_before(&data_raw);
         if (ret_code != 0) {
@@ -139,6 +147,8 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
             rerror("error on handler after, code: %d\n", ret_code);
             return;
         }
+
+
     }
 
     ///*
@@ -190,81 +200,130 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
 }
 
 static void on_close(uv_handle_t* peer) {
-    rinfo("on close.\n");
-    free(peer);
+    //todo Ray 暂时仅tcp
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(peer->data);
+    //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ds);
+    rinfo("on close, id = %"PRIu64", \n", datasource->ds_id);
+
+    if (datasource->ds_type == ripc_data_source_type_client) {
+        rstr_free(datasource->cache_read);
+        rstr_free(datasource->buff_write);
+        rfree_data(ripc_data_source_t, datasource);
+        rfree_data(uv_tcp_t, peer);
+    }
+    else if (datasource->ds_type == ripc_data_source_type_server) {
+        rerror("on_close error, cant release server.\n");
+    }
 }
 
 static void alloc_dynamic(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
     rinfo("new buff, size: %d\n", suggested_size);
-    buf->base = malloc(suggested_size);
+    buf->base = rstr_new(suggested_size);
     buf->len = suggested_size;
 }
 
+/** 强制要求使用buffer/cache 编码解码 **/
 static void alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
     /* up to 16 datagrams at once */
-    static char slab[16 * 64 * 1024];
-    buf->base = slab;
-    buf->len = sizeof(slab);
+    //static char slab[16 * 1024];
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(handle->data);
+    buf->base = datasource->cache_read + datasource->read_pos;
+    buf->len = read_cache_size - datasource->read_pos;
 }
 
 static void on_connection(uv_stream_t* server, int status) {
     rinfo("on_connection accepting, code: %d\n", status);
 
-    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(server->data);
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(server->data);
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ds);
+    ripc_data_source_t* ds_client = NULL;
 
-    uv_stream_t* stream;
+    uv_stream_t* stream = NULL;
     int ret_code;
 
     if (status != 0) {
         rerror("accept error: %d, %s\n", status, uv_err_name(status));
-        return;
+        rgoto(1);
     }
+
+    ds_client = rnew_data(ripc_data_source_t);
 
     switch (rsocket_ctx->server_type) {
     case ripc_type_tcp:
-        stream = malloc(sizeof(uv_tcp_t));
+        stream = rnew_data(uv_tcp_t);
         if (stream == NULL) {
             rerror("stream oom.");
-            return;
+            rgoto(1);
         }
 
         ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)stream);
         if (ret_code != 0) {
             rerror("streamuv_tcp_init error, %d.\n", ret_code);
-            return;
+            rgoto(1);
         }
 
         break;
 
     case ripc_type_pipe:
-        stream = malloc(sizeof(uv_pipe_t));
+        stream = rnew_data(uv_pipe_t);
         ret_code = uv_pipe_init(rsocket_ctx->loop, (uv_pipe_t*)stream, 0);
         if (ret_code != 0) {
             rerror("error on uv_pipe_init: %d\n", ret_code);
+            rgoto(1);
         }
-        return;
+        break;
 
     default:
-        rerror("bad server_type: %d\n", rsocket_ctx->server_type);
-        return;
+        rerror("error of server_type: %d\n", rsocket_ctx->server_type);
+        rgoto(1);
     }
 
-    /* associate server with stream */
-    //stream->data = server;
+    ds_client->ds_type = ripc_data_source_type_client;
+    ds_client->ds_id = rsocket_ctx->id;//todo Ray sid
+    ds_client->cache_read = rstr_new(read_cache_size);
+    ds_client->read_pos = 0;
+    ds_client->buff_write = rstr_new(write_buff_size);
+    ds_client->write_pos = 0;
+    ds_client->ds = rsocket_ctx;
 
-    ret_code = uv_accept(server, stream);
+    /* client关联到ds对象，ds->ds = context*/
+    stream->data = ds_client;
+
+    if (rsocket_ctx->server_type == ripc_type_tcp) {
+        ret_code = uv_accept(server, stream);
+        if (ret_code != 0) {
+            rerror("uv_accept error, %d.\n", ret_code);
+            rgoto(1);
+        }
+
+        ret_code = uv_read_start(stream, alloc_static, after_read);
+        if (ret_code != 0) {
+            rerror("uv_read_start error, %d.\n", ret_code);
+            rgoto(1);
+        }
+
+        rinfo("accept finished.\n");
+    }
+
+exit0:
+
+exit1:
     if (ret_code != 0) {
-        rerror("uv_accept error, %d.\n", ret_code);
-        return;
-    }
+        if (stream != NULL) {
+            switch (rsocket_ctx->server_type) {
+            case ripc_type_tcp:
+                rfree_data(uv_tcp_t, stream);
+                break;
+            case ripc_type_pipe:
+                rfree_data(uv_pipe_t, stream);
+                break;
+            }
+        }
 
-    ret_code = uv_read_start(stream, alloc_dynamic, after_read);
-    if (ret_code != 0) {
-        rerror("uv_read_start error, %d.\n", ret_code);
-        return;
+        if (datasource != NULL) {
+            rfree_data(ripc_data_source_t, stream);
+        }
     }
-
-    rinfo("accept finished.\n");
 }
 
 static void on_server_close(uv_handle_t* handle) {
@@ -272,6 +331,16 @@ static void on_server_close(uv_handle_t* handle) {
     rinfo("on_server_close success.\n");
 }
 
+//static void on_shutdown(uv_shutdown_t* req, int status) {
+//    if (status == 0) {
+//        rinfo("shutdown success.\n");
+//    }
+//    else {
+//        rerror("error on shutdown: %d\n", status);
+//    }
+//
+//    rfree_data(uv_shutdown_t, req);
+//}
 //static uv_udp_send_t* send_alloc(void) {
 //    uv_udp_send_t* req = udp_data_list_free;
 //    if (req != NULL) {
