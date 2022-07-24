@@ -198,40 +198,42 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
 
 
-static uint64_t rhash_func_string(const void* key) {
-    if (key) {
-        return rhash_func_murmur((char*)key);
-    }
-    return rcode_ok;
-}
-static void* copy_key_func_string(void* data_ext, const void* key) {
-    if (key) {
-        return rstr_cpy(key, 0);
-    }
-    return NULL;
-}
-static void* copy_value_func_string(void* data_ext, const void* obj) {
-    if (obj) {
-        return rstr_cpy(obj, 0);
-    }
-    return NULL;
-}
-static void free_key_func_string(void* data_ext, void* key) {
-    if (key) {
-        rstr_free(key);
-    }
-}
-static void free_value_func_string(void* data_ext, void* obj) {
-    if (obj) {
-        rstr_free(obj);
-    }
-}
-static int compare_key_func_string(void* data_ext, const void* key1, const void* key2) {
-    if (key1 && key2) {
-        return rstr_eq(key1, key2);
-    }
-    return rcode_ok;
-}
+// static uint64_t rhash_func_string(const void* key) {
+//     if (key) {
+//         return rhash_func_murmur((char*)key);
+//     }
+//     return rcode_ok;
+// }
+// static void* copy_key_func_string(void* data_ext, const void* key) {
+//     if (key) {
+//         return rstr_cpy(key, 0);
+//     }
+//     return NULL;
+// }
+// static void* copy_value_func_string(void* data_ext, const void* obj) {
+//     if (obj) {
+//         return rstr_cpy(obj, 0);
+//     }
+//     return NULL;
+// }
+// static void free_key_func_string(void* data_ext, void* key) {
+//     if (key) {
+//         rstr_free(key);
+//     }
+// }
+// static void free_value_func_string(void* data_ext, void* obj) {
+//     if (obj) {
+//         rstr_free(obj);
+//     }
+// }
+// static int compare_key_func_string(void* data_ext, const void* key1, const void* key2) {
+//     if (key1 && key2) {
+//         return rstr_eq(key1, key2);
+//     }
+//     return rcode_ok;
+// }
+rdict_block_define_func(rdata_type_string, rdata_type_string);
+
 static void rdict_string_test(void **state) {// string类型 k-v
     (void)state;
     int count = 10000;
@@ -244,12 +246,12 @@ static void rdict_string_test(void **state) {// string类型 k-v
     start_benchmark(0);
     rdict_t* dict_ins = rdict_create(count, 32, NULL);
     assert_true(dict_ins);
-    dict_ins->hash_func = rhash_func_string;
-    dict_ins->copy_key_func = copy_key_func_string;
-    dict_ins->copy_value_func = copy_value_func_string;
-    dict_ins->free_key_func = free_key_func_string;
-    dict_ins->free_value_func = free_value_func_string;
-    dict_ins->compare_key_func = compare_key_func_string;
+    dict_ins->hash_func = rdict_hash_func_rdata_type_string;
+    dict_ins->copy_key_func = rdict_copy_key_func_rdata_type_string;
+    dict_ins->copy_value_func = rdict_copy_value_func_rdata_type_string;
+    dict_ins->free_key_func = rdict_free_key_func_rdata_type_string;
+    dict_ins->free_value_func = rdict_free_value_func_rdata_type_string;
+    dict_ins->compare_key_func = rdict_compare_key_func_rdata_type_string;
     end_benchmark("Create string map.");
 
     start_benchmark(0);

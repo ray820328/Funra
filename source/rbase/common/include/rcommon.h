@@ -254,7 +254,7 @@ typedef enum rdata_plain_type_size_t {
     rdata_type_ptr_size = sizeof(void*)                   /** generic pointer */
 } rdata_plain_type_size_t;
 
-#define rdata_type_unknown_inner_type
+#define rdata_type_unknown_inner_type 
 #define rdata_type_bool_inner_type bool
 #define rdata_type_char_inner_type char
 #define rdata_type_uchar_inner_type unsigned char
@@ -328,6 +328,24 @@ typedef enum rdata_plain_type_size_t {
 
 #define rdata_type_declare_compare_func(T) \
     int T##_compare_func(const T##_inner_type obj1, const T##_inner_type obj2)
+
+#define rdata_type_unknown_hash_func NULL
+#define rdata_type_bool_hash_func NULL
+#define rdata_type_char_hash_func NULL
+#define rdata_type_uchar_hash_func NULL
+#define rdata_type_short_hash_func NULL
+#define rdata_type_ushort_hash_func NULL
+#define rdata_type_int_chash_func NULL
+#define rdata_type_uint_hash_func NULL
+#define rdata_type_long_chash_func NULL
+#define rdata_type_ulong_hash_func NULL
+#define rdata_type_long_long_hash_func NULL
+#define rdata_type_ulong_long_hash_func NULL
+#define rdata_type_float_hash_func NULL
+#define rdata_type_double_hash_func NULL
+#define rdata_type_long_double_hash_func NULL
+#define rdata_type_string_hash_func rhash_func_murmur
+#define rdata_type_ptr_hash_func NULL
 
 /* ------------------------------- APIs ------------------------------------*/
     

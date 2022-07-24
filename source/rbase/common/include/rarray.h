@@ -17,10 +17,10 @@ extern "C" {
 #include "rcommon.h"
 
 /* ------------------------------- Macros ------------------------------------*/
-#define rarray_size_t unsigned long
+#define rarray_size_t uint32_t
 #define rarray_size_max 0xFFFFFFFFUL
 #define rarray_size_min 0L
-#define rarray_size_t_format "lu"
+#define rarray_size_t_format "u"
 #define rarray_init_capacity_default 16
 #define rarray_scale_factor 2
 

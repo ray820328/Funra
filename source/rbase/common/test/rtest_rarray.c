@@ -209,7 +209,7 @@ static struct data_test
     char* value;
 } data_test;
 static struct data_test* copy_value_func_obj(const struct data_test* obj) {
-    struct data_test* dest = rnew_data(data_test);
+    struct data_test* dest = rnew_data(struct data_test, data_test);
     dest->index = obj->index;
     dest->value = rstr_cpy(obj->value, 0);
     return dest;

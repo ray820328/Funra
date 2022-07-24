@@ -18,10 +18,10 @@
 extern "C" {
 #endif
 
-#define rdict_size_t unsigned long
+#define rdict_size_t uint32_t
 #define rdict_size_max 0xFFFFFFFFUL
 #define rdict_size_min 0L
-#define rdict_size_t_format "lu"
+#define rdict_size_t_format "u"
 #define rdict_bucket_capacity_default 16
 #define rdict_init_capacity_default 16
 #define rdict_scale_factor_default 0.75
@@ -93,7 +93,7 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry_t **bucketref)
 
 /* ------------------------------- Macros ------------------------------------*/
 
-#define rdict_is_key_equal(d, key1, key2) (d)->compare_key_func((d)->data_ext, key1, key2)
+#define rdict_is_key_equal(d, key1, key2) ((d)->compare_key_func((d)->data_ext, key1, key2) == rcode_eq)
 
 #define rdict_free_key(d, entry) \
     if (entry) \
@@ -133,19 +133,52 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry_t **bucketref)
         return 0; \
     }
 
-#define rdict_set_signed_int_val(entry, _val_) \
-    (entry)->value.s64 = (_val_);
+#define rdict_block_declare_func(K, T) \
+    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, T##_inner_type obj); \
+    T##_inner_type rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset); \
+    int rarray_remove_value_func_##T(rarray_t* ar, const rarray_size_t index); \
+    void rarray_free_value_func_##T(void* obj)
 
-#define rdict_set_unsigned_int_val(entry, _val_) \
-    (entry)->value.u64 = (_val_);
+#define rdict_block_define_func(K, V) \
+uint64_t rdict_hash_func_##K(const K##_inner_type key) { \
+    if (K##_hash_func) { \
+        return K##_hash_func(key); \
+    } \
+    return (uint64_t)key; \
+} \
+K##_inner_type rdict_copy_key_func_##K(void* data_ext, const K##_inner_type key) { \
+    if (K##_copy_func) { \
+        return K##_copy_func(key); \
+    } \
+    return (K##_inner_type)key; \
+} \
+V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type obj) { \
+    if (V##_copy_func) { \
+        return V##_copy_func(obj); \
+    } \
+    return (V##_inner_type)obj; \
+} \
+void rdict_free_key_func_##K(void* data_ext, K##_inner_type key) { \
+    if (K##_free_func) { \
+        K##_free_func(key); \
+    } \
+} \
+void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
+    if (V##_free_func) { \
+        V##_free_func(obj); \
+    } \
+} \
+int rdict_compare_key_func_##K(void* data_ext, const K##_inner_type key1, const K##_inner_type key2) { \
+    if (K##_compare_func) { \
+        return K##_compare_func(key1, key2); \
+    } \
+    if ( key1 == key2) { \
+        return 0; \
+    } \
+    return 1; \
+}
 
-#define dict_set_double_val(entry, _val_) \
-    (entry)->value.d = (_val_);
-
-#define dict_set_float_val(entry, _val_) \
-    (entry)->value.f = (_val_);
-
-#define rdict_compare_keys(d, key1, key2) \
+//#define rdict_compare_keys(d, key1, key2) \
     (((d)->compare_key_func) ? (d)->compare_key_func((d)->data_ext, (key1), (key2)) : (key1) == (key2))
 
 #define rdict_get_buckets(d) ((d)->entry ? ((d)->entry) : NULL)
