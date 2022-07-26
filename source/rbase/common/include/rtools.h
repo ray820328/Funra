@@ -36,6 +36,9 @@ int rtools_startindex1(uint64_t val);
 /** 1bits */
 int rtools_popcount1(uint64_t val);
 
+
+uint64_t rhash_func_murmur(const char *key);
+
 #ifdef __cplusplus
 }
 #endif

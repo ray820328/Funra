@@ -232,7 +232,6 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 //     }
 //     return rcode_ok;
 // }
-rdict_block_define_func(rdata_type_string, rdata_type_string);
 
 static void rdict_string_test(void **state) {// string类型 k-v
     (void)state;

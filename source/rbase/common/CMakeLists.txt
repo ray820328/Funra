@@ -7,6 +7,7 @@ PROJECT(rcommon)
 INCLUDE_DIRECTORIES(include)
 
 SET(SRC_LIB
+        src/rbase.c
         src/rfile.c
         src/rtime.c
         src/rstring.c

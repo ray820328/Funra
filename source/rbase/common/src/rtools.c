@@ -94,6 +94,48 @@ int rtools_popcount1(uint64_t val) {//1bits
 }
 
 
+uint64_t rhash_func_murmur(const char *key)
+{
+    const uint64_t m = UINT64_C(0xc6a4a7935bd1e995);
+    const size_t len = strlen(key);
+    const unsigned char* p = (const unsigned char*)key;
+    const unsigned char *end = p + (len & ~(uint64_t)0x7);
+    uint64_t h = (len * m);
+
+    while (p != end) {
+        uint64_t k;
+        memcpy(&k, p, sizeof(k));
+
+        k *= m;
+        k ^= k >> 47u;
+        k *= m;
+
+        h ^= k;
+        h *= m;
+        p += 8;
+    }
+
+    switch (len & 7u) {
+    case 7: h ^= (uint64_t)p[6] << 48ul; // fall through
+    case 6: h ^= (uint64_t)p[5] << 40ul; // fall through
+    case 5: h ^= (uint64_t)p[4] << 32ul; // fall through
+    case 4: h ^= (uint64_t)p[3] << 24ul; // fall through
+    case 3: h ^= (uint64_t)p[2] << 16ul; // fall through
+    case 2: h ^= (uint64_t)p[1] << 8ul;  // fall through
+    case 1: h ^= (uint64_t)p[0];         // fall through
+        h *= m;
+    default:
+        break;
+    };
+
+    h ^= h >> 47u;
+    h *= m;
+    h ^= h >> 47u;
+
+    return h; // (uint32_t)h;
+}
+
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop

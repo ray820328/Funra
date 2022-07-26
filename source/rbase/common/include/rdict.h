@@ -13,6 +13,7 @@
 #include "string.h"
 
 #include "rcommon.h"
+#include "rtools.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -133,13 +134,17 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry_t **bucketref)
         return 0; \
     }
 
-#define rdict_block_declare_func(K, T) \
-    int rarray_set_value_func_##T(rarray_t* ar, const rarray_size_t offset, T##_inner_type obj); \
-    T##_inner_type rarray_get_value_func_##T(rarray_t* ar, const rarray_size_t offset); \
-    int rarray_remove_value_func_##T(rarray_t* ar, const rarray_size_t index); \
-    void rarray_free_value_func_##T(void* obj)
+#define rdict_block_declare_type_key_func(K) \
+    uint64_t rdict_hash_func_##K(const K##_inner_type key); \
+    K##_inner_type rdict_copy_key_func_##K(void* data_ext, const K##_inner_type key); \
+    void rdict_free_key_func_##K(void* data_ext, K##_inner_type key); \
+    int rdict_compare_key_func_##K(void* data_ext, const K##_inner_type key1, const K##_inner_type key2)
 
-#define rdict_block_define_func(K, V) \
+#define rdict_block_declare_type_value_func(V) \
+    V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type obj); \
+    void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj)
+
+#define rdict_block_define_type_key_func(K) \
 uint64_t rdict_hash_func_##K(const K##_inner_type key) { \
     if (K##_hash_func) { \
         return K##_hash_func(key); \
@@ -152,20 +157,9 @@ K##_inner_type rdict_copy_key_func_##K(void* data_ext, const K##_inner_type key)
     } \
     return (K##_inner_type)key; \
 } \
-V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type obj) { \
-    if (V##_copy_func) { \
-        return V##_copy_func(obj); \
-    } \
-    return (V##_inner_type)obj; \
-} \
 void rdict_free_key_func_##K(void* data_ext, K##_inner_type key) { \
     if (K##_free_func) { \
         K##_free_func(key); \
-    } \
-} \
-void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
-    if (V##_free_func) { \
-        V##_free_func(obj); \
     } \
 } \
 int rdict_compare_key_func_##K(void* data_ext, const K##_inner_type key1, const K##_inner_type key2) { \
@@ -177,6 +171,20 @@ int rdict_compare_key_func_##K(void* data_ext, const K##_inner_type key1, const 
     } \
     return 1; \
 }
+
+#define rdict_block_define_type_value_func(V) \
+V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type obj) { \
+    if (V##_copy_func) { \
+        return V##_copy_func(obj); \
+    } \
+    return (V##_inner_type)obj; \
+} \
+void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
+    if (V##_free_func) { \
+        V##_free_func(obj); \
+    } \
+} \
+
 
 //#define rdict_compare_keys(d, key1, key2) \
     (((d)->compare_key_func) ? (d)->compare_key_func((d)->data_ext, (key1), (key2)) : (key1) == (key2))
@@ -211,8 +219,6 @@ int rdict_compare_key_func_##K(void* data_ext, const K##_inner_type key1, const 
 
 /* ------------------------------- APIs ------------------------------------*/
 
-uint64_t rhash_func_murmur(const char *key);
-
 rdict_t* rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext);
 int rdict_expand(rdict_t* d, rdict_size_t capacity);
 int rdict_add(rdict_t* d, void* key, void* val);
@@ -225,6 +231,21 @@ rdict_entry_t* rdict_find(rdict_t* d, const void* key);
 /* 注意rehash失效 */
 rdict_iterator_t* rdict_it_heap(rdict_t* d);
 rdict_entry_t* rdict_next(rdict_iterator_t* it);
+
+
+// rdict_block_declare_type_key_func(rdata_type_int);
+// rdict_block_declare_type_key_func(rdata_type_int64);
+// rdict_block_declare_type_key_func(rdata_type_uint64);
+rdict_block_declare_type_key_func(rdata_type_string);
+// rdict_block_declare_type_key_func(rdata_type_ptr);
+
+// rdict_block_declare_type_value_func(rdata_type_int);
+// rdict_block_declare_type_value_func(rdata_type_float);
+// rdict_block_declare_type_value_func(rdata_type_double);
+// rdict_block_declare_type_value_func(rdata_type_int64);
+// rdict_block_declare_type_value_func(rdata_type_uint64);
+rdict_block_declare_type_value_func(rdata_type_string);
+// rdict_block_declare_type_value_func(rdata_type_ptr);
 
 #ifdef __cplusplus
 }
