@@ -103,9 +103,6 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_string_inner_type char*
 #define rdata_type_ptr_inner_type void**
 
-#define rdata_type_declare_copy_func_name(T) T##_copy_func
-#define rdata_type_declare_copy_func(T) \
-    T##_inner_type T##_copy_func(const T##_inner_type obj)
 #define rdata_type_unknown_copy_func NULL
 #define rdata_type_bool_copy_func NULL
 #define rdata_type_char_copy_func NULL
@@ -124,8 +121,24 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_string_copy_func rstr_cpy_full
 #define rdata_type_ptr_copy_func NULL
 
-#define rdata_type_declare_free_func(T) \
-    T##_inner_type T##_free_func(T##_inner_type obj)
+#define rdata_type_unknown_copy(val)
+#define rdata_type_bool_copy(val) (val)
+#define rdata_type_char_copy(val) (val)
+#define rdata_type_uchar_copy(val) (val)
+#define rdata_type_short_copy(val) (val)
+#define rdata_type_ushort_copy(val) (val)
+#define rdata_type_int_copy(val) (val)
+#define rdata_type_uint_copy(val) (val)
+#define rdata_type_long_copy(val) (val)
+#define rdata_type_ulong_copy(val) (val)
+#define rdata_type_int64_copy(val) (val)
+#define rdata_type_uint64_copy(val) (val)
+#define rdata_type_float_copy(val) (val)
+#define rdata_type_double_copy(val) (val)
+#define rdata_type_long_double_copy(val) (val)
+#define rdata_type_string_copy(val) rstr_cpy_full(val)
+#define rdata_type_ptr_copy(val) (val)
+
 #define rdata_type_unknown_free_func NULL
 #define rdata_type_bool_free_func NULL
 #define rdata_type_char_free_func NULL
@@ -144,8 +157,24 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_string_free_func rstr_free_func
 #define rdata_type_ptr_free_func NULL
 
-#define rdata_type_declare_compare_func(T) \
-    int T##_compare_func(const T##_inner_type obj1, const T##_inner_type obj2)
+#define rdata_type_unknown_free(val)
+#define rdata_type_bool_free(val)
+#define rdata_type_char_free(val)
+#define rdata_type_uchar_free(val)
+#define rdata_type_short_free(val)
+#define rdata_type_ushort_free(val)
+#define rdata_type_int_free(val)
+#define rdata_type_uint_free(val)
+#define rdata_type_long_free(val)
+#define rdata_type_ulong_free(val)
+#define rdata_type_int64_free(val)
+#define rdata_type_uint64_free(val)
+#define rdata_type_float_free(val)
+#define rdata_type_double_free(val)
+#define rdata_type_long_double_free(val)
+#define rdata_type_string_free(val) rstr_free_func(val)
+#define rdata_type_ptr_free(val)
+
 #define rdata_type_unknown_compare_func NULL
 #define rdata_type_bool_compare_func NULL
 #define rdata_type_char_compare_func NULL
@@ -164,8 +193,24 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_string_compare_func rstr_compare_func
 #define rdata_type_ptr_compare_func NULL
 
-#define rdata_type_declare_hash_func(T) \
-    uint64_t T##_hash_func(const T##_inner_type obj)
+#define rdata_type_unknown_compare(val1, val2) rcode_eq
+#define rdata_type_bool_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_char_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_uchar_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_short_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_ushort_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_int_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_uint_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_long_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_ulong_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_int64_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_uint64_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_float_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_double_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_long_double_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+#define rdata_type_string_compare(val1, val2) rstr_compare_func(val1, val2)
+#define rdata_type_ptr_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
+
 #define rdata_type_unknown_hash_func NULL
 #define rdata_type_bool_hash_func NULL
 #define rdata_type_char_hash_func NULL
@@ -183,6 +228,24 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_long_double_hash_func NULL
 #define rdata_type_string_hash_func rhash_func_murmur
 #define rdata_type_ptr_hash_func NULL
+
+#define rdata_type_unknown_hash(val)
+#define rdata_type_bool_hash(val) (val)
+#define rdata_type_char_hash(val) (val)
+#define rdata_type_uchar_hash(val) (val)
+#define rdata_type_short_hash(val) (val)
+#define rdata_type_ushort_hash(val) (val)
+#define rdata_type_int_hash(val) (val)
+#define rdata_type_uint_hash(val) (val)
+#define rdata_type_long_hash(val) (val)
+#define rdata_type_ulong_hash(val) (val)
+#define rdata_type_int64_hash(val) (val)
+#define rdata_type_uint64_hash(val) (val)
+#define rdata_type_float_hash(val) (val)
+#define rdata_type_double_hash(val) (val)
+#define rdata_type_long_double_hash(val) (val)
+#define rdata_type_string_hash(val) rhash_func_murmur(val)
+#define rdata_type_ptr_hash(val) (val)
 
 
 #ifdef __cplusplus

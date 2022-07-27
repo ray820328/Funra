@@ -80,15 +80,7 @@ int run_rdict_tests(int benchmark_output) {
     return result == 0 ? rcode_ok : -1;
 }
 
-static uint64_t rhash_func_int(const void* key) {
-    return (uint64_t)key;
-}
-//static void set_key_func_default(void* data_ext, rdict_entry_t* entry, const void* key) {
-//    entry->key.s64 = key;
-//}
-//static void set_value_func_default(void* data_ext, rdict_entry_t* entry, const void* obj) {
-//    entry->value.s64 = obj;
-//}
+
 static void rdict_int_test(void **state) {// 整数类型 k-v
     (void)state;
     int count = 10000;
@@ -112,11 +104,9 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
     //};
     
     start_benchmark(0);
-    rdict_t* dict_ins = rdict_create(count, 0, NULL);
+    rdict_t* dict_ins = NULL;
+    rdict_init(dict_ins, rdata_type_int, rdata_type_int, 0, 0);
     assert_true(dict_ins);
-    dict_ins->hash_func = rhash_func_int;
-    //dict_ins->set_key_func = set_key_func_default;
-    //dict_ins->set_value_func = set_value_func_default;
     end_benchmark("Create map.");
 
     start_benchmark(0);
@@ -197,42 +187,6 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 }
 
 
-
-// static uint64_t rhash_func_string(const void* key) {
-//     if (key) {
-//         return rhash_func_murmur((char*)key);
-//     }
-//     return rcode_ok;
-// }
-// static void* copy_key_func_string(void* data_ext, const void* key) {
-//     if (key) {
-//         return rstr_cpy(key, 0);
-//     }
-//     return NULL;
-// }
-// static void* copy_value_func_string(void* data_ext, const void* obj) {
-//     if (obj) {
-//         return rstr_cpy(obj, 0);
-//     }
-//     return NULL;
-// }
-// static void free_key_func_string(void* data_ext, void* key) {
-//     if (key) {
-//         rstr_free(key);
-//     }
-// }
-// static void free_value_func_string(void* data_ext, void* obj) {
-//     if (obj) {
-//         rstr_free(obj);
-//     }
-// }
-// static int compare_key_func_string(void* data_ext, const void* key1, const void* key2) {
-//     if (key1 && key2) {
-//         return rstr_eq(key1, key2);
-//     }
-//     return rcode_ok;
-// }
-
 static void rdict_string_test(void **state) {// string类型 k-v
     (void)state;
     int count = 10000;
@@ -243,14 +197,9 @@ static void rdict_string_test(void **state) {// string类型 k-v
     init_benchmark(1024, "test string rdict_t(%d)", count);
 
     start_benchmark(0);
-    rdict_t* dict_ins = rdict_create(count, 32, NULL);
+    rdict_t* dict_ins = NULL;
+    rdict_init(dict_ins, rdata_type_string, rdata_type_string, count, 0);
     assert_true(dict_ins);
-    dict_ins->hash_func = rdict_hash_func_rdata_type_string;
-    dict_ins->copy_key_func = rdict_copy_key_func_rdata_type_string;
-    dict_ins->copy_value_func = rdict_copy_value_func_rdata_type_string;
-    dict_ins->free_key_func = rdict_free_key_func_rdata_type_string;
-    dict_ins->free_value_func = rdict_free_value_func_rdata_type_string;
-    dict_ins->compare_key_func = rdict_compare_key_func_rdata_type_string;
     end_benchmark("Create string map.");
 
     start_benchmark(0);
@@ -267,6 +216,8 @@ static void rdict_string_test(void **state) {// string类型 k-v
     for (j = 0; j < count; j++) {
         rformat_s(key_str_buffer, "%d", j);
         rdict_entry_t *de = rdict_find(dict_ins, key_str_buffer);
+        assert_true(de != NULL);
+        //rinfo("key: %s, val: %s\n", de->key.ptr, de->value.ptr);
         assert_true(de != NULL && rstr_2int(de->value.ptr) == count + j);
     }
     end_benchmark("Linear access existing elements");

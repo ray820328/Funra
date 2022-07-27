@@ -146,48 +146,39 @@ typedef void (rdict_scan_bucket_func)(void* data_ext, rdict_entry_t **bucketref)
 
 #define rdict_block_define_type_key_func(K) \
 uint64_t rdict_hash_func_##K(const K##_inner_type key) { \
-    if (K##_hash_func) { \
-        return K##_hash_func(key); \
-    } \
-    return (uint64_t)key; \
+    return (uint64_t)K##_hash(key); \
 } \
 K##_inner_type rdict_copy_key_func_##K(void* data_ext, const K##_inner_type key) { \
-    if (K##_copy_func) { \
-        return K##_copy_func(key); \
-    } \
-    return (K##_inner_type)key; \
+    return (K##_inner_type)K##_copy(key); \
 } \
 void rdict_free_key_func_##K(void* data_ext, K##_inner_type key) { \
-    if (K##_free_func) { \
-        K##_free_func(key); \
-    } \
+    K##_free(key); \
 } \
 int rdict_compare_key_func_##K(void* data_ext, const K##_inner_type key1, const K##_inner_type key2) { \
-    if (K##_compare_func) { \
-        return K##_compare_func(key1, key2); \
-    } \
-    if ( key1 == key2) { \
-        return 0; \
-    } \
-    return 1; \
+    return K##_compare(key1, key2); \
 }
 
 #define rdict_block_define_type_value_func(V) \
 V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type obj) { \
-    if (V##_copy_func) { \
-        return V##_copy_func(obj); \
-    } \
-    return (V##_inner_type)obj; \
+    return (V##_inner_type)V##_copy(obj); \
 } \
 void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
-    if (V##_free_func) { \
-        V##_free_func(obj); \
-    } \
+    V##_free(obj); \
 } \
 
 
-//#define rdict_compare_keys(d, key1, key2) \
-    (((d)->compare_key_func) ? (d)->compare_key_func((d)->data_ext, (key1), (key2)) : (key1) == (key2))
+#define rdict_init(inst, K, V, capacity, buckets) \
+    do { \
+        rassert((inst) == NULL, ""); \
+        (inst) = rdict_create((capacity)<=0 ? rdict_init_capacity_default:(capacity), (buckets)<=0 ? rdict_bucket_capacity_default : (buckets), NULL); \
+        rassert((inst) != NULL, ""); \
+        (inst)->hash_func = rdict_hash_func_##K; \
+        (inst)->copy_key_func = rdict_copy_key_func_##K; \
+        (inst)->free_key_func = rdict_free_key_func_##K; \
+        (inst)->compare_key_func = rdict_compare_key_func_##K; \
+        (inst)->copy_value_func = rdict_copy_value_func_##V; \
+        (inst)->free_value_func = rdict_free_value_func_##V; \
+    } while(0)
 
 #define rdict_get_buckets(d) ((d)->entry ? ((d)->entry) : NULL)
 #define rdict_set_buckets(d, buckets) (d)->entry = (buckets)
@@ -233,19 +224,19 @@ rdict_iterator_t* rdict_it_heap(rdict_t* d);
 rdict_entry_t* rdict_next(rdict_iterator_t* it);
 
 
-// rdict_block_declare_type_key_func(rdata_type_int);
-// rdict_block_declare_type_key_func(rdata_type_int64);
-// rdict_block_declare_type_key_func(rdata_type_uint64);
+rdict_block_declare_type_key_func(rdata_type_int);
+rdict_block_declare_type_key_func(rdata_type_int64);
+rdict_block_declare_type_key_func(rdata_type_uint64);
 rdict_block_declare_type_key_func(rdata_type_string);
-// rdict_block_declare_type_key_func(rdata_type_ptr);
+rdict_block_declare_type_key_func(rdata_type_ptr);
 
-// rdict_block_declare_type_value_func(rdata_type_int);
-// rdict_block_declare_type_value_func(rdata_type_float);
-// rdict_block_declare_type_value_func(rdata_type_double);
-// rdict_block_declare_type_value_func(rdata_type_int64);
-// rdict_block_declare_type_value_func(rdata_type_uint64);
+rdict_block_declare_type_value_func(rdata_type_int);
+rdict_block_declare_type_value_func(rdata_type_float);
+rdict_block_declare_type_value_func(rdata_type_double);
+rdict_block_declare_type_value_func(rdata_type_int64);
+rdict_block_declare_type_value_func(rdata_type_uint64);
 rdict_block_declare_type_value_func(rdata_type_string);
-// rdict_block_declare_type_value_func(rdata_type_ptr);
+rdict_block_declare_type_value_func(rdata_type_ptr);
 
 #ifdef __cplusplus
 }

@@ -30,12 +30,12 @@ extern "C" {
 
 #define rcode_ok 0
 
-#define rcode_eq 1
+#define rcode_lt -1
+#define rcode_eq 0
+#define rcode_gt 1
 #define rcode_neq 2
-#define rcode_gt 3
-#define rcode_gte 4
-#define rcode_lt 5
-#define rcode_lte 6
+#define rcode_gte 3
+#define rcode_lte 4
 
 #define sizeptr 8
 #define LPRId64 L"lld"

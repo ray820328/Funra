@@ -34,22 +34,12 @@ static void expand_failed_func_default(void* data_ext) {
     rassert(false, "default action");
 }
 
-static uint64_t hash_func_default(const void* key) {
-    return (uint64_t)key;
-}
-
 static void set_key_func_default(void* data_ext, rdict_entry_t* entry, const void* key) {
     entry->key.ptr = (void*)key;
 }
 
 static void set_value_func_default(void* data_ext, rdict_entry_t* entry, const void* obj) {
     entry->value.ptr = (void*)obj;
-}
-
-static int compare_key_func_default(void* data_ext, const void* key1, const void* key2) {
-    if (key1 == key2)
-        return 1;
-    return rcode_ok;
 }
 
 rdict_t *rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext) {
@@ -65,12 +55,12 @@ rdict_t *rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, 
     d->bucket_capacity = bucket_capacity <= 0 ? rdict_bucket_capacity_default : bucket_capacity;
     d->data_ext = data_ext;
 
-    d->hash_func = hash_func_default;
+    d->hash_func = NULL;
     d->set_key_func = set_key_func_default;
     d->set_value_func = set_value_func_default;
     d->copy_key_func = NULL;
     d->copy_value_func = NULL;
-    d->compare_key_func = compare_key_func_default;
+    d->compare_key_func = NULL;
     d->free_key_func = NULL;
     d->free_value_func = NULL;
     d->expand_failed_func = expand_failed_func_default;
@@ -380,19 +370,19 @@ static rdict_entry_t* _find_bucket_raw(rdict_hash_func_type hash_func, rdict_ent
 }
 
 
-// rdict_block_define_type_key_func(rdata_type_int)
-// rdict_block_define_type_key_func(rdata_type_int64)
-// rdict_block_define_type_key_func(rdata_type_uint64)
+rdict_block_define_type_key_func(rdata_type_int)
+rdict_block_define_type_key_func(rdata_type_int64)
+rdict_block_define_type_key_func(rdata_type_uint64)
 rdict_block_define_type_key_func(rdata_type_string)
-// rdict_block_define_type_key_func(rdata_type_ptr)
+rdict_block_define_type_key_func(rdata_type_ptr)
 
-// rdict_block_define_type_value_func(rdata_type_int)
-// rdict_block_define_type_value_func(rdata_type_float)
-// rdict_block_define_type_value_func(rdata_type_double)
-// rdict_block_define_type_value_func(rdata_type_int64)
-// rdict_block_define_type_value_func(rdata_type_uint64)
+rdict_block_define_type_value_func(rdata_type_int)
+rdict_block_define_type_value_func(rdata_type_float)
+rdict_block_define_type_value_func(rdata_type_double)
+rdict_block_define_type_value_func(rdata_type_int64)
+rdict_block_define_type_value_func(rdata_type_uint64)
 rdict_block_define_type_value_func(rdata_type_string)
-// rdict_block_define_type_value_func(rdata_type_ptr)
+rdict_block_define_type_value_func(rdata_type_ptr)
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
