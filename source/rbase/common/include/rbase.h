@@ -38,11 +38,10 @@ extern "C" {
 #define rwarn(format, ...) rlog_printf(NULL, RLOG_WARN, "[%ld] %s:%s:%d "format"", get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define rerror(format, ...) rlog_printf(NULL, RLOG_ERROR, "[%ld] %s:%s:%d "format"", get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define rfatal(format, ...) \
-	do { \
-		rlog_printf(NULL, RLOG_FATAL, "[%ld] %s:%s:%d "format"", get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__); \
-		abort(); \
-	} while (0)
-
+do { \
+	rlog_printf(NULL, RLOG_FATAL, "[%ld] %s:%s:%d "format"", get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__); \
+	abort(); \
+} while (0)
 
 
 typedef enum rdata_plain_type_t {
@@ -62,7 +61,8 @@ typedef enum rdata_plain_type_t {
     rdata_type_double,                /** double */
     rdata_type_long_double,           /** long double */
     rdata_type_string,                /** string */
-    rdata_type_ptr                    /** generic pointer */
+    rdata_type_ptr,                   /** generic pointer */
+    rdata_type_data                   /** struct */
 } rdata_plain_type_t;
 
 typedef enum rdata_plain_type_size_t {
@@ -76,8 +76,8 @@ typedef enum rdata_plain_type_size_t {
     rdata_type_uint_size = sizeof(unsigned int),          /** unsigned int */
     rdata_type_long_size = sizeof(long),                  /** long int */
     rdata_type_ulong_size = sizeof(unsigned long),        /** unsigned long int */
-    rdata_type_int64_size = sizeof(int64_t),        /** long long */
-    rdata_type_uint64_size = sizeof(uint64_t),           /** unsigned long long */
+    rdata_type_int64_size = sizeof(int64_t),              /** long long */
+    rdata_type_uint64_size = sizeof(uint64_t),            /** unsigned long long */
     rdata_type_float_size = sizeof(float),                /** float */
     rdata_type_double_size = sizeof(double),              /** double */
     rdata_type_long_double_size = sizeof(long double),    /** long double */
@@ -246,6 +246,12 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_long_double_hash(val) (val)
 #define rdata_type_string_hash(val) rhash_func_murmur(val)
 #define rdata_type_ptr_hash(val) (val)
+
+
+#define rdata_copy_func_define(T, val) \
+V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type obj) { \
+    return (V##_inner_type)V##_copy(obj); \
+} \
 
 
 #ifdef __cplusplus

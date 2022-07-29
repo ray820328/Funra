@@ -59,11 +59,19 @@ typedef struct rdict_entry_t {
     //struct rdict_entry_t *next;
 } rdict_entry_t;
 
-typedef uint64_t(*rdict_hash_func_type)(const void* key);
-/** 0 - 不相等; !0 - 相等 **/
+typedef uint64_t (*rdict_hash_func_type)(const void* key);
+typedef void (*rdict_set_key_func_type)(void* data_ext, rdict_entry_t* entry, const void* key);
+typedef void (*rdict_set_value_func_type)(void* data_ext, rdict_entry_t* entry, const void* obj);
+typedef void* (*rdict_copy_key_func_type)(void* data_ext, const void* key);
+typedef void* (*rdict_copy_value_func_type)(void* data_ext, const void* obj);
+typedef void (*rdict_free_key_func_type)(void* data_ext, void* key);
+typedef void (*rdict_free_value_func_type)(void* data_ext, void* obj);
+typedef void (*rdict_expand_failed_func_type)(void* data_ext);
+
+/** 0 - 相等 **/
 typedef int (*rdict_compare_key_func_type)(void* data_ext, const void* key1, const void* key2);
 
-typedef struct rdict_t {
+typedef struct rdict_t {//非线程安全，扩容为浅拷贝
     rdict_entry_t *entry;
     rdict_entry_t *entry_null;
     rdict_size_t size;
@@ -74,14 +82,14 @@ typedef struct rdict_t {
     void* data_ext;
 
     rdict_hash_func_type hash_func;
-    void (*set_key_func)(void* data_ext, rdict_entry_t* entry, const void* key);
-    void (*set_value_func)(void* data_ext, rdict_entry_t* entry, const void* obj);
-    void* (*copy_key_func)(void* data_ext, const void* key);
-    void* (*copy_value_func)(void* data_ext, const void* obj);
+    rdict_set_key_func_type set_key_func;
+    rdict_set_value_func_type set_value_func;
+    rdict_copy_key_func_type copy_key_func;
+    rdict_copy_value_func_type copy_value_func;
     rdict_compare_key_func_type compare_key_func;
-    void (*free_key_func)(void* data_ext, void* key);
-    void (*free_value_func)(void* data_ext, void* obj);
-    void (*expand_failed_func)(void* data_ext);
+    rdict_free_key_func_type free_key_func;
+    rdict_free_value_func_type free_value_func;
+    rdict_expand_failed_func_type expand_failed_func;
 } rdict_t;
 
 typedef struct rdict_iterator_t {
