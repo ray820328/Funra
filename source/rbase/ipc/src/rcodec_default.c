@@ -13,33 +13,39 @@
 #include "ripc.h"
 #include "rcodec_default.h"
 
-static int on_before(void* data) {
+static int on_before(void* ds, void* data) {
 
     return rcode_ok;
 }
 
-int process(void* data) {
+int process(void* ds, void* data) {
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(ds);
     ripc_data_raw_t* data_raw = (ripc_data_raw_t*)data;
+
+
+    datasource->read_pos += data_raw->len;
+    data_raw.len = datasource->read_pos;
+    data_raw.data = datasource->cache_read;
 
     rinfo("process...... %d\n", data_raw->len);
 
     return rcode_ok;
 }
 
-int on_after(void* data) {
+int on_after(void* ds, void* data) {
 
     return rcode_ok;
 }
 
-void on_next(void* data) {
+void on_next(void* ds, void* data) {
 
 }
 
-void on_notify(void* data) {
+void on_notify(void* ds, void* data) {
 
 }
 
-void notify(void* data) {
+void notify(void* ds, void* data) {
 
 }
 

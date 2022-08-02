@@ -83,7 +83,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
     int ret_code = 0;
 
     ripc_data_source_t* datasource = (ripc_data_source_t*)(handle->data);
-    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ds);
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
     ripc_data_raw_t data_raw;//直接在栈上
 
     local_write_req_t *wr;
@@ -125,24 +125,23 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
             //data_raw.data = buf->base;
         //} else if (append_cache) {//
 
-        datasource->read_pos += nread;
-        data_raw.len = datasource->read_pos;
+        data_raw.len = nread;
         data_raw.data = datasource->cache_read;
         //}
 
-        ret_code = rsocket_ctx->handler->on_before(&data_raw);
+        ret_code = rsocket_ctx->handler->on_before(datasource, &data_raw);
         if (ret_code != 0) {
             rerror("error on handler before, code: %d\n", ret_code);
             return;
         }
 
-        ret_code = rsocket_ctx->handler->process(&data_raw);
+        ret_code = rsocket_ctx->handler->process(datasource, &data_raw);
         if (ret_code != 0) {
             rerror("error on handler process, code: %d\n", ret_code);
             return;
         }
 
-        ret_code = rsocket_ctx->handler->on_after(&data_raw);
+        ret_code = rsocket_ctx->handler->on_after(datasource, &data_raw);
         if (ret_code != 0) {
             rerror("error on handler after, code: %d\n", ret_code);
             return;
@@ -202,7 +201,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
 static void on_close(uv_handle_t* peer) {
     //todo Ray 暂时仅tcp
     ripc_data_source_t* datasource = (ripc_data_source_t*)(peer->data);
-    //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ds);
+    //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
     rinfo("on close, id = %"PRIu64", \n", datasource->ds_id);
 
     if (datasource->ds_type == ripc_data_source_type_client) {
@@ -235,7 +234,7 @@ static void on_connection(uv_stream_t* server, int status) {
     rinfo("on_connection accepting, code: %d\n", status);
 
     ripc_data_source_t* datasource = (ripc_data_source_t*)(server->data);
-    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ds);
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
     ripc_data_source_t* ds_client = NULL;
 
     uv_stream_t* stream = NULL;
@@ -284,9 +283,9 @@ static void on_connection(uv_stream_t* server, int status) {
     ds_client->read_pos = 0;
     ds_client->buff_write = rstr_new(write_buff_size);
     ds_client->write_pos = 0;
-    ds_client->ds = rsocket_ctx;
+    ds_client->ctx = rsocket_ctx;
 
-    /* client关联到ds对象，ds->ds = context*/
+    /* client关联到ds对象，ds->ctx = context*/
     stream->data = ds_client;
 
     if (rsocket_ctx->server_type == ripc_type_tcp) {

@@ -12,6 +12,7 @@
 
 #include "rcommon.h"
 #include "rinterface.h"
+#include "rbuffer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,11 +84,9 @@ typedef struct ripc_data_s {
 typedef struct ripc_data_source_s {
     uint64_t ds_id;
     ripc_data_source_type_t ds_type;
-    char* cache_read;
-    int read_pos;
-    char* buff_write;
-    int write_pos;
-    void* ds;
+    rbuffer_t* read_cache;
+    rbuffer_t* write_buff;
+    void* ctx;
 } ripc_data_source_t;
 
 R_API int ripc_init(const void* cfg_data);

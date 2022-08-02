@@ -8,6 +8,7 @@ INCLUDE_DIRECTORIES(include)
 
 SET(SRC_LIB
         src/rbase.c
+        src/rbuffer.c
         src/rfile.c
         src/rtime.c
         src/rstring.c
@@ -24,6 +25,7 @@ SET(SRC_LIB
 
 SET(SRC_BIN
     ${SRC_LIB}
+    test/rtest_rbuffer.c
     test/rtest_rpool.c
     test/rtest_collections.c
     test/rtest_rstring.c

@@ -67,7 +67,7 @@ static int setup(void **state) {
     ripc_data_source_t* ds = rnew_data(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_server;
     ds->ds_id = rsocket_ctx.id;
-    ds->ds = &rsocket_ctx;
+    ds->ctx = &rsocket_ctx;
 
     ((uv_tcp_t*)(rsocket_ctx.server))->data = ds;
 

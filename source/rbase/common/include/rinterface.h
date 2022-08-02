@@ -14,13 +14,13 @@
 extern "C" {
 #endif
 
-typedef int (*rdata_handler_on_before_func)(void* data);
-typedef int (*rdata_handler_process_func)(void* data);
-typedef int (*rdata_handler_on_after_func)(void* data);
-typedef void (*rdata_handler_on_next_func)(void* data);
+typedef int (*rdata_handler_on_before_func)(void* ds, void* data);
+typedef int (*rdata_handler_process_func)(void* ds, void* data);
+typedef int (*rdata_handler_on_after_func)(void* ds, void* data);
+typedef void (*rdata_handler_on_next_func)(void* ds, void* data);
 
-typedef void (*rdata_handler_on_notify)(void* data);
-typedef void (*rdata_handler_notify)(void* data);
+typedef void (*rdata_handler_on_notify)(void* ds, void* data);
+typedef void (*rdata_handler_notify)(void* ds, void* data);
 
 typedef struct rdata_handler_s {
     struct rdata_handler_s* prev;
