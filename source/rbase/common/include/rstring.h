@@ -35,6 +35,8 @@ extern char* rstr_empty_const;
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_reset(rstr) rstr_init((rstr))
 #define rstr_free(rstr) if ((rstr) != NULL && (rstr) != rstr_empty_const) rayfree(rstr)
+#define rstr_is_empty(rstr) ((rstr) == NULL || (rstr) == rstr_empty)
+#define rstr_sizeof(rstr) sizeof(rstr)
 
 #define rstr_array_new(size) rnew_data_array(sizeof(char*), (size) + 1)
 #define rstr_array_count(rstr, count) \

@@ -41,7 +41,7 @@ extern "C" {
 #define rbuffer_start(d) ((d)->offset)
 #define rbuffer_left(d) ((d)->capacity - (d)->pos)
 #define rbuffer_full(d) (rbuffer_left(d) == 0)
-#define rbuffer_empty(d) ((d)->pos == 0 && (d)->offset == 0)
+#define rbuffer_empty(d) ((d)->pos == (d)->offset)
 
 /* ------------------------------- Structs ------------------------------------*/
     
@@ -61,14 +61,15 @@ typedef struct rbuffer_s {
 /* ------------------------------- APIs ------------------------------------*/
 
 rbuffer_t* rbuffer_create(rbuffer_size_t init_capacity);
-int rbuffer_read(rbuffer_t* d, rbuffer_size_t size);
-int rbuffer_write(rbuffer_t* d, char* val, rbuffer_size_t size);
+int rbuffer_read(rbuffer_t* d, char* val, rbuffer_size_t size);
+int rbuffer_write(rbuffer_t* d, const char* val, rbuffer_size_t size);
 int rbuffer_rewind(rbuffer_t* d);//数据移动到缓冲区头部
+int rbuffer_seek(rbuffer_t* d, rbuffer_size_t pos);//大于 d->pos 啥也不干
 int rbuffer_skip(rbuffer_t* d, rbuffer_size_t size); // offset 往 pos 移动
 int rbuffer_revert(rbuffer_t* d);//重置 pos 到 offset
 void rbuffer_clear(rbuffer_t* d);
 void rbuffer_release(rbuffer_t* d);
-char* rbuffer_output(rbuffer_t* d);
+int rbuffer_output(rbuffer_t* d, char* dest, rbuffer_size_t dest_size);
 
 #ifdef __cplusplus
 }
