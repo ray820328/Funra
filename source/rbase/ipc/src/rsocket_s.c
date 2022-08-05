@@ -10,9 +10,10 @@
 #include "rstring.h"
 #include "rlog.h"
 #include "rsocket_s.h"
+#include "rcodec_default.h"
 
-#define read_cache_size 16 * 102400
-#define write_buff_size 16 * 102400
+#define read_cache_size 64 * 1024
+#define write_buff_size 64 * 1024
 
 typedef struct {
     uv_write_t req;
@@ -27,7 +28,7 @@ static void on_server_close(uv_handle_t* handle);
 static void on_connection(uv_stream_t*, int status);
 
 
-static void send_data(uv_stream_t* handle, ripc_data_t* data) {
+static void send_data(uv_stream_t* handle, ripc_data_default_t* data) {
     int ret_code = 0;
     local_write_req_t *wr;
 
@@ -126,27 +127,14 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         //} else if (append_cache) {//
 
         data_raw.len = nread;
-        data_raw.data = datasource->cache_read;
+        //data_raw.data = datasource->read_cache;
         //}
 
-        ret_code = rsocket_ctx->handler->on_before(datasource, &data_raw);
-        if (ret_code != 0) {
-            rerror("error on handler before, code: %d\n", ret_code);
-            return;
-        }
-
-        ret_code = rsocket_ctx->handler->process(datasource, &data_raw);
-        if (ret_code != 0) {
+        ret_code = rsocket_ctx->handler->process(rsocket_ctx->handler, datasource, &data_raw);
+        if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d\n", ret_code);
             return;
         }
-
-        ret_code = rsocket_ctx->handler->on_after(datasource, &data_raw);
-        if (ret_code != 0) {
-            rerror("error on handler after, code: %d\n", ret_code);
-            return;
-        }
-
 
     }
 
@@ -205,8 +193,8 @@ static void on_close(uv_handle_t* peer) {
     rinfo("on close, id = %"PRIu64", \n", datasource->ds_id);
 
     if (datasource->ds_type == ripc_data_source_type_client) {
-        rstr_free(datasource->cache_read);
-        rstr_free(datasource->buff_write);
+        rbuffer_release(datasource->read_cache);
+        rbuffer_release(datasource->write_buff);
         rfree_data(ripc_data_source_t, datasource);
         rfree_data(uv_tcp_t, peer);
     }
@@ -225,13 +213,14 @@ static void alloc_dynamic(uv_handle_t* handle, size_t suggested_size, uv_buf_t* 
 static void alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
     /* up to 16 datagrams at once */
     //static char slab[16 * 1024];
+    //todo Ray 多线程收发会有问题
     ripc_data_source_t* datasource = (ripc_data_source_t*)(handle->data);
-    buf->base = datasource->cache_read + datasource->read_pos;
-    buf->len = read_cache_size - datasource->read_pos;
+    buf->base = rbuffer_write_start_dest(datasource->read_cache);
+    buf->len = rbuffer_left(datasource->read_cache);
 }
 
 static void on_connection(uv_stream_t* server, int status) {
-    rinfo("on_connection accepting, code: %d\n", status);
+    rinfo("on_connection accept, code: %d\n", status);
 
     ripc_data_source_t* datasource = (ripc_data_source_t*)(server->data);
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
@@ -279,10 +268,10 @@ static void on_connection(uv_stream_t* server, int status) {
 
     ds_client->ds_type = ripc_data_source_type_client;
     ds_client->ds_id = rsocket_ctx->id;//todo Ray sid
-    ds_client->cache_read = rstr_new(read_cache_size);
-    ds_client->read_pos = 0;
-    ds_client->buff_write = rstr_new(write_buff_size);
-    ds_client->write_pos = 0;
+    ds_client->read_cache = NULL;
+    rbuffer_init(ds_client->read_cache, read_cache_size);
+    ds_client->write_buff = NULL;
+    rbuffer_init(ds_client->write_buff, write_buff_size);
     ds_client->ctx = rsocket_ctx;
 
     /* client关联到ds对象，ds->ctx = context*/

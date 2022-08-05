@@ -73,7 +73,7 @@ static void after_write(local_write_req_t* req, int status) {
     rerror("uv_write error: %s - %s\n", uv_err_name(status), uv_strerror(status));
 }
 
-static void send_data(void* ctx, ripc_data_t* data) {
+static void send_data(void* ctx, ripc_data_default_t* data) {
     int ret_code = 0;
     local_write_req_t *wr;
 

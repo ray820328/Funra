@@ -80,8 +80,8 @@ int rbuffer_rewind(rbuffer_t* d) {
     int size = rbuffer_size(d);
     int block = 0;
 
-    if (rbuffer_start(d) > 0) {
-        block = rbuffer_start(d);
+    if (rbuffer_read_start_pos(d) > 0) {
+        block = rbuffer_read_start_pos(d);
 
         while (move_size < size) {
             if (move_size + block > size) {
@@ -100,10 +100,13 @@ int rbuffer_rewind(rbuffer_t* d) {
 }
 
 int rbuffer_seek(rbuffer_t* d, rbuffer_size_t pos) {
-    if (likely(pos >= d->offset && pos <= d->pos)) {
+    if (likely(pos >= d->offset && pos < d->capacity)) {
         d->pos = pos;
     }else if (pos < d->offset) {
         d->pos = d->offset;
+    }
+    else {
+        d->pos = d->capacity - 1;
     }
 
     return rcode_ok;
@@ -113,6 +116,9 @@ int rbuffer_skip(rbuffer_t* d, rbuffer_size_t size) {
     d->offset += size;
     if (d->offset > d->pos) {
         d->offset = d->pos;
+    }
+    if (d->offset < 0) {
+        d->offset = 0;
     }
     return rcode_ok;
 }
@@ -128,7 +134,9 @@ void rbuffer_clear(rbuffer_t* d) {
 }
 
 void rbuffer_release(rbuffer_t* d) {
-    rfree_data(rbuffer_t, d);
+    if (d != NULL) {
+        rfree_data(rbuffer_t, d);
+    }
 }
 
 int rbuffer_output(rbuffer_t* d, char* dest, rbuffer_size_t dest_size) {

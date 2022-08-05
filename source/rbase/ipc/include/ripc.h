@@ -18,14 +18,6 @@
 extern "C" {
 #endif
 
-#define ripc_data_len_max 2048000
-
-#define ripc_head_len_len 4
-#define ripc_head_cmd_len 4
-#define ripc_head_sid_len 8
-#define ripc_head_crc_len 4
-#define ripc_head_reserve0_len 8
-
 typedef enum {
     ripc_data_source_type_unknown = 0,
     ripc_data_source_type_server,
@@ -41,6 +33,14 @@ typedef enum {
     ripc_type_pipe,
     ripc_type_mix,
 } ripc_type_t;
+
+typedef enum {
+    ripc_code_unknown = 0,
+    ripc_code_success = 1,
+    ripc_code_error = 2,
+    ripc_code_cache_full,
+    ripc_code_cache_null,
+} ripc_code_t;
 
 typedef int (*ripc_init_func)(void* ctx, const void* cfg_data);
 typedef int (*ripc_uninit_func)(void* ctx);
@@ -70,16 +70,6 @@ typedef struct ripc_data_raw_s {
     uint32_t len;
     char* data;
 } ripc_data_raw_t;
-
-
-typedef struct ripc_data_s {
-    uint32_t len;
-    int32_t cmd;
-    uint64_t sid;
-    int32_t crc;
-    uint64_t reserve0;
-    char* data;
-} ripc_data_t;
 
 typedef struct ripc_data_source_s {
     uint64_t ds_id;

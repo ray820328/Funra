@@ -13,39 +13,87 @@
 #include "ripc.h"
 #include "rcodec_default.h"
 
-static int on_before(void* ds, void* data) {
-
-    return rcode_ok;
-}
-
-int process(void* ds, void* data) {
+static int on_before(rdata_handler_t* handler, void* ds, void* data) {
     ripc_data_source_t* datasource = (ripc_data_source_t*)(ds);
     ripc_data_raw_t* data_raw = (ripc_data_raw_t*)data;
 
+    rbuffer_write_ext(datasource->read_cache, data_raw->len);//数据已经写进去了，设置正确的pos即可
 
-    datasource->read_pos += data_raw->len;
-    data_raw.len = datasource->read_pos;
-    data_raw.data = datasource->cache_read;
-
-    rinfo("process...... %d\n", data_raw->len);
-
-    return rcode_ok;
+    return ripc_code_success;
 }
 
-int on_after(void* ds, void* data) {
+int process(rdata_handler_t* handler, void* ds, void* data) {
+    int ret_code = ripc_code_success;
+    int read_len = 0;
+    int require_len = 0;
 
-    return rcode_ok;
+    ret_code = handler->on_before(handler, ds, data);
+    if (ret_code != ripc_code_success) {
+        rerror("error on handler before, code: %d\n", ret_code);
+        return ret_code;
+    }
+
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(ds);
+    rbuffer_t* buffer = datasource->read_cache;
+
+    //char read_temp[8];
+    //require_len = ripc_head_version_len;
+    //read_len = rbuffer_read(buffer, read_temp, require_len);
+    //if (read_len != require_len) {
+    //    return ret_code;
+    //}
+    //int8_t version = (int8_t)read_temp[0];
+
+    rdebug("process buffer...... %d\n", rbuffer_size(buffer));
+
+    ripc_data_default_t ipc_data;
+    require_len = ripc_head_default_version_len + ripc_head_default_magic_len + ripc_head_default_len_len;
+        //+ ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
+    read_len = rbuffer_read(buffer, (char*)(&ipc_data), require_len);
+    if (read_len != require_len) {
+        return ret_code;
+    }
+
+    ret_code = handler->on_after(handler, ds, data);
+    if (ret_code != ripc_code_success) {
+        rerror("error on handler after, code: %d\n", ret_code);
+        return ret_code;
+    }
+
+    return ret_code;
 }
 
-void on_next(void* ds, void* data) {
+int on_after(rdata_handler_t* handler, void* ds, void* data) {
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(ds);
+    rbuffer_t* buffer = datasource->read_cache;
+    int left_size = rbuffer_left(buffer);
+
+    if (left_size < rbuffer_capacity(buffer) / 2) {
+        rbuffer_rewind(buffer);
+    }
+
+    left_size = rbuffer_left(buffer);
+    if (left_size < 1 || left_size > rbuffer_capacity(buffer)) {
+        return ripc_code_cache_full;
+    }
+
+    //下一个handler处理
+    if (handler->next != NULL) {
+        return handler->next->process(handler->next, datasource, data);
+    }
+
+    return ripc_code_success;
+}
+
+void on_next(rdata_handler_t* handler, void* ds, void* data) {
 
 }
 
-void on_notify(void* ds, void* data) {
+void on_notify(rdata_handler_t* handler, void* ds, void* data) {
 
 }
 
-void notify(void* ds, void* data) {
+void notify(rdata_handler_t* handler, void* ds, void* data) {
 
 }
 

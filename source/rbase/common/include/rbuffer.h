@@ -38,8 +38,14 @@ extern "C" {
 
 #define rbuffer_capacity(d) ((d)->capacity)
 #define rbuffer_size(d) ((d)->pos - (d)->offset)
-#define rbuffer_start(d) ((d)->offset)
+#define rbuffer_read_start_pos(d) ((d)->offset)
+#define rbuffer_read_start_dest(d) ((d)->data + (d)->offset)
+#define rbuffer_write_start_pos(d) ((d)->pos)
+#define rbuffer_write_start_dest(d) ((d)->data + (d)->pos)
+#define rbuffer_read_ext(d, len) rbuffer_skip((d), (d)->offset + (len))
+#define rbuffer_write_ext(d, len) rbuffer_seek((d), (d)->pos + (len))
 #define rbuffer_left(d) ((d)->capacity - (d)->pos)
+#define rbuffer_left_write(d) ((d)->capacity - (d)->pos + (d)->offset)
 #define rbuffer_full(d) (rbuffer_left(d) == 0)
 #define rbuffer_empty(d) ((d)->pos == (d)->offset)
 
@@ -64,7 +70,7 @@ rbuffer_t* rbuffer_create(rbuffer_size_t init_capacity);
 int rbuffer_read(rbuffer_t* d, char* val, rbuffer_size_t size);
 int rbuffer_write(rbuffer_t* d, const char* val, rbuffer_size_t size);
 int rbuffer_rewind(rbuffer_t* d);//数据移动到缓冲区头部
-int rbuffer_seek(rbuffer_t* d, rbuffer_size_t pos);//大于 d->pos 啥也不干
+int rbuffer_seek(rbuffer_t* d, rbuffer_size_t pos);
 int rbuffer_skip(rbuffer_t* d, rbuffer_size_t size); // offset 往 pos 移动
 int rbuffer_revert(rbuffer_t* d);//重置 pos 到 offset
 void rbuffer_clear(rbuffer_t* d);

@@ -13,6 +13,7 @@
 #include "rcommon.h"
 #include "ripc.h"
 #include "rsocket.h"
+#include "rcodec_default.h"
 
 #ifdef __cplusplus
 extern "C" {

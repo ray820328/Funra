@@ -47,7 +47,7 @@ static void rsocket_c_full_test(void **state) {
     rtools_wait_mills(1000);
 
     start_benchmark(0);
-    ripc_data_t data;
+    ripc_data_default_t data;
     data.data = rstr_cpy("send test", 0);
     data.len = rstr_len(data.data);
     rsocket_c.send(NULL, &data);//发送数据
