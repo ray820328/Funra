@@ -1,6 +1,0 @@
-This file lists the bugs you must be aware of. Be sure to check this
-file before using the CPL.
- 
-Limitations:
-  On HP-UX and Sun Solaris platforms only the GNU C compiler is currently
-  supported. 

@@ -1,4 +1,0 @@
-### Sc
-
-- Utility functions
-
