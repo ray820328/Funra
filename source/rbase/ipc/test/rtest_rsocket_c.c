@@ -17,12 +17,14 @@
 
 #include "rbase/ipc/test/rtest.h"
 #include "rsocket_c.h"
+#include "rcodec_default.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
+static rsocket_session_uv_t rsocket_ctx;
 static rthread socket_thread;
 
 static void* run_client(void* arg) {
@@ -34,7 +36,7 @@ static void* run_client(void* arg) {
 
 static void rsocket_c_full_test(void **state) {
 	(void)state;
-	int count = 10000;
+	int count = 10;
 	init_benchmark(1024, "test rsocket_c (%d)", count);
 
     int ret_code = 0;
@@ -60,7 +62,37 @@ static void rsocket_c_full_test(void **state) {
 
 
 static int setup(void **state) {
-    rsocket_c.init(NULL, NULL);
+    rsocket_ctx.id = 1;
+    rsocket_ctx.peer_type = ripc_type_tcp;
+    rsocket_ctx.peer = (uv_handle_t*)rnew_data(uv_tcp_t);
+    rsocket_ctx.loop = uv_default_loop();
+    rsocket_ctx.peer_state = 1;
+
+    ripc_data_source_t* ds = rnew_data(ripc_data_source_t);
+    ds->ds_type = ripc_data_source_type_client;
+    ds->ds_id = rsocket_ctx.id;
+    ds->ctx = &rsocket_ctx;
+
+    ((uv_tcp_t*)(rsocket_ctx.peer))->data = ds;
+
+    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rnew_data(rsocket_cfg_t);
+    rsocket_ctx.cfg = cfg;
+    cfg->id = 1;
+    rstr_set(cfg->ip, "0.0.0.0");
+    cfg->port = 23000;
+
+    rdata_handler_t* handler = (rdata_handler_t*)rnew_data(rdata_handler_t);
+    rsocket_ctx.handler = handler;
+    handler->prev = NULL;
+    handler->next = NULL;
+    handler->on_before = rcodec_decode_default.on_before;
+    handler->process = rcodec_decode_default.process;
+    handler->on_after = rcodec_decode_default.on_after;
+    handler->on_next = rcodec_decode_default.on_next;
+    handler->on_notify = rcodec_decode_default.on_notify;
+    handler->notify = rcodec_decode_default.notify;
+
+    rsocket_c.init(&rsocket_ctx, rsocket_ctx.cfg);
 
     return rcode_ok;
 }

@@ -83,12 +83,12 @@ static int setup(void **state) {
     rsocket_ctx.handler = handler;
     handler->prev = NULL;
     handler->next = NULL;
-    handler->on_before = rcodec_default.on_before;
-    handler->process = rcodec_default.process;
-    handler->on_after = rcodec_default.on_after;
-    handler->on_next = rcodec_default.on_next;
-    handler->on_notify = rcodec_default.on_notify;
-    handler->notify = rcodec_default.notify;
+    handler->on_before = rcodec_decode_default.on_before;
+    handler->process = rcodec_decode_default.process;
+    handler->on_after = rcodec_decode_default.on_after;
+    handler->on_next = rcodec_decode_default.on_next;
+    handler->on_notify = rcodec_decode_default.on_notify;
+    handler->notify = rcodec_decode_default.notify;
 
     rsocket_s.init(&rsocket_ctx, rsocket_ctx.cfg);
     rthread_init(&socket_thread);

@@ -13,6 +13,8 @@
 #include "rcommon.h"
 #include "rinterface.h"
 
+#include "uv.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,6 +38,22 @@ typedef struct rsocket_cfg_s {
     uint32_t sock_flag;
     bool encrypt_msg;
 } rsocket_cfg_t;
+
+typedef struct rsocket_session_uv_s {
+    uint64_t id;
+
+    rsocket_cfg_t* cfg;
+    rdata_handler_t* handler;
+    rdata_handler_t* sender;
+
+    ripc_type_t peer_type;
+    uv_handle_t* peer;
+    uv_connect_t* connect_req;
+    uv_loop_t* loop;
+    int peer_state;//0 关闭
+
+} rsocket_session_uv_t;
+
 
 R_API int rsocket_init(const void* cfg_data);
 R_API int rsocket_uninit();

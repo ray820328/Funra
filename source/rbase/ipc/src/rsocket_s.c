@@ -384,13 +384,13 @@ static int start_server_tcp4(rsocket_ctx_uv_t* rsocket_ctx) {
     int port = cfg->port;
     struct sockaddr_in bind_addr;
     ret_code = uv_ip4_addr(ip, port, &bind_addr);
-    if (ret_code) {
+    if (ret_code != 0) {
         rerror("uv_ip4_addr error, code: %d\n", ret_code);
         return 1;
     }
     
     ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_handle_t*)rsocket_ctx->server);
-    if (ret_code) {
+    if (ret_code != 0) {
         rerror("socket creation error, code: %d\n", ret_code);
         return 1;
     }
@@ -546,6 +546,7 @@ static int ripc_open(void* ctx) {
         rerror("error on run loop, code: %d\n", ret_code);
         return;
     }
+    rsocket_ctx->server_state = 1;
 
     return ret_code;
 }
@@ -555,7 +556,7 @@ static int ripc_close(void* ctx) {
 
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
     uv_close(rsocket_ctx->server, on_server_close);
-    rsocket_ctx->server_state = 1;
+    rsocket_ctx->server_state = 0;
 
     return rcode_ok;
 }

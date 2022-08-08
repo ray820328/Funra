@@ -28,6 +28,7 @@ typedef struct rsocket_ctx_uv_s {
 
     rsocket_cfg_t* cfg;
     rdata_handler_t* handler;
+    rdata_handler_t* sender;
 
     ripc_type_t server_type;
     uv_handle_t* server;

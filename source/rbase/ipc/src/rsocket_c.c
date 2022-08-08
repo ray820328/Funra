@@ -15,17 +15,15 @@
 #include "rtools.h"
 
 
-static uv_loop_t *loop;
 //static uv_pipe_t queue;
-static uv_tcp_t client;
 
-typedef struct rsocket_session_uv_s {
-    rsocket_session_fields;
-
-    uv_tcp_t tcp;
-    uv_connect_t connect_req;
-    uv_shutdown_t shutdown_req;
-} rsocket_session_uv_t;
+//typedef struct rsocket_session_uv_s {
+//    rsocket_session_fields;
+//
+//    uv_tcp_t tcp;
+//    uv_connect_t connect_req;
+//    uv_shutdown_t shutdown_req;
+//} rsocket_session_uv_t;
 
 typedef struct {
     uv_write_t req;
@@ -76,11 +74,12 @@ static void after_write(local_write_req_t* req, int status) {
 static void send_data(void* ctx, ripc_data_default_t* data) {
     int ret_code = 0;
     local_write_req_t *wr;
+    rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
 
     wr = (local_write_req_t*)rnew_data(local_write_req_t);
     wr->buf = uv_buf_init(data->data, data->len);
 
-    ret_code = uv_write(&wr->req, (uv_stream_t*)&client, &wr->buf, 1, after_write);
+    ret_code = uv_write(&wr->req, (uv_stream_t*)rsocket_ctx->peer, &wr->buf, 1, after_write);
     rdebug("send_data, len: %d, data_org: %p, data_buf: %p\n", data->len, data->data, wr->buf.base);
 
     if (ret_code != 0) {
@@ -133,34 +132,43 @@ static void close_cb(uv_handle_t* handle) {
 static void connect_cb(uv_connect_t* req, int status) {
     if (req == NULL || status != 0) {
         rerror("client callback, req = %p, status: %d\n", req, status);
-        return;
+        rgoto(1);
     }
 
     rinfo("client callback, status: %d\n", status);
 
-    free(req);
+exit1:
+    if (req != NULL) {
+        rfree_data(uv_connect_t, req);
+    }
 }
 
-static void client_connect() {
-    uv_connect_t* connect_req = malloc(sizeof *connect_req);
+static void client_connect(rsocket_session_uv_t* rsocket_ctx) {
+    uv_connect_t* connect_req = rnew_data(uv_connect_t);
 
     struct sockaddr_in addr;
     int ret_code;
 
-    char* ip = "127.0.0.1";
-    int port = 23000;
-    if (uv_ip4_addr(ip, port, &addr) != 0) {
-        rerror("error on init ip-addr.\n");
-        return;
+    rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+
+    char* ip = cfg->ip;
+    int port = cfg->port;
+    ret_code = uv_ip4_addr(ip, port, &addr);
+    if (ret_code != 0) {
+        rerror("uv_ip4_addr error, code: %d\n", ret_code);
+        rgoto(1);
     }
 
-    ret_code = uv_tcp_connect(connect_req, &client, (const struct sockaddr*) &addr, connect_cb);
+    ret_code = uv_tcp_connect(connect_req, rsocket_ctx->peer, (const struct sockaddr*) &addr, connect_cb);
     if (ret_code != 0) {
-        rerror("error on connecting.\n");
-        return;
+        rerror("error on connecting, code: %d\n", ret_code);
+        rgoto(1);
     }
 
     rinfo("client connect to {%s:%d} success.\n", ip, port);
+
+exit1:
+    rfree_data(uv_connect_t, connect_req);
 }
 
 
@@ -168,10 +176,9 @@ static int ripc_init(void* ctx, const void* cfg_data) {
     rinfo("socket client init.\n");
 
     int ret_code;
+    rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
 
-    loop = uv_default_loop();
-
-    ret_code = uv_tcp_init(loop, &client);
+    ret_code = uv_tcp_init(rsocket_ctx->loop, rsocket_ctx->peer);
     if (ret_code != 0) {
         rerror("error on init loop.\n");
         return;
@@ -184,24 +191,35 @@ static int ripc_init(void* ctx, const void* cfg_data) {
 }
 
 static int ripc_uninit(void* ctx) {
+    rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
+
     rinfo("socket client uninit.\n");
 
-    uv_stop(loop);
+    uv_stop(rsocket_ctx->loop);
+
+    rsocket_ctx->peer_state = 0;
+
     return rcode_ok;
 }
 
 static int ripc_open(void* ctx) {
+    rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
+
     rinfo("socket client open.\n");
 
-    client_connect();
+    client_connect(rsocket_ctx);
 
-    return uv_run(loop, UV_RUN_DEFAULT);
+    rsocket_ctx->peer_state = 1;
+
+    return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
 }
 
 static int ripc_close(void* ctx) {
+    rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
+
     rinfo("socket client close.\n");
 
-    uv_close((uv_handle_t*)&client, close_cb);
+    uv_close((uv_handle_t*)rsocket_ctx->peer, close_cb);
 
     return rcode_ok;
 }

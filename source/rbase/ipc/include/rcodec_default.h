@@ -60,7 +60,8 @@ typedef struct rcodec_s {
     // int (*error)(void* data);
 } rcodec_t;
 
-extern const rdata_handler_t rcodec_default;
+extern const rdata_handler_t rcodec_encode_default;
+extern const rdata_handler_t rcodec_decode_default;
 
 #ifdef __cplusplus
 }
