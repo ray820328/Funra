@@ -107,8 +107,8 @@ extern char* rstr_empty_const;
             _time_datas_[3], _time_datas_[4], _time_datas_[5]); \
     } while(0)
 
-#define rstr_set(dest, src) \
-    memcpy(dest, src, rstr_len(src) + 1);
+#define rstr_set(dest, src, len) \
+    memcpy(dest, src, (len == 0) ? (rstr_len(src) + 1) : len);
 
 #define rstr_compare(str1, str2) \
     rstr_compare_func((str1), (str2))

@@ -76,11 +76,11 @@ static int setup(void **state) {
     cfg->id = 1;
     cfg->sid_min = 100000;
     cfg->sid_max = 200000;
-    rstr_set(cfg->ip, "0.0.0.0");
+    rstr_set(cfg->ip, "0.0.0.0", 0);
     cfg->port = 23000;
 
     rdata_handler_t* handler = (rdata_handler_t*)rnew_data(rdata_handler_t);
-    rsocket_ctx.handler = handler;
+    rsocket_ctx.in_handler = handler;
     handler->prev = NULL;
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
@@ -89,6 +89,17 @@ static int setup(void **state) {
     handler->on_next = rcodec_decode_default.on_next;
     handler->on_notify = rcodec_decode_default.on_notify;
     handler->notify = rcodec_decode_default.notify;
+
+    handler = (rdata_handler_t*)rnew_data(rdata_handler_t);
+    rsocket_ctx.out_handler = handler;
+    handler->prev = NULL;
+    handler->next = NULL;
+    handler->on_before = rcodec_encode_default.on_before;
+    handler->process = rcodec_encode_default.process;
+    handler->on_after = rcodec_encode_default.on_after;
+    handler->on_next = rcodec_encode_default.on_next;
+    handler->on_notify = rcodec_encode_default.on_notify;
+    handler->notify = rcodec_encode_default.notify;
 
     rsocket_s.init(&rsocket_ctx, rsocket_ctx.cfg);
     rthread_init(&socket_thread);

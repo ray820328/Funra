@@ -52,7 +52,7 @@ static void rthread_errstr(rthread *t) {
     }
 }
 
-unsigned int __stdcall rthread_fn(void *arg) {
+static unsigned int __stdcall rthread_fn(void *arg) {
     rthread *t = arg;
 
     t->ret = t->rfunc(t->arg);
@@ -65,7 +65,7 @@ int rthread_start(rthread *t, void *(*rfunc)(void *), void *arg) {
     t->rfunc = rfunc;
     t->arg = arg;
 
-    t->id = (HANDLE) _beginthreadex(NULL, 0, rthread_fn, t, 0, NULL);
+    t->id = (HANDLE) _beginthreadex(NULL, 0, rthread_fn, t, 0, NULL);//线程都有自己的errno之类的变量
     if (t->id == 0) {
         rthread_errstr(t);
         ret_code = -1;
@@ -109,7 +109,7 @@ exit0:
 
 #else // _WIN64
 
-int rthread_start(rthread *t, void *(*rfunc)(void *), void *arg) {
+int rthread_start(rthread *t, rthread_func rfunc, void *arg) {
     int ret_code;
     pthread_attr_t attr;
 

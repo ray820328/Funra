@@ -16,7 +16,10 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
-    
+
+#define rmem_eq(mem1, mem2, len) \
+    (memcmp((mem1), (mem2), (len)) == 0 ? true : false)
+
 #if defined(_WIN32) || defined(_WIN64)
 
 #define ros_windows

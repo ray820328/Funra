@@ -38,6 +38,8 @@ typedef enum {
     ripc_code_unknown = 0,
     ripc_code_success = 1,
     ripc_code_error = 2,
+    ripc_code_error_version,
+    ripc_code_error_magic,
     ripc_code_cache_full,
     ripc_code_cache_null,
 } ripc_code_t;

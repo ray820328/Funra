@@ -50,18 +50,15 @@ static void free_write_req(uv_write_t *req) {
     free(wr);
 }
 
-static void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
-    buf->base = malloc(suggested_size);
-    buf->len = suggested_size;
-}
-
 static void after_write(local_write_req_t* req, int status) {
     rinfo("write finished: %d\n", status);
     local_write_req_t* wr;
 
     /* Free the read/write buffer and the request */
     wr = (local_write_req_t*)req;
-    rstr_free(wr->buf.base);
+
+    rdebug("after_write, wr: %p, req: %p, buf: %p\n", wr, &wr->req, &wr->buf);
+    /* rstr_free(wr->buf.base); */
     rfree_data(local_write_req_t, wr);
 
     if (status == 0) {
@@ -75,11 +72,24 @@ static void send_data(void* ctx, ripc_data_default_t* data) {
     int ret_code = 0;
     local_write_req_t *wr;
     rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
+    ripc_data_source_t* datasource = ((uv_tcp_t*)(rsocket_ctx->peer))->data;
+
+    if (rsocket_ctx->out_handler) {
+        ret_code = rsocket_ctx->in_handler->process(rsocket_ctx->in_handler, datasource, data);
+        if (ret_code != ripc_code_success) {
+            rerror("error on handler process, code: %d\n", ret_code);
+            return;
+        }
+    }
 
     wr = (local_write_req_t*)rnew_data(local_write_req_t);
-    wr->buf = uv_buf_init(data->data, data->len);
+    //wr->buf = uv_buf_init(data->data, data->len);//结构体内容复制
+
+    wr->buf.base = rbuffer_read_start_dest(datasource->write_buff);
+    wr->buf.len = rbuffer_size(datasource->write_buff);
 
     ret_code = uv_write(&wr->req, (uv_stream_t*)rsocket_ctx->peer, &wr->buf, 1, after_write);
+    rdebug("send_data, wr: %p, req: %p, buf: %p\n", wr, &wr->req, &wr->buf);
     rdebug("send_data, len: %d, data_org: %p, data_buf: %p\n", data->len, data->data, wr->buf.base);
 
     if (ret_code != 0) {
@@ -166,9 +176,11 @@ static void client_connect(rsocket_session_uv_t* rsocket_ctx) {
     }
 
     rinfo("client connect to {%s:%d} success.\n", ip, port);
-
+    
 exit1:
-    rfree_data(uv_connect_t, connect_req);
+    if (ret_code != 0) {
+        rfree_data(uv_connect_t, connect_req);
+    }
 }
 
 

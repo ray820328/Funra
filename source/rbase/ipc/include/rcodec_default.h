@@ -27,6 +27,8 @@ extern "C" {
 #define ripc_head_default_crc_len 4
 #define ripc_head_default_reserve0_len 8
 
+#define ripc_head_default_magic "Ray"
+
 #pragma pack(1)
 #pragma pack(show)
 

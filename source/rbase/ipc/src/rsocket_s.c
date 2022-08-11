@@ -94,7 +94,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
     rinfo("after read: %d\n", nread);
 
     if (nread < 0) {
-        rstr_free(((uv_buf_t*)buf)->base);
+        //rstr_free(((uv_buf_t*)buf)->base);
 
         /* Error or EOF */
         if (nread != UV_EOF) {//异常，未主动关闭等
@@ -120,7 +120,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         return;
     }
 
-    if (rsocket_ctx->handler) {
+    if (rsocket_ctx->in_handler) {
         //if (datasource->read_type == append_new) { //没一次都是new一个空间去读
             //data_raw.len = nread;
             //data_raw.data = buf->base;
@@ -130,7 +130,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         //data_raw.data = datasource->read_cache;
         //}
 
-        ret_code = rsocket_ctx->handler->process(rsocket_ctx->handler, datasource, &data_raw);
+        ret_code = rsocket_ctx->in_handler->process(rsocket_ctx->in_handler, datasource, &data_raw);
         if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d\n", ret_code);
             return;

@@ -18,6 +18,8 @@ extern "C" {
 
 /* ------------------------------- Macros ------------------------------------*/
 
+typedef void *(*rthread_func)(void *);
+
 #if defined(_WIN32) || defined(_WIN64)
 
 #define rmutex_t CRITICAL_SECTION
@@ -54,7 +56,7 @@ long get_cur_thread_id();
 
 typedef struct rthread {
     HANDLE id;
-    void *(*rfunc)(void *);
+    rthread_func rfunc;
     void *arg;
     void *ret;
     char err[128];
@@ -91,7 +93,7 @@ char* rthread_err(rthread *t);
  * @return  '0' on success,
  *          '-1' on error, call 'sc_thread_err()' for error string.
  */
-int rthread_start(rthread *t, void *(*rfunc)(void *), void *arg);
+int rthread_start(rthread *t, rthread_func rfunc, void *arg);
 
 /**
  * @param t thread

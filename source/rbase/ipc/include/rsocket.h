@@ -43,12 +43,12 @@ typedef struct rsocket_session_uv_s {
     uint64_t id;
 
     rsocket_cfg_t* cfg;
-    rdata_handler_t* handler;
-    rdata_handler_t* sender;
+    rdata_handler_t* in_handler;
+    rdata_handler_t* out_handler;
 
     ripc_type_t peer_type;
     uv_handle_t* peer;
-    uv_connect_t* connect_req;
+    //uv_connect_t* connect_req;
     uv_loop_t* loop;
     int peer_state;//0 关闭
 
