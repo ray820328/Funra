@@ -25,7 +25,7 @@
 #endif //__GNUC__
 
 static rsocket_session_uv_t rsocket_ctx;
-static rthread socket_thread;
+//static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
 
 static void* run_client(void* arg) {
     rsocket_c.open(&rsocket_ctx);
@@ -42,8 +42,8 @@ static void rsocket_c_full_test(void **state) {
     int ret_code = 0;
 
     start_benchmark(0);
-    ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
-    //run_client("socket_thread");
+    //ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
+    run_client("socket_thread");
 	end_benchmark("open connection.");
 
     rtools_wait_mills(1000);
@@ -111,10 +111,10 @@ static int setup(void **state) {
     return rcode_ok;
 }
 static int teardown(void **state) {
-    void* param;
-    int ret_code = rthread_join(&socket_thread, &param);
-    assert_true(ret_code == 0);
-    assert_true(rstr_eq((char *)param, "socket_thread"));
+    //void* param;
+    //int ret_code = rthread_join(&socket_thread, &param);
+    //assert_true(ret_code == 0);
+    //assert_true(rstr_eq((char *)param, "socket_thread"));
     
     rsocket_c.uninit(&rsocket_ctx);
 
