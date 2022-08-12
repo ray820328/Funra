@@ -30,6 +30,10 @@ typedef struct {
     uv_buf_t buf;
 } local_write_req_t;
 
+
+static int read_cache_size = 64 * 1024;
+static int write_buff_size = 64 * 1024;
+
 static void set_nonblocking(uv_os_sock_t sock) {
     int r;
 #ifdef _WIN32
@@ -67,44 +71,48 @@ static void after_write(local_write_req_t* req, int status) {
 
     rerror("uv_write error: %s - %s\n", uv_err_name(status), uv_strerror(status));
 }
+static void on_writerrr(uv_write_t *req, int status) {
+    rinfo("111111111on_write: %d\n", status);
+
+    if (status) {
+        rerror("write error, code = %d, err = %s\n", status, uv_err_name(status));
+    }
+    rfree_data(uv_write_t, req);
+    //free_write_req(req);
+}
+
 
 static void send_data(void* ctx, ripc_data_default_t* data) {
     int ret_code = 0;
-    local_write_req_t *wr;
+    //local_write_req_t *wr;
     rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
     ripc_data_source_t* datasource = ((uv_tcp_t*)(rsocket_ctx->peer))->data;
+    uv_write_t* req = NULL;
 
     if (rsocket_ctx->out_handler) {
-        ret_code = rsocket_ctx->in_handler->process(rsocket_ctx->in_handler, datasource, data);
+        ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, datasource, data);
         if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d\n", ret_code);
             return;
         }
     }
 
-    wr = (local_write_req_t*)rnew_data(local_write_req_t);
+    req = rnew_data(uv_write_t);
     //wr->buf = uv_buf_init(data->data, data->len);//结构体内容复制
+    uv_buf_t buf;
 
-    wr->buf.base = rbuffer_read_start_dest(datasource->write_buff);
-    wr->buf.len = rbuffer_size(datasource->write_buff);
+    buf.base = rbuffer_read_start_dest(datasource->write_buff);
+    buf.len = rbuffer_size(datasource->write_buff);
 
-    ret_code = uv_write(&wr->req, (uv_stream_t*)rsocket_ctx->peer, &wr->buf, 1, after_write);
-    rdebug("send_data, wr: %p, req: %p, buf: %p\n", wr, &wr->req, &wr->buf);
-    rdebug("send_data, len: %d, data_org: %p, data_buf: %p\n", data->len, data->data, wr->buf.base);
+    //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
+    ret_code = uv_write(req, (uv_stream_t*)(rsocket_ctx->peer), &buf, 1, on_writerrr);
+    rdebug("send_data, req: %p, buf: %p\n", req, &buf);
+    rdebug("send_data, len: %d, dest_len: %p, data_buf: %p\n", data->len, data->data, buf.base);
 
     if (ret_code != 0) {
         rerror("uv_write failed. code: %d\n", ret_code);
         return;
     }
-}
-
-static void on_write(uv_write_t *req, int status) {
-    rinfo("on_write: %d\n", status);
-
-    if (status) {
-        rerror("write error, code = %d, err = %s\n", status, uv_err_name(status));
-    }
-    free_write_req(req);
 }
 
 static void on_read(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) {
@@ -116,7 +124,7 @@ static void on_read(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) {
 
         local_write_req_t *req = (local_write_req_t*)malloc(sizeof(local_write_req_t));
         req->buf = uv_buf_init(buf->base, nread);
-        uv_write((uv_write_t*)req, client, &req->buf, 1, on_write);
+        uv_write((uv_write_t*)req, client, &req->buf, 1, on_writerrr);
         return;
     }
 
@@ -145,6 +153,13 @@ static void connect_cb(uv_connect_t* req, int status) {
         rgoto(1);
     }
 
+    rsocket_session_uv_t* ctx = (rsocket_session_uv_t*)(req->data);
+    ripc_data_source_t* ds_client = (ripc_data_source_t*)ctx->peer->data;
+    ds_client->read_cache = NULL;
+    rbuffer_init(ds_client->read_cache, read_cache_size);
+    ds_client->write_buff = NULL;
+    rbuffer_init(ds_client->write_buff, write_buff_size);
+
     rinfo("client callback, status: %d\n", status);
 
 exit1:
@@ -169,6 +184,7 @@ static void client_connect(rsocket_session_uv_t* rsocket_ctx) {
         rgoto(1);
     }
 
+    connect_req->data = rsocket_ctx;
     ret_code = uv_tcp_connect(connect_req, rsocket_ctx->peer, (const struct sockaddr*) &addr, connect_cb);
     if (ret_code != 0) {
         rerror("error on connecting, code: %d\n", ret_code);
@@ -193,7 +209,7 @@ static int ripc_init(void* ctx, const void* cfg_data) {
     ret_code = uv_tcp_init(rsocket_ctx->loop, rsocket_ctx->peer);
     if (ret_code != 0) {
         rerror("error on init loop.\n");
-        return;
+        return ret_code;
     }
 
     //uv_pipe_init(loop, &queue, 1 /* ipc */);

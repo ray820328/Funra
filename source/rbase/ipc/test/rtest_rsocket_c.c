@@ -36,7 +36,7 @@ static void* run_client(void* arg) {
 
 static void rsocket_c_full_test(void **state) {
 	(void)state;
-	int count = 10;
+	int count = 1;
 	init_benchmark(1024, "test rsocket_c (%d)", count);
 
     int ret_code = 0;
@@ -50,10 +50,12 @@ static void rsocket_c_full_test(void **state) {
 
     start_benchmark(0);
     ripc_data_default_t data;
-    data.cmd = 1;
-    data.data = rstr_cpy("send test", 0);
-    data.len = rstr_len(data.data);
-    rsocket_c.send(&rsocket_ctx, &data);//发送数据
+    for (int i = 0; i < count; i++) {
+        data.cmd = i;
+        data.data = rstr_cpy("send test", 0);
+        data.len = rstr_len(data.data);
+        rsocket_c.send(&rsocket_ctx, &data);//发送数据
+    }
     end_benchmark("send data.");
 
     rtools_wait_mills(1000);

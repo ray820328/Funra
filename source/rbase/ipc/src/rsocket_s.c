@@ -12,14 +12,14 @@
 #include "rsocket_s.h"
 #include "rcodec_default.h"
 
-#define read_cache_size 64 * 1024
-#define write_buff_size 64 * 1024
-
 typedef struct {
     uv_write_t req;
     uv_buf_t buf;
 } local_write_req_t;
 
+
+static int read_cache_size = 64 * 1024;
+static int write_buff_size = 64 * 1024;
 
 static void after_write(local_write_req_t* req, int status);
 static void after_read(uv_stream_t*, ssize_t nread, const uv_buf_t* buf);
@@ -538,13 +538,13 @@ static int ripc_open(void* ctx) {
     int ret_code = start_server_tcp4(rsocket_ctx);
     if (ret_code != rcode_ok) {
         rerror("error on start server, code: %d\n", ret_code);
-        return;
+        return ret_code;
     }
 
     ret_code = uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
     if (ret_code != rcode_ok) {
         rerror("error on run loop, code: %d\n", ret_code);
-        return;
+        return ret_code;
     }
     rsocket_ctx->server_state = 1;
 

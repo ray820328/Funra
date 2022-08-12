@@ -25,12 +25,11 @@ static int encode_on_before(rdata_handler_t* handler, void* ds, void* data) {
     if (rbuffer_size(datasource->write_buff) == 0) {
         rbuffer_rewind(datasource->write_buff);//只有全写完才能rewind
     }
-
+    
     if (rbuffer_left(datasource->write_buff) < (ipc_data->len + header_len)) {
         rerror("error on handler before, is full, left: %d\n", rbuffer_left(datasource->write_buff));
         return ripc_code_cache_full;
     }
-    //rbuffer_write_ext(datasource->read_cache, data_raw->len);
 
     return ripc_code_success;
 }
@@ -55,8 +54,6 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
     payload_len = ipc_data->len;
     rbuffer_t* buffer = datasource->write_buff;
 
-    rdebug("process buffer...... %d\n", rbuffer_size(buffer));
-
     ipc_data->version = 0;
     rstr_set(ipc_data->magic, ripc_head_default_magic, ripc_head_default_magic_len);//0溢出，le覆盖
     ipc_data->len = trans_len + payload_len;
@@ -67,20 +64,25 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
     write_len = rbuffer_write(buffer, (char*)(ipc_data), header_len);
     if (write_len != header_len) {
         rbuffer_read_ext(buffer, -write_len);
+        rerror("error on handler process head: %d\n", write_len);
         return ripc_code_cache_full;
     }
 
     write_len = rbuffer_write(buffer, (char*)(ipc_data->data), payload_len);
     if (write_len != payload_len) {
-        rbuffer_read_ext(buffer, -write_len);
+        rbuffer_read_ext(buffer, -write_len - header_len);
+        rerror("error on handler process payload: %d\n", write_len);
         return ripc_code_cache_full;
     }
 
     ret_code = handler->on_after(handler, ds, data);
     if (ret_code != ripc_code_success) {
+        rbuffer_read_ext(buffer, -write_len - header_len);
         rerror("error on handler after, code: %d\n", ret_code);
         return ret_code;
     }
+
+    rdebug("encode, process buffer size: %d\n", rbuffer_size(buffer));
 
     return ret_code;
 }

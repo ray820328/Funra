@@ -70,7 +70,7 @@ static int run_tests(int output) {
 
     ret_code = rcode_ok;
 
-    ret_code = run_rsocket_s_tests(output);
+    //ret_code = run_rsocket_s_tests(output);
     if (ret_code != rcode_ok) {
         return ret_code;
     }
