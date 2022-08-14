@@ -160,6 +160,8 @@ static void connect_cb(uv_connect_t* req, int status) {
     ds_client->write_buff = NULL;
     rbuffer_init(ds_client->write_buff, write_buff_size);
 
+	ctx->peer_state = 1;
+
     rinfo("client callback, status: %d\n", status);
 
 exit1:
@@ -236,8 +238,6 @@ static int ripc_open(void* ctx) {
     rinfo("socket client open.\n");
 
     client_connect(rsocket_ctx);
-
-    rsocket_ctx->peer_state = 1;
 
     return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
 }

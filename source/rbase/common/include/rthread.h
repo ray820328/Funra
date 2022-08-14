@@ -26,7 +26,10 @@ typedef void *(*rthread_func)(void *);
 #define rmutex_init(rmutexObj) \
     InitializeCriticalSection(rmutexObj)
 #define rmutex_uninit(rmutexObj) \
-    
+	DeleteCriticalSection(rmutexObj)
+
+#define rmutex_try_lock(rmutexObj) \
+    if (TryEnterCriticalSection(mutex))
 #define rmutex_lock(rmutexObj) \
     EnterCriticalSection(rmutexObj)
 #define rmutex_unlock(rmutexObj) \
@@ -38,7 +41,21 @@ typedef void *(*rthread_func)(void *);
 #define rmutex_init(rmutexObj) \
     pthread_mutex_init(rmutexObj, NULL)
 #define rmutex_uninit(rmutexObj) \
-    
+	pthread_mutex_destroy(rmutexObj);
+
+//pthread_mutexattr_t attr;
+//pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE)
+#define rmutex_try_lock(rmutexObj) \
+{ \
+	int err; \
+	err = pthread_mutex_trylock(rmutexObj); \
+	if (err) { \
+		if (err != EBUSY && err != EAGAIN) { \
+			rassert(false, ""); \
+		} else { \
+			rdebug("locked.\n"); \
+		} \
+	} else 
 #define rmutex_lock(rmutexObj) \
     pthread_mutex_lock(rmutexObj)
 #define rmutex_unlock(rmutexObj) \

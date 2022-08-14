@@ -129,8 +129,9 @@ int run_rsocket_c_tests(int benchmark_output) {
 
     int64_t timeNow = rtime_nanosec();
 
-    result += cmocka_run_group_tests(test_group2, setup, teardown);
-
+    //result += cmocka_run_group_tests(test_group2, setup, teardown);
+	setup(0);
+	rsocket_c_full_test(0);
     printf("run_rsocket_c_tests, failed: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
