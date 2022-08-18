@@ -34,12 +34,35 @@ static void* run_client(void* arg) {
     return arg;
 }
 
+static void repeat_cb(uv_timer_t* handle) {
+    assert_true(handle != NULL);
+    assert_true(1 == uv_is_active((uv_handle_t*)handle));
+
+    ripc_data_default_t data;
+    data.cmd = 11;
+    data.data = rstr_cpy("send test", 0);
+    data.len = rstr_len(data.data);
+    rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.peer))->data, &data);//发送数据
+
+    //repeat_cb_called++;
+
+    //if (repeat_cb_called == 5) {
+    //    uv_close((uv_handle_t*)handle, repeat_close_cb);
+    //}
+}
+
 static void rsocket_c_full_test(void **state) {
 	(void)state;
 	int count = 1;
 	init_benchmark(1024, "test rsocket_c (%d)", count);
 
     int ret_code = 0;
+
+    uv_timer_t timer_repeat;
+    ret_code = uv_timer_init(rsocket_ctx.loop, &timer_repeat);
+    assert_true(ret_code == 0);
+    ret_code = uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
+    assert_true(ret_code == 0);
 
     start_benchmark(0);
     //ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
@@ -49,16 +72,10 @@ static void rsocket_c_full_test(void **state) {
     rtools_wait_mills(1000);
 
     start_benchmark(0);
-    ripc_data_default_t data;
-    for (int i = 0; i < count; i++) {
-        data.cmd = i;
-        data.data = rstr_cpy("send test", 0);
-        data.len = rstr_len(data.data);
-        rsocket_c.send(&rsocket_ctx, &data);//发送数据
-    }
+    
     end_benchmark("send data.");
 
-    rtools_wait_mills(1000);
+    rtools_wait_mills(3000);
 		
     uninit_benchmark();
 }

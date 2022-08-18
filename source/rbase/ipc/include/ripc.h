@@ -44,16 +44,30 @@ typedef enum {
     ripc_code_cache_null,
 } ripc_code_t;
 
+typedef struct ripc_data_raw_s {
+    uint32_t len;
+    char* data;
+} ripc_data_raw_t;
+
+typedef struct ripc_data_source_s {
+    uint64_t ds_id;
+    ripc_data_source_type_t ds_type;
+    rbuffer_t* read_cache;
+    rbuffer_t* write_buff;
+    void* ctx;
+    void* stream;
+} ripc_data_source_t;
+
 typedef int (*ripc_init_func)(void* ctx, const void* cfg_data);
 typedef int (*ripc_uninit_func)(void* ctx);
 typedef int (*ripc_open_func)(void* ctx);
 typedef int (*ripc_close_func)(void* ctx);
 typedef int (*ripc_start_func)(void* ctx);
 typedef int (*ripc_stop_func)(void* ctx);
-typedef int (*ripc_send_func)(void* ctx, void* data);
-typedef int (*ripc_check_func)(void* ctx, void* data);
-typedef int (*ripc_receive_func)(void* ctx, void* data);
-typedef int (*ripc_error_func)(void* ctx, void* data);
+typedef int (*ripc_send_func)(ripc_data_source_t* ds, void* data);
+typedef int (*ripc_check_func)(ripc_data_source_t* ds, void* data);
+typedef int (*ripc_receive_func)(ripc_data_source_t* ds, void* data);
+typedef int (*ripc_error_func)(ripc_data_source_t* ds, void* data);
 
 typedef struct ripc_entry_s {
     ripc_init_func init;
@@ -67,19 +81,6 @@ typedef struct ripc_entry_s {
     ripc_receive_func receive;
     ripc_error_func error;
 } ripc_entry_t;
-
-typedef struct ripc_data_raw_s {
-    uint32_t len;
-    char* data;
-} ripc_data_raw_t;
-
-typedef struct ripc_data_source_s {
-    uint64_t ds_id;
-    ripc_data_source_type_t ds_type;
-    rbuffer_t* read_cache;
-    rbuffer_t* write_buff;
-    void* ctx;
-} ripc_data_source_t;
 
 R_API int ripc_init(const void* cfg_data);
 R_API int ripc_uninit();

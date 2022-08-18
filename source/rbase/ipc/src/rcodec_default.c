@@ -11,6 +11,7 @@
 #include "rlog.h"
 
 #include "ripc.h"
+#include "rsocket_s.h"
 #include "rcodec_default.h"
 
  /** ------------------------编码---------------------- **/
@@ -156,6 +157,16 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
     if (!rmem_eq(ipc_data.magic, ripc_head_default_magic, ripc_head_default_magic_len)) {
         rerror("error on handler process, magic error: %d\n", ripc_code_error_magic);
         return ripc_code_error_magic;
+    }
+
+    //rinfo("received msg: %s\n", ipc_data->data);
+
+    if (datasource->ds_type == ripc_data_source_type_client) {
+        ripc_data_default_t data_send;
+        data_send.cmd = 101;
+        data_send.data = rstr_cpy("server response.", 0);//未释放
+        data_send.len = rstr_len(data_send.data);
+        rsocket_s.send(datasource, &data_send);
     }
 
     ret_code = handler->on_after(handler, ds, data);

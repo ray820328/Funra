@@ -13,58 +13,150 @@
 #include "rcodec_default.h"
 
 typedef struct {
-    uv_write_t req;
-    uv_buf_t buf;
+    ripc_data_source_t* ds;
+    int write_size;
 } local_write_req_t;
 
 
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-static void after_write(local_write_req_t* req, int status);
+static void send_data(ripc_data_source_t* ds, void* data);
 static void after_read(uv_stream_t*, ssize_t nread, const uv_buf_t* buf);
 static void on_close(uv_handle_t* peer);
 static void on_server_close(uv_handle_t* handle);
 static void on_connection(uv_stream_t*, int status);
 
+static void read_alloc_dynamic(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
+    rinfo("new buff, size: %d\n", suggested_size);
+    buf->base = rstr_new(suggested_size);
+    buf->len = suggested_size;
+}
+/** 强制要求使用buffer/cache 编码解码 **/
+static void read_alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
+    /* up to 16 datagrams at once */
+    //static char slab[16 * 1024];
+    //todo Ray 多线程收发会有问题
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(handle->data);
+    buf->base = rbuffer_write_start_dest(datasource->read_cache);
+    buf->len = rbuffer_left(datasource->read_cache);
+}
 
-static void send_data(uv_stream_t* handle, ripc_data_default_t* data) {
-    int ret_code = 0;
-    local_write_req_t *wr;
+//static void send_data(uv_stream_t* handle, ripc_data_default_t* data) {
+//    int ret_code = 0;
+//    local_write_req_t *wr;
+//
+//    rdebug("send_data: %d\n", data->len);
+//
+//    wr = rnew_data(local_write_req_t);
+//    wr->buf = uv_buf_init(data->data, data->len);
+//
+//    ret_code = uv_write(&wr->req, handle, &wr->buf, 1, after_write);
+//    if (ret_code != 0) {
+//        rerror("uv_write failed. code: %d\n", ret_code);
+//        rgoto(1);
+//    }
+//
+//exit1:
+//    if (wr != NULL) {
+//        //rfree_data(local_write_req_t, wr);//释放在after_write里面
+//    }
+//}
 
-    rdebug("send_data: %d\n", data->len);
+static void on_connection(uv_stream_t* server, int status) {
+    rinfo("on_connection accept, code: %d\n", status);
 
-    wr = rnew_data(local_write_req_t);
-    wr->buf = uv_buf_init(data->data, data->len);
+    ripc_data_source_t* datasource = (ripc_data_source_t*)(server->data);
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
+    ripc_data_source_t* ds_client = NULL;
 
-    ret_code = uv_write(&wr->req, handle, &wr->buf, 1, after_write);
-    if (ret_code != 0) {
-        rerror("uv_write failed. code: %d\n", ret_code);
+    uv_stream_t* stream = NULL;
+    int ret_code;
+
+    if (status != 0) {
+        rerror("accept error: %d, %s\n", status, uv_err_name(status));
         rgoto(1);
     }
 
+    ds_client = rnew_data(ripc_data_source_t);
+
+    switch (rsocket_ctx->server_type) {
+    case ripc_type_tcp:
+        stream = rnew_data(uv_tcp_t);
+        if (stream == NULL) {
+            rerror("stream oom.");
+            rgoto(1);
+        }
+
+        ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)stream);
+        if (ret_code != 0) {
+            rerror("streamuv_tcp_init error, %d.\n", ret_code);
+            rgoto(1);
+        }
+
+        break;
+
+    case ripc_type_pipe:
+        stream = rnew_data(uv_pipe_t);
+        ret_code = uv_pipe_init(rsocket_ctx->loop, (uv_pipe_t*)stream, 0);
+        if (ret_code != 0) {
+            rerror("error on uv_pipe_init: %d\n", ret_code);
+            rgoto(1);
+        }
+        break;
+
+    default:
+        rerror("error of server_type: %d\n", rsocket_ctx->server_type);
+        rgoto(1);
+    }
+
+    ds_client->ds_type = ripc_data_source_type_client;
+    ds_client->ds_id = rsocket_ctx->id;//todo Ray sid
+    ds_client->read_cache = NULL;
+    rbuffer_init(ds_client->read_cache, read_cache_size);
+    ds_client->write_buff = NULL;
+    rbuffer_init(ds_client->write_buff, write_buff_size);
+    ds_client->ctx = rsocket_ctx;
+    ds_client->stream = stream;
+
+    /* client关联到ds对象，ds->ctx = context*/
+    stream->data = ds_client;
+
+    if (rsocket_ctx->server_type == ripc_type_tcp) {
+        ret_code = uv_accept(server, stream);
+        if (ret_code != 0) {
+            rerror("uv_accept error, %d.\n", ret_code);
+            rgoto(1);
+        }
+
+        ret_code = uv_read_start(stream, read_alloc_static, after_read);
+        if (ret_code != 0) {
+            rerror("uv_read_start error, %d.\n", ret_code);
+            rgoto(1);
+        }
+
+        rinfo("accept finished.\n");
+    }
+
+exit0:
+
 exit1:
-    if (wr != NULL) {
-        //rfree_data(local_write_req_t, wr);//释放在after_write里面
+    if (ret_code != 0) {
+        if (stream != NULL) {
+            switch (rsocket_ctx->server_type) {
+            case ripc_type_tcp:
+                rfree_data(uv_tcp_t, stream);
+                break;
+            case ripc_type_pipe:
+                rfree_data(uv_pipe_t, stream);
+                break;
+            }
+        }
+
+        if (datasource != NULL) {
+            rfree_data(ripc_data_source_t, stream);
+        }
     }
-}
-
-static void after_write(local_write_req_t* req, int status) {
-    rinfo("write finished, state: %d\n", status);
-
-    local_write_req_t* wr;
-
-    /* Free the read/write buffer and the request */
-    wr = (local_write_req_t*)req;
-
-    rstr_free(wr->buf.base);
-    rfree_data(local_write_req_t, wr);
-
-    if (status == 0) {
-        return;
-    }
-
-    rerror("uv_write error: %s - %s\n", uv_err_name(status), uv_strerror(status));
 }
 
 static void after_shutdown_client(uv_shutdown_t* req, int status) {
@@ -121,7 +213,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
     }
 
     if (rsocket_ctx->in_handler) {
-        //if (datasource->read_type == append_new) { //没一次都是new一个空间去读
+        //if (datasource->read_type == append_new) { //每一次都是new一个空间去读
             //data_raw.len = nread;
             //data_raw.data = buf->base;
         //} else if (append_cache) {//
@@ -186,6 +278,60 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
     //}
 }
 
+static void after_write(uv_write_t *req, int status) {
+    rinfo("end after_write state: %d\n", status);
+
+    if (status != 0) {
+        rerror("write error, code = %d, err = %s\n", status, uv_err_name(status));
+    }
+
+    local_write_req_t* wr = (local_write_req_t*)req->data;
+    ripc_data_source_t* datasource = wr->ds;
+    rbuffer_skip(datasource->write_buff, wr->write_size);
+    rfree_data(local_write_req_t, wr);
+    rfree_data(uv_write_t, req);
+    //free_write_req(req);
+
+    rdebug("writing buff left bytes: %d - %d\n", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
+}
+static void send_data(ripc_data_source_t* ds, void* data) {
+    int ret_code = 0;
+    local_write_req_t* wr;
+    ripc_data_source_t* datasource = (ripc_data_source_t*)ds;
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ds->ctx;
+    uv_write_t* req = NULL;
+
+    if (rsocket_ctx->out_handler) {
+        ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, datasource, data);
+        if (ret_code != ripc_code_success) {
+            rerror("error on handler process, code: %d\n", ret_code);
+            return;
+        }
+    }
+
+    uv_buf_t buf;
+    //buf = uv_buf_init(data->data, data->len);//结构体内容复制
+    buf.base = rbuffer_read_start_dest(datasource->write_buff);
+    buf.len = rbuffer_size(datasource->write_buff);
+
+    wr = rnew_data(local_write_req_t);
+    wr->ds = datasource;
+    wr->write_size = buf.len;
+
+    req = rnew_data(uv_write_t);
+    req->data = wr;
+
+    //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
+    ret_code = uv_write(req, (uv_stream_t*)(datasource->stream), &buf, 1, after_write);
+    rdebug("send_data, req: %p, buf: %p\n", req, &buf);
+    //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p\n", data->len, data->data, buf.base);
+
+    if (ret_code != 0) {
+        rerror("uv_write failed. code: %d\n", ret_code);
+        return;
+    }
+}
+
 static void on_close(uv_handle_t* peer) {
     //todo Ray 暂时仅tcp
     ripc_data_source_t* datasource = (ripc_data_source_t*)(peer->data);
@@ -200,117 +346,6 @@ static void on_close(uv_handle_t* peer) {
     }
     else if (datasource->ds_type == ripc_data_source_type_server) {
         rerror("on_close error, cant release server.\n");
-    }
-}
-
-static void alloc_dynamic(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
-    rinfo("new buff, size: %d\n", suggested_size);
-    buf->base = rstr_new(suggested_size);
-    buf->len = suggested_size;
-}
-
-/** 强制要求使用buffer/cache 编码解码 **/
-static void alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
-    /* up to 16 datagrams at once */
-    //static char slab[16 * 1024];
-    //todo Ray 多线程收发会有问题
-    ripc_data_source_t* datasource = (ripc_data_source_t*)(handle->data);
-    buf->base = rbuffer_write_start_dest(datasource->read_cache);
-    buf->len = rbuffer_left(datasource->read_cache);
-}
-
-static void on_connection(uv_stream_t* server, int status) {
-    rinfo("on_connection accept, code: %d\n", status);
-
-    ripc_data_source_t* datasource = (ripc_data_source_t*)(server->data);
-    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
-    ripc_data_source_t* ds_client = NULL;
-
-    uv_stream_t* stream = NULL;
-    int ret_code;
-
-    if (status != 0) {
-        rerror("accept error: %d, %s\n", status, uv_err_name(status));
-        rgoto(1);
-    }
-
-    ds_client = rnew_data(ripc_data_source_t);
-
-    switch (rsocket_ctx->server_type) {
-    case ripc_type_tcp:
-        stream = rnew_data(uv_tcp_t);
-        if (stream == NULL) {
-            rerror("stream oom.");
-            rgoto(1);
-        }
-
-        ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)stream);
-        if (ret_code != 0) {
-            rerror("streamuv_tcp_init error, %d.\n", ret_code);
-            rgoto(1);
-        }
-
-        break;
-
-    case ripc_type_pipe:
-        stream = rnew_data(uv_pipe_t);
-        ret_code = uv_pipe_init(rsocket_ctx->loop, (uv_pipe_t*)stream, 0);
-        if (ret_code != 0) {
-            rerror("error on uv_pipe_init: %d\n", ret_code);
-            rgoto(1);
-        }
-        break;
-
-    default:
-        rerror("error of server_type: %d\n", rsocket_ctx->server_type);
-        rgoto(1);
-    }
-
-    ds_client->ds_type = ripc_data_source_type_client;
-    ds_client->ds_id = rsocket_ctx->id;//todo Ray sid
-    ds_client->read_cache = NULL;
-    rbuffer_init(ds_client->read_cache, read_cache_size);
-    ds_client->write_buff = NULL;
-    rbuffer_init(ds_client->write_buff, write_buff_size);
-    ds_client->ctx = rsocket_ctx;
-
-    /* client关联到ds对象，ds->ctx = context*/
-    stream->data = ds_client;
-
-    if (rsocket_ctx->server_type == ripc_type_tcp) {
-        ret_code = uv_accept(server, stream);
-        if (ret_code != 0) {
-            rerror("uv_accept error, %d.\n", ret_code);
-            rgoto(1);
-        }
-
-        ret_code = uv_read_start(stream, alloc_static, after_read);
-        if (ret_code != 0) {
-            rerror("uv_read_start error, %d.\n", ret_code);
-            rgoto(1);
-        }
-
-        rinfo("accept finished.\n");
-    }
-
-exit0:
-
-exit1:
-    if (ret_code != 0) {
-        if (stream != NULL) {
-            switch (rsocket_ctx->server_type) {
-            case ripc_type_tcp:
-                rfree_data(uv_tcp_t, stream);
-                break;
-            case ripc_type_pipe:
-                rfree_data(uv_pipe_t, stream);
-                break;
-            }
-        }
-
-        if (datasource != NULL) {
-            rfree_data(ripc_data_source_t, stream);
-        }
     }
 }
 
@@ -583,7 +618,7 @@ const ripc_entry_t rsocket_s = {
     ripc_close,// ripc_close_func close;
     ripc_start,// ripc_start_func start;
     ripc_stop,// ripc_stop_func stop;
-    NULL,// ripc_send_func send;
+    send_data,// ripc_send_func send;
     NULL,// ripc_check_func check;
     NULL,// ripc_receive_func receive;
     NULL// ripc_error_func error;

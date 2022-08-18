@@ -26,88 +26,76 @@
 //} rsocket_session_uv_t;
 
 typedef struct {
-    uv_write_t req;
-    uv_buf_t buf;
+    ripc_data_source_t* ds;
+    int write_size;
 } local_write_req_t;
 
 
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
+static int ripc_close(void* ctx);
+
 static void set_nonblocking(uv_os_sock_t sock) {
     int r;
 #ifdef _WIN32
     unsigned long on = 1;
     r = ioctlsocket(sock, FIONBIO, &on);
-    ASSERT(r == 0);
+    rassert(r == 0, "");
 #else
     int flags = fcntl(sock, F_GETFL, 0);
-    ASSERT(flags >= 0);
+    rassert(flags >= 0, "");
     r = fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-    ASSERT(r >= 0);
+    rassert(r >= 0, "");
 #endif
 }
 
-static void free_write_req(uv_write_t *req) {
-    local_write_req_t *wr = (local_write_req_t*)req;
-    free(wr->buf.base);
-    free(wr);
-}
+static void after_write(uv_write_t *req, int status) {
+    rinfo("end after_write state: %d\n", status);
 
-static void after_write(local_write_req_t* req, int status) {
-    rinfo("write finished: %d\n", status);
-    local_write_req_t* wr;
-
-    /* Free the read/write buffer and the request */
-    wr = (local_write_req_t*)req;
-
-    rdebug("after_write, wr: %p, req: %p, buf: %p\n", wr, &wr->req, &wr->buf);
-    /* rstr_free(wr->buf.base); */
-    rfree_data(local_write_req_t, wr);
-
-    if (status == 0) {
-        return;
-    }
-
-    rerror("uv_write error: %s - %s\n", uv_err_name(status), uv_strerror(status));
-}
-static void on_writerrr(uv_write_t *req, int status) {
-    rinfo("111111111on_write: %d\n", status);
-
-    if (status) {
+    if (status != 0) {
         rerror("write error, code = %d, err = %s\n", status, uv_err_name(status));
     }
+
+    local_write_req_t* wr = (local_write_req_t*)req->data;
+    ripc_data_source_t* datasource = wr->ds;
+    rbuffer_skip(datasource->write_buff, wr->write_size);
+    rfree_data(local_write_req_t, wr);
     rfree_data(uv_write_t, req);
-    //free_write_req(req);
+
+    rdebug("writing buff left bytes: %d - %d\n", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
 }
-
-
-static void send_data(void* ctx, ripc_data_default_t* data) {
+static void send_data(ripc_data_source_t* ds, void* data) {
     int ret_code = 0;
-    //local_write_req_t *wr;
-    rsocket_session_uv_t* rsocket_ctx = (rsocket_session_uv_t*)ctx;
-    ripc_data_source_t* datasource = ((uv_tcp_t*)(rsocket_ctx->peer))->data;
+    local_write_req_t* wr;
+    ripc_data_source_t* ds_client = ds;// ((uv_tcp_t*)(rsocket_ctx->peer))->data;
+    rsocket_session_uv_t* ctx = (rsocket_session_uv_t*)ds->ctx;
     uv_write_t* req = NULL;
 
-    if (rsocket_ctx->out_handler) {
-        ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, datasource, data);
+    if (ctx->out_handler) {
+        ret_code = ctx->out_handler->process(ctx->out_handler, ds_client, data);
         if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d\n", ret_code);
             return;
         }
     }
 
-    req = rnew_data(uv_write_t);
-    //wr->buf = uv_buf_init(data->data, data->len);//结构体内容复制
     uv_buf_t buf;
+    //buf = uv_buf_init(data->data, data->len);//结构体内容复制
+    buf.base = rbuffer_read_start_dest(ds_client->write_buff);
+    buf.len = rbuffer_size(ds_client->write_buff);
 
-    buf.base = rbuffer_read_start_dest(datasource->write_buff);
-    buf.len = rbuffer_size(datasource->write_buff);
+    wr = rnew_data(local_write_req_t);
+    wr->ds = ds_client;
+    wr->write_size = buf.len;
+
+    req = rnew_data(uv_write_t);
+    req->data = wr;
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
-    ret_code = uv_write(req, (uv_stream_t*)(rsocket_ctx->peer), &buf, 1, on_writerrr);
+    ret_code = uv_write(req, (uv_stream_t*)(ctx->peer), &buf, 1, after_write);
     rdebug("send_data, req: %p, buf: %p\n", req, &buf);
-    rdebug("send_data, len: %d, dest_len: %p, data_buf: %p\n", data->len, data->data, buf.base);
+    //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p\n", data->len, data->data, buf.base);
 
     if (ret_code != 0) {
         rerror("uv_write failed. code: %d\n", ret_code);
@@ -115,54 +103,112 @@ static void send_data(void* ctx, ripc_data_default_t* data) {
     }
 }
 
-static void on_read(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf) {
-    rinfo("on_read: %d\n", nread);
+static void on_close(uv_handle_t* peer) {
+    //todo Ray 暂时仅tcp
+    ripc_data_source_t* ds_client = (ripc_data_source_t*)(peer->data);
+    //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
+    rinfo("on close, id = %"PRIu64", \n", ds_client->ds_id);
 
-    if (nread > 0) {
-        rdebug("on_read, content: %s\n", buf->base);
-        rtools_wait_mills(5000);
+    rbuffer_release(ds_client->read_cache);
+    rbuffer_release(ds_client->write_buff);
+    rfree_data(ripc_data_source_t, ds_client);
+    rfree_data(uv_tcp_t, peer);
+}
 
-        local_write_req_t *req = (local_write_req_t*)malloc(sizeof(local_write_req_t));
-        req->buf = uv_buf_init(buf->base, nread);
-        uv_write((uv_write_t*)req, client, &req->buf, 1, on_writerrr);
-        return;
-    }
+static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
+    int ret_code = 0;
+
+    ripc_data_source_t* ds_client = (ripc_data_source_t*)handle->data;
+    rsocket_session_uv_t* ctx = (rsocket_session_uv_t*)(ds_client->ctx);
+    ripc_data_raw_t data_raw;//直接在栈上
+
+    local_write_req_t *wr;
+    int shutdown = 0;
+
+    rinfo("after read: %d\n", nread);
 
     if (nread < 0) {
-        if (nread != UV_EOF) {
-            rerror("read error %s\n", uv_err_name(nread));
+        //rstr_free(((uv_buf_t*)buf)->base);
+
+        /* Error or EOF */
+        if (nread != UV_EOF) {//异常，未主动关闭等
+            rerror("error on read: %d\n", nread);
+            ret_code = ripc_close(ctx);
+            if (ret_code != 0) {
+                rerror("error on ripc_close, code: %d\n", ret_code);
+            }
+            return;
         }
-        uv_close((uv_handle_t*)client, NULL);
-    }
 
-    free(buf->base);
-}
-
-static void close_cb(uv_handle_t* handle) {
-    if (handle == NULL) {
-        rerror("client close error.\n");
+        if (uv_is_writable(handle)) {
+            ret_code = ripc_close(ctx);
+            if (ret_code != 0) {
+                rerror("error on ripc_close, code: %d\n", ret_code);
+                return;
+            }
+        }
         return;
     }
 
-    rinfo("client close callback success.\n");
-}
+    if (nread == 0) {
+        /* Everything OK, but nothing read. */
+        //rstr_free(((uv_buf_t*)buf)->base);//buffer
+        return;
+    }
 
+    if (ctx->in_handler) {
+        //if (datasource->read_type == append_new) { //每一次都是new一个空间去读
+            //data_raw.len = nread;
+            //data_raw.data = buf->base;
+        //} else if (append_cache) {//
+
+        data_raw.len = nread;
+        //data_raw.data = datasource->read_cache;
+        //}
+
+        ret_code = ctx->in_handler->process(ctx->in_handler, ds_client, &data_raw);
+        if (ret_code != ripc_code_success) {
+            rerror("error on handler process, code: %d\n", ret_code);
+            return;
+        }
+
+    }
+
+}
+/** 强制要求使用buffer/cache 编码解码 **/
+static void read_alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
+    /* up to 16 datagrams at once */
+    //static char slab[16 * 1024];
+    //todo Ray 多线程收发会有问题
+    ripc_data_source_t* ds_client = (ripc_data_source_t*)(handle->data);
+    buf->base = rbuffer_write_start_dest(ds_client->read_cache);
+    buf->len = rbuffer_left(ds_client->read_cache);
+}
 static void connect_cb(uv_connect_t* req, int status) {
     if (req == NULL || status != 0) {
         rerror("client callback, req = %p, status: %d\n", req, status);
         rgoto(1);
     }
 
+    int ret_code = 0;
     rsocket_session_uv_t* ctx = (rsocket_session_uv_t*)(req->data);
     ripc_data_source_t* ds_client = (ripc_data_source_t*)ctx->peer->data;
+    ds_client->stream = req->handle;
     ds_client->read_cache = NULL;
     rbuffer_init(ds_client->read_cache, read_cache_size);
     ds_client->write_buff = NULL;
     rbuffer_init(ds_client->write_buff, write_buff_size);
 
 	ctx->peer_state = 1;
+    if (ctx->peer_type == ripc_type_tcp) {
+        ret_code = uv_read_start((uv_stream_t*)(ctx->peer), read_alloc_static, after_read);
+        if (ret_code != 0) {
+            rerror("uv_read_start error, %d.\n", ret_code);
+            rgoto(1);
+        }
+    }
 
-    rinfo("client callback, status: %d\n", status);
+    rinfo("connect callback, status: %d\n", status);
 
 exit1:
     if (req != NULL) {
@@ -247,7 +293,13 @@ static int ripc_close(void* ctx) {
 
     rinfo("socket client close.\n");
 
-    uv_close((uv_handle_t*)rsocket_ctx->peer, close_cb);
+    if (rsocket_ctx->peer_state == 0) {
+        return rcode_ok;
+    }
+
+    rsocket_ctx->peer_state = 0;
+
+    uv_close((uv_handle_t*)rsocket_ctx->peer, on_close);
 
     return rcode_ok;
 }
