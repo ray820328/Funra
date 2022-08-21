@@ -39,20 +39,23 @@ typedef struct rsocket_cfg_s {
     bool encrypt_msg;
 } rsocket_cfg_t;
 
-typedef struct rsocket_session_uv_s {
-    uint64_t id;
 
-    rsocket_cfg_t* cfg;
-    rdata_handler_t* in_handler;
-    rdata_handler_t* out_handler;
+typedef struct rsocket_ctx_uv_s {
+	uint64_t id;
 
-    ripc_type_t peer_type;
-    uv_handle_t* peer;
-    //uv_connect_t* connect_req;
-    uv_loop_t* loop;
-    int peer_state;//0 关闭
+	rsocket_cfg_t* cfg;
+	rdata_handler_t* in_handler;
+	rdata_handler_t* out_handler;
 
-} rsocket_session_uv_t;
+	uv_loop_t* loop;
+	ripc_type_t stream_type;
+	uv_handle_t* stream;
+	int stream_state;//0 关闭
+	// uv_tcp_t* stream_tcp;
+	// uv_udp_t* stream_udp;
+	// uv_pipe_t* stream_pipe;
+	//uv_udp_send_t* udp_data_list_free;
+} rsocket_ctx_uv_t;
 
 
 R_API int rsocket_init(const void* cfg_data);

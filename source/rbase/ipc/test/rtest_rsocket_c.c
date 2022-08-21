@@ -24,7 +24,7 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static rsocket_session_uv_t rsocket_ctx;
+static rsocket_ctx_uv_t rsocket_ctx;
 //static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
 
 static void* run_client(void* arg) {
@@ -42,7 +42,7 @@ static void repeat_cb(uv_timer_t* handle) {
     data.cmd = 11;
     data.data = rstr_cpy("send test", 0);
     data.len = rstr_len(data.data);
-    rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.peer))->data, &data);//发送数据
+    rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
 
     //repeat_cb_called++;
 
@@ -83,17 +83,17 @@ static void rsocket_c_full_test(void **state) {
 
 static int setup(void **state) {
     rsocket_ctx.id = 1;
-    rsocket_ctx.peer_type = ripc_type_tcp;
-    rsocket_ctx.peer = (uv_handle_t*)rnew_data(uv_tcp_t);
+    rsocket_ctx.stream_type = ripc_type_tcp;
+    rsocket_ctx.stream = (uv_handle_t*)rnew_data(uv_tcp_t);
     rsocket_ctx.loop = uv_default_loop();
-    rsocket_ctx.peer_state = 0;
+    rsocket_ctx.stream_state = 0;
 
     ripc_data_source_t* ds = rnew_data(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
     ds->ds_id = rsocket_ctx.id;
     ds->ctx = &rsocket_ctx;
 
-    ((uv_tcp_t*)(rsocket_ctx.peer))->data = ds;
+    ((uv_tcp_t*)(rsocket_ctx.stream))->data = ds;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rnew_data(rsocket_cfg_t);
     rsocket_ctx.cfg = cfg;

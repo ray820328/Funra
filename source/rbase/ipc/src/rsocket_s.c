@@ -80,7 +80,7 @@ static void on_connection(uv_stream_t* server, int status) {
 
     ds_client = rnew_data(ripc_data_source_t);
 
-    switch (rsocket_ctx->server_type) {
+    switch (rsocket_ctx->stream_type) {
     case ripc_type_tcp:
         stream = rnew_data(uv_tcp_t);
         if (stream == NULL) {
@@ -106,7 +106,7 @@ static void on_connection(uv_stream_t* server, int status) {
         break;
 
     default:
-        rerror("error of server_type: %d\n", rsocket_ctx->server_type);
+        rerror("error of server_type: %d\n", rsocket_ctx->stream_type);
         rgoto(1);
     }
 
@@ -122,7 +122,7 @@ static void on_connection(uv_stream_t* server, int status) {
     /* client关联到ds对象，ds->ctx = context*/
     stream->data = ds_client;
 
-    if (rsocket_ctx->server_type == ripc_type_tcp) {
+    if (rsocket_ctx->stream_type == ripc_type_tcp) {
         ret_code = uv_accept(server, stream);
         if (ret_code != 0) {
             rerror("uv_accept error, %d.\n", ret_code);
@@ -143,7 +143,7 @@ exit0:
 exit1:
     if (ret_code != 0) {
         if (stream != NULL) {
-            switch (rsocket_ctx->server_type) {
+            switch (rsocket_ctx->stream_type) {
             case ripc_type_tcp:
                 rfree_data(uv_tcp_t, stream);
                 break;
@@ -424,7 +424,7 @@ static int start_server_tcp4(rsocket_ctx_uv_t* rsocket_ctx) {
         return 1;
     }
     
-    ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_handle_t*)rsocket_ctx->server);
+    ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_handle_t*)rsocket_ctx->stream);
     if (ret_code != 0) {
         rerror("socket creation error, code: %d\n", ret_code);
         return 1;
@@ -441,13 +441,13 @@ static int start_server_tcp4(rsocket_ctx_uv_t* rsocket_ctx) {
     //uv_tcp_close_reset(&server, uv_close_cb close_cb);
 
 
-    ret_code = uv_tcp_bind((uv_tcp_t*)rsocket_ctx->server, (const struct sockaddr*) &bind_addr, 0);
+    ret_code = uv_tcp_bind((uv_tcp_t*)rsocket_ctx->stream, (const struct sockaddr*) &bind_addr, 0);
     if (ret_code) {
         rerror("bind error at %s:%d\n", ip, port);
         return 1;
     }
 
-    ret_code = uv_listen((uv_stream_t*)rsocket_ctx->server, 128, on_connection);
+    ret_code = uv_listen((uv_stream_t*)rsocket_ctx->stream, 128, on_connection);
     if (ret_code) {
         rerror("listen error %s:%d, %s\n", ip, port, uv_err_name(ret_code));
         return 1;
@@ -581,7 +581,7 @@ static int ripc_open(void* ctx) {
         rerror("error on run loop, code: %d\n", ret_code);
         return ret_code;
     }
-    rsocket_ctx->server_state = 1;
+    rsocket_ctx->stream_state = 1;
 
     return ret_code;
 }
@@ -590,8 +590,8 @@ static int ripc_close(void* ctx) {
     rinfo("socket server close.\n");
 
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
-    uv_close(rsocket_ctx->server, on_server_close);
-    rsocket_ctx->server_state = 0;
+    uv_close(rsocket_ctx->stream, on_server_close);
+    rsocket_ctx->stream_state = 0;
 
     return rcode_ok;
 }

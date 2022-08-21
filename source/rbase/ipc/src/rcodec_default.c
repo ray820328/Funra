@@ -124,6 +124,10 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
     int ret_code = ripc_code_success;
     int read_len = 0;
     int require_len = 0;
+	static int full_head_len = ripc_head_default_version_len + ripc_head_default_magic_len + ripc_head_default_len_len
+		+ ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
+	static int data_head_len = 
+		ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
 
     ret_code = handler->on_before(handler, ds, data);
     if (ret_code != ripc_code_success) {
@@ -145,28 +149,43 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
     rdebug("process buffer...... %d\n", rbuffer_size(buffer));
 
     ripc_data_default_t ipc_data;
-    require_len = ripc_head_default_version_len + ripc_head_default_magic_len + ripc_head_default_len_len;
-    //+ ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
-    read_len = rbuffer_read(buffer, (char*)(&ipc_data), require_len);
-    if (read_len != require_len) {
-        rbuffer_read_ext(buffer, -read_len);
-        return ripc_code_success;//长度不够，返回去继续读
-    }
+	while (true) {
+		require_len = full_head_len;
+		read_len = rbuffer_read(buffer, (char*)(&ipc_data), require_len);
+		if (read_len != require_len) {
+			rbuffer_read_ext(buffer, -read_len);
+			break;//长度不够，返回去继续读
+		}
 
-    if (!rmem_eq(ipc_data.magic, ripc_head_default_magic, ripc_head_default_magic_len)) {
-        rerror("error on handler process, magic error: %d\n", ripc_code_error_magic);
-        return ripc_code_error_magic;
-    }
+		if (!rmem_eq(ipc_data.magic, ripc_head_default_magic, ripc_head_default_magic_len)) {
+			rerror("error on handler process, magic error: %d\n", ripc_code_error_magic);
+			rbuffer_clear(buffer);
+			return ripc_code_error_magic;
+		}
 
-    rinfo("received msg: %s\n", "1");
+		require_len = ipc_data.len - data_head_len;
+		ipc_data.data = rstr_new(require_len + 1);
+		read_len = rbuffer_read(buffer, (char*)(ipc_data.data), require_len);
 
-    if (datasource->ds_type == ripc_data_source_type_client) {
-        ripc_data_default_t data_send;
-        data_send.cmd = 101;
-        data_send.data = rstr_cpy("server response.", 0);//未释放
-        data_send.len = rstr_len(data_send.data);
-        //rsocket_s.send(datasource, &data_send);
-    }
+		rdebug("received msg: %d - %d - %d\n", require_len, read_len, rbuffer_size(buffer));
+		if (read_len != require_len) {
+			rbuffer_read_ext(buffer, -read_len);
+			break;//长度不够，返回去继续读
+		}
+
+		ipc_data.data[require_len] = rstr_end;
+		rinfo("received msg: %d - %s\n", require_len, ipc_data.data);
+
+		if (datasource->ds_type == ripc_data_source_type_client) {
+			ripc_data_default_t data_send;
+			data_send.cmd = 101;
+			data_send.data = rstr_cpy("server response.", 0);//未释放
+			data_send.len = rstr_len(data_send.data);
+			//rsocket_s.send(datasource, &data_send);
+		}
+
+		rfree_data(char, ipc_data.data);
+	}
 
     ret_code = handler->on_after(handler, ds, data);
     if (ret_code != ripc_code_success) {
@@ -182,7 +201,7 @@ static int decode_on_after(rdata_handler_t* handler, void* ds, void* data) {
     rbuffer_t* buffer = datasource->read_cache;
     int left_size = rbuffer_left(buffer);
 
-    if (left_size < rbuffer_capacity(buffer) / 2) {
+    if (rbuffer_size(buffer) == 0 || left_size < rbuffer_capacity(buffer) / 2) {
         rbuffer_rewind(buffer);
     }
 

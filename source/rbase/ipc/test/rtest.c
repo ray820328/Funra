@@ -69,7 +69,7 @@ static int run_tests(int output) {
     rtest_add_test_entry(run_rcodec_default_tests);
 
     ret_code = rcode_ok;
-	run_rsocket_c_tests(0);
+	run_rsocket_s_tests(0);
 
     ////ret_code = run_rsocket_s_tests(output);
     //if (ret_code != rcode_ok) {

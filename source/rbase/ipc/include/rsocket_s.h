@@ -21,26 +21,14 @@
 extern "C" {
 #endif
 
-typedef struct rsocket_ctx_uv_s {
-    uint64_t id;
+typedef struct rsocket_server_ctx_uv_s {
+	rsocket_ctx_uv_t share;
+
     uint64_t sid_min;
     uint64_t sid_max;
 
-    rsocket_cfg_t* cfg;
-    rdata_handler_t* in_handler;
-    rdata_handler_t* out_handler;
-
-    ripc_type_t server_type;
-    uv_handle_t* server;
-    uv_loop_t* loop;
-    int server_state;//0 关闭
-    // uv_tcp_t* server_tcp;
-    // uv_udp_t* server_udp;
-    // uv_pipe_t* server_pipe;
-    uv_udp_send_t* udp_data_list_free;
-
     rdict_t* map_clients;
-} rsocket_ctx_uv_t;
+} rsocket_server_ctx_uv_t;
 
 
 extern const ripc_entry_t rsocket_s;
