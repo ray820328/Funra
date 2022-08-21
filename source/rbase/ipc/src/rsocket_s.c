@@ -9,6 +9,7 @@
 
 #include "rstring.h"
 #include "rlog.h"
+#include "rdict.h"
 #include "rsocket_s.h"
 #include "rcodec_default.h"
 
@@ -556,6 +557,13 @@ static int start_server_tcp4(rsocket_ctx_uv_t* rsocket_ctx) {
 
 static int ripc_init(void* ctx, const void* cfg_data) {
     rinfo("socket server init.\n");
+
+    rsocket_server_ctx_uv_t* rsocket_ctx = (rsocket_server_ctx_uv_t*)ctx;
+
+    rdict_t* dict_ins = NULL;
+    rdict_init(dict_ins, rdata_type_uint64, rdata_type_ptr, 2000, 0);
+    rassert(dict_ins != NULL, "");
+	rsocket_ctx->map_clients = dict_ins;
 
     return rcode_ok;
 }

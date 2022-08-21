@@ -95,11 +95,11 @@ typedef enum rdata_plain_type_size_t {
 #define rdata_type_short_inner_type short int
 #define rdata_type_ushort_inner_type unsigned short int
 #define rdata_type_int_inner_type int
-#define rdata_type_uint_inner_type unsigned int
-#define rdata_type_long_inner_type long int
+#define rdata_type_uint_inner_type uint32_t
+#define rdata_type_long_inner_type int32_t
 #define rdata_type_ulong_inner_type unsigned long int
-#define rdata_type_int64_inner_type long long
-#define rdata_type_uint64_inner_type unsigned long long
+#define rdata_type_int64_inner_type int64_t
+#define rdata_type_uint64_inner_type uint64_t
 #define rdata_type_float_inner_type float
 #define rdata_type_double_inner_type double
 #define rdata_type_long_double_inner_type long double
