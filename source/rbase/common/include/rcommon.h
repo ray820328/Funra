@@ -155,7 +155,7 @@ extern "C" {
             } while(0)
 
 #else //RAY_USE_POOL
-#define rnew_data(T) rcheck_value(true, (T*)raymalloc(sizeof(T)))
+#define rnew_data(T) (T*)raymalloc(sizeof(T))
 #define rfree_data(T, data) \
             do { \
 			    rayfree(data); \

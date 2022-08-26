@@ -24,8 +24,7 @@ extern "C" {
 typedef struct rsocket_server_ctx_uv_s {
 	rsocket_ctx_uv_t share;
 
-    uint64_t sid_min;
-    uint64_t sid_max;
+    uint64_t sid_cur;
 
     rdict_t* map_clients;
 } rsocket_server_ctx_uv_t;

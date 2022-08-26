@@ -76,9 +76,11 @@ static int setup(void **state) {
     ctx->cfg = cfg;
     cfg->id = 1;
     cfg->sid_min = 100000;
-    cfg->sid_max = 200000;
+    cfg->sid_max = 2000000;
     rstr_set(cfg->ip, "0.0.0.0", 0);
     cfg->port = 23000;
+
+    rsocket_ctx.sid_cur = cfg->sid_min;
 
     rdata_handler_t* handler = (rdata_handler_t*)rnew_data(rdata_handler_t);
     ctx->in_handler = handler;

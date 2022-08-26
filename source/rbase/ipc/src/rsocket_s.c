@@ -68,7 +68,7 @@ static void on_connection(uv_stream_t* server, int status) {
     rinfo("on_connection accept, code: %d\n", status);
 
     ripc_data_source_t* datasource = (ripc_data_source_t*)(server->data);
-    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
+    rsocket_server_ctx_uv_t* rsocket_ctx = (rsocket_server_ctx_uv_t*)(datasource->ctx);
     ripc_data_source_t* ds_client = NULL;
 
     uv_stream_t* stream = NULL;
@@ -81,7 +81,7 @@ static void on_connection(uv_stream_t* server, int status) {
 
     ds_client = rnew_data(ripc_data_source_t);
 
-    switch (rsocket_ctx->stream_type) {
+    switch (rsocket_ctx->share.stream_type) {
     case ripc_type_tcp:
         stream = rnew_data(uv_tcp_t);
         if (stream == NULL) {
@@ -89,7 +89,7 @@ static void on_connection(uv_stream_t* server, int status) {
             rgoto(1);
         }
 
-        ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)stream);
+        ret_code = uv_tcp_init(rsocket_ctx->share.loop, (uv_tcp_t*)stream);
         if (ret_code != 0) {
             rerror("streamuv_tcp_init error, %d.\n", ret_code);
             rgoto(1);
@@ -99,7 +99,7 @@ static void on_connection(uv_stream_t* server, int status) {
 
     case ripc_type_pipe:
         stream = rnew_data(uv_pipe_t);
-        ret_code = uv_pipe_init(rsocket_ctx->loop, (uv_pipe_t*)stream, 0);
+        ret_code = uv_pipe_init(rsocket_ctx->share.loop, (uv_pipe_t*)stream, 0);
         if (ret_code != 0) {
             rerror("error on uv_pipe_init: %d\n", ret_code);
             rgoto(1);
@@ -107,12 +107,12 @@ static void on_connection(uv_stream_t* server, int status) {
         break;
 
     default:
-        rerror("error of server_type: %d\n", rsocket_ctx->stream_type);
+        rerror("error of server_type: %d\n", rsocket_ctx->share.stream_type);
         rgoto(1);
     }
 
     ds_client->ds_type = ripc_data_source_type_client;
-    ds_client->ds_id = rsocket_ctx->id;//todo Ray sid
+    ds_client->ds_id = ++ rsocket_ctx->sid_cur;
     ds_client->read_cache = NULL;
     rbuffer_init(ds_client->read_cache, read_cache_size);
     ds_client->write_buff = NULL;
@@ -123,7 +123,9 @@ static void on_connection(uv_stream_t* server, int status) {
     /* client关联到ds对象，ds->ctx = context*/
     stream->data = ds_client;
 
-    if (rsocket_ctx->stream_type == ripc_type_tcp) {
+    rdict_add(rsocket_ctx->map_clients, ds_client->ds_id, ds_client);
+
+    if (rsocket_ctx->share.stream_type == ripc_type_tcp) {
         ret_code = uv_accept(server, stream);
         if (ret_code != 0) {
             rerror("uv_accept error, %d.\n", ret_code);
@@ -144,7 +146,7 @@ exit0:
 exit1:
     if (ret_code != 0) {
         if (stream != NULL) {
-            switch (rsocket_ctx->stream_type) {
+            switch (rsocket_ctx->share.stream_type) {
             case ripc_type_tcp:
                 rfree_data(uv_tcp_t, stream);
                 break;
@@ -336,10 +338,12 @@ static void send_data(ripc_data_source_t* ds, void* data) {
 static void on_close(uv_handle_t* peer) {
     //todo Ray 暂时仅tcp
     ripc_data_source_t* datasource = (ripc_data_source_t*)(peer->data);
-    //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
+    rsocket_server_ctx_uv_t* rsocket_ctx = (rsocket_server_ctx_uv_t*)(datasource->ctx);
     rinfo("on close, id = %"PRIu64", \n", datasource->ds_id);
 
     if (datasource->ds_type == ripc_data_source_type_client) {
+        rdict_remove(rsocket_ctx->map_clients, datasource->ds_id);
+
         rbuffer_release(datasource->read_cache);
         rbuffer_release(datasource->write_buff);
         rfree_data(ripc_data_source_t, datasource);
