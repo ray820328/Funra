@@ -15,6 +15,7 @@ SET(SRC_LIB
         src/rstring_ext.c
         src/rthread.c
         src/rarray.c
+        src/rmemory.c
         src/rlog.c
         src/rdict.c
         src/rlist.c

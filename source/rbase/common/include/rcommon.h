@@ -164,7 +164,7 @@ extern "C" {
 
 #endif //RAY_USE_POOL
 
-#define rnew_data_array(size_elem, count) calloc((count), (size_elem))
+#define rnew_data_array(size_elem, count) raycmalloc((count), (size_elem))
 #define rclear_data_array(data, size_block) memset((data), 0, (size_block))
 #define rfree_data_array(data) \
             do { \
