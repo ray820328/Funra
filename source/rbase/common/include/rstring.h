@@ -30,7 +30,7 @@ extern char* rstr_empty_const;
 #define rstr_blank ' '
 #define rstr_array_end NULL
 
-#define rstr_new(size) raymalloc(size)
+#define rstr_new(size) (char*)raymalloc((size) + 1u)
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_reset(rstr) rstr_init((rstr))
@@ -38,7 +38,7 @@ extern char* rstr_empty_const;
 #define rstr_is_empty(rstr) ((rstr) == NULL || (rstr) == rstr_empty)
 #define rstr_sizeof(rstr) sizeof(rstr)
 
-#define rstr_array_new(size) rnew_data_array(sizeof(char*), (size) + 1)
+#define rstr_array_new(size) (char**)rnew_data_array(sizeof(char*), (size) + 1)
 #define rstr_array_count(rstr, count) \
     do { \
         count = 0; \

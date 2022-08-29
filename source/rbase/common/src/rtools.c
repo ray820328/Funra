@@ -25,6 +25,11 @@ int rtools_init() {
     return rcode_ok;
 }
 
+int rtools_uninit() {
+
+    return rcode_ok;
+}
+
 int rtools_rand_int(int start, int end) {
     // srand(rtime_millisec())
     return rand() % (end - start + 1) + start;

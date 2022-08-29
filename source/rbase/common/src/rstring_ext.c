@@ -79,7 +79,7 @@ char* rstr_join(const char* src, ...) {
 
 char** rstr_make_array(const int count, ...) {
     va_list argp;
-    char** rstr_arr = rnew_data_array(sizeof(char*), count + 1);
+    char** rstr_arr = rstr_array_new(count);
     rstr_arr[count] = rstr_array_end;
     char* temp = NULL;
     int index = 0;

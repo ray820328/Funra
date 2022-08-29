@@ -10,6 +10,7 @@
 #include <locale.h>
 #include <string.h>
 
+#include "rmemory.h"
 #include "rlog.h"
 #include "rbase/common/test/rtest.h"
 
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
     setlocale(LC_NUMERIC, "zh_CN");
     setlocale(LC_TIME, "zh_CN");
 
+    rmem_init();
     rtools_init();
 
 #ifdef ros_windows
@@ -68,6 +70,8 @@ int main(int argc, char **argv) {
     // }
 
     rlog_uninit();
+    rtools_uninit();
+    rmem_uninit();
 
 #ifndef __SUNPRO_C
     return rcode_ok;

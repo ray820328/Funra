@@ -21,6 +21,7 @@ extern "C" {
 /* ------------------------------- APIs ------------------------------------*/
 
 int rtools_init();
+int rtools_uninit();
 
 /** [start, end] */
 int rtools_rand_int(int start, int end);

@@ -240,7 +240,7 @@ int rlog_init(const char* log_default_filename, const rlog_level_t log_default_l
 
     rmutex_lock(&rlog_mutex);
 
-    rlog_all = rnew_data_array(sizeof(rlog_t*), 2);
+    rlog_all = (rlog_t**)rnew_data_array(sizeof(rlog_t*), 2);
     rlog_all[0] = rlog;
     rlog_all[1] = NULL;
 

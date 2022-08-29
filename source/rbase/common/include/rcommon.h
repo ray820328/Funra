@@ -164,7 +164,8 @@ extern "C" {
 
 #endif //RAY_USE_POOL
 
-#define rnew_data_array(size_elem, count) raycmalloc((count), (size_elem))
+#define rnew_data_array(elem_size, count) raycmalloc((count), (elem_size))
+#define rnew_data_type_array(elem_type, count) (elem_type*)raycmalloc_type((count), elem_type)
 #define rclear_data_array(data, size_block) memset((data), 0, (size_block))
 #define rfree_data_array(data) \
             do { \
@@ -172,7 +173,7 @@ extern "C" {
 			    (data) = NULL; \
             } while(0)
 
-#define rmin(a,b) ((a)<(b)?(a):(b))
+#define rmin(a, b) ((a)<(b)?(a):(b))
 #define rmax(a, b) ((a)>(b)?(a):(b))
 
 /** 只支持带显式类型的原生数组，如：int[] **/
