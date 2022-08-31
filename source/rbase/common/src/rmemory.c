@@ -68,7 +68,7 @@ int rmem_uninit() {
 void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, char* func, int line) {
     void* ret = malloc(elem_size);
 #ifdef rmemory_show_detail_realtime
-    rdebug("malloc. %d-%p from %ld, %s:%s-%d"Li, elem_size, ret, thread_id, filename, func, line);
+    rdebug("malloc. %d-%p from %ld, %s:%s-%d", elem_size, ret, thread_id, filename, func, line);
 #endif // rmemory_show_detail_realtime
 
     rmem_info_t* info = malloc(sizeof(rmem_info_t));
@@ -89,7 +89,7 @@ void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, char* 
 void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* filename, char* func, int line) {
     void* ret = calloc(count, elem_size);
 #ifdef rmemory_show_detail_realtime
-    rdebug("calloc. %d-%p from %ld, %s:%s-%d"Li, elem_size * count, ret, thread_id, filename, func, line);
+    rdebug("calloc. %d-%p from %ld, %s:%s-%d", elem_size * count, ret, thread_id, filename, func, line);
 #endif // rmemory_show_detail_realtime
 
     rmem_info_t* info = malloc(sizeof(rmem_info_t));
@@ -109,12 +109,12 @@ void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* f
 
 int rmem_free(void* ptr, long thread_id, char* filename, char* func, int line) {
 #ifdef rmemory_show_detail_realtime
-    rdebug("free. %d-%p from %ld, %s:%s-%d"Li, 0, ptr, thread_id, filename, func, line);
+    rdebug("free. %d-%p from %ld, %s:%s-%d", 0, ptr, thread_id, filename, func, line);
 #endif // rmemory_show_detail_realtime
 
     rdict_entry_t *de = rdict_find(rmem_trace_map, (int64_t)ptr);
     if (de == NULL || ((rmem_info_t*)(de->value.ptr))->ptr != ptr) {
-        rerror("free error, not exists. %d-%p != (%p->%p) from %ld, %s:%s-%d"Li, 0, ptr, 
+        rerror("free error, not exists. %d-%p != (%p->%p) from %ld, %s:%s-%d", 0, ptr, 
             de, de == NULL ? NULL : ((rmem_info_t*)(de->value.ptr))->ptr, thread_id, filename, func, line);
         return 1;
     }
@@ -129,11 +129,11 @@ int rmem_statistics(char* filepath) {
 #ifdef rmemory_enable_tracer
     FILE* file_ptr = fopen(filepath, "w");
     if (file_ptr == NULL) {
-        rinfo("error open file: %s"Li, filepath);
+        rinfo("error open file: %s", filepath);
         return 1;
     }
 
-    rinfo("rmemory leak count: %"rdict_size_t_format""Li, rdict_size(rmem_trace_map));
+    rinfo("rmemory leak count: %"rdict_size_t_format, rdict_size(rmem_trace_map));
     if (rdict_size(rmem_trace_map) == 0) {
         fprintf(file_ptr, "nice, no memory leak.");
     }

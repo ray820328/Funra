@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     rlog_init("${date}/rtest_common_${index}.log", RLOG_ALL, false, 100);
 
     char* exe_root = rdir_get_exe_root();
-    rinfo("当前路径: %s\n", exe_root);
+    rinfo("当前路径: %s", exe_root);
     rstr_free(exe_root);
 
     init_platform();

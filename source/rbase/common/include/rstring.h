@@ -78,7 +78,7 @@ extern char* rstr_empty_const;
 #define rformat_s(buffer_str, fmt_str, ...) \
     do { \
         if (sprintf((buffer_str), (fmt_str), ##__VA_ARGS__) >= (int)sizeof((buffer_str))) { \
-            rlog_printf(NULL, RLOG_ERROR, "error, data exceed of max len(%d).\n", (int)sizeof((buffer_str))); \
+            rerror("error, data exceed of max len(%d)", (int)sizeof((buffer_str))); \
             (buffer_str)[(int)sizeof((buffer_str)) - 1] = '\0'; \
         } \
     } while(0)

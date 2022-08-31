@@ -364,7 +364,7 @@ int rfile_exists(const char* path) {
 //    FILE *fp;
 //    //文件以追加的方式打开
 //    if ((fp = fopen(filename, "a+")) == NULL) {
-//        printdbgr("Cannot open file, press any key to exit!\n");
+//        rdebug("Cannot open file, press any key to exit!");
 //        return -1;
 //    }
 //    //while (!feof(fp))
@@ -372,7 +372,7 @@ int rfile_exists(const char* path) {
 //    //    int a = 0;
 //    //    int b = 0;
 //    //    fscanf(fp, "%d + %d", &a, &b);
-//    //    printdbgr("a = %d, b = %d\n", a, b);
+//    //    rdebug("a = %d, b = %d", a, b);
 //    //    //输出a = 1, b = 2
 //    //}
 //    //fclose(fp);
@@ -688,7 +688,7 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
     HANDLE file_find_ret = FindFirstFileW(win_file_path, &file_find_data);//FindFirstFile没有自动转换成 W !!
     if (file_find_ret == INVALID_HANDLE_VALUE) {
         //ERROR_ACCESS_DENIED == GetLastError();
-        rerror("Unable to scan unicode directory: %s, error: %lu \n", format_path, GetLastError());
+        rerror("Unable to scan unicode directory: %s, error: %lu", format_path, GetLastError());
         rgoto(0);
     }
     path_unicode_to_utf8(file_full_name, file_path_len_max * 3 + 1, file_find_data.cFileName);
@@ -733,7 +733,7 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
     WIN32_FIND_DATA file_find_data;
     HANDLE file_find_ret = FindFirstFileA(format_path, &file_find_data);
     if (file_find_ret == INVALID_HANDLE_VALUE) {
-        rerror("Unable to scan ansi directory: %s, error: %lu \n", format_path, GetLastError());
+        rerror("Unable to scan ansi directory: %s, error: %lu", format_path, GetLastError());
         rgoto(0);
     }
     if (!rstr_eq(file_find_data.cFileName, rfile_path_current) && !rstr_eq(file_find_data.cFileName, rfile_path_parent)) {
@@ -776,7 +776,7 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
     //if (stat(file->d_name, &sb) >= 0 && S_ISDIR(sb.st_mode))
 
     if (!(dir_ptr = opendir(format_path))) {
-        rerror("Unable to scan directory: %s\n", format_path);
+        rerror("Unable to scan directory: %s", format_path);
         rgoto(0);
     }
     while ((ptr = readdir(dir_ptr)) != 0) {

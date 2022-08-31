@@ -97,20 +97,20 @@ extern rpool_chain_node_t* rpool_chain;
     rdeclare_pool(TYPE) = NULL; \
   static void travel_##TYPE##_info(void (*action_func)(void* item)) \
   { \
-    rinfo("pool "#TYPE": [%"PRId64", %"PRId64"]\n", rget_pool(TYPE)->capacity, rget_pool(TYPE)->totalFree); \
+    rinfo("pool "#TYPE": [%"PRId64", %"PRId64"]", rget_pool(TYPE)->capacity, rget_pool(TYPE)->totalFree); \
     if (action_func) \
         action_func(rget_pool(TYPE)); \
   } \
   static inline rpool_block_##TYPE##_t* rpool_##TYPE##_expand(rpool_##TYPE##_t* poolTemp, int num) \
   { \
     if (!poolTemp) { \
-	    rinfo(#TYPE" pool is NULL\n"); \
+	    rinfo(#TYPE" pool is NULL"); \
         return NULL; \
     } \
     rpool_block_##TYPE##_t* poolBlock = raymalloc(sizeof(rpool_block_##TYPE##_t)); \
     if (!poolBlock) \
     { \
-		rinfo(#TYPE" poolBlock is NULL\n"); \
+		rinfo(#TYPE" poolBlock is NULL"); \
         return NULL; /* malloc failed */ \
     } \
     poolBlock->items = raycmalloc_type(num, rpool_##TYPE##_item_t); \
@@ -118,7 +118,7 @@ extern rpool_chain_node_t* rpool_chain;
     { \
         rayfree(poolBlock); \
         poolBlock = NULL; \
-		rinfo(#TYPE" poolBlock->items is NULL\n"); \
+		rinfo(#TYPE" poolBlock->items is NULL"); \
         return NULL; /* calloc failed */ \
     } \
     poolBlock->head = &poolBlock->items[0]; \
@@ -135,7 +135,7 @@ extern rpool_chain_node_t* rpool_chain;
     poolBlock->prevBlock = NULL; \
     poolTemp->capacity += num; \
     poolTemp->totalFree += num; \
-    rinfo("expand block "#TYPE"(%"PRId64", %d, %"PRId64", %"PRId64") success, (%p)\n", \
+    rinfo("expand block "#TYPE"(%"PRId64", %d, %"PRId64", %"PRId64") success, (%p)", \
 		poolTemp->capacity, num, poolBlock->itemFirst, poolBlock->itemLast, poolBlock); \
     return poolBlock; \
   } \
@@ -158,7 +158,7 @@ extern rpool_chain_node_t* rpool_chain;
     poolTemp->freeHeadBlock = poolBlock; \
     rpool_chain_node_t* chainNode = raymalloc(sizeof(rpool_chain_node_t)); \
     if (!chainNode) { \
-        rinfo("create pool "#TYPE"(%d, %d) failed add to chain, (%p)\n", size_init, size_adjust, poolTemp); \
+        rinfo("create pool "#TYPE"(%d, %d) failed add to chain, (%p)", size_init, size_adjust, poolTemp); \
         return NULL; \
     } \
     chainNode->next = rpool_chain->next; \
@@ -167,14 +167,14 @@ extern rpool_chain_node_t* rpool_chain;
     chainNode->rpool_travel_block_func = (rpool_type_travel_block_func)travel_##TYPE##_info; \
     chainNode->rpool_destroy_pool_func = (rpool_type_destroy_pool_func)rpool_##TYPE##_destroy; \
     rpool_chain->next = chainNode; \
-    rinfo("create pool "#TYPE"(%d, %d) success, (%p)\n", size_init, size_adjust, poolTemp); \
+    rinfo("create pool "#TYPE"(%d, %d) success, (%p)", size_init, size_adjust, poolTemp); \
     return poolTemp; \
   } \
   void rpool_##TYPE##_destroy(rpool_##TYPE##_t* poolTemp) \
   { \
     poolTemp = poolTemp == NULL ? rget_pool(TYPE) : poolTemp; \
     if (!poolTemp || !rget_pool(TYPE)) { \
-        rinfo("destroy "#TYPE"(%d, %d), pool is NULL, (%p)\n", size_init, size_adjust, poolTemp); \
+        rinfo("destroy "#TYPE"(%d, %d), pool is NULL, (%p)", size_init, size_adjust, poolTemp); \
         return; \
     } \
     rpool_block_##TYPE##_t* poolBlock = poolTemp->freeHeadBlock; \
@@ -205,14 +205,14 @@ extern rpool_chain_node_t* rpool_chain;
 			} \
 		} \
 	} \
-    rinfo("destroy pool "#TYPE"(%d, %d) success, (%p)\n", size_init, size_adjust, poolTemp); \
+    rinfo("destroy pool "#TYPE"(%d, %d) success, (%p)", size_init, size_adjust, poolTemp); \
     rayfree(poolTemp); \
     rget_pool(TYPE) = NULL; \
   } \
   TYPE* rpool_##TYPE##_get(rpool_##TYPE##_t* poolTemp) \
   { \
     if (!rget_pool(TYPE)) { \
-        rinfo("get from "#TYPE"(%d, %d), pool is NULL, (%p)\n", size_init, size_adjust, poolTemp); \
+        rinfo("get from "#TYPE"(%d, %d), pool is NULL, (%p)", size_init, size_adjust, poolTemp); \
         return NULL; \
     } \
     rpool_block_##TYPE##_t* poolBlock = poolTemp->freeHeadBlock; \
@@ -228,7 +228,7 @@ extern rpool_chain_node_t* rpool_chain;
         if(!item) { \
             poolBlock = rpool_##TYPE##_expand(poolTemp, size_adjust); \
             if (!poolBlock) { \
-                rinfo("malloc from pool "#TYPE"(%d, %d) failed.\n", size_init, size_adjust); \
+                rinfo("malloc from pool "#TYPE"(%d, %d) failed.", size_init, size_adjust); \
                 return NULL; \
             } \
             rpool_block_##TYPE##_t* blockSecond = poolTemp->freeHeadBlock->nextBlock; \
@@ -244,29 +244,29 @@ extern rpool_chain_node_t* rpool_chain;
     poolBlock->head = item->next; \
     poolBlock->freeCount -= 1; \
     poolTemp->totalFree -= 1; \
-    /** rinfo("malloc, "#TYPE"(%p)\n", item); **/ \
+    /** rinfo("malloc, "#TYPE"(%p)", item); **/ \
     return &item->data; \
   } \
   int rpool_##TYPE##_free(TYPE* data, rpool_##TYPE##_t* poolTemp) \
   { \
     if (!rget_pool(TYPE)) { \
-        rinfo("free to "#TYPE"(%d, %d), pool is NULL, (%p)\n", size_init, size_adjust, poolTemp); \
+        rinfo("free to "#TYPE"(%d, %d), pool is NULL, (%p)", size_init, size_adjust, poolTemp); \
         return -1; \
     } \
     rpool_block_##TYPE##_t* poolBlock = poolTemp->freeHeadBlock; \
     rpool_##TYPE##_item_t* itemData = (rpool_##TYPE##_item_t*)data;\
-	/** rinfo("free from pool "#TYPE" block[%p, [%p], %p), %s\n", poolBlock->items, data, (poolBlock->items + poolBlock->totalCount), __FUNCTION__); **/ \
+	/** rinfo("free from pool "#TYPE" block[%p, [%p], %p), %s", poolBlock->items, data, (poolBlock->items + poolBlock->totalCount), __FUNCTION__); **/ \
     if((itemData < poolBlock->items) || (itemData >= (poolBlock->items + poolBlock->totalCount))) \
     { \
         while ((poolBlock = poolBlock->nextBlock) != NULL) { \
-			/** rinfo("free to "#TYPE" pool block(%d,%d) [%p, {%p}, %p)\n", \
+			/** rinfo("free to "#TYPE" pool block(%d,%d) [%p, {%p}, %p)", \
 				poolBlock->totalCount, poolBlock->freeCount, poolBlock->items, data, (poolBlock->items + poolBlock->totalCount)); **/ \
             if((itemData >= poolBlock->items) && (itemData < (poolBlock->items + poolBlock->totalCount))) { \
                 break; \
             } \
         } \
         if (!poolBlock) { \
-            rinfo("free to pool "#TYPE"(%d, %d) failed, %p\n", size_init, size_adjust, data); \
+            rinfo("free to pool "#TYPE"(%d, %d) failed, %p", size_init, size_adjust, data); \
             return -1; \
         } \
     } \
@@ -274,12 +274,12 @@ extern rpool_chain_node_t* rpool_chain;
     poolBlock->head = itemData; \
     poolBlock->freeCount++; \
     poolTemp->totalFree++; \
-    /** rinfo("free success: (%d,%d) [%p, {%p}, %p)\n", \
+    /** rinfo("free success: (%d,%d) [%p, {%p}, %p)", \
 			poolBlock->totalCount, poolBlock->freeCount, poolBlock->items, data, poolBlock->items + poolBlock->totalCount); **/ \
     if (poolTemp->freeHeadBlock != poolBlock) { \
         if (poolTemp->totalFree > 2 * poolBlock->freeCount) { \
             if (unlikely(poolBlock->totalCount == poolBlock->freeCount)) { \
-                rinfo("free block: "#TYPE"(%"PRId64", %"PRId64") [%p, %d]\n", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); \
+                rinfo("free block: "#TYPE"(%"PRId64", %"PRId64") [%p, %d]", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); \
                 poolTemp->capacity -= poolBlock->totalCount; \
                 poolTemp->totalFree -= poolBlock->totalCount; \
                 poolBlock->prevBlock->nextBlock = poolBlock->nextBlock; \
@@ -291,7 +291,7 @@ extern rpool_chain_node_t* rpool_chain;
 /**        } else { **if ((poolTemp->capacity - poolTemp->totalFree) < (poolTemp->capacity / RAY_PROFILER_POOL_SHRINK)) { **\
                 if (poolBlock = poolBlock->nextBlock) { \
                     if (poolBlock->prevBlock->freeCount > poolBlock->freeCount) { \
-                        ** rinfo("change block: "#TYPE"(%"PRId64", %"PRId64") [%p, %d] \n", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); ** \
+                        ** rinfo("change block: "#TYPE"(%"PRId64", %"PRId64") [%p, %d] ", poolTemp->capacity, poolTemp->totalFree, poolBlock, poolBlock->totalCount); ** \
                         rpool_block_##TYPE##_t* b1 = poolBlock->prevBlock; \
                         b1->nextBlock = poolBlock->nextBlock; \
                         poolBlock->nextBlock = b1; \
@@ -359,7 +359,7 @@ extern rpool_chain_node_t* rpool_chain; \
 if (rpool_chain) { \
     rpool_chain_node_t* tempChainNode = NULL; \
     while ((tempChainNode = rpool_chain->next)) { \
-        rinfo("rpool_chain must be NULL.\n"); \
+        rinfo("rpool_chain must be NULL."); \
         rpool_chain->next = tempChainNode->next; \
         if (tempChainNode->rpool_destroy_pool_func != NULL) { \
             tempChainNode->rpool_destroy_pool_func(tempChainNode->pool_self); \
@@ -369,7 +369,7 @@ if (rpool_chain) { \
     } \
     rayfree(rpool_chain); \
     rpool_chain = NULL; \
-    rinfo("rpool_chain finished.\n"); \
+    rinfo("rpool_chain finished."); \
 }
 
 

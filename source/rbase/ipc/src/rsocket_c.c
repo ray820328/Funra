@@ -51,10 +51,10 @@ static void set_nonblocking(uv_os_sock_t sock) {
 }
 
 static void after_write(uv_write_t *req, int status) {
-    rinfo("end after_write state: %d\n", status);
+    rinfo("end after_write state: %d", status);
 
     if (status != 0) {
-        rerror("write error, code = %d, err = %s\n", status, uv_err_name(status));
+        rerror("write error, code = %d, err = %s", status, uv_err_name(status));
     }
 
     local_write_req_t* wr = (local_write_req_t*)req->data;
@@ -63,7 +63,7 @@ static void after_write(uv_write_t *req, int status) {
     rdata_free(local_write_req_t, wr);
     rdata_free(uv_write_t, req);
 
-    rdebug("writing buff left bytes: %d - %d\n", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
+    rdebug("writing buff left bytes: %d - %d", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
 }
 static void send_data(ripc_data_source_t* ds, void* data) {
     int ret_code = 0;
@@ -75,7 +75,7 @@ static void send_data(ripc_data_source_t* ds, void* data) {
     if (ctx->out_handler) {
         ret_code = ctx->out_handler->process(ctx->out_handler, ds_client, data);
         if (ret_code != ripc_code_success) {
-            rerror("error on handler process, code: %d\n", ret_code);
+            rerror("error on handler process, code: %d", ret_code);
             return;
         }
     }
@@ -94,11 +94,11 @@ static void send_data(ripc_data_source_t* ds, void* data) {
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
     ret_code = uv_write(req, (uv_stream_t*)(ctx->stream), &buf, 1, after_write);
-    rdebug("send_data, req: %p, buf: %p\n", req, &buf);
-    //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p\n", data->len, data->data, buf.base);
+    rdebug("send_data, req: %p, buf: %p", req, &buf);
+    //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p", data->len, data->data, buf.base);
 
     if (ret_code != 0) {
-        rerror("uv_write failed. code: %d\n", ret_code);
+        rerror("uv_write failed. code: %d", ret_code);
         return;
     }
 }
@@ -107,7 +107,7 @@ static void on_close(uv_handle_t* peer) {
     //todo Ray 暂时仅tcp
     ripc_data_source_t* ds_client = (ripc_data_source_t*)(peer->data);
     //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
-    rinfo("on close, id = %"PRIu64", \n", ds_client->ds_id);
+    rinfo("on close, id = %"PRIu64", ", ds_client->ds_id);
 
     rbuffer_release(ds_client->read_cache);
     rbuffer_release(ds_client->write_buff);
@@ -125,17 +125,17 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
     local_write_req_t *wr;
     int shutdown = 0;
 
-    rinfo("after read: %d\n", nread);
+    rinfo("after read: %d", nread);
 
     if (nread < 0) {
         //rstr_free(((uv_buf_t*)buf)->base);
 
         /* Error or EOF */
         if (nread != UV_EOF) {//异常，未主动关闭等
-            rerror("error on read: %d\n", nread);
+            rerror("error on read: %d", nread);
             ret_code = ripc_close(ctx);
             if (ret_code != 0) {
-                rerror("error on ripc_close, code: %d\n", ret_code);
+                rerror("error on ripc_close, code: %d", ret_code);
             }
             return;
         }
@@ -143,7 +143,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         if (uv_is_writable(handle)) {
             ret_code = ripc_close(ctx);
             if (ret_code != 0) {
-                rerror("error on ripc_close, code: %d\n", ret_code);
+                rerror("error on ripc_close, code: %d", ret_code);
                 return;
             }
         }
@@ -168,7 +168,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
 
         ret_code = ctx->in_handler->process(ctx->in_handler, ds_client, &data_raw);
         if (ret_code != ripc_code_success) {
-            rerror("error on handler process, code: %d\n", ret_code);
+            rerror("error on handler process, code: %d", ret_code);
             return;
         }
 
@@ -186,7 +186,7 @@ static void read_alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf
 }
 static void connect_cb(uv_connect_t* req, int status) {
     if (req == NULL || status != 0) {
-        rerror("client callback, req = %p, status: %d\n", req, status);
+        rerror("client callback, req = %p, status: %d", req, status);
         rgoto(1);
     }
 
@@ -203,12 +203,12 @@ static void connect_cb(uv_connect_t* req, int status) {
     if (ctx->stream_type == ripc_type_tcp) {
         ret_code = uv_read_start((uv_stream_t*)(ctx->stream), read_alloc_static, after_read);
         if (ret_code != 0) {
-            rerror("uv_read_start error, %d.\n", ret_code);
+            rerror("uv_read_start error, %d.", ret_code);
             rgoto(1);
         }
     }
 
-    rinfo("connect callback, status: %d\n", status);
+    rinfo("connect callback, status: %d", status);
 
 exit1:
     if (req != NULL) {
@@ -228,18 +228,18 @@ static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
     int port = cfg->port;
     ret_code = uv_ip4_addr(ip, port, &addr);
     if (ret_code != 0) {
-        rerror("uv_ip4_addr error, code: %d\n", ret_code);
+        rerror("uv_ip4_addr error, code: %d", ret_code);
         rgoto(1);
     }
 
     connect_req->data = rsocket_ctx;
     ret_code = uv_tcp_connect(connect_req, rsocket_ctx->stream, (const struct sockaddr*) &addr, connect_cb);
     if (ret_code != 0) {
-        rerror("error on connecting, code: %d\n", ret_code);
+        rerror("error on connecting, code: %d", ret_code);
         rgoto(1);
     }
 
-    rinfo("client connect to {%s:%d} success.\n", ip, port);
+    rinfo("client connect to {%s:%d} success.", ip, port);
     
 exit1:
     if (ret_code != 0) {
@@ -249,14 +249,14 @@ exit1:
 
 
 static int ripc_init(void* ctx, const void* cfg_data) {
-    rinfo("socket client init.\n");
+    rinfo("socket client init.");
 
     int ret_code;
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
     ret_code = uv_tcp_init(rsocket_ctx->loop, rsocket_ctx->stream);
     if (ret_code != 0) {
-        rerror("error on init loop.\n");
+        rerror("error on init loop.");
         return ret_code;
     }
 
@@ -269,7 +269,7 @@ static int ripc_init(void* ctx, const void* cfg_data) {
 static int ripc_uninit(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client uninit.\n");
+    rinfo("socket client uninit.");
 
     uv_stop(rsocket_ctx->loop);
 
@@ -281,7 +281,7 @@ static int ripc_uninit(void* ctx) {
 static int ripc_open(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client open.\n");
+    rinfo("socket client open.");
 
     client_connect(rsocket_ctx);
 
@@ -291,7 +291,7 @@ static int ripc_open(void* ctx) {
 static int ripc_close(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client close.\n");
+    rinfo("socket client close.");
 
     if (rsocket_ctx->stream_state == 0) {
         return rcode_ok;

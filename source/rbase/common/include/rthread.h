@@ -53,7 +53,7 @@ typedef void *(*rthread_func)(void *);
 		if (err != EBUSY && err != EAGAIN) { \
 			rassert(false, ""); \
 		} else { \
-			rdebug("locked.\n"); \
+			rdebug("locked."); \
 		} \
 	} else 
 #define rmutex_lock(rmutexObj) \

@@ -50,13 +50,13 @@ int run_rthread_tests(int benchmark_output) {
 
 static void* rfunc_test(void* arg) {
     srand((unsigned int)(rtime_millisec()));
-    rinfo("start, thread: %s\n", (char *) arg);
+    rinfo("start, thread: %s", (char *) arg);
     printf("start, thread: %s\n", (char *) arg);
 
     int wait_time = rtools_rand_int(10, 100);
     rtools_wait_mills(wait_time);
 
-    rinfo("stop, thread: %s, wait = %d\n", (char *) arg, wait_time);
+    rinfo("stop, thread: %s, wait = %d", (char *) arg, wait_time);
     printf("stop, thread: %s, wait = %d\n", (char *) arg, wait_time);
     return arg;
 }

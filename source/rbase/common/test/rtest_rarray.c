@@ -104,7 +104,7 @@ static void rarray_int_test(void **state) {
     j = 0;
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-        rinfo("Iterator rarray, value=%d, index=%"rarray_size_t_format"\n", temp, (&it)->index);
+        rinfo("Iterator rarray, value=%d, index=%"rarray_size_t_format"", temp, (&it)->index);
         assert_true(temp == count - j++);
     }
     temp = 0;
@@ -187,7 +187,7 @@ static void rarray_string_test(void **state) {
     j = 0;
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-        rinfo("Iterator rarray, value=%s, index=%"rarray_size_t_format"\n", temp, (&it)->index);
+        rinfo("Iterator rarray, value=%s, index=%"rarray_size_t_format"", temp, (&it)->index);
         assert_true(rstr_2int(temp) == count - j);
         rnum2str(temp_str, count - j, 0);
         assert_true(rstr_eq(temp, temp_str));
@@ -281,7 +281,7 @@ static void rarray_ptr_test(void **state) {
     j = 0;
     rarray_it_first(&it);
     for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-        rinfo("Iterator rarray, value=%s, index=%"rarray_size_t_format"\n", temp->value, (&it)->index);
+        rinfo("Iterator rarray, value=%s, index=%"rarray_size_t_format"", temp->value, (&it)->index);
         assert_true(rstr_2int(temp->value) == count - j);
         rnum2str(temp_str, count - j, 0);
         assert_true(rstr_eq(temp->value, temp_str));

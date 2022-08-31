@@ -61,7 +61,7 @@ static int init_tcp_server() {
     // listen
     int r = uv_listen((uv_stream_t*)&server, backlog, on_new_conn);
     if (r) {
-        rerror("error init_tcp_server\n");
+        rerror("error init_tcp_server");
         return 1;
     }
 

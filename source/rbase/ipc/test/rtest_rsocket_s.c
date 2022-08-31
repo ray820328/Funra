@@ -34,7 +34,7 @@ static void* run_server(void* arg) {
     //{
     //    rtools_wait_mills(10);
     //}
-    rinfo("end, run_server: %s\n", (char *)arg);
+    rinfo("end, run_server: %s", (char *)arg);
 
     return arg;
 }

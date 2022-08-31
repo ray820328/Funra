@@ -29,7 +29,7 @@ static rsocket_ctx_uv_t rsocket_ctx;
 
 static void* run_client(void* arg) {
     rsocket_c.open(&rsocket_ctx);
-    rinfo("end, run_client: %s\n", (char *)arg);
+    rinfo("end, run_client: %s", (char *)arg);
 
     return arg;
 }

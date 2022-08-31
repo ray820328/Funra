@@ -159,7 +159,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
 
     for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
         if (is_init && rlog->log_items[cur_level]) {
-            printf("log item already finished, level = %d.\n", cur_level);
+            rinfo("log item already finished, level = %d", cur_level);
             continue;//初始优先级更高，不覆盖
         }
         log_level_str = file_seperate ? rlog_level_2str(cur_level) : rlog_level_2str(RLOG_ALL);
@@ -168,7 +168,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
             log_item = rdata_new(rlog_info_t);
             memset(log_item, 0, sizeof(rlog_info_t));
             if (log_item == NULL) {
-                printf("init log item failed, %s.\n", log_level_str);
+                rerror("init log item failed, %s.", log_level_str);
                 code_ret = 1;
                 rgoto(1);
             }
@@ -191,7 +191,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
         log_item->filename = _rlog_get_filepath(rlog->filepath_template, log_level_str, false);//初始都不带递增后缀
         rfile_format_path(log_item->filename);
 
-        printf("build log item, filename = '%s'\n", log_item->filename);
+        rinfo("build log item, filename = '%s'", log_item->filename);
 
         if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, log_item->filename)) {
             if (rfile_exists(log_item->filename)) {
@@ -208,7 +208,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
         }
 
         if (log_item->file_ptr == NULL) {
-            printf("Cannot open file [%s], check file is opening or not!\n", log_item->filename);
+            rinfo("Cannot open file [%s], check file is opening or not!", log_item->filename);
             code_ret = 1;
             rgoto(1);
         }
@@ -217,10 +217,10 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
 //exit0:
     code_ret = rcode_ok;
 
-    printf("build rlog finished.\n");
+    rinfo("build rlog finished.");
 exit1:
     if (code_ret != 0) {
-        printf("build rlog failed. code = %d\n", code_ret);
+        rinfo("build rlog failed. code = %d", code_ret);
     }
 
     return code_ret;
@@ -295,12 +295,12 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
     rlog->file_size_max = file_size < rlog_rollback_size ? rlog_rollback_size * 1024000 : file_size * 1024000;
 
     if (level != RLOG_ALL && rlog->log_items[level]) {
-        printf("rlog_init already inited, level = %d.\n", level);
+        rinfo("rlog_init already inited, level = %d", level);
         rgoto(0);
 	}
 
 	if (!filename || rstr_len(filename) > rlog_filename_length) {
-        printf("rlog_init filename is too long.\n");
+        rinfo("rlog_init filename is too long.");
         code_ret = 1;
         rgoto(1);
 	}
@@ -318,10 +318,10 @@ exit0:
 
     code_ret = rcode_ok;
 
-    rinfo("init rlog finished (%p - %s)."Li, rlog, filename);
+    rinfo("init rlog finished (%p - %s).", rlog, filename);
 exit1:
     if (code_ret != 0) {
-        rerror("init rlog failed (%s). code = %d"Li, filename, code_ret);
+        rerror("init rlog failed (%s). code = %d", filename, code_ret);
     }
 
     rmutex_unlock(&rlog_mutex);
@@ -335,7 +335,7 @@ int rlog_reset(rlog_t* rlog, const rlog_level_t level, int file_size) {
 }
 
 int rlog_uninit_log(rlog_t* rlog) {
-	rinfo("uninit rlog (%p - %s)."Li, rlog, rlog->filepath_template);
+	rinfo("uninit rlog (%p - %s).", rlog, rlog->filepath_template);
 
 	rmutex_lock(&rlog_mutex);
 
@@ -355,7 +355,7 @@ int rlog_uninit_log(rlog_t* rlog) {
             }
 
             if (rlog->log_items[cur_level]->filename) {
-                //printf("rlog_uninit free filename, p = %p, filename = %s\n", rlog->log_items[cur_level]->filename, rlog->log_items[cur_level]->filename);
+                //rinfo("rlog_uninit free filename, p = %p, filename = %s", rlog->log_items[cur_level]->filename, rlog->log_items[cur_level]->filename);
                 rayfree(rlog->log_items[cur_level]->filename);
                 rlog->log_items[cur_level]->filename = NULL;
             }
@@ -396,7 +396,7 @@ int rlog_flush_file(rlog_t* rlog, bool close_file) {
     rmutex_lock(rlog->mutex);
 
     rlog_force_flush = true;
-	rlog_printf(NULL, RLOG_INFO, "log file flushed.\n");
+	rinfo("log file flushed.");
 
     FILE* last_file = NULL;
 	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
@@ -428,7 +428,7 @@ int rlog_rolling_file(rlog_t* rlog, const rlog_level_t level) {
     int code_ret = 0;
 
 	if (!rlog->inited) {
-		rlog_printf(NULL, RLOG_INFO, "rolling rlog failed, not inited.\n");
+		rinfo("rolling rlog failed, not inited.");
 		goto exit1;
 	}
 
@@ -442,7 +442,7 @@ int rlog_rolling_file(rlog_t* rlog, const rlog_level_t level) {
     }
     
     code_ret = rcode_ok;
-	printf("rolling rlog finished.\n");
+	rinfo("rolling rlog finished.");
 
 exit1:
 	rmutex_unlock(&rlog_mutex);
@@ -532,7 +532,7 @@ int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
 #endif // print2file
 		rlogFlushLast = timeNow;
         buffer[0] = '\0';
-		//printf("\nflush item finished...\n");
+		//printf("\nflush item finished...");
 
     }
     else {

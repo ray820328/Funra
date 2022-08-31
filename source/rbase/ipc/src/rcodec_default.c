@@ -27,7 +27,7 @@ static int encode_on_before(rdata_handler_t* handler, void* ds, void* data) {
     }
     
     if (rbuffer_left(datasource->write_buff) < (ipc_data->len + header_len)) {
-        rerror("error on handler before, is full, left: %d\n", rbuffer_left(datasource->write_buff));
+        rerror("error on handler before, is full, left: %d", rbuffer_left(datasource->write_buff));
         return ripc_code_cache_full;
     }
 
@@ -45,7 +45,7 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
 
     ret_code = handler->on_before(handler, ds, data);
     if (ret_code != ripc_code_success) {
-        rerror("error on handler before, code: %d\n", ret_code);
+        rerror("error on handler before, code: %d", ret_code);
         return ret_code;
     }
 
@@ -64,25 +64,25 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
     write_len = rbuffer_write(buffer, (char*)(ipc_data), header_len);
     if (write_len != header_len) {
         rbuffer_read_ext(buffer, -write_len);
-        rerror("error on handler process head: %d\n", write_len);
+        rerror("error on handler process head: %d", write_len);
         return ripc_code_cache_full;
     }
 
     write_len = rbuffer_write(buffer, (char*)(ipc_data->data), payload_len);
     if (write_len != payload_len) {
         rbuffer_read_ext(buffer, -write_len - header_len);
-        rerror("error on handler process payload: %d\n", write_len);
+        rerror("error on handler process payload: %d", write_len);
         return ripc_code_cache_full;
     }
 
     ret_code = handler->on_after(handler, ds, data);
     if (ret_code != ripc_code_success) {
         rbuffer_read_ext(buffer, -write_len - header_len);
-        rerror("error on handler after, code: %d\n", ret_code);
+        rerror("error on handler after, code: %d", ret_code);
         return ret_code;
     }
 
-    rdebug("encode, process buffer size: %d\n", rbuffer_size(buffer));
+    rdebug("encode, process buffer size: %d", rbuffer_size(buffer));
 
     return ret_code;
 }
@@ -131,7 +131,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 
     ret_code = handler->on_before(handler, ds, data);
     if (ret_code != ripc_code_success) {
-        rerror("error on handler before, code: %d\n", ret_code);
+        rerror("error on handler before, code: %d", ret_code);
         return ret_code;
     }
 
@@ -146,7 +146,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
     //}
     //int8_t version = (int8_t)read_temp[0];
 
-    rdebug("process buffer...... %d\n", rbuffer_size(buffer));
+    rdebug("process buffer...... %d", rbuffer_size(buffer));
 
     ripc_data_default_t ipc_data;
 	while (true) {
@@ -158,7 +158,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		if (!rmem_eq(ipc_data.magic, ripc_head_default_magic, ripc_head_default_magic_len)) {
-			rerror("error on handler process, magic error: %d\n", ripc_code_error_magic);
+			rerror("error on handler process, magic error: %d", ripc_code_error_magic);
 			rbuffer_clear(buffer);
 			return ripc_code_error_magic;
 		}
@@ -167,14 +167,14 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		ipc_data.data = rdata_new_buffer(require_len + 1);
 		read_len = rbuffer_read(buffer, (char*)(ipc_data.data), require_len);
 
-		rdebug("received msg: %d - %d - %d\n", require_len, read_len, rbuffer_size(buffer));
+		rdebug("received msg: %d - %d - %d", require_len, read_len, rbuffer_size(buffer));
 		if (read_len != require_len) {
 			rbuffer_read_ext(buffer, -read_len);
 			break;//长度不够，返回去继续读
 		}
 
 		ipc_data.data[require_len] = rstr_end;
-		rinfo("received msg: %d - %s\n", require_len, ipc_data.data);
+		rinfo("received msg: %d - %s", require_len, ipc_data.data);
 
 		if (datasource->ds_type == ripc_data_source_type_client) {
 			ripc_data_default_t data_send;
@@ -189,7 +189,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 
     ret_code = handler->on_after(handler, ds, data);
     if (ret_code != ripc_code_success) {
-        rerror("error on handler after, code: %d\n", ret_code);
+        rerror("error on handler after, code: %d", ret_code);
         return ret_code;
     }
 

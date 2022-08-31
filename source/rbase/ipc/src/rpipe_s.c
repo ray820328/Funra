@@ -56,7 +56,7 @@ char worker_path[1024];
 //}
 
 static void close_process_handle(uv_process_t *req, int64_t exit_status, int term_signal) {
-    rinfo("Process exited with status %" PRId64 ", signal %d\n", exit_status, term_signal);
+    rinfo("Process exited with status %" PRId64 ", signal %d", exit_status, term_signal);
     uv_close((uv_handle_t*)req, NULL);
 }
 
@@ -67,10 +67,10 @@ static void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *b
 
 static void on_new_connection_pipe(uv_stream_t *server, int status) {
     if (status == -1) {
-        rerror("accept error, code = %d\n", status);
+        rerror("accept error, code = %d", status);
         return;
     }
-    rinfo("server on accept success.\n");
+    rinfo("server on accept success.");
 
     uv_tcp_t *client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
     uv_tcp_init(loop, client);
@@ -91,7 +91,7 @@ static void setup_workers_pipe() {
     size_t path_size = 1024;
     uv_exepath(worker_path, &path_size);
     rstr_cat(worker_path, "workers", 0);
-    rinfo("Worker path: %s\n", worker_path);
+    rinfo("Worker path: %s", worker_path);
 
     char* args[2];
     args[0] = worker_path;
@@ -127,13 +127,13 @@ static void setup_workers_pipe() {
         worker->options.args = args;
 
         uv_spawn(loop, &worker->req, &worker->options);
-        rinfo("started worker %d\n", worker->req.pid);
+        rinfo("started worker %d", worker->req.pid);
     }
 }
 
 
 static int ripc_init(const void* cfg_data) {
-    rinfo("socket server init.\n");
+    rinfo("socket server init.");
 
     loop = uv_default_loop();
 
@@ -143,13 +143,13 @@ static int ripc_init(const void* cfg_data) {
 }
 
 static int ripc_uninit() {
-    rinfo("socket server uninit.\n");
+    rinfo("socket server uninit.");
 
     return rcode_ok;
 }
 
 static int ripc_open() {
-    rinfo("socket server open.\n");
+    rinfo("socket server open.");
 
     uv_tcp_t server;
     uv_tcp_init(loop, &server);
@@ -171,16 +171,16 @@ static int ripc_open() {
     uv_tcp_bind(&server, (const struct sockaddr *)&bind_addr, 0);
     int r;
     if ((r = uv_listen((uv_stream_t*)&server, backlog, on_new_connection))) {
-        rerror("Listen error %s\n", uv_err_name(r));
+        rerror("Listen error %s", uv_err_name(r));
         return 2;
     }
-    rinfo("Listen at %s:%d success.\n", ip, port);
+    rinfo("Listen at %s:%d success.", ip, port);
 
     return uv_run(loop, UV_RUN_DEFAULT);
 }
 
 static int ripc_close() {
-    rinfo("socket server close.\n");
+    rinfo("socket server close.");
 
     return rcode_ok;
 }

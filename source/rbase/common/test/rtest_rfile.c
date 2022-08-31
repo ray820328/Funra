@@ -57,7 +57,7 @@ static void rfile_full_test(void **state) {
         rlist_iterator_t it = rlist_it(file_list, rlist_dir_tail);
         rlist_node_t *node = NULL;
         while ((node = rlist_next(&it))) {
-            rinfo("rfile_full_test filename: %s\n", (char*)(node->val));
+            rinfo("rfile_full_test filename: %s", (char*)(node->val));
             //assert_true(test_entries != 0);
         }
         rlist_destroy(file_list);

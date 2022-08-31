@@ -113,10 +113,10 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
         return rdict_code_ok;
     }
 
-	rdebug("expand map, size : capacity = %"rdict_size_t_format" : %"rdict_size_t_format" -> %"rdict_size_t_format"\n",
+	rdebug("expand map, size : capacity = %"rdict_size_t_format" : %"rdict_size_t_format" -> %"rdict_size_t_format,
         d->size, d->capacity, dest_capacity);
     if (d->size * 1.0 / d->capacity < rdict_used_factor_default) { //使用率太小，换hash算法
-		rwarn("used ratio under the score of %1.3f\n", d->size * 1.0 / d->capacity);
+		rwarn("used ratio under the score of %1.3f", d->size * 1.0 / d->capacity);
     }
 
     rdict_entry_t* entry_next = NULL;
@@ -198,13 +198,13 @@ int rdict_add(rdict_t* d, void* key, void* val) {
     rdict_entry_t *entry_start = entry_cur  = _find_bucket(d, key, d->buckets, d->bucket_capacity);
 
     while (entry_cur->key.ptr && !rdict_is_key_equal(d, entry_cur->key.ptr, key)) { //桶内元素长度受限
-        //rdebug("go next, entry_cur(%"PRId64") -> %"PRId64", key.ptr(%p) != key(%p)"Li, entry_cur, entry_cur + 1, entry_cur->key.ptr, key);
+        //rdebug("go next, entry_cur(%"PRId64") -> %"PRId64", key.ptr(%p) != key(%p)", entry_cur, entry_cur + 1, entry_cur->key.ptr, key);
         ++ entry_cur;
     }
-    //rdebug("stop traval, entry_start(%p), entry_cur(%p) key.ptr(%p) != key(%p)"Li, entry_start, entry_cur, entry_cur->key.ptr, key);
+    //rdebug("stop traval, entry_start(%p), entry_cur(%p) key.ptr(%p) != key(%p)", entry_start, entry_cur, entry_cur->key.ptr, key);
 
     if (entry_cur >= (entry_start + d->bucket_capacity - 1)) {//扩容
-		rdebug("not enough space for adding, need expand.\n");
+		rdebug("not enough space for adding, need expand.");
         int code_expand = rdict_expand(d, d->capacity);
         if (code_expand != rdict_code_ok) {
             return code_expand;
@@ -221,9 +221,9 @@ int rdict_add(rdict_t* d, void* key, void* val) {
     }
 
     rdict_set_value(d, entry_cur, val); //支持 NULL 元素
-    //rdebug("add at, key(%p) -> entry_cur(%p)"Li, key, entry_cur);
+    //rdebug("add at, key(%p) -> entry_cur(%p)", key, entry_cur);
 
-    //rdebug("add at: %"PRId64" -> %"PRId64" -> %"PRId64"\n", key, entry_start, entry_cur);
+    //rdebug("add at: %"PRId64" -> %"PRId64" -> %"PRId64"", key, entry_start, entry_cur);
 
     return rdict_code_ok;
 }
@@ -257,7 +257,7 @@ int rdict_remove(rdict_t* d, const void* key) {
     rdict_entry_t* entry_end = entry_start + (d->bucket_capacity - 1);
 
     //if (key == 0x7f) {
-    //    rdebug("rdict_remove key = %lld\n", key);
+    //    rdebug("rdict_remove key = %lld", key);
     //}
 
     while (entry_cur->key.ptr && !rdict_is_key_equal(d, entry_cur->key.ptr, key)) {
@@ -266,7 +266,7 @@ int rdict_remove(rdict_t* d, const void* key) {
         }
         ++entry_cur;
     }
-    //rdebug("remove at bucket: %"PRId64" -> %"PRId64", %"PRId64"\n", key, entry_start, entry_cur);
+    //rdebug("remove at bucket: %"PRId64" -> %"PRId64", %"PRId64"", key, entry_start, entry_cur);
 
     if (!entry_cur->key.ptr) {
         //uint64_t hash = rdict_hash_key(d, key);
@@ -339,10 +339,10 @@ rdict_entry_t * rdict_find(rdict_t* d, const void* key) {
     }
 
     rdict_entry_t* entry = _find_bucket(d, key, d->buckets, d->bucket_capacity);
-    //rdebug("find bucket, entry(%p) key.ptr(%p) - key(%p)"Li, entry, entry->key.ptr, key);
+    //rdebug("find bucket, entry(%p) key.ptr(%p) - key(%p)", entry, entry->key.ptr, key);
     while (entry->key.ptr != NULL) {
         if (rdict_is_key_equal(d, entry->key.ptr, key)) {
-            //rdebug("find item, entry(%p) %p == %p"Li, entry, entry->key.ptr, key);
+            //rdebug("find item, entry(%p) %p == %p", entry, entry->key.ptr, key);
             return entry;
         }
         ++entry;
