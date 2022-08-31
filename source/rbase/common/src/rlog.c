@@ -176,11 +176,11 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
             log_item->level = cur_level;
 
             //todo Ray ...
-            log_item->item_buffer = rstr_new(rlog_temp_data_size);
+            log_item->item_buffer = raymalloc(rlog_temp_data_size);
             log_item->item_buffer[0] = '\0';
-            log_item->buffer = rstr_new(rlog_cache_data_size);
+            log_item->buffer = raymalloc(rlog_cache_data_size);
             log_item->buffer[0] = '\0';
-            log_item->item_fmt = rstr_new(rlog_temp_data_size);
+            log_item->item_fmt = raymalloc(rlog_temp_data_size);
             log_item->item_fmt[0] = '\0';
         }
         else {
@@ -257,13 +257,23 @@ exit1:
 }
 
 int rlog_uninit() {
-    rmutex_uninit(&rlog_mutex);
+    int rcode = 0;
+    rlog_t* rlog = NULL;
+    rlog_info_t* log_item = NULL;
 
 	for (int i = 0; rlog_all && rlog_all[i]; i++) {
-        rfree_data(rlog_t, rlog_all[i]);
+        rlog = rlog_all[i];
+
+        rcode = rlog_uninit_log(rlog);
+        rassert(rcode == rcode_ok, "");
+
+        rlog = NULL;
+        rlog_all[i] = NULL;
     }
 
     rfree_data_array(rlog_all);
+
+    rmutex_uninit(&rlog_mutex);
 
     return rcode_ok;
 }
@@ -279,6 +289,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
     rmutex_lock(&rlog_mutex);
 
     rlog->mutex = rnew_data(rmutex_t);
+    rmutex_init(rlog->mutex);
     rlog->level = level == RLOG_ALL ? RLOG_VERB : level;
     rlog->file_seperate = file_seperate;
     rlog->file_size_max = file_size < rlog_rollback_size ? rlog_rollback_size * 1024000 : file_size * 1024000;
@@ -307,10 +318,10 @@ exit0:
 
     code_ret = rcode_ok;
 
-    printf("init rlog finished.\n");
+    rinfo("init rlog finished (%p - %s)."Li, rlog, filename);
 exit1:
     if (code_ret != 0) {
-        printf("init rlog failed. code = %d\n", code_ret);
+        rerror("init rlog failed (%s). code = %d"Li, filename, code_ret);
     }
 
     rmutex_unlock(&rlog_mutex);
@@ -324,12 +335,11 @@ int rlog_reset(rlog_t* rlog, const rlog_level_t level, int file_size) {
 }
 
 int rlog_uninit_log(rlog_t* rlog) {
-	printf("uninit rlog finished.\n");
+	rinfo("uninit rlog (%p - %s)."Li, rlog, rlog->filepath_template);
 
 	rmutex_lock(&rlog_mutex);
 
 	rlog->inited = false;
-    rmutex_uninit(rlog->mutex);
 
     char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
 
@@ -369,6 +379,9 @@ int rlog_uninit_log(rlog_t* rlog) {
 			rlog->log_items[cur_level] = NULL;
 		}
 	}
+
+    rmutex_uninit(rlog->mutex);
+    rfree_data(rmutex_t, rlog->mutex);
 
     rfree_data(rlog_t, rlog);
 
@@ -439,9 +452,19 @@ exit1:
 
 //日期会乱序
 int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
-    rlog = rlog == NULL ? rlog_all[0] : rlog;
+    rlog = rlog != NULL ? rlog : (rlog_all != NULL ? rlog_all[0] : NULL);
 
-    if (rlog == NULL || level < rlog->level) {
+    if (rlog == NULL || !rlog->inited) {
+        char* buffer_temp = (char*)malloc(rlog_temp_data_size);
+        va_list print_params;
+        va_start(print_params, fmt);
+        vsnprintf(buffer_temp, rlog_temp_data_size - 1, fmt, print_params);
+        va_end(print_params);
+        printf("(rlog not ready) - %s", buffer_temp);
+        free(buffer_temp);
+        return 1;
+    }
+    if (level < rlog->level) {
         return rcode_ok;
     }
 #ifdef print2file
@@ -522,17 +545,32 @@ int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
 }
 
 int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
-    rlog = rlog == NULL ? rlog_all[0] : rlog;
+    rlog = rlog != NULL ? rlog : (rlog_all != NULL ? rlog_all[0] : NULL);
 
-    if (rlog == NULL || level < rlog->level) {
+    if (rlog == NULL || !rlog->inited) {
+        char* buffer_temp = (char*)malloc(rlog_temp_data_size);
+        va_list print_params;
+        va_start(print_params, fmt);
+        int len_temp = vsnprintf(buffer_temp, rlog_temp_data_size - 1, fmt, print_params);
+        rassert(len_temp < rlog_temp_data_size, "");
+        va_end(print_params);
+        printf("(rlog not ready) - %s", buffer_temp);
+        free(buffer_temp);
+        return 1;
+    }
+    if (level < rlog->level) {
         return rcode_ok;
     }
 
     if (unlikely(rlog->log_items[level] == NULL)) {
-		va_list print_params;
-		va_start(print_params, fmt);
-		printf(fmt, print_params);
-		va_end(print_params);
+        char* buffer_temp1 = (char*)malloc(rlog_temp_data_size);
+        va_list print_params1;
+        va_start(print_params1, fmt);
+        int len_temp1 = vsnprintf(buffer_temp1, rlog_temp_data_size - 1, fmt, print_params1);
+        rassert(len_temp1 < rlog_temp_data_size, "");
+        va_end(print_params1);
+        printf("(rlog item not ready, error!!!) - %s", buffer_temp1);
+        free(buffer_temp1);
         return -1;
     }
 

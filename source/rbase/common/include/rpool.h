@@ -1,6 +1,7 @@
 ﻿#ifndef RAY_POOL_H
 #define RAY_POOL_H
 
+#include "rmemory.h"
 #include "rlog.h"
 #include "rlist.h"
 
@@ -112,7 +113,7 @@ extern rpool_chain_node_t* rpool_chain;
 		rinfo(#TYPE" poolBlock is NULL\n"); \
         return NULL; /* malloc failed */ \
     } \
-    poolBlock->items = calloc(num, sizeof(rpool_##TYPE##_item_t)); \
+    poolBlock->items = raycmalloc_type(num, rpool_##TYPE##_item_t); \
     if (!poolBlock->items) \
     { \
         rayfree(poolBlock); \

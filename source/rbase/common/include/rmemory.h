@@ -22,6 +22,7 @@ extern "C" {
 #ifndef rmemory_enable_tracer
 
 #define raymalloc(elem_size) malloc((elem_size))
+#define raymalloc_type(elem_type) malloc(sizeof(elem_type))
 #define raycmalloc(count, elem_size) calloc((count), (elem_size))
 #define raycmalloc_type(count, elem_type) calloc((count), sizeof(elem_type))
 #define rayfree(ptr) \
@@ -33,6 +34,7 @@ do { \
 #else //rmemory_enable_tracer
 
 #define raymalloc(elem_size) rmem_malloc_trace((elem_size), get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__)
+#define raymalloc_type(elem_type) rmem_malloc_trace(sizeof(elem_type), get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__)
 #define raycmalloc(count, elem_size) rmem_cmalloc_trace((elem_size), (count), get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__)
 #define raycmalloc_type(count, elem_type) (elem_type*)rmem_cmalloc_trace(sizeof(elem_type), (count), get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__)
 #define rayfree(ptr) \

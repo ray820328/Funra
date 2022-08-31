@@ -1,3 +1,13 @@
+/**
+
+错误：
+没有调用 rmutex_init，调用了 rmutex_uninit，崩溃。
+
+
+
+
+ */
+
 #include "logger.h"
 #include <assert.h>
 #include <stdarg.h>

@@ -93,9 +93,9 @@ extern "C" {
 #include <mswsock.h>
 #include <climits>
 
-#define get_filename(x) strrchr(x, '\\') ? strrchr(x, '\\') + 1 : x
-#define likely(x) x
-#define unlikely(x) x
+#define get_filename(x) strrchr((x), '\\') ? strrchr((x), '\\') + 1 : (x)
+#define likely(x) (x)
+#define unlikely(x) (x)
 
 #define access(param1, param2) _access(param1, param2)
 
@@ -156,11 +156,7 @@ extern "C" {
 
 #else //RAY_USE_POOL
 #define rnew_data(T) (T*)raymalloc(sizeof(T))
-#define rfree_data(T, data) \
-            do { \
-			    rayfree(data); \
-			    data = NULL; \
-            } while(0)
+#define rfree_data(T, data) rayfree(data);
 
 #endif //RAY_USE_POOL
 
