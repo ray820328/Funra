@@ -103,14 +103,23 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
     //    rdict_init_entry(&new_entry[i], 0, 0);
     //}
 
-    rdict_entry_t *entry = rdict_get_buckets(d);
-    if (entry == NULL) {
+    rdict_entry_t *entry_old = rdict_get_entry(d, 0);
+    if (entry_old == NULL) {
         d->capacity = dest_capacity;// *(d->entry));
         d->size = 0;
         d->buckets = bucket_count;
+
         rdict_set_buckets(d, new_entry);
 
         return rdict_code_ok;
+    }
+    else {
+        if likely(d->free_func == NULL) {
+            rdata_free(rdict_entry_t, entry_old);
+        }
+        else {
+            d->free_func(entry_old);
+        }
     }
 
 	rdebug("expand map, size : capacity = %"rdict_size_t_format" : %"rdict_size_t_format" -> %"rdict_size_t_format,

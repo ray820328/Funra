@@ -75,6 +75,7 @@ static void rlist_test(void **state) {
 
             rlist_rpush(ret_list, value);
         }
+        rstr_free(value);
     }
 
     assert_int_equal(ret_list->len, count);
@@ -105,7 +106,7 @@ static void rlist_test(void **state) {
         node = rlist_next(&it);
     }
 
-    rdestroy_object(ret_list, rlist_destroy);
+    rdata_destroy(ret_list, rlist_destroy);
 
     assert_false(ret_list);
 }

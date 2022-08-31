@@ -59,9 +59,6 @@ typedef struct rdict_entry_t {
     //struct rdict_entry_t *next;
 } rdict_entry_t;
 
-typedef rdict_entry_t* (*rdict_malloc_entries_type)(rdict_size_t capacity);
-typedef int (*rdict_free_entries_type)(rdict_entry_t* entries);
-
 typedef void* (*rdict_malloc_func_type)(size_t elem_size);
 typedef void* (*rdict_calloc_func_type)(size_t count, size_t elem_size);
 typedef void (*rdict_free_func_type)(void* ptr);
@@ -203,7 +200,7 @@ void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
 
 #define rdict_get_buckets(d) ((d)->entry ? ((d)->entry) : NULL)
 #define rdict_set_buckets(d, buckets) (d)->entry = (buckets)
-#define rdict_get_entry(d, pos) ((d)->entry ? (d)->entry + (pos) : NULL)
+#define rdict_get_entry(d, pos) ((d)->entry ? ((d)->entry + (pos)) : NULL)
 #define rdict_get_entry_raw(entry, pos) ((entry) ? (entry) + (pos) : NULL)
 #define rdict_hash_key(d, key) (d)->hash_func((key))
 #define rdict_init_entry(entry, k, v) (entry)->key.ptr = (k); (entry)->value.ptr = (v)
@@ -232,7 +229,7 @@ void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
 /* ------------------------------- APIs ------------------------------------*/
 
 rdict_t* rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext, 
-    rdict_malloc_entries_type malloc_entries_func, rdict_free_entries_type free_entries_func);
+    rdict_malloc_func_type malloc_func, rdict_calloc_func_type calloc_func, rdict_free_func_type free_func);
 int rdict_expand(rdict_t* d, rdict_size_t capacity);
 int rdict_add(rdict_t* d, void* key, void* val);
 int rdict_remove(rdict_t* d, const void* key);

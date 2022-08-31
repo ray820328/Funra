@@ -28,8 +28,8 @@ extern "C" {
 #endif
 
 /* ------------------------------- Structs ------------------------------------*/
-typedef void* (*rlist_fn_malloc_node_val)(void *val);
-typedef void (*rlist_fnfree_node_val)(void *val);
+typedef void* (*rlist_malloc_node_val_func_type)(void *val);
+typedef void (*rlist_free_node_val_func_type)(void *val);
 
 typedef enum {
     rlist_dir_head,
@@ -46,8 +46,8 @@ typedef struct rlist_t {
     rlist_node_t *head;
     rlist_node_t *tail;
     unsigned int len;
-    rlist_fn_malloc_node_val malloc_node_val;
-    rlist_fnfree_node_val free_node_val;
+    rlist_malloc_node_val_func_type malloc_node_val;
+    rlist_free_node_val_func_type free_node_val;
     rcom_compare_func_type compare_node_val;
 } rlist_t;
 
@@ -72,8 +72,8 @@ typedef struct rlist_iterator_t {
             (self) = rlist_create(); \
         } \
         rassert((self) != NULL, ""); \
-        self->malloc_node_val = (rlist_fn_malloc_node_val)T##_copy_func; \
-        self->free_node_val = (rlist_fnfree_node_val)T##_free_func; \
+        self->malloc_node_val = (rlist_malloc_node_val_func_type)T##_copy_func; \
+        self->free_node_val = (rlist_free_node_val_func_type)T##_free_func; \
         self->compare_node_val = (rcom_compare_func_type)T##_compare_func; \
     } while(0)
 

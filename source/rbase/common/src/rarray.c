@@ -129,7 +129,7 @@ void rarray_clear(rarray_t* ar) {
             ar->free_value_func(temp);
         }
     }
-    rclear_data_array(ar->items, ar->value_size * ar->capacity);
+    rdata_clear_array(ar->items, ar->value_size * ar->capacity);
     ar->size = 0;
 }
 
