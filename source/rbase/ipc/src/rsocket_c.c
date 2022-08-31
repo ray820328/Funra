@@ -60,8 +60,8 @@ static void after_write(uv_write_t *req, int status) {
     local_write_req_t* wr = (local_write_req_t*)req->data;
     ripc_data_source_t* datasource = wr->ds;
     rbuffer_skip(datasource->write_buff, wr->write_size);
-    rfree_data(local_write_req_t, wr);
-    rfree_data(uv_write_t, req);
+    rdata_free(local_write_req_t, wr);
+    rdata_free(uv_write_t, req);
 
     rdebug("writing buff left bytes: %d - %d\n", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
 }
@@ -85,11 +85,11 @@ static void send_data(ripc_data_source_t* ds, void* data) {
     buf.base = rbuffer_read_start_dest(ds_client->write_buff);
     buf.len = rbuffer_size(ds_client->write_buff);
 
-    wr = rnew_data(local_write_req_t);
+    wr = rdata_new(local_write_req_t);
     wr->ds = ds_client;
     wr->write_size = buf.len;
 
-    req = rnew_data(uv_write_t);
+    req = rdata_new(uv_write_t);
     req->data = wr;
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
@@ -111,8 +111,8 @@ static void on_close(uv_handle_t* peer) {
 
     rbuffer_release(ds_client->read_cache);
     rbuffer_release(ds_client->write_buff);
-    rfree_data(ripc_data_source_t, ds_client);
-    rfree_data(uv_tcp_t, peer);
+    rdata_free(ripc_data_source_t, ds_client);
+    rdata_free(uv_tcp_t, peer);
 }
 
 static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
@@ -212,12 +212,12 @@ static void connect_cb(uv_connect_t* req, int status) {
 
 exit1:
     if (req != NULL) {
-        rfree_data(uv_connect_t, req);
+        rdata_free(uv_connect_t, req);
     }
 }
 
 static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
-    uv_connect_t* connect_req = rnew_data(uv_connect_t);
+    uv_connect_t* connect_req = rdata_new(uv_connect_t);
 
     struct sockaddr_in addr;
     int ret_code;
@@ -243,7 +243,7 @@ static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
     
 exit1:
     if (ret_code != 0) {
-        rfree_data(uv_connect_t, connect_req);
+        rdata_free(uv_connect_t, connect_req);
     }
 }
 

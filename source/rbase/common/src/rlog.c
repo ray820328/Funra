@@ -165,7 +165,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
         log_level_str = file_seperate ? rlog_level_2str(cur_level) : rlog_level_2str(RLOG_ALL);
 
         if (is_init) {
-            log_item = rnew_data(rlog_info_t);
+            log_item = rdata_new(rlog_info_t);
             memset(log_item, 0, sizeof(rlog_info_t));
             if (log_item == NULL) {
                 printf("init log item failed, %s.\n", log_level_str);
@@ -176,11 +176,11 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
             log_item->level = cur_level;
 
             //todo Ray ...
-            log_item->item_buffer = raymalloc(rlog_temp_data_size);
+            log_item->item_buffer = rdata_new_buffer(rlog_temp_data_size);
             log_item->item_buffer[0] = '\0';
-            log_item->buffer = raymalloc(rlog_cache_data_size);
+            log_item->buffer = rdata_new_buffer(rlog_cache_data_size);
             log_item->buffer[0] = '\0';
-            log_item->item_fmt = raymalloc(rlog_temp_data_size);
+            log_item->item_fmt = rdata_new_buffer(rlog_temp_data_size);
             log_item->item_fmt[0] = '\0';
         }
         else {
@@ -231,7 +231,7 @@ int rlog_init(const char* log_default_filename, const rlog_level_t log_default_l
     int ret_code = rcode_ok;
     rmutex_init(&rlog_mutex);
 
-    rlog_t* rlog = rnew_data(rlog_t);
+    rlog_t* rlog = rdata_new(rlog_t);
 	memset(rlog, 0, sizeof(rlog_t));
     ret_code = rlog_init_log(rlog, log_default_filename, log_default_level, log_default_seperate_file, file_size);
 	if (ret_code != rcode_ok) {
@@ -240,7 +240,7 @@ int rlog_init(const char* log_default_filename, const rlog_level_t log_default_l
 
     rmutex_lock(&rlog_mutex);
 
-    rlog_all = (rlog_t**)rnew_data_array(sizeof(rlog_t*), 2);
+    rlog_all = (rlog_t**)rdata_new_array(sizeof(rlog_t*), 2);
     rlog_all[0] = rlog;
     rlog_all[1] = NULL;
 
@@ -250,7 +250,7 @@ int rlog_init(const char* log_default_filename, const rlog_level_t log_default_l
 
 exit1:
     if (ret_code != rcode_ok && rlog != NULL) {
-        rfree_data(rlog_t, rlog);
+        rdata_free(rlog_t, rlog);
     }
 
     return ret_code;
@@ -271,7 +271,7 @@ int rlog_uninit() {
         rlog_all[i] = NULL;
     }
 
-    rfree_data_array(rlog_all);
+    rdata_free_array(rlog_all);
 
     rmutex_uninit(&rlog_mutex);
 
@@ -288,7 +288,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
 
     rmutex_lock(&rlog_mutex);
 
-    rlog->mutex = rnew_data(rmutex_t);
+    rlog->mutex = rdata_new(rmutex_t);
     rmutex_init(rlog->mutex);
     rlog->level = level == RLOG_ALL ? RLOG_VERB : level;
     rlog->file_seperate = file_seperate;
@@ -375,15 +375,15 @@ int rlog_uninit_log(rlog_t* rlog) {
                 rlog->log_items[cur_level]->item_fmt = NULL;
             }
 
-			rfree_data(rlog_info_t, rlog->log_items[cur_level]);
+			rdata_free(rlog_info_t, rlog->log_items[cur_level]);
 			rlog->log_items[cur_level] = NULL;
 		}
 	}
 
     rmutex_uninit(rlog->mutex);
-    rfree_data(rmutex_t, rlog->mutex);
+    rdata_free(rmutex_t, rlog->mutex);
 
-    rfree_data(rlog_t, rlog);
+    rdata_free(rlog_t, rlog);
 
 	rmutex_unlock(&rlog_mutex);
 

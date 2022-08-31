@@ -147,23 +147,24 @@ extern "C" {
 //#define RAY_USE_POOL
 
 #ifdef RAY_USE_POOL
-#define rnew_data(T) rcheck_value(true, rpool_get(T, rget_pool(T)))
-#define rfree_data(T, data) \
+#define rdata_new(T) rcheck_value(true, rpool_get(T, rget_pool(T)))
+#define rdata_free(T, data) \
             do { \
                 rpool_free(T, data, rget_pool(T)); \
                 data = NULL; \
             } while(0)
 
 #else //RAY_USE_POOL
-#define rnew_data(T) (T*)raymalloc(sizeof(T))
-#define rfree_data(T, data) rayfree(data);
+#define rdata_new(T) (T*)raymalloc(sizeof(T))
+#define rdata_new_buffer(size) raymalloc((size))
+#define rdata_free(T, data) rayfree(data);
 
 #endif //RAY_USE_POOL
 
-#define rnew_data_array(elem_size, count) raycmalloc((count), (elem_size))
-#define rnew_data_type_array(elem_type, count) (elem_type*)raycmalloc_type((count), elem_type)
+#define rdata_new_array(elem_size, count) raycmalloc((count), (elem_size))
+#define rdata_new_type_array(elem_type, count) (elem_type*)raycmalloc_type((count), elem_type)
 #define rclear_data_array(data, size_block) memset((data), 0, (size_block))
-#define rfree_data_array(data) \
+#define rdata_free_array(data) \
             do { \
 			    free(data); \
 			    (data) = NULL; \

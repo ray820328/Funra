@@ -164,7 +164,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		require_len = ipc_data.len - data_head_len;
-		ipc_data.data = rstr_new(require_len + 1);
+		ipc_data.data = rdata_new_buffer(require_len + 1);
 		read_len = rbuffer_read(buffer, (char*)(ipc_data.data), require_len);
 
 		rdebug("received msg: %d - %d - %d\n", require_len, read_len, rbuffer_size(buffer));
@@ -184,7 +184,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 			//rsocket_s.send(datasource, &data_send);
 		}
 
-		rfree_data(char, ipc_data.data);
+		rdata_free(char, ipc_data.data);
 	}
 
     ret_code = handler->on_after(handler, ds, data);

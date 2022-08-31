@@ -10,7 +10,7 @@
 #include "rlist.h"
 
 rlist_t* rlist_create() {
-    rlist_t* self = rnew_data(rlist_t);
+    rlist_t* self = rdata_new(rlist_t);
     rassert(self != NULL, "");
     self->head = NULL;
     self->tail = NULL;
@@ -52,7 +52,7 @@ void rlist_destroy(rlist_t *self) {
         curr = next;
     }
 
-    rfree_data(rlist_t, self);
+    rdata_free(rlist_t, self);
 }
 
 /*
@@ -62,7 +62,7 @@ void rlist_destroy(rlist_t *self) {
 rlist_node_t* rlist_rpush(rlist_t *self, void* nodeValue) {
     if (!nodeValue) return NULL;//不支持空节点
 
-    rlist_node_t* node = rnew_data(rlist_node_t);
+    rlist_node_t* node = rdata_new(rlist_node_t);
     if (!node) {
         return NULL;
     }
@@ -134,7 +134,7 @@ rlist_node_t* rlist_lpop(rlist_t *self) {
 rlist_node_t* rlist_lpush(rlist_t *self, void* nodeValue) {
     if (!nodeValue) return NULL;//不支持空节点
 
-    rlist_node_t* node = rnew_data(rlist_node_t);
+    rlist_node_t* node = rdata_new(rlist_node_t);
     if (!node) {
         return NULL;
     }

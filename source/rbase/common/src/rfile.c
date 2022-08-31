@@ -506,7 +506,7 @@ int rdir_make(const char* path, bool recursive) {
     rstr_free(temp_path2);
 
 	if (dirs != NULL) {
-		char* format_path = rstr_new(path_len + 1);
+		char* format_path = rstr_new(path_len);
 		rstr_reset(format_path);
 
 		char* dir_cur = NULL;
@@ -680,7 +680,7 @@ int _rdir_list(rlist_t* ret_list, const char* path, bool only_file, bool sub_dir
     format_path[path_len + 2] = rstr_end;
 
 #ifdef file_system_unicode
-    char file_full_name[file_path_len_max * 3 + 1];
+    char file_full_name[file_path_len_max * 3];
     WCHAR win_file_path[MAX_PATH];
     WIN32_FIND_DATA file_find_data;
     win_file_path[0] = rstr_end;

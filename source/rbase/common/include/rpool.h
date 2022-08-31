@@ -306,11 +306,11 @@ extern rpool_chain_node_t* rpool_chain;
   } \
   rattribute_unused(static TYPE* malloc_##TYPE##_data (size_t size) \
   { \
-    return rnew_data(TYPE); \
+    return rdata_new(TYPE); \
   }) \
   rattribute_unused(static void free_##TYPE##_data (TYPE* data) \
   { \
-    rfree_data(TYPE, data); \
+    rdata_free(TYPE, data); \
   })
 
 

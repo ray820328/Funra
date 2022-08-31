@@ -44,7 +44,7 @@ static void set_value_func_default(void* data_ext, rdict_entry_t* entry, const v
 
 rdict_t *rdict_create(rdict_size_t init_capacity, rdict_size_t bucket_capacity, void* data_ext,
     rdict_malloc_func_type malloc_func, rdict_calloc_func_type calloc_func, rdict_free_func_type free_func) {
-    rdict_t* d = malloc_func == NULL ? rnew_data(rdict_t) : malloc_func(sizeof(rdict_t));
+    rdict_t* d = malloc_func == NULL ? rdata_new(rdict_t) : malloc_func(sizeof(rdict_t));
 
     d->entry = NULL;
     d->entry_null = NULL;
@@ -94,7 +94,7 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
     rdict_size_t bucket_count = capacity % d->bucket_capacity == 0 ? capacity / d->bucket_capacity : capacity / d->bucket_capacity + 1;
     rdict_size_t dest_capacity = bucket_count * d->bucket_capacity;
     rdict_entry_t *new_entry = NULL;
-    new_entry = d->calloc_func == NULL ? rnew_data_type_array(rdict_entry_t, dest_capacity) : d->calloc_func(dest_capacity, sizeof(rdict_entry_t));
+    new_entry = d->calloc_func == NULL ? rdata_new_type_array(rdict_entry_t, dest_capacity) : d->calloc_func(dest_capacity, sizeof(rdict_entry_t));
     if (new_entry == NULL) {
 		rerror("invalid malloc.");
         return rdict_code_error;
@@ -183,7 +183,7 @@ int rdict_add(rdict_t* d, void* key, void* val) {
     }
     if (!key) {
         if (!d->entry_null) {
-            d->entry_null = d->malloc_func == NULL ? rnew_data(rdict_entry_t) : d->malloc_func(sizeof(rdict_entry_t));
+            d->entry_null = d->malloc_func == NULL ? rdata_new(rdict_entry_t) : d->malloc_func(sizeof(rdict_entry_t));
             d->size += 1;
             rdict_set_key(d, d->entry_null, key);
         } else {
@@ -238,7 +238,7 @@ int rdict_remove(rdict_t* d, const void* key) {
             rdict_free_value(d, d->entry_null);
 
             if likely(d->free_func == NULL) {
-                rfree_data(rdict_entry_t, d->entry_null);
+                rdata_free(rdict_entry_t, d->entry_null);
             }
             else {
                 d->free_func(d->entry_null);
@@ -301,7 +301,7 @@ void rdict_clear(rdict_t* d) {
         rdict_free_value(d, d->entry_null);
 
         if likely(d->free_func == NULL) {
-            rfree_data(rdict_entry_t, d->entry_null);
+            rdata_free(rdict_entry_t, d->entry_null);
         }
         else {
             d->free_func(d->entry_null);
@@ -326,7 +326,7 @@ void rdict_release(rdict_t* d) {
     rdict_clear(d);
 
     if likely(d->free_func == NULL) {
-        rfree_data(rdict_t, d);
+        rdata_free(rdict_t, d);
     }
     else {
         d->free_func(d);
@@ -352,7 +352,7 @@ rdict_entry_t * rdict_find(rdict_t* d, const void* key) {
 }
 
 rdict_iterator_t* rdict_it_heap(rdict_t* d) {
-    rdict_iterator_t* it = d->malloc_func == NULL ? rnew_data(rdict_iterator_t) : d->malloc_func(sizeof(rdict_iterator_t));
+    rdict_iterator_t* it = d->malloc_func == NULL ? rdata_new(rdict_iterator_t) : d->malloc_func(sizeof(rdict_iterator_t));
 
     if (d == NULL || d->entry == NULL) {
         return it;

@@ -127,7 +127,7 @@ char** rstr_make_array(const int count, ...) {
     //for (int i = 0; i < 10 && matchs[i].rm_so != -1; i++) {
     //    int len = matchs[i].rm_eo - matchs[i].rm_so;
     //    if (len) {
-    //        char* record = rstr_new(len + 1);
+    //        char* record = rstr_new(len);
     //        memcpy(record, src + matchs[i].rm_so, len);
     //        record[len] = rstr_end;
     //        rarray_add(array_ins, record);

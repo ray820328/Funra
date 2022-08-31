@@ -26,7 +26,7 @@ static int compare_func_default(const void* obj1, const void* obj2) {
 }
 
 static int _rarray_alloc(rarray_t* ar, rarray_size_t capacity) {
-    void** dest_ptr = rnew_data_array(ar->value_size, capacity);
+    void** dest_ptr = rdata_new_array(ar->value_size, capacity);
     if (dest_ptr == NULL) {
         rerror("expand failed."Li);
         return rarray_code_error;
@@ -40,7 +40,7 @@ static int _rarray_alloc(rarray_t* ar, rarray_size_t capacity) {
             memcpy(dest_ptr, ar->items, copy_len * (ar)->value_size);
         }
 
-        rfree_data_array(ar->items);
+        rdata_free_array(ar->items);
     }
 
     ar->items = dest_ptr;
@@ -50,7 +50,7 @@ static int _rarray_alloc(rarray_t* ar, rarray_size_t capacity) {
 }
 
 rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
-    rarray_t* ar = rnew_data(rarray_t);
+    rarray_t* ar = rdata_new(rarray_t);
 
     ar->items = NULL;
 
@@ -108,7 +108,7 @@ void** rarray_get_all(rarray_t* ar) {
         return NULL;
     }
 
-    void** dest_ptr = rnew_data_array(ar->value_size, rarray_size(ar));
+    void** dest_ptr = rdata_new_array(ar->value_size, rarray_size(ar));
     if (dest_ptr == NULL) {
         rerror("rarray_get_all failed."Li);
         return NULL;
@@ -141,9 +141,9 @@ void rarray_release(rarray_t* ar) {
     rarray_clear(ar);
 
     if (ar->items != NULL) {
-        rfree_data_array(ar->items);
+        rdata_free_array(ar->items);
     }
-    rfree_data(rarray_t, ar);
+    rdata_free(rarray_t, ar);
 }
 
 bool rarray_exist(rarray_t* ar, const void* data) {

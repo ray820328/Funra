@@ -83,7 +83,7 @@ static rarray_t* _kmp_search(char* str, char* pattern, int count) {
                 j = rarray_at(array_key, j - 1);
             }
             else {
-                i = i + 1;
+                i++;
             }
         }
     }
@@ -132,7 +132,7 @@ char* rstr_concat_array(const char** src, const char* delim, bool suffix) {
 		dest_len += (rstr_len(str_cur) + delim_len);
 	}
 
-	char* dest = (char*)rstr_new(dest_len + 1u);
+	char* dest = (char*)rstr_new(dest_len);
 
 	rstr_array_for(src, str_cur) {
 		cur_len = rstr_len(str_cur);
@@ -196,7 +196,7 @@ char* rstr_sub(const char* src, size_t from, size_t dest_size, bool new) {
         return (char*)(src + from);//整个from字符串，不仅仅dest
     }
 
-    char* dest = rstr_new(dest_size + 1u);
+    char* dest = rstr_new(dest_size);
     rassert(dest != NULL, "dest is null.");
 
     memcpy(dest, src + from, dest_size);
@@ -363,7 +363,7 @@ char** rstr_split(const char* src, const char* delim) {
     //rarray_t* array_ins = NULL;
     //rarray_init(array_ins, rdata_type_string, data_len + 1);
 
-    char** ret = rstr_array_new(data_len + 1);
+    char** ret = rstr_array_new(data_len + 1);//todo Ray 必须 加1 ?
     char** token = NULL;
     size_t src_len = rstr_len(src);
     size_t delim_len = rstr_len(delim);

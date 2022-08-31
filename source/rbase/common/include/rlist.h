@@ -80,7 +80,7 @@ typedef struct rlist_iterator_t {
 #define rlist_free_node(self, node) \
     if ((node) != NULL) { \
         if((self) != NULL && (self)->free_node_val) (self)->free_node_val((node)->val); \
-        rfree_data(rlist_node_t, (node)); \
+        rdata_free(rlist_node_t, (node)); \
     } \
 
 #define rlist_size(self) (self)->len

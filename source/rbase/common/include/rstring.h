@@ -38,7 +38,7 @@ extern char* rstr_empty_const;
 #define rstr_is_empty(rstr) ((rstr) == NULL || (rstr) == rstr_empty)
 #define rstr_sizeof(rstr) sizeof(rstr)
 
-#define rstr_array_new(size) (char**)rnew_data_array(sizeof(char*), (size) + 1)
+#define rstr_array_new(size) (char**)rdata_new_array(sizeof(char*), (size) + 1)
 #define rstr_array_count(rstr, count) \
     do { \
         count = 0; \
@@ -58,7 +58,7 @@ extern char* rstr_empty_const;
         for (size_t rstr##_free_index = 0; rstr##_free_item = *((char**)rstr + rstr##_free_index), rstr##_free_item != rstr_array_end; rstr##_free_index++) { \
             rstr_free(rstr##_free_item); \
         } \
-        rfree_data_array(rstr); \
+        rdata_free_array(rstr); \
     }
     
 //注意类型长度默认lld，num为int等溢出

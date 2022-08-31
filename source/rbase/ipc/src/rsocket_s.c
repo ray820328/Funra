@@ -30,7 +30,7 @@ static void on_connection(uv_stream_t*, int status);
 
 static void read_alloc_dynamic(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
     rinfo("new buff, size: %d\n", suggested_size);
-    buf->base = rstr_new(suggested_size);
+    buf->base = rdata_new_buffer(suggested_size);
     buf->len = suggested_size;
 }
 /** 强制要求使用buffer/cache 编码解码 **/
@@ -49,7 +49,7 @@ static void read_alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf
 //
 //    rdebug("send_data: %d\n", data->len);
 //
-//    wr = rnew_data(local_write_req_t);
+//    wr = rdata_new(local_write_req_t);
 //    wr->buf = uv_buf_init(data->data, data->len);
 //
 //    ret_code = uv_write(&wr->req, handle, &wr->buf, 1, after_write);
@@ -60,7 +60,7 @@ static void read_alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf
 //
 //exit1:
 //    if (wr != NULL) {
-//        //rfree_data(local_write_req_t, wr);//释放在after_write里面
+//        //rdata_free(local_write_req_t, wr);//释放在after_write里面
 //    }
 //}
 
@@ -79,11 +79,11 @@ static void on_connection(uv_stream_t* server, int status) {
         rgoto(1);
     }
 
-    ds_client = rnew_data(ripc_data_source_t);
+    ds_client = rdata_new(ripc_data_source_t);
 
     switch (rsocket_ctx->share.stream_type) {
     case ripc_type_tcp:
-        stream = rnew_data(uv_tcp_t);
+        stream = rdata_new(uv_tcp_t);
         if (stream == NULL) {
             rerror("stream oom.");
             rgoto(1);
@@ -98,7 +98,7 @@ static void on_connection(uv_stream_t* server, int status) {
         break;
 
     case ripc_type_pipe:
-        stream = rnew_data(uv_pipe_t);
+        stream = rdata_new(uv_pipe_t);
         ret_code = uv_pipe_init(rsocket_ctx->share.loop, (uv_pipe_t*)stream, 0);
         if (ret_code != 0) {
             rerror("error on uv_pipe_init: %d\n", ret_code);
@@ -148,16 +148,16 @@ exit1:
         if (stream != NULL) {
             switch (rsocket_ctx->share.stream_type) {
             case ripc_type_tcp:
-                rfree_data(uv_tcp_t, stream);
+                rdata_free(uv_tcp_t, stream);
                 break;
             case ripc_type_pipe:
-                rfree_data(uv_pipe_t, stream);
+                rdata_free(uv_pipe_t, stream);
                 break;
             }
         }
 
         if (datasource != NULL) {
-            rfree_data(ripc_data_source_t, stream);
+            rdata_free(ripc_data_source_t, stream);
         }
     }
 }
@@ -172,7 +172,7 @@ static void after_shutdown_client(uv_shutdown_t* req, int status) {
 
     uv_close((uv_handle_t*)req->handle, on_close);
 
-    rfree_data(uv_shutdown_t, req);
+    rdata_free(uv_shutdown_t, req);
 }
 
 static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
@@ -199,7 +199,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         }
 
         if (uv_is_writable(handle)) {
-            sreq = rnew_data(uv_shutdown_t);
+            sreq = rdata_new(uv_shutdown_t);
             ret_code = uv_shutdown(sreq, handle, after_shutdown_client);
             if (ret_code != 0) {
                 rerror("error on shutdown, code: %d\n", ret_code);
@@ -291,8 +291,8 @@ static void after_write(uv_write_t *req, int status) {
     local_write_req_t* wr = (local_write_req_t*)req->data;
     ripc_data_source_t* datasource = wr->ds;
     rbuffer_skip(datasource->write_buff, wr->write_size);
-    rfree_data(local_write_req_t, wr);
-    rfree_data(uv_write_t, req);
+    rdata_free(local_write_req_t, wr);
+    rdata_free(uv_write_t, req);
     //free_write_req(req);
 
     rdebug("writing buff left bytes: %d - %d\n", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
@@ -317,11 +317,11 @@ static void send_data(ripc_data_source_t* ds, void* data) {
     buf.base = rbuffer_read_start_dest(datasource->write_buff);
     buf.len = rbuffer_size(datasource->write_buff);
 
-    wr = rnew_data(local_write_req_t);
+    wr = rdata_new(local_write_req_t);
     wr->ds = datasource;
     wr->write_size = buf.len;
 
-    req = rnew_data(uv_write_t);
+    req = rdata_new(uv_write_t);
     req->data = wr;
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
@@ -346,8 +346,8 @@ static void on_close(uv_handle_t* peer) {
 
         rbuffer_release(datasource->read_cache);
         rbuffer_release(datasource->write_buff);
-        rfree_data(ripc_data_source_t, datasource);
-        rfree_data(uv_tcp_t, peer);
+        rdata_free(ripc_data_source_t, datasource);
+        rdata_free(uv_tcp_t, peer);
     }
     else if (datasource->ds_type == ripc_data_source_type_server) {
         rerror("on_close error, cant release server.\n");
@@ -367,7 +367,7 @@ static void on_server_close(uv_handle_t* handle) {
 //        rerror("error on shutdown: %d\n", status);
 //    }
 //
-//    rfree_data(uv_shutdown_t, req);
+//    rdata_free(uv_shutdown_t, req);
 //}
 //static uv_udp_send_t* send_alloc(void) {
 //    uv_udp_send_t* req = udp_data_list_free;
