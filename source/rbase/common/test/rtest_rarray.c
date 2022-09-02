@@ -199,7 +199,6 @@ static void rarray_string_test(void **state) {
 
     rarray_release(array_ins);
 
-
     uninit_benchmark();
 }
 

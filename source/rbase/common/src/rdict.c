@@ -112,15 +112,7 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
         rdict_set_buckets(d, new_entry);
 
         return rdict_code_ok;
-    }
-    else {
-        if likely(d->free_func == NULL) {
-            rdata_free(rdict_entry_t, entry_old);
-        }
-        else {
-            d->free_func(entry_old);
-        }
-    }
+    }//旧的空间必须到最后释放
 
 	rdebug("expand map, size : capacity = %"rdict_size_t_format" : %"rdict_size_t_format" -> %"rdict_size_t_format,
         d->size, d->capacity, dest_capacity);
@@ -131,7 +123,7 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
     rdict_entry_t* entry_next = NULL;
     rdict_entry_t* entry_start = entry_next = rdict_get_buckets(d);
     rdict_entry_t* new_bucket_cur = NULL;
-    rdict_size_t inc = 0;
+    rdict_size_t inc = 0u;
     for (rdict_size_t i = 0; i < d->capacity; ) {
         entry_next = entry_start + i;
 
@@ -141,8 +133,8 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
         }
 
         new_bucket_cur = _find_bucket_raw(d->hash_func, new_entry, entry_next->key.ptr, bucket_count, d->bucket_capacity);
-        for (inc = 0; new_bucket_cur && new_bucket_cur->key.ptr != NULL; ++new_bucket_cur, ++inc) {
-            if (inc >= d->bucket_capacity - 1) {
+        for (inc = 0u; new_bucket_cur && new_bucket_cur->key.ptr != NULL; ++new_bucket_cur, ++inc) {
+            if (d->bucket_capacity > 0 && (inc >= d->bucket_capacity - 1)) {
                 if likely(d->free_func == NULL) {
                     rayfree(new_entry);//释放当前申请的块
                 }
@@ -301,7 +293,7 @@ int rdict_remove(rdict_t* d, const void* key) {
 }
 
 void rdict_clear(rdict_t* d) {
-    if (!d) {
+    if (d == NULL) {
         return;
     }
 
@@ -334,10 +326,17 @@ void rdict_clear(rdict_t* d) {
 void rdict_release(rdict_t* d) {
     rdict_clear(d);
 
+    rdict_entry_t *entry = rdict_get_entry(d, 0);
     if likely(d->free_func == NULL) {
+        if (entry) {
+            rdata_free(rdict_entry_t, entry);
+        }
         rdata_free(rdict_t, d);
     }
     else {
+        if (entry) {
+            d->free_func(entry);
+        }
         d->free_func(d);
     }
 }

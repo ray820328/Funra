@@ -162,11 +162,7 @@ extern "C" {
 #define rdata_new_array(elem_size, count) raycmalloc((count), (elem_size))
 #define rdata_new_type_array(elem_type, count) (elem_type*)raycmalloc_type((count), elem_type)
 #define rdata_clear_array(data, size_block) memset((data), 0, (size_block))
-#define rdata_free_array(data) \
-            do { \
-			    free(data); \
-			    (data) = NULL; \
-            } while(0)
+#define rdata_free_array(data) rayfree(data)
 
 #define rmin(a, b) ((a)<(b)?(a):(b))
 #define rmax(a, b) ((a)>(b)?(a):(b))

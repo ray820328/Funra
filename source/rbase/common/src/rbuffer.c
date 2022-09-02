@@ -135,6 +135,9 @@ void rbuffer_clear(rbuffer_t* d) {
 
 void rbuffer_release(rbuffer_t* d) {
     if (d != NULL) {
+        if (d->data != NULL) {
+            rdata_free(uint8_t, d->data);
+        }
         rdata_free(rbuffer_t, d);
     }
 }

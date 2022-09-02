@@ -83,7 +83,7 @@ int run_rdict_tests(int benchmark_output) {
 
 static void rdict_int_test(void **state) {// 整数类型 k-v
     (void)state;
-    int count = 10000;
+    int count = 1000;
     int j;
 
     rdict_entry_t de_temp = { .key.ptr = 0, .value.ptr = 0 };
@@ -189,7 +189,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
 static void rdict_string_test(void **state) {// string类型 k-v
     (void)state;
-    int count = 10000;
+    int count = 1000;
     int j;
     char key_str_buffer[24] = { '\0' };
     char value_str_buffer[24] = { '\0' };

@@ -37,6 +37,8 @@ static int init_platform() {
 }
 
 int main(int argc, char **argv) {
+
+    rmem_init();
     rtools_init();
 
     rlog_init("${date}/rtest_ipc_${index}.log", RLOG_ALL, false, 100);
@@ -56,6 +58,8 @@ int main(int argc, char **argv) {
     // }
 
     rlog_uninit();
+    rtools_uninit();
+    rmem_uninit();
 
 #ifndef __SUNPRO_C
     return rcode_ok;

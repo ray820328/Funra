@@ -50,11 +50,12 @@ static rarray_t* _kmp_search(char* str, char* pattern, int count) {
     const int len_pattern = strlen(pattern);
     int len_src = strlen(str);
 
-    static rarray_t* array_key = NULL;
+    //static rarray_t* array_key = NULL;
+    rarray_t* array_key = NULL;
     if (array_key == NULL) {
         rarray_init(array_key, rdata_type_int, 30);
     }
-    rarray_clear(array_key);
+    //rarray_clear(array_key);
 
     _kmp_next_array_init(pattern, len_pattern, array_key);
 
@@ -87,6 +88,8 @@ static rarray_t* _kmp_search(char* str, char* pattern, int count) {
             }
         }
     }
+
+    rarray_release(array_key);
 
     return array_ret;
 }

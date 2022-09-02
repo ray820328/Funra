@@ -380,6 +380,8 @@ int rlog_uninit_log(rlog_t* rlog) {
 		}
 	}
 
+    rstr_free(rlog->filepath_template);
+
     rmutex_uninit(rlog->mutex);
     rdata_free(rmutex_t, rlog->mutex);
 

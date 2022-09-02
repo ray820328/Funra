@@ -103,6 +103,8 @@ static int run_tests(int output) {
         }
     }
 
+    rdata_destroy(test_entries, rlist_destroy);
+
     return ret_code;
 }
 

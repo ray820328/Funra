@@ -80,16 +80,16 @@ static void rlist_test(void **state) {
 
     assert_int_equal(ret_list->len, count);
 
-    char* nodeValue = "listNode - 3";
-    rlist_node_t *nodeFind = rlist_find(ret_list, nodeValue);
+    char* node_val = "listNode - 3";
+    rlist_node_t *node_find = rlist_find(ret_list, node_val);
 
-    assert_true(nodeFind);
+    assert_true(node_find);
 
-    assert_true(nodeFind->val);
+    assert_true(node_find->val);
 
-    assert_string_equal(nodeFind->val, nodeValue);
+    assert_string_equal(node_find->val, node_val);
 
-    rlist_remove(ret_list, nodeFind);
+    rlist_remove(ret_list, node_find);
 
     assert_int_equal(ret_list->len, count - 1);
 
@@ -98,6 +98,10 @@ static void rlist_test(void **state) {
     assert_true(rlist_at(ret_list, -1)); // last
     assert_true(rlist_at(ret_list, -3)); // third last
     assert_false(rlist_at(ret_list, count - 1));
+
+    node_find = rlist_rpop(ret_list);
+    assert_false(rlist_at(ret_list, count - 2));
+    rlist_free_node(ret_list, node_find);
 
     rlist_iterator_t it = rlist_it(ret_list, rlist_dir_tail);
     rlist_node_t *node = rlist_next(&it);

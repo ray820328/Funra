@@ -59,18 +59,18 @@ void rlist_destroy(rlist_t *self) {
  * Append the given node to the list
  * and return the node, NULL on failure.
  */
-rlist_node_t* rlist_rpush(rlist_t *self, void* nodeValue) {
-    if (!nodeValue) return NULL;//不支持空节点
+rlist_node_t* rlist_rpush(rlist_t *self, void* node_val) {
+    if (!node_val) return NULL;//不支持空节点
 
     rlist_node_t* node = rdata_new(rlist_node_t);
     if (!node) {
         return NULL;
     }
     if (self->malloc_node_val) {
-        node->val = self->malloc_node_val(nodeValue);
+        node->val = self->malloc_node_val(node_val);
     }
     else {
-        node->val = nodeValue;
+        node->val = node_val;
     }
 
     if (self->len > 0) {
@@ -131,8 +131,8 @@ rlist_node_t* rlist_lpop(rlist_t *self) {
  * Prepend the given node to the list
  * and return the node, NULL on failure.
  */
-rlist_node_t* rlist_lpush(rlist_t *self, void* nodeValue) {
-    if (!nodeValue) return NULL;//不支持空节点
+rlist_node_t* rlist_lpush(rlist_t *self, void* node_val) {
+    if (!node_val) return NULL;//不支持空节点
 
     rlist_node_t* node = rdata_new(rlist_node_t);
     if (!node) {
@@ -140,10 +140,10 @@ rlist_node_t* rlist_lpush(rlist_t *self, void* nodeValue) {
     }
 
     if (self->malloc_node_val) {
-        node->val = self->malloc_node_val(nodeValue);
+        node->val = self->malloc_node_val(node_val);
     }
     else {
-        node->val = nodeValue;
+        node->val = node_val;
     }
 
     if (self->len) {

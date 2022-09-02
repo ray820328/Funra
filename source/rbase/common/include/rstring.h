@@ -172,6 +172,31 @@ R_API int rstr_trim(char* src);
 R_API int rstr_trim_begin(char* src);
 R_API int rstr_trim_end(char* src);
 
+
+#ifdef rmemory_enable_tracer
+
+//static char* rstr_cpy_warp(char* data, int len, long thread_id, char* filename, char* func, int line) {
+//
+//    if (data == NULL || data == rstr_empty) {
+//        return rstr_empty;
+//}
+//
+//    unsigned int data_len = (unsigned int)strlen((char*)data);
+//    data_len = len > 0 && len < data_len ? len : data_len;
+//    char* data_copy = rmem_malloc_trace(data_len + 1, thread_id, filename, func, line);
+//    if (data_copy == NULL) {
+//        return rstr_empty;
+//    }
+//
+//    //rstr_init(data_copy);
+//    memcpy(data_copy, data, data_len);
+//    data_copy[data_len] = rstr_end;
+//    return data_copy;
+//}
+//#define rstr_cpy(src, len) rstr_cpy_warp(src, len, get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__) 
+
+#endif //rmemory_enable_tracer
+
 #ifdef __cplusplus
 }
 #endif

@@ -43,7 +43,6 @@ do { \
     (ptr) = NULL; \
 } while (0)
 
-
 #endif //rmemory_enable_tracer
 
 //#define rmemory_show_detail_realtime

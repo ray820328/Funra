@@ -34,6 +34,7 @@ static void rstring_index_test(void **state) {
     start_benchmark(0);
     char* str_join = rstr_join("test", "_", "join", " string", rstr_array_end);
     assert_true(rstr_eq(str_join, "test_join string"));
+    rstr_free(str_join);
     end_benchmark("rstring join.");
 
     start_benchmark(0);
@@ -71,12 +72,12 @@ static void rstring_index_test(void **state) {
     rstr_array_for(tokens, token_cur) {
         int cur_len = rstr_len(token_cur);
         assert_true(cur_len > 0);
-    } 
+    }
 
-	char* str_concat_full = rstr_concat_array((const char**)tokens, delim, false);
-	assert_true(rstr_eq(str_concat_full, test_full_str));
+    char* str_concat_full = rstr_concat_array((const char**)tokens, delim, false);
+    assert_true(rstr_eq(str_concat_full, test_full_str));
 
-	rstr_free(str_concat_full);
+    rstr_free(str_concat_full);
     rstr_array_free(tokens);
 
     end_benchmark("rstring token.");
