@@ -29,41 +29,22 @@ static rsocket_server_ctx_uv_t rsocket_ctx;
 static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
 
 static void* run_server(void* arg) {
-    rsocket_s.open(&rsocket_ctx);
-    //while (true)
-    //{
-    //    rtools_wait_mills(10);
-    //}
-    rinfo("end, run_server: %s", (char *)arg);
 
-    return arg;
-}
-
-static void rsocket_s_full_test(void **state) {
-	(void)state;
-	int count = 10000;
-	init_benchmark(1024, "test rsocket_s (%d)", count);
-
-    int ret_code = 0;
-
-    start_benchmark(0);
-    ret_code = rthread_start(&socket_thread, run_server, "socket_thread"); // 0;// 
-    //run_server("socket_thread");
-    assert_true(ret_code == 0);
-    
-	end_benchmark("start listening.");
-		
-    uninit_benchmark();
-}
-
-static int setup(void **state) {
     //初始化配置
-	rsocket_ctx_uv_t* ctx = (rsocket_ctx_uv_t*)&rsocket_ctx;
+    rsocket_ctx_uv_t* ctx = (rsocket_ctx_uv_t*)&rsocket_ctx;
     ctx->id = 1;
     ctx->stream_type = ripc_type_tcp;
     ctx->stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-    ctx->loop = uv_default_loop();
     ctx->stream_state = 1;
+    //ctx->loop = uv_default_loop();
+    uv_loop_t loop;
+    assert_true(0 == uv_loop_init(&loop));
+#ifdef _WIN32
+    assert_true(UV_ENOSYS == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, 0));
+#else
+    assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
+#endif
+    ctx->loop = &loop;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_server;
@@ -105,12 +86,41 @@ static int setup(void **state) {
     handler->notify = rcodec_encode_default.notify;
 
     rsocket_s.init(&rsocket_ctx, ctx->cfg);
+
+    rsocket_s.open(&rsocket_ctx);
+    //while (true)
+    //{
+    //    rtools_wait_mills(10);
+    //}
+    rinfo("end, run_server: %s", (char *)arg);
+
+    return arg;
+}
+
+static void rsocket_s_full_test(void **state) {
+	(void)state;
+	int count = 10000;
+	init_benchmark(1024, "test rsocket_s (%d)", count);
+
+    int ret_code = 0;
+
+    start_benchmark(0);
+    ret_code = rthread_start(&socket_thread, run_server, "socket_thread"); // 0;// 
+    //run_server("socket_thread");
+    assert_true(ret_code == 0);
+    
+	end_benchmark("start listening.");
+		
+    uninit_benchmark();
+}
+
+static int setup(void **state) {
     rthread_init(&socket_thread);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-
+    rinfo("join socket_thread.");
     void* param;
     int ret_code = rthread_join(&socket_thread, &param);
     assert_true(ret_code == 0);

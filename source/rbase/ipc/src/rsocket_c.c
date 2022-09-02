@@ -239,7 +239,7 @@ static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
         rgoto(1);
     }
 
-    rinfo("client connect to {%s:%d} success.", ip, port);
+    rinfo("client connecting to {%s:%d}..", ip, port);
     
 exit1:
     if (ret_code != 0) {

@@ -24,19 +24,17 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static rsocket_ctx_uv_t rsocket_ctx;
-//static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
-
-static void* run_client(void* arg) {
-    rsocket_c.open(&rsocket_ctx);
-    rinfo("end, run_client: %s", (char *)arg);
-
-    return arg;
-}
+static rsocket_ctx_uv_t rsocket_ctx;//非线程安全
+static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
 
 static void repeat_cb(uv_timer_t* handle) {
     assert_true(handle != NULL);
     assert_true(1 == uv_is_active((uv_handle_t*)handle));
+    if (rsocket_ctx.stream_state != 1) {
+        rtools_wait_mills(5000);
+        rsocket_c.open(&rsocket_ctx);
+        return;
+    }
 
     ripc_data_default_t data;
     data.cmd = 11;
@@ -51,42 +49,20 @@ static void repeat_cb(uv_timer_t* handle) {
     //}
 }
 
-static void rsocket_c_full_test(void **state) {
-	(void)state;
-	int count = 1;
-	init_benchmark(1024, "test rsocket_c (%d)", count);
+static void* run_client(void* arg) {
 
-    int ret_code = 0;
-
-    uv_timer_t timer_repeat;
-    ret_code = uv_timer_init(rsocket_ctx.loop, &timer_repeat);
-    assert_true(ret_code == 0);
-    ret_code = uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
-    assert_true(ret_code == 0);
-
-    start_benchmark(0);
-    //ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
-    run_client("socket_thread");
-	end_benchmark("open connection.");
-
-    rtools_wait_mills(1000);
-
-    start_benchmark(0);
-    
-    end_benchmark("send data.");
-
-    rtools_wait_mills(3000);
-		
-    uninit_benchmark();
-}
-
-
-static int setup(void **state) {
     rsocket_ctx.id = 1;
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-    rsocket_ctx.loop = uv_default_loop();
-    rsocket_ctx.stream_state = 0;
+    rsocket_ctx.stream_state = 0; 
+    uv_loop_t loop;
+    assert_true(0 == uv_loop_init(&loop));
+#ifdef _WIN32
+    assert_true(UV_ENOSYS == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, 0));
+#else
+    assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
+#endif
+    rsocket_ctx.loop = &loop;// uv_default_loop();
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -125,6 +101,41 @@ static int setup(void **state) {
 
     rsocket_c.init(&rsocket_ctx, rsocket_ctx.cfg);
 
+    uv_timer_t timer_repeat;
+    uv_timer_init(rsocket_ctx.loop, &timer_repeat);
+    uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
+
+    rsocket_c.open(&rsocket_ctx);
+    rinfo("end, run_client: %s", (char *)arg);
+
+    rsocket_c.uninit(&rsocket_ctx);
+
+    return arg;
+}
+
+static void rsocket_c_full_test(void **state) {
+	(void)state;
+	int count = 1;
+	init_benchmark(1024, "test rsocket_c (%d)", count);
+
+    int ret_code = 0;
+
+    start_benchmark(0);
+    ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
+    //run_client("socket_thread");
+	end_benchmark("open connection.");
+
+    rtools_wait_mills(1000);
+
+    rinfo("client uv started.");
+
+    start_benchmark(0);
+}
+
+
+static int setup(void **state) {
+    rthread_init(&socket_thread);
+
     return rcode_ok;
 }
 static int teardown(void **state) {
@@ -133,8 +144,6 @@ static int teardown(void **state) {
     //assert_true(ret_code == 0);
     //assert_true(rstr_eq((char *)param, "socket_thread"));
     
-    rsocket_c.uninit(&rsocket_ctx);
-
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
@@ -146,9 +155,9 @@ int run_rsocket_c_tests(int benchmark_output) {
 
     int64_t timeNow = rtime_nanosec();
 
-    //result += cmocka_run_group_tests(test_group2, setup, teardown);
-	setup(0);
-	rsocket_c_full_test(0);
+    result += cmocka_run_group_tests(test_group2, setup, teardown);
+	//setup(0);
+	//rsocket_c_full_test(0);
     printf("run_rsocket_c_tests, failed: %d, all time: %"PRId64" us\n", result, (rtime_nanosec() - timeNow));
 
     return result == 0 ? rcode_ok : -1;
