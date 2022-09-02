@@ -285,7 +285,7 @@ static int ripc_open(void* ctx) {
 
     client_connect(rsocket_ctx);
 
-    return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
+    return rcode_ok;
 }
 
 static int ripc_close(void* ctx) {
@@ -305,11 +305,15 @@ static int ripc_close(void* ctx) {
 }
 
 static int ripc_start(void* ctx) {
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    return rcode_ok;
+    return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
 }
 
 static int ripc_stop(void* ctx) {
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
+
+    uv_stop(rsocket_ctx->loop);
 
     return rcode_ok;
 }

@@ -26,6 +26,7 @@
 
 static rsocket_ctx_uv_t rsocket_ctx;//非线程安全
 static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
+static volatile int repeat_cb_count = 3;
 
 static void repeat_cb(uv_timer_t* handle) {
     assert_true(handle != NULL);
@@ -42,11 +43,11 @@ static void repeat_cb(uv_timer_t* handle) {
     data.len = rstr_len(data.data);
     rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
 
-    //repeat_cb_called++;
+    repeat_cb_count--;
 
-    //if (repeat_cb_called == 5) {
-    //    uv_close((uv_handle_t*)handle, repeat_close_cb);
-    //}
+    if (repeat_cb_count <= 0) {
+        uv_close((uv_handle_t*)handle, NULL);
+    }
 }
 
 static void* run_client(void* arg) {
@@ -105,9 +106,10 @@ static void* run_client(void* arg) {
     uv_timer_init(rsocket_ctx.loop, &timer_repeat);
     uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
 
-    rsocket_c.open(&rsocket_ctx);
+    rsocket_c.start(&rsocket_ctx);
     rinfo("end, run_client: %s", (char *)arg);
 
+    rsocket_c.stop(&rsocket_ctx);
     rsocket_c.uninit(&rsocket_ctx);
 
     return arg;
