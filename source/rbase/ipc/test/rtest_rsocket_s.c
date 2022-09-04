@@ -46,6 +46,8 @@ static void* run_server(void* arg) {
 #endif
     ctx->loop = &loop;
 
+	rsocket_ctx.share.ipc_entry = &rsocket_s;
+
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_server;
     ds->ds_id = ctx->id;
@@ -85,9 +87,9 @@ static void* run_server(void* arg) {
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
-    rsocket_s.init(&rsocket_ctx, ctx->cfg);
+	rsocket_ctx.share.ipc_entry->init(&rsocket_ctx, ctx->cfg);
 
-    rsocket_s.open(&rsocket_ctx);
+	rsocket_ctx.share.ipc_entry->open(&rsocket_ctx);
     //while (true)
     //{
     //    rtools_wait_mills(10);
@@ -126,7 +128,7 @@ static int teardown(void **state) {
     assert_true(ret_code == 0);
     assert_true(rstr_eq((char *)param, "socket_thread"));
 
-    rsocket_s.uninit(&rsocket_ctx);
+	rsocket_ctx.share.ipc_entry->uninit(&rsocket_ctx);
 
     //todo Ray 释放ctx资源配置
 

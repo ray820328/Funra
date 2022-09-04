@@ -44,6 +44,7 @@ typedef struct rsocket_ctx_uv_s {
 	uint64_t id;
 
 	rsocket_cfg_t* cfg;
+	ripc_entry_t* ipc_entry;
 	rdata_handler_t* in_handler;
 	rdata_handler_t* out_handler;
 

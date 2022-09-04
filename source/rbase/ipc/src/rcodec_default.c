@@ -11,6 +11,7 @@
 #include "rlog.h"
 
 #include "ripc.h"
+#include "rsocket.h"
 #include "rcodec_default.h"
 
  /** ------------------------编码---------------------- **/
@@ -174,14 +175,20 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		ipc_data.data[require_len] = rstr_end;
-		rinfo("received msg: %d - %s", require_len, ipc_data.data);
+		rinfo("received(%d : %d) msg: %d - %s", datasource->ds_type, ipc_data.cmd, require_len, ipc_data.data);
 
 		if (datasource->ds_type == ripc_data_source_type_client) {
+			rsocket_ctx_uv_t* rsocket_ctx = datasource->ctx;
 			ripc_data_default_t data_send;
 			data_send.cmd = 101;
 			data_send.data = rstr_cpy("server response.", 0);//未释放
 			data_send.len = rstr_len(data_send.data);
-			//rsocket_s.send(datasource, &data_send);
+			//rsocket_ctx->ipc_entry->send(datasource, &data_send);
+
+			if (ipc_data.cmd == 999) {
+				rsocket_ctx->ipc_entry->close(rsocket_ctx);
+				rsocket_ctx->ipc_entry->stop(rsocket_ctx);
+			}
 		}
 
 		rdata_free(char, ipc_data.data);

@@ -39,13 +39,18 @@ static void repeat_cb(uv_timer_t* handle) {
 
     ripc_data_default_t data;
     data.cmd = 11;
-    data.data = rstr_cpy("send test", 0);
+    data.data = rstr_cpy("client send test", 0);
     data.len = rstr_len(data.data);
     rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
 
     repeat_cb_count--;
 
     if (repeat_cb_count <= 0) {
+		data.cmd = 999;
+		data.data = rstr_cpy("client close test", 0);
+		data.len = rstr_len(data.data);
+		rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+
         uv_close((uv_handle_t*)handle, NULL);
     }
 }

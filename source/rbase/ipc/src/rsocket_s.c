@@ -614,6 +614,12 @@ static int ripc_start(void* ctx) {
 }
 
 static int ripc_stop(void* ctx) {
+	rinfo("socket server stop.");
+
+	rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
+
+	uv_stop(rsocket_ctx->loop);
+	//uv_loop_close(rsocket_ctx->loop);
 
     return rcode_ok;
 }
