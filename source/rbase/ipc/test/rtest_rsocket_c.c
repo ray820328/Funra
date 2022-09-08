@@ -31,8 +31,8 @@ static volatile int repeat_cb_count = 3;
 static void repeat_cb(uv_timer_t* handle) {
     assert_true(handle != NULL);
     assert_true(1 == uv_is_active((uv_handle_t*)handle));
-    if (rsocket_ctx.stream_state != 1) {
-        rtools_wait_mills(5000);
+    if (rsocket_ctx.stream_state != ripc_state_ready) {
+        rtools_wait_mills(3000);
         rsocket_c.open(&rsocket_ctx);
         return;
     }
@@ -51,7 +51,7 @@ static void repeat_cb(uv_timer_t* handle) {
 		data.len = rstr_len(data.data);
 		rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
 
-        uv_close((uv_handle_t*)handle, NULL);
+        //uv_close((uv_handle_t*)handle, NULL);
     }
 }
 
@@ -60,7 +60,7 @@ static void* run_client(void* arg) {
     rsocket_ctx.id = 1;
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-    rsocket_ctx.stream_state = 0; 
+    rsocket_ctx.stream_state = ripc_state_init;
     uv_loop_t loop;
     assert_true(0 == uv_loop_init(&loop));
 #ifdef _WIN32
@@ -112,10 +112,17 @@ static void* run_client(void* arg) {
     uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
 
     rsocket_c.start(&rsocket_ctx);
-    rinfo("end, run_client: %s", (char *)arg);
 
     rsocket_c.stop(&rsocket_ctx);
     rsocket_c.uninit(&rsocket_ctx);
+
+    rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
+    rdata_free(rdata_handler_t, rsocket_ctx.out_handler);
+    rdata_free(ripc_data_source_t, ds);
+    rdata_free(rsocket_cfg_t, cfg);
+    rdata_free(uv_tcp_t, rsocket_ctx.stream);
+
+    rinfo("end, run_client success: %s", (char *)arg);
 
     return arg;
 }

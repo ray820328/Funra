@@ -107,11 +107,11 @@ static void on_close(uv_handle_t* peer) {
     //todo Ray 暂时仅tcp
     ripc_data_source_t* ds_client = (ripc_data_source_t*)(peer->data);
     //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
-    rinfo("on close, id = %"PRIu64", ", ds_client->ds_id);
+    rinfo("on client close, id = %"PRIu64", ", ds_client->ds_id);
 
     rbuffer_release(ds_client->read_cache);
     rbuffer_release(ds_client->write_buff);
-    rdata_free(ripc_data_source_t, ds_client);
+    rdata_free(ripc_data_source_t, ds_client);//外面释放
     rdata_free(uv_tcp_t, peer);
 }
 
@@ -135,7 +135,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
             rerror("error on read: %d", nread);
             ret_code = ripc_close(ctx);
             if (ret_code != 0) {
-                rerror("error on ripc_close, code: %d", ret_code);
+                rerror("error on ripc_close eof, code: %d", ret_code);
             }
             return;
         }
@@ -199,7 +199,7 @@ static void connect_cb(uv_connect_t* req, int status) {
     ds_client->write_buff = NULL;
     rbuffer_init(ds_client->write_buff, write_buff_size);
 
-	ctx->stream_state = 1;
+	ctx->stream_state = ripc_state_ready;
     if (ctx->stream_type == ripc_type_tcp) {
         ret_code = uv_read_start((uv_stream_t*)(ctx->stream), read_alloc_static, after_read);
         if (ret_code != 0) {
@@ -271,9 +271,7 @@ static int ripc_uninit(void* ctx) {
 
     rinfo("socket client uninit.");
 
-    uv_stop(rsocket_ctx->loop);
-
-    rsocket_ctx->stream_state = 0;
+    rsocket_ctx->stream_state = ripc_state_uninit;
 
     return rcode_ok;
 }
@@ -290,16 +288,17 @@ static int ripc_open(void* ctx) {
 
 static int ripc_close(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
+    ripc_data_source_t* datasource = (ripc_data_source_t*)((uv_tcp_t*)(rsocket_ctx->stream))->data;
 
     rinfo("socket client close.");
 
-    if (rsocket_ctx->stream_state == 0) {
+    if (rsocket_ctx->stream_state == ripc_state_closed) {
         return rcode_ok;
     }
 
-    rsocket_ctx->stream_state = 0;
+    rsocket_ctx->stream_state = ripc_state_closed;
 
-    uv_close((uv_handle_t*)rsocket_ctx->stream, on_close);
+    uv_stop(rsocket_ctx->loop);
 
     return rcode_ok;
 }
@@ -307,13 +306,17 @@ static int ripc_close(void* ctx) {
 static int ripc_start(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
+    rinfo("socket client start.");
+
     return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
 }
 
 static int ripc_stop(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    uv_stop(rsocket_ctx->loop);
+    rinfo("socket client stop.");
+
+    uv_close((uv_handle_t*)rsocket_ctx->stream, on_close);
 
     return rcode_ok;
 }

@@ -22,7 +22,9 @@ extern "C" {
 #endif
 
 typedef struct rsocket_server_ctx_uv_s {
-	rsocket_ctx_uv_t share;
+    rsocket_ctx_fields;
+
+    rsocket_ctx_uv_fields;
 
     uint64_t sid_cur;
 

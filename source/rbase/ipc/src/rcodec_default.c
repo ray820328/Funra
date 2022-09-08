@@ -185,9 +185,8 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 			data_send.len = rstr_len(data_send.data);
 			//rsocket_ctx->ipc_entry->send(datasource, &data_send);
 
-			if (ipc_data.cmd == 999) {
-				rsocket_ctx->ipc_entry->close(rsocket_ctx);
-				rsocket_ctx->ipc_entry->stop(rsocket_ctx);
+            if (ipc_data.cmd == 999) {
+                rsocket_ctx->ipc_entry->stop(rsocket_ctx);
 			}
 		}
 

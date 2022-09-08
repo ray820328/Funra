@@ -46,7 +46,7 @@ static void* run_server(void* arg) {
 #endif
     ctx->loop = &loop;
 
-	rsocket_ctx.share.ipc_entry = &rsocket_s;
+	rsocket_ctx.ipc_entry = &rsocket_s;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_server;
@@ -87,13 +87,19 @@ static void* run_server(void* arg) {
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
-	rsocket_ctx.share.ipc_entry->init(&rsocket_ctx, ctx->cfg);
+	rsocket_ctx.ipc_entry->init(&rsocket_ctx, ctx->cfg);
+	rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->start(&rsocket_ctx);//loop until to call stop
 
-	rsocket_ctx.share.ipc_entry->open(&rsocket_ctx);
-    //while (true)
-    //{
-    //    rtools_wait_mills(10);
-    //}
+    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
+
+    rdata_free(rdata_handler_t, ctx->in_handler);
+    rdata_free(rdata_handler_t, ctx->out_handler);
+    rdata_free(ripc_data_source_t, ds);
+    rdata_free(rsocket_cfg_t, cfg);
+    rdata_free(uv_tcp_t, ctx->stream);
+
     rinfo("end, run_server: %s", (char *)arg);
 
     return arg;
@@ -127,8 +133,6 @@ static int teardown(void **state) {
     int ret_code = rthread_join(&socket_thread, &param);
     assert_true(ret_code == 0);
     assert_true(rstr_eq((char *)param, "socket_thread"));
-
-	rsocket_ctx.share.ipc_entry->uninit(&rsocket_ctx);
 
     //todo Ray 释放ctx资源配置
 

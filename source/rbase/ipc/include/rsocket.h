@@ -19,13 +19,26 @@
 extern "C" {
 #endif
 
-#define rsocket_session_fields \
+#define _rsocket_session_fields \
     ripc_type_t type; \
     uint64_t id; \
     void* userdata; \
     void* context; \
     int state; \
     bool is_encrypt
+
+#define rsocket_ctx_fields \
+    uint64_t id; \
+    rsocket_cfg_t* cfg; \
+    ripc_entry_t* ipc_entry; \
+    rdata_handler_t* in_handler; \
+    rdata_handler_t* out_handler; \
+    ripc_state_t stream_state
+
+#define rsocket_ctx_uv_fields \
+    uv_loop_t* loop; \
+    ripc_type_t stream_type; \
+    uv_handle_t* stream
 
 typedef struct rsocket_cfg_s {
     uint64_t id;
@@ -41,21 +54,9 @@ typedef struct rsocket_cfg_s {
 
 
 typedef struct rsocket_ctx_uv_s {
-	uint64_t id;
+    rsocket_ctx_fields;
 
-	rsocket_cfg_t* cfg;
-	ripc_entry_t* ipc_entry;
-	rdata_handler_t* in_handler;
-	rdata_handler_t* out_handler;
-
-	uv_loop_t* loop;
-	ripc_type_t stream_type;
-	uv_handle_t* stream;
-	int stream_state;//0 关闭
-	// uv_tcp_t* stream_tcp;
-	// uv_udp_t* stream_udp;
-	// uv_pipe_t* stream_pipe;
-	//uv_udp_send_t* udp_data_list_free;
+    rsocket_ctx_uv_fields;
 } rsocket_ctx_uv_t;
 
 

@@ -206,6 +206,7 @@ void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
 #define rdict_init_entry(entry, k, v) (entry)->key.ptr = (k); (entry)->value.ptr = (v)
 #define rdict_get_key(entry) ((entry)->key.ptr)
 #define rdict_get_value(entry) ((entry)->value.ptr)
+#define rdict_exists(d, key) rdict_find((d), (key)) != NULL
 #define rdict_size(d) ((d)->size)
 #define rdict_rehashing(d) ((d)->rehash_id != 0)
 

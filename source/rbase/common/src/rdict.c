@@ -145,7 +145,9 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
                 return rdict_expand(d, capacity * 2);//递归扩容
             }
         }
-        memcpy(new_bucket_cur, entry_next, sizeof(rdict_entry_t));//浅拷贝
+        if (new_bucket_cur) {
+            memcpy(new_bucket_cur, entry_next, sizeof(rdict_entry_t));//浅拷贝
+        }
 
         i++;
     }
@@ -183,7 +185,7 @@ int rdict_add(rdict_t* d, void* key, void* val) {
         return rdict_code_error;
     }
     if (!key) {
-        if (!d->entry_null) {
+        if (!d->entry_null) {//key为0只能一个，后来的直接冲掉，key一样逻辑正确
             d->entry_null = d->malloc_func == NULL ? rdata_new(rdict_entry_t) : d->malloc_func(sizeof(rdict_entry_t));
             d->size += 1;
             rdict_set_key(d, d->entry_null, key);
@@ -317,7 +319,6 @@ void rdict_clear(rdict_t* d) {
     }
 
     d->size = 0;
-    d->buckets = 0;
     if (d->entry) {
        memset(d->entry, 0, sizeof(rdict_entry_t) * d->capacity);
     }
