@@ -27,7 +27,7 @@ static void rtools_full_test(void **state) {
 
     start_benchmark(0);
     int rand_val = 0;
-    printf("rand_val = ", rand_val);
+    printf("rand_val = %d", rand_val);
     for (int i = 0; i < count; i++) {
         rand_val = rtools_rand_int(100, 200);
         printf("%d, ", rand_val);

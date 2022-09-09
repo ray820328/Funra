@@ -165,7 +165,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		require_len = ipc_data.len - data_head_len;
-		ipc_data.data = rdata_new_buffer(require_len + 1);
+		ipc_data.data = rdata_new_size(require_len + 1);
 		read_len = rbuffer_read(buffer, (char*)(ipc_data.data), require_len);
 
 		rdebug("received msg: %d - %d - %d", require_len, read_len, rbuffer_size(buffer));
@@ -175,22 +175,25 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		ipc_data.data[require_len] = rstr_end;
-		rinfo("received(%d : %d) msg: %d - %s", datasource->ds_type, ipc_data.cmd, require_len, ipc_data.data);
+        rinfo("received(ds_type=%d, cmd=%d) msg(len=%d): %s", datasource->ds_type, ipc_data.cmd, require_len, ipc_data.data);
+        rdata_free(char*, ipc_data.data);
 
-		if (datasource->ds_type == ripc_data_source_type_client) {
+        if (datasource->ds_type == ripc_data_source_type_client) {
 			rsocket_ctx_uv_t* rsocket_ctx = datasource->ctx;
-			ripc_data_default_t data_send;
+            ripc_data_default_t data_send;
+            rinfo("000");
 			data_send.cmd = 101;
 			data_send.data = rstr_cpy("server response.", 0);//未释放
-			data_send.len = rstr_len(data_send.data);
-			//rsocket_ctx->ipc_entry->send(datasource, &data_send);
+            data_send.len = rstr_len(data_send.data);
+            //rsocket_ctx->ipc_entry->send(datasource, &data_send);
+            rinfo("001");
+            rdata_free(char*, data_send.data);
 
             if (ipc_data.cmd == 999) {
                 rsocket_ctx->ipc_entry->stop(rsocket_ctx);
 			}
 		}
-
-		rdata_free(char, ipc_data.data);
+        rinfo("002");
 	}
 
     ret_code = handler->on_after(handler, ds, data);

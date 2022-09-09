@@ -32,7 +32,7 @@ static void on_connection(uv_stream_t*, int status);
 
 static void read_alloc_dynamic(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
     rinfo("new buff, size: %d", suggested_size);
-    buf->base = rdata_new_buffer(suggested_size);
+    buf->base = rdata_new_size(suggested_size);
     buf->len = suggested_size;
 }
 /** 强制要求使用buffer/cache 编码解码 **/
@@ -303,14 +303,13 @@ static void after_write(uv_write_t *req, int status) {
 static void send_data(ripc_data_source_t* ds, void* data) {
     int ret_code = 0;
     local_write_req_t* wr;
-    ripc_data_source_t* datasource = (ripc_data_source_t*)ds;
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ds->ctx;
     uv_write_t* req = NULL;
 
     //if (datasource == NULL || datasource->stream)
 
     if (rsocket_ctx->out_handler) {
-        ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, datasource, data);
+        ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, ds, data);
         if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d", ret_code);
             return;
@@ -319,19 +318,19 @@ static void send_data(ripc_data_source_t* ds, void* data) {
 
     uv_buf_t buf;
     //buf = uv_buf_init(data->data, data->len);//结构体内容复制
-    buf.base = rbuffer_read_start_dest(datasource->write_buff);
-    buf.len = rbuffer_size(datasource->write_buff);
+    buf.base = rbuffer_read_start_dest(ds->write_buff);
+    buf.len = rbuffer_size(ds->write_buff);
 
     wr = rdata_new(local_write_req_t);
-    wr->ds = datasource;
+    wr->ds = ds;
     wr->write_size = buf.len;
 
     req = rdata_new(uv_write_t);
     req->data = wr;
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
-    ret_code = uv_write(req, (uv_stream_t*)(datasource->stream), &buf, 1, after_write);
-    rdebug("send_data, req: %p, buf: %p", req, &buf);
+    ret_code = uv_write(req, (uv_stream_t*)(ds->stream), &buf, 1, after_write);
+    rdebug("end server send_data, req: %p, buf: %p", req, &buf);
     //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p", data->len, data->data, buf.base);
 
     if (ret_code != 0) {
@@ -351,8 +350,8 @@ static void on_session_close(uv_handle_t* peer) {
 
         rbuffer_release(datasource->read_cache);
         rbuffer_release(datasource->write_buff);
+        rdata_free(uv_tcp_t, datasource->stream);
         rdata_free(ripc_data_source_t, datasource);
-        rdata_free(uv_tcp_t, peer);
     }
     else if (datasource->ds_type == ripc_data_source_type_server) {
         rerror("on_session_close error, cant release server.");
@@ -673,11 +672,6 @@ static int ripc_stop(void* ctx) {
     uv_close(rsocket_ctx->stream, on_server_close);
 
     return rcode_ok;
-}
-
-static ripc_entry_t* get_ipc_entry(const char* key) {
-
-    return NULL;
 }
 
 const ripc_entry_t rsocket_s = {

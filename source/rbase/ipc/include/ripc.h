@@ -95,9 +95,6 @@ typedef struct ripc_entry_s {
     ripc_error_func error;
 } ripc_entry_t;
 
-R_API int ripc_init(const void* cfg_data);
-R_API int ripc_uninit();
-
 #ifdef __cplusplus
 }
 #endif

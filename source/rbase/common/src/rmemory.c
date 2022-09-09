@@ -65,7 +65,7 @@ int rmem_uninit() {
     return rcode_ok;
 }
 
-void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, char* func, int line) {
+void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, const char* func, int line) {
     void* ret = malloc(elem_size);
 #ifdef rmemory_show_detail_realtime
     rdebug("malloc. %d-%p from %ld, %s:%s-%d", elem_size, ret, thread_id, filename, func, line);
@@ -78,7 +78,7 @@ void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, char* 
     info->count = 0;
     info->thread_id = thread_id;
     info->filename = filename;
-    info->func = func;
+    info->func = (char*)func;
     info->line = line;
 
     rdict_add(rmem_trace_map, (int64_t)ret, info);
@@ -86,7 +86,7 @@ void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, char* 
     return ret;
 }
 
-void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* filename, char* func, int line) {
+void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* filename, const char* func, int line) {
     void* ret = calloc(count, elem_size);
 #ifdef rmemory_show_detail_realtime
     rdebug("calloc. %d-%p from %ld, %s:%s-%d", elem_size * count, ret, thread_id, filename, func, line);
@@ -99,7 +99,7 @@ void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* f
     info->count = count;
     info->thread_id = thread_id;
     info->filename = filename;
-    info->func = func;
+    info->func = (char*)func;
     info->line = line;
 
     rdict_add(rmem_trace_map, (int64_t)ret, info);
@@ -107,7 +107,7 @@ void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* f
     return ret;
 }
 
-int rmem_free(void* ptr, long thread_id, char* filename, char* func, int line) {
+int rmem_free(void* ptr, long thread_id, char* filename, const char* func, int line) {
 #ifdef rmemory_show_detail_realtime
     rdebug("free. %d-%p from %ld, %s:%s-%d", 0, ptr, thread_id, filename, func, line);
 #endif // rmemory_show_detail_realtime

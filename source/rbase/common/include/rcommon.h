@@ -129,8 +129,8 @@ extern "C" {
 #define rattribute_unused(declaration) __attribute__((unused)) declaration
 
 #define get_filename(x) basename(x)
-#define likely(x) __builtin_expect(!!(x), 1)
-#define unlikely(x) __builtin_expect(!!(x), 0)
+#define likely(x) (__builtin_expect(!!(x), 1))
+#define unlikely(x) (__builtin_expect(!!(x), 0))
 
 #define R_API extern
 
@@ -140,7 +140,7 @@ extern "C" {
 
 #ifdef RAY_USE_POOL
 #define rdata_new(T) rcheck_value(true, rpool_get(T, rget_pool(T)))
-#define rdata_new_buffer(size) raymalloc((size))
+#define rdata_new_size(size) raymalloc((size))
 #define rdata_free(T, data) \
     do { \
         rpool_free(T, data, rget_pool(T)); \
@@ -149,7 +149,7 @@ extern "C" {
 
 #else //RAY_USE_POOL
 #define rdata_new(T) (T*)raymalloc(sizeof(T))
-#define rdata_new_buffer(size) raymalloc((size))
+#define rdata_new_size(size) raymalloc((size))
 #define rdata_free(T, data) rayfree(data)
 
 #endif //RAY_USE_POOL

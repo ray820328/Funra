@@ -56,9 +56,9 @@ int rmem_init();
 int rmem_uninit();
 int rmem_statistics(char* filepath);
 
-void* rmem_malloc_trace(size_t size, long thread_id, char* filename, char* func, int line);
-void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* filename, char* func, int line);
-int rmem_free(void* ptr, long thread_id, char* filename, char* func, int line);
+void* rmem_malloc_trace(size_t size, long thread_id, char* filename, const char* func, int line);
+void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* filename, const char* func, int line);
+int rmem_free(void* ptr, long thread_id, char* filename, const char* func, int line);
 
 #ifdef __cplusplus
 }

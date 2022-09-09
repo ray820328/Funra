@@ -176,11 +176,11 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
             log_item->level = cur_level;
 
             //todo Ray ...
-            log_item->item_buffer = rdata_new_buffer(rlog_temp_data_size);
+            log_item->item_buffer = rdata_new_size(rlog_temp_data_size);
             log_item->item_buffer[0] = '\0';
-            log_item->buffer = rdata_new_buffer(rlog_cache_data_size);
+            log_item->buffer = rdata_new_size(rlog_cache_data_size);
             log_item->buffer[0] = '\0';
-            log_item->item_fmt = rdata_new_buffer(rlog_temp_data_size);
+            log_item->item_fmt = rdata_new_size(rlog_temp_data_size);
             log_item->item_fmt[0] = '\0';
         }
         else {

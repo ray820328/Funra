@@ -20,7 +20,7 @@
 
 rbuffer_t* rbuffer_create(rbuffer_size_t init_capacity) {
     rbuffer_t* d = rdata_new(rbuffer_t);
-    d->data = rdata_new_buffer(init_capacity);
+    d->data = rdata_new_size(init_capacity);
     d->capacity = init_capacity;
     d->offset = d->pos = 0;
 

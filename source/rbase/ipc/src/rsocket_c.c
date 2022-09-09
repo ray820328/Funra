@@ -94,7 +94,7 @@ static void send_data(ripc_data_source_t* ds, void* data) {
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
     ret_code = uv_write(req, (uv_stream_t*)(ctx->stream), &buf, 1, after_write);
-    rdebug("send_data, req: %p, buf: %p", req, &buf);
+    rdebug("end client send_data, req: %p, buf: %p", req, &buf);
     //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p", data->len, data->data, buf.base);
 
     if (ret_code != 0) {
@@ -171,7 +171,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
             rerror("error on handler process, code: %d", ret_code);
             return;
         }
-
+        rinfo("111");
     }
 
 }

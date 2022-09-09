@@ -63,8 +63,6 @@ typedef struct rsocket_ctx_uv_s {
 R_API int rsocket_init(const void* cfg_data);
 R_API int rsocket_uninit();
 
-R_API ripc_entry_t* get_ipc_entry(const char* key);
-
 #ifdef __cplusplus
 }
 #endif

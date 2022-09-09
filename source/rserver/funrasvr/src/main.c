@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     ripc_init(NULL);
 
     while (true) {
-        wait_millsec(50);
+        rtools_wait_mills(50);
 
     }
     rinfo("timeNow: %"PRId64" 毫秒, %"PRId64" 微秒, %"PRId64" 纳秒, %"PRId64" us",

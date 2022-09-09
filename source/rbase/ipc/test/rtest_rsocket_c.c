@@ -42,6 +42,7 @@ static void repeat_cb(uv_timer_t* handle) {
     data.data = rstr_cpy("client send test", 0);
     data.len = rstr_len(data.data);
     rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+    rdata_free(char*, data.data);
 
     repeat_cb_count--;
 
@@ -49,7 +50,8 @@ static void repeat_cb(uv_timer_t* handle) {
 		data.cmd = 999;
 		data.data = rstr_cpy("client close test", 0);
 		data.len = rstr_len(data.data);
-		rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+        rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+        rdata_free(char*, data.data);
 
         //uv_close((uv_handle_t*)handle, NULL);
     }
@@ -143,7 +145,7 @@ static void rsocket_c_full_test(void **state) {
 
     rinfo("client uv started.");
 
-    start_benchmark(0);
+    uninit_benchmark();
 }
 
 
