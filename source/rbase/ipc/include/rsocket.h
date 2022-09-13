@@ -13,8 +13,6 @@
 #include "rcommon.h"
 #include "rinterface.h"
 
-#include "uv.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,11 +33,6 @@ extern "C" {
     rdata_handler_t* out_handler; \
     ripc_state_t stream_state
 
-#define rsocket_ctx_uv_fields \
-    uv_loop_t* loop; \
-    ripc_type_t stream_type; \
-    uv_handle_t* stream
-
 typedef struct rsocket_cfg_s {
     uint64_t id;
     uint64_t sid_min;
@@ -52,16 +45,11 @@ typedef struct rsocket_cfg_s {
     bool encrypt_msg;
 } rsocket_cfg_t;
 
-
-typedef struct rsocket_ctx_uv_s {
+typedef struct rsocket_ctx_s {
     rsocket_ctx_fields;
 
-    rsocket_ctx_uv_fields;
-} rsocket_ctx_uv_t;
-
-
-R_API int rsocket_init(const void* cfg_data);
-R_API int rsocket_uninit();
+    //rsocket_ctx_uv_fields;
+} rsocket_ctx_t;
 
 #ifdef __cplusplus
 }

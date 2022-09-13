@@ -25,80 +25,80 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static rsocket_server_ctx_uv_t rsocket_ctx;
+static rsocket_server_ctx_t rsocket_ctx;
 static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
 
 static void* run_server(void* arg) {
-
-    //初始化配置
-    rsocket_ctx_uv_t* ctx = (rsocket_ctx_uv_t*)&rsocket_ctx;
-    ctx->id = 1;
-    ctx->stream_type = ripc_type_tcp;
-    ctx->stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-    ctx->stream_state = 1;
-    //ctx->loop = uv_default_loop();
-    uv_loop_t loop;
-    assert_true(0 == uv_loop_init(&loop));
-#ifdef _WIN32
-    assert_true(UV_ENOSYS == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, 0));
-#else
-    assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
-#endif
-    ctx->loop = &loop;
-
-	rsocket_ctx.ipc_entry = &rsocket_s;
-
-    ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
-    ds->ds_type = ripc_data_source_type_server;
-    ds->ds_id = ctx->id;
-    ds->ctx = &rsocket_ctx;
-
-    ((uv_tcp_t*)(ctx->stream))->data = ds;
-
-    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
-    ctx->cfg = cfg;
-    cfg->id = 1;
-    cfg->sid_min = 100000;
-    cfg->sid_max = 2000000;
-    rstr_set(cfg->ip, "0.0.0.0", 0);
-    cfg->port = 23000;
-
-    rsocket_ctx.sid_cur = cfg->sid_min;
-
-    rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    ctx->in_handler = handler;
-    handler->prev = NULL;
-    handler->next = NULL;
-    handler->on_before = rcodec_decode_default.on_before;
-    handler->process = rcodec_decode_default.process;
-    handler->on_after = rcodec_decode_default.on_after;
-    handler->on_next = rcodec_decode_default.on_next;
-    handler->on_notify = rcodec_decode_default.on_notify;
-    handler->notify = rcodec_decode_default.notify;
-
-    handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    ctx->out_handler = handler;
-    handler->prev = NULL;
-    handler->next = NULL;
-    handler->on_before = rcodec_encode_default.on_before;
-    handler->process = rcodec_encode_default.process;
-    handler->on_after = rcodec_encode_default.on_after;
-    handler->on_next = rcodec_encode_default.on_next;
-    handler->on_notify = rcodec_encode_default.on_notify;
-    handler->notify = rcodec_encode_default.notify;
-
-	rsocket_ctx.ipc_entry->init(&rsocket_ctx, ctx->cfg);
-	rsocket_ctx.ipc_entry->open(&rsocket_ctx);
-    rsocket_ctx.ipc_entry->start(&rsocket_ctx);//loop until to call stop
-
-    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
-    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
-
-    rdata_free(rdata_handler_t, ctx->in_handler);
-    rdata_free(rdata_handler_t, ctx->out_handler);
-    rdata_free(ripc_data_source_t, ds);
-    rdata_free(rsocket_cfg_t, cfg);
-    rdata_free(uv_tcp_t, ctx->stream);
+//
+//    //初始化配置
+//    rsocket_ctx_uv_t* ctx = (rsocket_ctx_uv_t*)&rsocket_ctx;
+//    ctx->id = 1;
+//    ctx->stream_type = ripc_type_tcp;
+//    ctx->stream = (uv_handle_t*)rdata_new(uv_tcp_t);
+//    ctx->stream_state = 1;
+//    //ctx->loop = uv_default_loop();
+//    uv_loop_t loop;
+//    assert_true(0 == uv_loop_init(&loop));
+//#ifdef _WIN32
+//    assert_true(UV_ENOSYS == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, 0));
+//#else
+//    assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
+//#endif
+//    ctx->loop = &loop;
+//
+//	rsocket_ctx.ipc_entry = &rsocket_s;
+//
+//    ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
+//    ds->ds_type = ripc_data_source_type_server;
+//    ds->ds_id = ctx->id;
+//    ds->ctx = &rsocket_ctx;
+//
+//    ((uv_tcp_t*)(ctx->stream))->data = ds;
+//
+//    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
+//    ctx->cfg = cfg;
+//    cfg->id = 1;
+//    cfg->sid_min = 100000;
+//    cfg->sid_max = 2000000;
+//    rstr_set(cfg->ip, "0.0.0.0", 0);
+//    cfg->port = 23000;
+//
+//    rsocket_ctx.sid_cur = cfg->sid_min;
+//
+//    rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
+//    ctx->in_handler = handler;
+//    handler->prev = NULL;
+//    handler->next = NULL;
+//    handler->on_before = rcodec_decode_default.on_before;
+//    handler->process = rcodec_decode_default.process;
+//    handler->on_after = rcodec_decode_default.on_after;
+//    handler->on_next = rcodec_decode_default.on_next;
+//    handler->on_notify = rcodec_decode_default.on_notify;
+//    handler->notify = rcodec_decode_default.notify;
+//
+//    handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
+//    ctx->out_handler = handler;
+//    handler->prev = NULL;
+//    handler->next = NULL;
+//    handler->on_before = rcodec_encode_default.on_before;
+//    handler->process = rcodec_encode_default.process;
+//    handler->on_after = rcodec_encode_default.on_after;
+//    handler->on_next = rcodec_encode_default.on_next;
+//    handler->on_notify = rcodec_encode_default.on_notify;
+//    handler->notify = rcodec_encode_default.notify;
+//
+//	rsocket_ctx.ipc_entry->init(&rsocket_ctx, ctx->cfg);
+//	rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+//    rsocket_ctx.ipc_entry->start(&rsocket_ctx);//loop until to call stop
+//
+//    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
+//    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
+//
+//    rdata_free(rdata_handler_t, ctx->in_handler);
+//    rdata_free(rdata_handler_t, ctx->out_handler);
+//    rdata_free(ripc_data_source_t, ds);
+//    rdata_free(rsocket_cfg_t, cfg);
+//    rdata_free(uv_tcp_t, ctx->stream);
 
     rinfo("end, run_server: %s", (char *)arg);
 

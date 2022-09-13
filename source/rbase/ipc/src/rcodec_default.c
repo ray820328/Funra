@@ -179,7 +179,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
         rdata_free(char*, ipc_data.data);
 
         if (datasource->ds_type == ripc_data_source_type_session) {
-			rsocket_ctx_uv_t* rsocket_ctx = datasource->ctx;
+			rsocket_ctx_t* rsocket_ctx = datasource->ctx;
             ripc_data_default_t data_send;
 			data_send.cmd = 101;
 			data_send.data = rstr_cpy("server response.", 0);//未释放

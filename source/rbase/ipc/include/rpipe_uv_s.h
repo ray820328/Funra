@@ -7,23 +7,25 @@
  * @author: Ray
  */
 
-#ifndef RSOCKET_C_H
-#define RSOCKET_C_H
+#ifndef RPIPE_S_H
+#define RPIPE_S_H
 
 #include "rcommon.h"
+#include "rdict.h"
 #include "ripc.h"
-#include "rsocket.h"
-#include "rcodec_default.h"
+
+#include "uv.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const ripc_entry_t rsocket_c;
+
+extern const ripc_entry_t rpipe_uv_s;
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // RSOCKET_C_H
+#endif // RPIPE_S_H

@@ -11,9 +11,10 @@ INCLUDE_DIRECTORIES(
 
 SET(SRC_LIB
     src/ripc.c
-    src/rsocket.c
     src/rsocket_s.c
     src/rsocket_c.c
+    src/rsocket_uv_s.c
+    src/rsocket_uv_c.c
     src/rcodec_default.c
 )
 
@@ -21,6 +22,8 @@ SET(SRC_BIN
     ${SRC_LIB}
     test/rtest_rcodec_default.c
     test/rtest.c
+    test/rtest_rsocket_uv_s.c
+    test/rtest_rsocket_uv_c.c
     test/rtest_rsocket_s.c
     test/rtest_rsocket_c.c
 )

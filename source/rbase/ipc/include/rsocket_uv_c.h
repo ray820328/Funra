@@ -7,23 +7,24 @@
  * @author: Ray
  */
 
-#ifndef RSOCKET_C_H
-#define RSOCKET_C_H
+#ifndef RSOCKET_UV_C_H
+#define RSOCKET_UV_C_H
 
 #include "rcommon.h"
 #include "ripc.h"
-#include "rsocket.h"
+#include "rsocket_uv.h"
 #include "rcodec_default.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const ripc_entry_t rsocket_c;
+
+extern const ripc_entry_t rsocket_uv_c;
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // RSOCKET_C_H
+#endif // RSOCKET_UV_C_H

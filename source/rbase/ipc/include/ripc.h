@@ -100,4 +100,4 @@ typedef struct ripc_entry_s {
 }
 #endif
 
-#endif
+#endif //RIPC_H

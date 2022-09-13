@@ -12,8 +12,6 @@
 
 int ripc_init(const void* cfg_data) {
 
-    rsocket_init(cfg_data);
-
     return rcode_ok;
 }
 

@@ -7,34 +7,34 @@
  * @author: Ray
  */
 
-#ifndef RSOCKET_S_H
-#define RSOCKET_S_H
+#ifndef RSOCKET_UV_S_H
+#define RSOCKET_UV_S_H
 
 #include "rcommon.h"
 #include "rdict.h"
 #include "ripc.h"
-#include "rsocket.h"
+#include "rsocket_uv.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct rsocket_server_ctx_s {
+typedef struct rsocket_server_ctx_uv_s {
     rsocket_ctx_fields;
 
-    //rsocket_ctx_uv_fields;
+    rsocket_ctx_uv_fields;
 
     uint64_t sid_cur;
 
     rdict_t* map_clients;
-} rsocket_server_ctx_t;
+} rsocket_server_ctx_uv_t;
 
 
-extern const ripc_entry_t rsocket_s;
+extern const ripc_entry_t rsocket_uv_s;
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // RSOCKET_S_H
+#endif // RSOCKET_UV_S_H

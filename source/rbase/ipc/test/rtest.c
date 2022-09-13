@@ -69,13 +69,12 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int ret_code;
 
-    rtest_add_test_entry(run_rsocket_c_tests);
     rtest_add_test_entry(run_rcodec_default_tests);
 
     ret_code = rcode_ok;
-    ret_code = run_rsocket_c_tests(output);
+    ret_code = run_rsocket_uv_c_tests(output);
 
-    ret_code = run_rsocket_s_tests(output);
+    ret_code = run_rsocket_uv_s_tests(output);
     if (ret_code != rcode_ok) {
         return ret_code;
     }
