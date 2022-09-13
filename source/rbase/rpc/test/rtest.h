@@ -26,6 +26,6 @@
 
 #include "include/rtest_com.h"
 
-int run_recs_tests(int benchmark_output);
+int run_rrpc_tests(int benchmark_output);
 
 #endif /* RTEST_H */

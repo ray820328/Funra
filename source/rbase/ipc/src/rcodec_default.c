@@ -178,22 +178,19 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
         rinfo("received(ds_type=%d, cmd=%d) msg(len=%d): %s", datasource->ds_type, ipc_data.cmd, require_len, ipc_data.data);
         rdata_free(char*, ipc_data.data);
 
-        if (datasource->ds_type == ripc_data_source_type_client) {
+        if (datasource->ds_type == ripc_data_source_type_session) {
 			rsocket_ctx_uv_t* rsocket_ctx = datasource->ctx;
             ripc_data_default_t data_send;
-            rinfo("000");
 			data_send.cmd = 101;
 			data_send.data = rstr_cpy("server response.", 0);//未释放
             data_send.len = rstr_len(data_send.data);
-            //rsocket_ctx->ipc_entry->send(datasource, &data_send);
-            rinfo("001");
+            rsocket_ctx->ipc_entry->send(datasource, &data_send);
             rdata_free(char*, data_send.data);
 
             if (ipc_data.cmd == 999) {
                 rsocket_ctx->ipc_entry->stop(rsocket_ctx);
 			}
 		}
-        rinfo("002");
 	}
 
     ret_code = handler->on_after(handler, ds, data);

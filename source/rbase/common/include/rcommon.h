@@ -136,6 +136,10 @@ extern "C" {
 
 #endif //WIN32
 
+#ifdef rmemory_enable_tracer
+    #include "rthread.h"
+#endif //不能提前，windows在win.h前包含会抽风
+
 //#define RAY_USE_POOL
 
 #ifdef RAY_USE_POOL
@@ -155,7 +159,7 @@ extern "C" {
 #endif //RAY_USE_POOL
 
 #define rdata_destroy(ptr, destroy_func) \
-    if ((ptr) && (destroy_func)) { \
+    if ((destroy_func)) { \
         (destroy_func)((ptr)); \
         (ptr) = NULL; \
     }

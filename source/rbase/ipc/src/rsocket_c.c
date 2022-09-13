@@ -171,7 +171,6 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
             rerror("error on handler process, code: %d", ret_code);
             return;
         }
-        rinfo("111");
     }
 
 }

@@ -259,7 +259,7 @@ exit1:
 int rlog_uninit() {
     int rcode = 0;
     rlog_t* rlog = NULL;
-    rlog_info_t* log_item = NULL;
+    // rlog_info_t* log_item = NULL;
 
 	for (int i = 0; rlog_all && rlog_all[i]; i++) {
         rlog = rlog_all[i];
@@ -341,13 +341,13 @@ int rlog_uninit_log(rlog_t* rlog) {
 
 	rlog->inited = false;
 
-    char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
+    FILE* last_file = NULL;//只支持两种，全散和单独一个文件
 
 	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
         if (rlog->log_items[cur_level] != NULL) {
             if (rlog->log_items[cur_level]->file_ptr) {
-                if (rstr_eq(last_filepath, rstr_empty) || !rstr_eq(last_filepath, rlog->log_items[cur_level]->filename)) {
-                    last_filepath = rlog->log_items[cur_level]->filename;
+                if (rlog->log_items[cur_level]->file_ptr != NULL && last_file != rlog->log_items[cur_level]->file_ptr) {
+                    last_file = rlog->log_items[cur_level]->file_ptr;
                     fflush(rlog->log_items[cur_level]->file_ptr);
                     fclose(rlog->log_items[cur_level]->file_ptr);
                 }

@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
-PROJECT(recs)
+PROJECT(rrpc)
 
 #SET(EXECUTABLE_OUTPUT_PATH ${RBASE_BINARY_ROOT}) 
 
@@ -9,15 +9,13 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(SRC_LIB
-    src/rentity.c
-    src/rcomponent.c
-    src/rsystem.c
+    src/rrpc.c
 )
 
 SET(SRC_BIN
     ${SRC_LIB}
     test/rtest.c
-    test/rtest_recs.c
+    test/rtest_rrpc.c
 )
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})

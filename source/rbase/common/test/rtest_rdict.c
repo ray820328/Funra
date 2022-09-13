@@ -119,7 +119,7 @@ static void rdict_int_test(void **state) {// 整数类型 k-v
 
     start_benchmark(0);
     for (j = 0; j < count; j++) {
-        assert_true(true == rdict_exists(dict_ins, j));
+        assert_true(rdict_exists(dict_ins, j));
 
         rdict_entry_t *de = rdict_find(dict_ins, j);
         assert_true(de != NULL && de->value.s64 == count + j);

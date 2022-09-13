@@ -7,18 +7,27 @@
  * @author: Ray
  */
 
-#ifndef RENTITY_H
-#define RENTITY_H
+#ifndef RRPC_H
+#define RRPC_H
 
 #include "rcommon.h"
-#include "recs.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+typedef enum {
+    rrpc_type_unknown = 0,
+} rrpc_type_t;
+
+typedef int (*rrpc_init_func)(void* ctx, const void* cfg_data);
+
+typedef struct rrpc_entry_s {
+    rrpc_init_func init;
+} rrpc_entry_t;
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif //RENTITY_H
+#endif //RRPC_H

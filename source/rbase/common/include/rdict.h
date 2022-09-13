@@ -188,12 +188,12 @@ void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
         (inst) = rdict_create((capacity)<=0 ? rdict_init_capacity_default:(capacity), \
             (buckets)<=0 ? rdict_bucket_capacity_default : (buckets), NULL, malloc_f, calloc_f, free_f); \
         rassert((inst) != NULL, ""); \
-        (inst)->hash_func = hash_f ? hash_f : rdict_hash_func_##K; \
-        (inst)->copy_key_func = copy_key_f ? copy_key_f : rdict_copy_key_func_##K; \
-        (inst)->free_key_func = free_key_f ? free_key_f : rdict_free_key_func_##K; \
-        (inst)->compare_key_func = compare_key_f ? compare_key_f : rdict_compare_key_func_##K; \
-        (inst)->copy_value_func = copy_value_f ? copy_value_f : rdict_copy_value_func_##V; \
-        (inst)->free_value_func = free_value_f ? free_value_f : rdict_free_value_func_##V; \
+        (inst)->hash_func = (rdict_hash_func_type)(hash_f ? hash_f : rdict_hash_func_##K); \
+        (inst)->copy_key_func = (rdict_copy_key_func_type)(copy_key_f ? copy_key_f : rdict_copy_key_func_##K); \
+        (inst)->free_key_func = (rdict_free_key_func_type)(free_key_f ? free_key_f : rdict_free_key_func_##K); \
+        (inst)->compare_key_func = (rdict_compare_key_func_type)(compare_key_f ? compare_key_f : rdict_compare_key_func_##K); \
+        (inst)->copy_value_func = (rdict_copy_value_func_type)(copy_value_f ? copy_value_f : rdict_copy_value_func_##V); \
+        (inst)->free_value_func = (rdict_free_value_func_type)(free_value_f ? free_value_f : rdict_free_value_func_##V); \
     } while(0)
 #define rdict_init(inst, K, V, capacity, buckets) \
     rdict_init_full(inst, K, V, capacity, buckets, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
@@ -206,7 +206,7 @@ void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
 #define rdict_init_entry(entry, k, v) (entry)->key.ptr = (k); (entry)->value.ptr = (v)
 #define rdict_get_key(entry) ((entry)->key.ptr)
 #define rdict_get_value(entry) ((entry)->value.ptr)
-#define rdict_exists(d, key) rdict_find((d), (key)) != NULL
+#define rdict_exists(d, key) ((bool)(rdict_find((d), (key)) != NULL))
 #define rdict_size(d) ((d)->size)
 #define rdict_rehashing(d) ((d)->rehash_id != 0)
 

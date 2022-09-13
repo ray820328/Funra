@@ -33,7 +33,7 @@ static void repeat_cb(uv_timer_t* handle) {
     assert_true(1 == uv_is_active((uv_handle_t*)handle));
     if (rsocket_ctx.stream_state != ripc_state_ready) {
         rtools_wait_mills(3000);
-        rsocket_c.open(&rsocket_ctx);
+        rsocket_ctx.ipc_entry->open(&rsocket_ctx);
         return;
     }
 
@@ -41,7 +41,7 @@ static void repeat_cb(uv_timer_t* handle) {
     data.cmd = 11;
     data.data = rstr_cpy("client send test", 0);
     data.len = rstr_len(data.data);
-    rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+    rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
     rdata_free(char*, data.data);
 
     repeat_cb_count--;
@@ -50,7 +50,7 @@ static void repeat_cb(uv_timer_t* handle) {
 		data.cmd = 999;
 		data.data = rstr_cpy("client close test", 0);
 		data.len = rstr_len(data.data);
-        rsocket_c.send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+        rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
         rdata_free(char*, data.data);
 
         //uv_close((uv_handle_t*)handle, NULL);
@@ -71,6 +71,8 @@ static void* run_client(void* arg) {
     assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
 #endif
     rsocket_ctx.loop = &loop;// uv_default_loop();
+
+    rsocket_ctx.ipc_entry = &rsocket_c;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -107,16 +109,16 @@ static void* run_client(void* arg) {
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
-    rsocket_c.init(&rsocket_ctx, rsocket_ctx.cfg);
+    rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
 
     uv_timer_t timer_repeat;
     uv_timer_init(rsocket_ctx.loop, &timer_repeat);
     uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
 
-    rsocket_c.start(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->start(&rsocket_ctx);
 
-    rsocket_c.stop(&rsocket_ctx);
-    rsocket_c.uninit(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
 
     rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
     rdata_free(rdata_handler_t, rsocket_ctx.out_handler);
@@ -139,6 +141,7 @@ static void rsocket_c_full_test(void **state) {
     start_benchmark(0);
     ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
     //run_client("socket_thread");
+    assert_true(ret_code == 0);
 	end_benchmark("open connection.");
 
     rtools_wait_mills(1000);

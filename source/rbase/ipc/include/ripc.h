@@ -23,6 +23,7 @@ typedef enum {
     ripc_data_source_type_server,
     ripc_data_source_type_client,
     ripc_data_source_type_peer,
+    ripc_data_source_type_session,
     ripc_data_source_type_mix,
 } ripc_data_source_type_t;
 

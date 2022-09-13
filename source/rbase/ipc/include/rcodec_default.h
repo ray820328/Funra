@@ -13,6 +13,11 @@
 #include "rcommon.h"
 #include "rinterface.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#endif //__GNUC__
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -68,5 +73,9 @@ extern const rdata_handler_t rcodec_decode_default;
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif //__GNUC__
 
 #endif //RCODEC_DEFAULT_H

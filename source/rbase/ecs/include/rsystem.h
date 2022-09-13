@@ -13,8 +13,6 @@
 #include "rcommon.h"
 #include "rinterface.h"
 
-#include "uv.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

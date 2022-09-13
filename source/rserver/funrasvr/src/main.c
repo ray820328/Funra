@@ -29,8 +29,6 @@ int main(int argc, char **argv) {
     int64_t timeNowMicro = rtime_microsec();
     int64_t timeNowMill = rtime_millisec();
 
-    ripc_init(NULL);
-
     while (true) {
         rtools_wait_mills(50);
 

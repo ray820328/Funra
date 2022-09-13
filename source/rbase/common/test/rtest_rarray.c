@@ -67,7 +67,7 @@ static void rarray_int_test(void **state) {
     int j;
     int temp;
 
-    init_benchmark(1024, "test rarray (%ld)", count);
+    init_benchmark(1024, "test rarray (%d)", count);
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;
@@ -123,7 +123,7 @@ static void rarray_string_test(void **state) {
     int j;
     char* temp;
 
-    init_benchmark(1024, "test rarray (%ld)", count);
+    init_benchmark(1024, "test rarray (%d)", count);
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;
@@ -227,7 +227,7 @@ static void rarray_ptr_test(void **state) {
     int j;
     struct data_test* temp;
 
-    init_benchmark(1024, "test rarray (%ld)", count);
+    init_benchmark(1024, "test rarray (%d)", count);
 
     start_benchmark(0);
     rarray_t* array_ins = NULL;

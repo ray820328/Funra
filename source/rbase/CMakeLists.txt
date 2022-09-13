@@ -7,6 +7,9 @@ PROJECT(rbase)
 
 SET(RBASE_SOURCE_ROOT ${PROJECT_SOURCE_DIR})
 
+IF (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    SET(WIN32_LEAN_AND_MEAN)
+ENDIF ()
 
 IF (CMAKE_BUILD_TYPE MATCHES "Debug")
 	MESSAGE(STATUS "Build as type of Debug")
@@ -76,12 +79,12 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     
     SET(LINK_LIBS 
         legacy_stdio_definitions
-        3rd/cmocka${RBUILD_TYPE_POSTFIX}
-        3rd/lua${RBUILD_TYPE_POSTFIX} 
-        3rd/uv${RBUILD_TYPE_POSTFIX}
-        3rd/uv_a${RBUILD_TYPE_POSTFIX} 
-        rcommon${RBUILD_TYPE_POSTFIX} 
-        ripc${RBUILD_TYPE_POSTFIX}  
+        3rd/cmocka
+        3rd/lua
+        3rd/uv
+        3rd/uv_a
+        rcommon
+        ripc  
     )
 else()
     LINK_DIRECTORIES(
@@ -126,3 +129,4 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY          ${RBASE_LIB_ROOT})
 ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(ecs)
 ADD_SUBDIRECTORY(ipc)
+ADD_SUBDIRECTORY(rpc)

@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     rmem_init();
     rtools_init();
 
-    rlog_init("${date}/rtest_ipc_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rtest_rpc_${index}.log", RLOG_ALL, false, 100);
 
     char* exe_root = rdir_get_exe_root();
     rinfo("当前路径: %s", exe_root);
@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int ret_code;
 
-    rtest_add_test_entry(run_recs_tests);
-
+    rtest_add_test_entry(run_rrpc_tests);
+    
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
     rlist_node_t *node = NULL;
     while ((node = rlist_next(&it))) {

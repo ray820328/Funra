@@ -113,7 +113,7 @@ static void on_connection(uv_stream_t* server, int status) {
         rgoto(1);
     }
 
-    ds_client->ds_type = ripc_data_source_type_client;
+    ds_client->ds_type = ripc_data_source_type_session;
     ds_client->ds_id = ++ rsocket_ctx->sid_cur;
     ds_client->read_cache = NULL;
     rbuffer_init(ds_client->read_cache, read_cache_size);
@@ -125,7 +125,7 @@ static void on_connection(uv_stream_t* server, int status) {
     /* client关联到ds对象，ds->ctx = context*/
     stream->data = ds_client;
 
-    rdict_add(rsocket_ctx->map_clients, ds_client->ds_id, ds_client);
+    rdict_add(rsocket_ctx->map_clients, (void*)ds_client->ds_id, ds_client);
 
     if (rsocket_ctx->stream_type == ripc_type_tcp) {
         ret_code = uv_accept(server, stream);
@@ -345,8 +345,8 @@ static void on_session_close(uv_handle_t* peer) {
     rsocket_server_ctx_uv_t* rsocket_ctx = (rsocket_server_ctx_uv_t*)(datasource->ctx);
     rinfo("on session close, id = %"PRIu64", peer = %p", datasource->ds_id, peer);
 
-    if (datasource->ds_type == ripc_data_source_type_client && rdict_exists(rsocket_ctx->map_clients, datasource->ds_id)) {
-        rdict_remove(rsocket_ctx->map_clients, datasource->ds_id);
+    if (datasource->ds_type == ripc_data_source_type_session && rdict_exists(rsocket_ctx->map_clients, (const void*)datasource->ds_id)) {
+        rdict_remove(rsocket_ctx->map_clients, (const void*)datasource->ds_id);
 
         rbuffer_release(datasource->read_cache);
         rbuffer_release(datasource->write_buff);

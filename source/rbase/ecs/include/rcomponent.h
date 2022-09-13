@@ -19,6 +19,8 @@ extern "C" {
 
     typedef struct rcomponent
     {
+        recs_cmp_type_t type;
+        char* type_name;
 
     } rrpc_i;
 
