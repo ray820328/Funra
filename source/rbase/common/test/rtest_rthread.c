@@ -66,8 +66,8 @@ static void rthread_full_test(void **state) {
 
     int ret_code;
     void *ret;
-    rthread thread;
-    rthread thread2;
+    rthread_t thread;
+    rthread_t thread2;
 
     init_benchmark(1024, "test rthread (%d)", count);
 

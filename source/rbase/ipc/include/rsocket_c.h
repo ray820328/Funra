@@ -19,8 +19,8 @@
 extern "C" {
 #endif
 
-extern const ripc_entry_t rsocket_c;
-
+extern const ripc_entry_t* rsocket_c;
+extern const ripc_entry_t* rsocket_select_c;
 
 #ifdef __cplusplus
 }

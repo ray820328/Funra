@@ -57,19 +57,25 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
 
     ipc_data->version = 0;
     rstr_set(ipc_data->magic, ripc_head_default_magic, ripc_head_default_magic_len);//0溢出，le覆盖
-    ipc_data->len = trans_len + payload_len;
-    ipc_data->sid = datasource->ds_id;
-    ipc_data->crc = 0;
-    ipc_data->reserve0 = 0;
+    ipc_data->len = htonl(trans_len + payload_len);
+    ipc_data->cmd = htonl(ipc_data->cmd);
+    ipc_data->sid = htonll(datasource->ds_id);
+    ipc_data->crc = htonl(ipc_data->crc);
+    ipc_data->reserve0 = htonl(ipc_data->reserve0);
 
     write_len = rbuffer_write(buffer, (char*)(ipc_data), header_len);
     if (write_len != header_len) {
         rbuffer_read_ext(buffer, -write_len);
+        ipc_data->len = (uint32_t)ntohl(ipc_data->len);
+        ipc_data->cmd = (int32_t)ntohl(ipc_data->cmd);
+        ipc_data->sid = (uint64_t)ntohll(ipc_data->sid);
+        ipc_data->crc = (int32_t)ntohl(ipc_data->crc);
+        ipc_data->reserve0 = (uint64_t)ntohll(ipc_data->reserve0);
         rerror("error on handler process head: %d", write_len);
         return ripc_code_cache_full;
     }
 
-    write_len = rbuffer_write(buffer, (char*)(ipc_data->data), payload_len);
+    write_len = rbuffer_write(buffer, (char*)(ipc_data->data), payload_len);//data部分逻辑保证字节序，比如pb
     if (write_len != payload_len) {
         rbuffer_read_ext(buffer, -write_len - header_len);
         rerror("error on handler process payload: %d", write_len);
@@ -164,6 +170,12 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 			return ripc_code_error_magic;
 		}
 
+        ipc_data.len = (uint32_t)ntohl(ipc_data.len);
+        ipc_data.cmd = (int32_t)ntohl(ipc_data.cmd);
+        ipc_data.sid = (uint64_t)ntohll(ipc_data.sid);
+        ipc_data.crc = (int32_t)ntohl(ipc_data.crc);
+        ipc_data.reserve0 = (uint64_t)ntohll(ipc_data.reserve0);
+
 		require_len = ipc_data.len - data_head_len;
 		ipc_data.data = rdata_new_size(require_len + 1);
 		read_len = rbuffer_read(buffer, (char*)(ipc_data.data), require_len);
@@ -175,7 +187,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		ipc_data.data[require_len] = rstr_end;
-        rinfo("received(ds_type=%d, cmd=%d) msg(len=%d): %s", datasource->ds_type, ipc_data.cmd, require_len, ipc_data.data);
+        rdebug("received(ds_type=%d, cmd=%d) msg(len=%d): %s", datasource->ds_type, ipc_data.cmd, require_len, ipc_data.data);
         rdata_free(char*, ipc_data.data);
 
         if (datasource->ds_type == ripc_data_source_type_session) {

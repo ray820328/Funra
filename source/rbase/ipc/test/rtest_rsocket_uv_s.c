@@ -26,7 +26,7 @@
 #endif //__GNUC__
 
 static rsocket_server_ctx_uv_t rsocket_ctx;
-static rthread socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
+static rthread_t socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
 
 static void* run_server(void* arg) {
 

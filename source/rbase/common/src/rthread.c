@@ -18,7 +18,7 @@
 #pragma GCC diagnostic ignored "-Wdangling-else"
 #endif //__GNUC__
 
-long get_cur_thread_id() {
+long rthread_cur_id() {
 #if defined(_WIN32) || defined(_WIN64)
     return GetCurrentThreadId();
 #elif __linux__
@@ -30,7 +30,7 @@ long get_cur_thread_id() {
 #endif /* defined(_WIN32) || defined(_WIN64) */
 }
 
-void rthread_init(rthread *t) {
+void rthread_init(rthread_t *t) {
     t->id = 0;
 }
 
@@ -39,7 +39,7 @@ void rthread_init(rthread *t) {
 
 #include <process.h>
 
-static void rthread_errstr(rthread *t) {
+static void rthread_errstr(rthread_t *t) {
     int ret_code;
     DWORD err = GetLastError();
     LPSTR errstr = 0;
@@ -53,13 +53,13 @@ static void rthread_errstr(rthread *t) {
 }
 
 static unsigned int __stdcall rthread_fn(void *arg) {
-    rthread *t = arg;
+    rthread_t *t = arg;
 
     t->ret = t->rfunc(t->arg);
     return 0;
 }
 
-int rthread_start(rthread *t, void *(*rfunc)(void *), void *arg) {
+int rthread_start(rthread_t *t, void *(*rfunc)(void *), void *arg) {
     int ret_code = 0;
 
     t->rfunc = rfunc;
@@ -74,7 +74,7 @@ int rthread_start(rthread *t, void *(*rfunc)(void *), void *arg) {
     return ret_code;
 }
 
-int rthread_join(rthread *t, void **ret) {
+int rthread_join(rthread_t *t, void **ret) {
     int ret_code = 0;
     void *val = NULL;
     DWORD rv;
@@ -109,7 +109,7 @@ exit0:
 
 #else // _WIN64
 
-int rthread_start(rthread *t, rthread_func rfunc, void *arg) {
+int rthread_start(rthread_t *t, rthread_func rfunc, void *arg) {
     int ret_code;
     pthread_attr_t attr;
 
@@ -133,7 +133,7 @@ int rthread_start(rthread *t, rthread_func rfunc, void *arg) {
     return ret_code;
 }
 
-int rthread_join(rthread *t, void **ret) {
+int rthread_join(rthread_t *t, void **ret) {
     int ret_code = 0;
     void *val = NULL;
 
@@ -159,13 +159,13 @@ exit0:
 #endif // _WIN64
 
 
-int rthread_uninit(rthread *t) {
+int rthread_uninit(rthread_t *t) {
     int ret_code = rthread_join(t, NULL);
     // struct释放看留给上层，只释放thread系统资源
     return ret_code;
 }
 
-char *rthread_err(rthread *t) {
+char *rthread_err(rthread_t *t) {
     return t->err;
 }
 

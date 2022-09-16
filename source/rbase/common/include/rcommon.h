@@ -93,6 +93,8 @@ extern "C" {
 #include <mswsock.h>
 #include <climits>
 
+#pragma comment(lib, "ws2_32.lib")
+
 #define get_filename(x) strrchr((x), '\\') ? strrchr((x), '\\') + 1 : (x)
 #define likely(x) (x)
 #define unlikely(x) (x)

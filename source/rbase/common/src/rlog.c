@@ -489,7 +489,7 @@ int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
     char timeStr[32];
     int64_t timeNow = rtime_millisec();
     rformat_time_s_full(timeStr, timeNow, 0);
-    //get_cur_thread_id()
+    //rthread_cur_id()
     strcat(item_fmt, timeStr);
     strcat(item_fmt, " [");
     strcat(item_fmt, log_level_str);//strupr(log_level_str)

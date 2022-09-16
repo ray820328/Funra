@@ -63,13 +63,17 @@ typedef struct ripc_data_raw_s {
     char* data;
 } ripc_data_raw_t;
 
+typedef struct ripc_data_source_stream_s {
+    void* data;
+} ripc_data_source_stream_t;
+
 typedef struct ripc_data_source_s {
     uint64_t ds_id;
     ripc_data_source_type_t ds_type;
     rbuffer_t* read_cache;
     rbuffer_t* write_buff;
     void* ctx;
-    void* stream;
+    void* stream;//为了支持第三方类型
 } ripc_data_source_t;
 
 typedef int (*ripc_init_func)(void* ctx, const void* cfg_data);

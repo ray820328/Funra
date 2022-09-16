@@ -165,7 +165,7 @@ static int ripc_stop(void* ctx) {
     return rcode_ok;
 }
 
-const ripc_entry_t rsocket_c = {
+static const ripc_entry_t impl = {
     (ripc_init_func)ripc_init,// ripc_init_func init;
     (ripc_uninit_func)ripc_uninit,// ripc_uninit_func uninit;
     (ripc_open_func)ripc_open,// ripc_open_func open;
@@ -177,5 +177,6 @@ const ripc_entry_t rsocket_c = {
     NULL,// ripc_receive_func receive;
     NULL// ripc_error_func error;
 };
+const ripc_entry_t* rsocket_c = &impl;
 
 #undef local_write_req_t

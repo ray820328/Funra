@@ -12,6 +12,7 @@
 
 #include "rcommon.h"
 #include "rinterface.h"
+#include "ripc.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +28,7 @@ extern "C" {
 
 #define rsocket_ctx_fields \
     uint64_t id; \
+    ripc_type_t stream_type; \
     rsocket_cfg_t* cfg; \
     ripc_entry_t* ipc_entry; \
     rdata_handler_t* in_handler; \
@@ -48,7 +50,7 @@ typedef struct rsocket_cfg_s {
 typedef struct rsocket_ctx_s {
     rsocket_ctx_fields;
 
-    //rsocket_ctx_uv_fields;
+    ripc_data_source_stream_t* stream;
 } rsocket_ctx_t;
 
 #ifdef __cplusplus

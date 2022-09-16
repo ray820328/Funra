@@ -193,7 +193,7 @@ R_API int rstr_trim_end(char* src);
 //    data_copy[data_len] = rstr_end;
 //    return data_copy;
 //}
-//#define rstr_cpy(src, len) rstr_cpy_warp(src, len, get_cur_thread_id(), get_filename(__FILE__), __FUNCTION__, __LINE__) 
+//#define rstr_cpy(src, len) rstr_cpy_warp(src, len, rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__) 
 
 #endif //rmemory_enable_tracer
 

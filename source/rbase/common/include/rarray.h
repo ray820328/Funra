@@ -90,7 +90,7 @@ extern "C" {
     typedef int (*rarray_type_remove_value_func)(struct rarray_t* ar, const rarray_size_t index);
     typedef void (*rarray_type_free_value_func)(void* obj);
 
-    typedef enum rarray_code_t {
+    typedef enum rarray_code_s {
         rarray_code_error = 1,
         rarray_code_equal,
         rarray_code_not_equal,
@@ -99,7 +99,7 @@ extern "C" {
         rarray_code_index_out4_capacity,
     } rarray_code_t;
 
-    typedef struct rarray_t {
+    typedef struct rarray_s {
         rarray_size_t value_size;
         rarray_size_t size;
         rarray_size_t capacity;

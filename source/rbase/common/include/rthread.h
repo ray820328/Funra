@@ -65,59 +65,59 @@ typedef void *(*rthread_func)(void *);
 
 /* ------------------------------- APIs ------------------------------------*/
 
-long get_cur_thread_id();
+long rthread_cur_id();
 
 #if defined(_WIN32) || defined(_WIN64)
 
 #include <windows.h>
 
-typedef struct rthread {
+typedef struct rthread_s {
     HANDLE id;
     rthread_func rfunc;
     void *arg;
     void *ret;
     char err[128];
-} rthread;
+} rthread_t;
 
 #else // _WIN64
 
 #include <pthread.h>
 
-typedef struct rthread {
+typedef struct rthread_s {
     pthread_t id;
     char err[128];
-} rthread;
+} rthread_t;
 
 #endif // _WIN64
 
-void rthread_init(rthread *t);
+void rthread_init(rthread_t *t);
 
 /**
  * @param t thread
  * @return  '0' on success,
  *          '-1' on error, call 'sc_thread_err()' for error string.
  */
-int rthread_uninit(rthread *t);
+int rthread_uninit(rthread_t *t);
 
 /**
  * @param t thread
  * @return  last error message
  */
-char* rthread_err(rthread *t);
+char* rthread_err(rthread_t *t);
 
 /**
  * @param t thread
  * @return  '0' on success,
  *          '-1' on error, call 'sc_thread_err()' for error string.
  */
-int rthread_start(rthread *t, rthread_func rfunc, void *arg);
+int rthread_start(rthread_t *t, rthread_func rfunc, void *arg);
 
 /**
  * @param t thread
  * @return  '0' on success,
  *          '-1' on error, call 'sc_thread_err()' for error string.
  */
-int rthread_join(rthread *t, void **ret);
+int rthread_join(rthread_t *t, void **ret);
 
 
 #ifdef __cplusplus

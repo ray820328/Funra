@@ -24,83 +24,72 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static rthread socket_thread;
+static rsocket_ctx_t rsocket_ctx;//非线程安全
+static rthread_t socket_thread;
 
 static void* run_client(void* arg) {
-//
-//    rsocket_ctx.id = 1;
-//    rsocket_ctx.stream_type = ripc_type_tcp;
-//    rsocket_ctx.stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-//    rsocket_ctx.stream_state = ripc_state_init;
-//    uv_loop_t loop;
-//    assert_true(0 == uv_loop_init(&loop));
-//#ifdef _WIN32
-//    assert_true(UV_ENOSYS == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, 0));
-//#else
-//    assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
-//#endif
-//    rsocket_ctx.loop = &loop;// uv_default_loop();
-//
-//    rsocket_ctx.ipc_entry = &rsocket_c;
-//
-//    ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
-//    ds->ds_type = ripc_data_source_type_client;
-//    ds->ds_id = rsocket_ctx.id;
-//    ds->ctx = &rsocket_ctx;
-//
-//    ((uv_tcp_t*)(rsocket_ctx.stream))->data = ds;
-//
-//    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
-//    rsocket_ctx.cfg = cfg;
-//    cfg->id = 1;
-//    rstr_set(cfg->ip, "127.0.0.1", 0);
-//    cfg->port = 23000;
-//
-//    rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-//    rsocket_ctx.in_handler = handler;
-//    handler->prev = NULL;
-//    handler->next = NULL;
-//    handler->on_before = rcodec_decode_default.on_before;
-//    handler->process = rcodec_decode_default.process;
-//    handler->on_after = rcodec_decode_default.on_after;
-//    handler->on_next = rcodec_decode_default.on_next;
-//    handler->on_notify = rcodec_decode_default.on_notify;
-//    handler->notify = rcodec_decode_default.notify;
-//
-//    handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-//    rsocket_ctx.out_handler = handler;
-//    handler->prev = NULL;
-//    handler->next = NULL;
-//    handler->on_before = rcodec_encode_default.on_before;
-//    handler->process = rcodec_encode_default.process;
-//    handler->on_after = rcodec_encode_default.on_after;
-//    handler->on_next = rcodec_encode_default.on_next;
-//    handler->on_notify = rcodec_encode_default.on_notify;
-//    handler->notify = rcodec_encode_default.notify;
-//
-//    rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
-//
-//    uv_timer_t timer_repeat;
-//    uv_timer_init(rsocket_ctx.loop, &timer_repeat);
-//    uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
-//
-//    rsocket_ctx.ipc_entry->start(&rsocket_ctx);
-//
-//    rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
-//    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
-//
-//    rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
-//    rdata_free(rdata_handler_t, rsocket_ctx.out_handler);
-//    rdata_free(ripc_data_source_t, ds);
-//    rdata_free(rsocket_cfg_t, cfg);
-//    rdata_free(uv_tcp_t, rsocket_ctx.stream);
+
+    rsocket_ctx.id = 3001;
+    rsocket_ctx.stream_type = ripc_type_tcp;
+    rsocket_ctx.stream_state = ripc_state_init;
+
+    rsocket_ctx.ipc_entry = rsocket_select_c;
+
+    ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
+    ds->ds_type = ripc_data_source_type_client;
+    ds->ds_id = rsocket_ctx.id;
+    ds->ctx = &rsocket_ctx;
+
+    rsocket_ctx.stream = ds;
+
+    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
+    rsocket_ctx.cfg = cfg;
+    cfg->id = 1;
+    rstr_set(cfg->ip, "127.0.0.1", 0);
+    cfg->port = 23000;
+
+    rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
+    rsocket_ctx.in_handler = handler;
+    handler->prev = NULL;
+    handler->next = NULL;
+    handler->on_before = rcodec_decode_default.on_before;
+    handler->process = rcodec_decode_default.process;
+    handler->on_after = rcodec_decode_default.on_after;
+    handler->on_next = rcodec_decode_default.on_next;
+    handler->on_notify = rcodec_decode_default.on_notify;
+    handler->notify = rcodec_decode_default.notify;
+
+    handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
+    rsocket_ctx.out_handler = handler;
+    handler->prev = NULL;
+    handler->next = NULL;
+    handler->on_before = rcodec_encode_default.on_before;
+    handler->process = rcodec_encode_default.process;
+    handler->on_after = rcodec_encode_default.on_after;
+    handler->on_next = rcodec_encode_default.on_next;
+    handler->on_notify = rcodec_encode_default.on_notify;
+    handler->notify = rcodec_encode_default.notify;
+
+    rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
+    rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+
+    rsocket_ctx.ipc_entry->start(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
+
+    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
+    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
+
+    rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
+    rdata_free(rdata_handler_t, rsocket_ctx.out_handler);
+    rdata_free(ripc_data_source_t, ds);
+    rdata_free(rsocket_cfg_t, cfg);
 
     rinfo("end, run_client success: %s", (char *)arg);
 
     return arg;
 }
 
-static void rsocket_c_full_test(void **state) {
+static void rsocket_select_c_test(void **state) {
 	(void)state;
 	int count = 1;
 	init_benchmark(1024, "test rsocket_c (%d)", count);
@@ -115,7 +104,7 @@ static void rsocket_c_full_test(void **state) {
 
     rtools_wait_mills(1000);
 
-    rinfo("client uv started.");
+    rinfo("client select started.");
 
     uninit_benchmark();
 }
@@ -127,15 +116,15 @@ static int setup(void **state) {
     return rcode_ok;
 }
 static int teardown(void **state) {
-    //void* param;
-    //int ret_code = rthread_join(&socket_thread, &param);
-    //assert_true(ret_code == 0);
-    //assert_true(rstr_eq((char *)param, "socket_thread"));
+    void* param;
+    int ret_code = rthread_join(&socket_thread, &param);
+    assert_true(ret_code == 0);
+    assert_true(rstr_eq((char *)param, "socket_thread"));
     
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rsocket_c_full_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rsocket_select_c_test, NULL, NULL),
 };
 
 int run_rsocket_c_tests(int benchmark_output) {

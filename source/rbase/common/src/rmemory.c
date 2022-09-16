@@ -39,6 +39,17 @@ static void mem_dict_free_value_func(void* data_ext, rmem_info_t* obj) {
 } 
 
 int rmem_init() {
+    rmem_byte_order_code_t byte_order = rmem_check_host_order();
+    if (byte_order == rmem_byte_order_code_big) {
+        rinfo("host is big endian.");
+    }
+    else if (byte_order == rmem_byte_order_code_little) {
+        rinfo("host is little endian.");
+    }
+    else {
+        rerror("host endian is unknown.");
+    }
+
 #ifdef rmemory_enable_tracer
     if (rmem_trace_map == NULL) {
         rdict_init_full(rmem_trace_map, rdata_type_uint64, rdata_type_ptr, rmemory_dict_size, 0, 
@@ -156,6 +167,30 @@ int rmem_statistics(char* filepath) {
 }
 
 #undef rmem_info_t
+
+
+rmem_byte_order_code_t rmem_check_host_order() {
+    union {
+        uint16_t value;
+        char bytes[sizeof(uint16_t)];
+    } rmem_value;
+
+    rmem_value.value = 0x0102;
+    if ((int)rmem_value.bytes[0] == 1 && (int)rmem_value.bytes[1] == 2) {
+        return rmem_byte_order_code_big;
+    }
+    else if ((int)rmem_value.bytes[0] == 2 && (int)rmem_value.bytes[1] == 1) {
+        return rmem_byte_order_code_little;
+    }
+    else {
+        return rmem_byte_order_code_unknown;
+    }
+}
+
+rmem_byte_order_code_t rmem_check_net_order() {
+
+    return rmem_byte_order_code_little;
+}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

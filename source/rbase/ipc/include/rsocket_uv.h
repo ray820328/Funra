@@ -20,7 +20,6 @@ extern "C" {
 
 #define rsocket_ctx_uv_fields \
     uv_loop_t* loop; \
-    ripc_type_t stream_type; \
     uv_handle_t* stream
 
 typedef struct rsocket_ctx_uv_s {
