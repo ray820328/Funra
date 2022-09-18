@@ -26,6 +26,7 @@
 
 static rsocket_ctx_t rsocket_ctx;//非线程安全
 static rthread_t socket_thread;
+static volatile int sent_times = 10;
 
 static void* run_client(void* arg) {
 
@@ -74,6 +75,18 @@ static void* run_client(void* arg) {
     rsocket_ctx.ipc_entry->open(&rsocket_ctx);
 
     rsocket_ctx.ipc_entry->start(&rsocket_ctx);
+
+	while (--sent_times > 0) {
+		rtools_wait_mills(2000);
+
+		ripc_data_default_t data;
+		data.cmd = 11;
+		data.data = rstr_cpy("client select_send test", 0);
+		data.len = rstr_len(data.data);
+		rsocket_ctx.ipc_entry->send(ds, &data);
+		rdata_free(char*, data.data);
+	}
+
     rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
 
     rsocket_ctx.ipc_entry->close(&rsocket_ctx);

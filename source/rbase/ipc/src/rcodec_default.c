@@ -43,13 +43,13 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
     static int trans_len = ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
     static int header_len = ripc_head_default_version_len + ripc_head_default_magic_len + ripc_head_default_len_len
         + ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
-
+	
     ret_code = handler->on_before(handler, ds, data);
     if (ret_code != ripc_code_success) {
         rerror("error on handler before, code: %d", ret_code);
         return ret_code;
     }
-
+	
     ripc_data_source_t* datasource = (ripc_data_source_t*)(ds);
     ripc_data_default_t* ipc_data = (ripc_data_default_t*)data;
     payload_len = ipc_data->len;
@@ -62,7 +62,7 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
     ipc_data->sid = htonll(datasource->ds_id);
     ipc_data->crc = htonl(ipc_data->crc);
     ipc_data->reserve0 = htonl(ipc_data->reserve0);
-
+	
     write_len = rbuffer_write(buffer, (char*)(ipc_data), header_len);
     if (write_len != header_len) {
         rbuffer_read_ext(buffer, -write_len);
@@ -135,13 +135,13 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		+ ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
 	static int data_head_len = 
 		ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
-
+	
     ret_code = handler->on_before(handler, ds, data);
     if (ret_code != ripc_code_success) {
         rerror("error on handler before, code: %d", ret_code);
         return ret_code;
     }
-
+	
     ripc_data_source_t* datasource = (ripc_data_source_t*)(ds);
     rbuffer_t* buffer = datasource->read_cache;
 

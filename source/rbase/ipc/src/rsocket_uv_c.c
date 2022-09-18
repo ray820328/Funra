@@ -108,8 +108,8 @@ static void on_close(uv_handle_t* peer) {
 
     rbuffer_release(ds_client->read_cache);
     rbuffer_release(ds_client->write_buff);
-    rdata_free(ripc_data_source_t, ds_client);//外面释放
-    rdata_free(uv_tcp_t, peer);
+    //rdata_free(ripc_data_source_t, ds_client);//外面释放
+    //rdata_free(uv_tcp_t, peer);
 }
 
 static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {

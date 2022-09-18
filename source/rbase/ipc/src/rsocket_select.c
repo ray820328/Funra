@@ -16,6 +16,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+static int read_cache_size = 64 * 1024;
+static int write_buff_size = 64 * 1024;
+
 /* timeout control structure */
 typedef struct rtimeout_s {
     double block;          /* maximum time for blocking calls */
@@ -241,28 +244,36 @@ static int rsocket_create(rsocket_t* ps, int domain, int type, int protocol) {
 
 static int rsocket_connect(rsocket_t* ps, SA *addr, rsock_len_t len, rtimeout_t* tm) {
     int err;
-    /* don't call on closed socket */
-    if (*ps == SOCKET_INVALID) return IO_CLOSED;
-    /* ask system to connect */
-    if (connect(*ps, addr, len) == 0) return IO_DONE;
-    /* make sure the system is trying to connect */
+	if (*ps == SOCKET_INVALID) {
+		return IO_CLOSED;
+	}
+
+	if (connect(*ps, addr, len) == 0) {
+		return IO_DONE;
+	}
+    
     err = WSAGetLastError();
-    if (err != WSAEWOULDBLOCK && err != WSAEINPROGRESS) return err;
-    /* zero timeout case optimization */
-    if (rtimeout_is_zero(tm)) return IO_TIMEOUT;
-    /* we wait until something happens */
+	if (err != WSAEWOULDBLOCK && err != WSAEINPROGRESS) {
+		return err;
+	}
+    
+	if (rtimeout_is_zero(tm)) {
+		return IO_TIMEOUT;
+	}
+    /* wait until something happens */
     err = rsocket_waitfd(ps, WAITFD_C, tm);
     if (err == IO_CLOSED) {
         int elen = sizeof(err);
         /* give windows time to set the error (yes, disgusting) */
         Sleep(10);
-        /* find out why we failed */
-        getsockopt(*ps, SOL_SOCKET, SO_ERROR, (char *)&err, &elen);
-        /* we KNOW there was an error. if 'why' is 0, we will return
-        * "unknown error", but it's not really our fault */
-        return err > 0 ? err: IO_UNKNOWN;
-    } else return err;
 
+        getsockopt(*ps, SOL_SOCKET, SO_ERROR, (char *)&err, &elen);
+        
+        return err > 0 ? err : IO_UNKNOWN;
+	}
+	else {
+		return err;
+	}
 }
 
 static int rsocket_bind(rsocket_t* ps, SA *addr, rsock_len_t len) {
@@ -297,15 +308,19 @@ static int rsocket_accept(rsocket_t* ps, rsocket_t* pa, SA *addr, rsock_len_t *l
 }
 
 /** windows单次尽量不要发送1m以上的数据，卡死 **/
-static int rsocket_send(rsocket_t* ps, const char *data, size_t count, size_t *sent, rtimeout_t* tm) {
+static int rsocket_send(rsocket_t* ps, const char *data, int count, int *sent, rtimeout_t* tm) {
     int err;
     *sent = 0;
     /* avoid making system calls on closed sockets */
-    if (*ps == SOCKET_INVALID) return IO_CLOSED;
+	if (*ps == SOCKET_INVALID) {
+		rinfo("990");
+		return IO_CLOSED;
+	}
     /* loop until we send something or we give up on error */
     for ( ;; ) {
         /* try to send something */
         int put = send(*ps, data, (int) count, 0);
+		rinfo("999");
         /* if we sent something, we are done */
         if (put > 0) {
             *sent = put;
@@ -314,9 +329,13 @@ static int rsocket_send(rsocket_t* ps, const char *data, size_t count, size_t *s
         /* deal with failure */
         err = WSAGetLastError();
         /* we can only proceed if there was no serious error */
-        if (err != WSAEWOULDBLOCK) return err;
+		if (err != WSAEWOULDBLOCK) {
+			return err;
+		}
         /* avoid busy wait */
-        if ((err = rsocket_waitfd(ps, WAITFD_W, tm)) != IO_DONE) return err;
+		if ((err = rsocket_waitfd(ps, WAITFD_W, tm)) != IO_DONE) {
+			return err;
+		}
     }
 }
 
@@ -535,6 +554,7 @@ static int ripc_uninit_c(void* ctx) {
 static int ripc_open_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+	ripc_data_source_t* ds_client = rsocket_ctx->stream;
     int ret_code = 0;
 
     rinfo("socket client open.");
@@ -551,7 +571,8 @@ static int ripc_open_c(void* ctx) {
     int socktype = SOCK_STREAM; // udp = SOCK_DGRAM
     int protocol = 0;
     int opt = 1;
-    rsocket_t rsock_item = SOCKET_INVALID;
+	rsocket_t* rsock_item = rdata_new(rsocket_t);
+	*rsock_item = SOCKET_INVALID;
 
     //指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
     memset(&connect_hints, 0, sizeof(connect_hints));
@@ -573,24 +594,24 @@ static int ripc_open_c(void* ctx) {
 
     int current_family = family;
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
-        if (current_family != iterator->ai_family || rsock_item == SOCKET_INVALID) {
-            rsocket_destroy(&rsock_item);
+        if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
+            rsocket_destroy(rsock_item);
 
-            ret_code = rsocket_create(&rsock_item, family, socktype, protocol);
+            ret_code = rsocket_create(rsock_item, family, socktype, protocol);
             if (ret_code != rcode_ok) {
                 rinfo("failed on try create sock, code = %d", ret_code);
                 continue;
             }
 
             if (family == AF_INET6) {
-                setsockopt(rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
+                setsockopt(*rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
             }
-            rsocket_setnonblocking(&rsock_item);
+            rsocket_setnonblocking(rsock_item);
 
             current_family = iterator->ai_family;
         }
 
-        ret_code = rsocket_connect(&rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen, &tm);
+        ret_code = rsocket_connect(rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen, &tm);
         /* success or timeout, break of loop */
         if (ret_code == rcode_ok) {
             family = current_family;
@@ -603,8 +624,19 @@ static int ripc_open_c(void* ctx) {
         if (ret_code != rcode_ok) {
             rinfo("failed on connect, code = %d, msg = %s", ret_code, socket_strerror(ret_code));
         }
+
     }
     freeaddrinfo(addrinfo_result);
+
+	if (ret_code == rcode_ok) {
+		ds_client->read_cache = NULL;
+		rbuffer_init(ds_client->read_cache, read_cache_size);
+		ds_client->write_buff = NULL;
+		rbuffer_init(ds_client->write_buff, write_buff_size);
+
+		ds_client->stream = rsock_item;
+		rsocket_ctx->stream_state = ripc_state_ready;
+	}
 
     //struct addrinfo bind_hints;
     ////指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
@@ -641,8 +673,8 @@ static int ripc_open_c(void* ctx) {
     return rcode_ok;
 }
 static int ripc_close_c(void* ctx) {
-    rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
-    ripc_data_source_t* datasource = NULL;// (ripc_data_source_t*)(rsocket_ctx->stream)->data;
+	rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
+	ripc_data_source_t* ds_client = rsocket_ctx->stream;
 
     rinfo("socket client close.");
 
@@ -650,9 +682,10 @@ static int ripc_close_c(void* ctx) {
         return rcode_ok;
     }
 
-    rsocket_ctx->stream_state = ripc_state_closed;
+	rbuffer_release(ds_client->read_cache);
+	rbuffer_release(ds_client->write_buff);
 
-    //uv_stop(rsocket_ctx->loop);
+    rsocket_ctx->stream_state = ripc_state_closed;
 
     return rcode_ok;
 }
@@ -660,10 +693,6 @@ static int ripc_start_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
 
     rinfo("socket client start.");
-
-    //while (true) {
-        rtools_wait_mills(10000);
-    //}
 
     return 0;
 }
@@ -675,9 +704,37 @@ static int ripc_stop_c(void* ctx) {
 
     return rcode_ok;
 }
-static void send_data_c(ripc_data_source_t* ds, void* data) {
+static void send_data_c(ripc_data_source_t* ds_client, void* data) {
     int ret_code = 0;
-    ripc_data_source_t* ds_client = ds;// ((uv_tcp_t*)(rsocket_ctx->peer))->data;
+	rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
+	//rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+
+	if (rsocket_ctx->out_handler) {
+		ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, ds_client, data);
+		if (ret_code != ripc_code_success) {
+			rerror("error on handler process, code: %d", ret_code);
+			return;
+		}
+	}
+
+	const char* data_buff = rbuffer_read_start_dest(ds_client->write_buff);
+	int count = rbuffer_size(ds_client->write_buff);
+	int* sent_len = 0;
+
+	rtimeout_t tm;
+	rtimeout_init(&tm, 2, -1);
+	rtimeout_markstart(&tm);
+	rinfo("11 = %p", ds_client->stream);
+	ret_code = rsocket_send(ds_client->stream, data_buff, count, sent_len, &tm);
+	rinfo("22 = %p", ds_client->stream);
+	
+	if (ret_code != IO_DONE) {
+		rerror("end client send_data, code: %d, sent_len: %d", ret_code, sent_len);
+		return;
+	}
+	rdebug("end client send_data, code: %d, sent_len: %d", ret_code, sent_len);
+
+	rbuffer_skip(ds_client->write_buff, sent_len);
 }
 
 static const ripc_entry_t impl_c = {
