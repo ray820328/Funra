@@ -161,10 +161,10 @@ extern "C" {
 #endif //RAY_USE_POOL
 
 #define rdata_destroy(ptr, destroy_func) \
-    if ((destroy_func)) { \
+    do { \
         (destroy_func)((ptr)); \
         (ptr) = NULL; \
-    }
+    } while(0)
 #define rdata_new_array(elem_size, count) raycmalloc((count), (elem_size))
 #define rdata_new_type_array(elem_type, count) (elem_type*)raycmalloc_type((count), elem_type)
 #define rdata_clear_array(data, size_block) memset((data), 0, (size_block))

@@ -32,6 +32,21 @@ extern "C" {
 
 #endif //_WIN64
 
+typedef enum {
+    //系统接口部分 10000 - 19999
+    rcode_err_os_unknown = 10000,
+
+    //套接字部分 10500 - 10600
+    rcode_err_sock_unknown = 10500,
+    rcode_err_sock_timeout,
+    rcode_err_sock_disconnect,
+
+    //逻辑部分 20000 - 50000
+    rcode_err_logic_unknown = 20000,
+    rcode_err_logic_encode,
+    rcode_err_logic_decode,
+
+} rcode_err;
 
 /* ------------------------------- 平台os相关 ------------------------------------*/
 

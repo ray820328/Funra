@@ -46,7 +46,7 @@ static void* run_client(void* arg) {
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
     rsocket_ctx.cfg = cfg;
     cfg->id = 1;
-    rstr_set(cfg->ip, "127.0.0.1", 0);
+    rstr_set(cfg->ip, "10.11.140.87", 0);
     cfg->port = 23000;
 
     rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
@@ -77,14 +77,16 @@ static void* run_client(void* arg) {
     rsocket_ctx.ipc_entry->start(&rsocket_ctx);
 
 	while (--sent_times > 0) {
-		rtools_wait_mills(2000);
-
 		ripc_data_default_t data;
 		data.cmd = 11;
 		data.data = rstr_cpy("client select_send test", 0);
 		data.len = rstr_len(data.data);
 		rsocket_ctx.ipc_entry->send(ds, &data);
-		rdata_free(char*, data.data);
+        rdata_free(char*, data.data);
+
+        rtools_wait_mills(2000);
+
+        rsocket_ctx.ipc_entry->receive(ds, NULL);
 	}
 
     rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
