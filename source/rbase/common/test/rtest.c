@@ -81,16 +81,17 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int ret_code;
 
-    rtest_add_test_entry(run_rbuffer_tests);
-    rtest_add_test_entry(run_rpool_tests);
-    rtest_add_test_entry(run_rstring_tests);
-    rtest_add_test_entry(run_rthread_tests);
-    rtest_add_test_entry(run_rarray_tests);
-	rtest_add_test_entry(run_rcommon_tests);
-	rtest_add_test_entry(run_rdict_tests);
-    rtest_add_test_entry(run_rlog_tests);
-    rtest_add_test_entry(run_rfile_tests);
-    rtest_add_test_entry(run_rtools_tests);
+    rtest_add_test_entry(run_rtime_tests);
+ //   rtest_add_test_entry(run_rbuffer_tests);
+ //   rtest_add_test_entry(run_rpool_tests);
+ //   rtest_add_test_entry(run_rstring_tests);
+ //   rtest_add_test_entry(run_rthread_tests);
+ //   rtest_add_test_entry(run_rarray_tests);
+	//rtest_add_test_entry(run_rcommon_tests);
+	//rtest_add_test_entry(run_rdict_tests);
+ //   rtest_add_test_entry(run_rlog_tests);
+ //   rtest_add_test_entry(run_rfile_tests);
+ //   rtest_add_test_entry(run_rtools_tests);
 
     ret_code = 0;
 

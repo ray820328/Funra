@@ -36,6 +36,7 @@ SET(SRC_BIN
     test/rtest_rlog.c
     test/rtest_rfile.c
     test/rtest_rtools.c
+    test/rtest_rtime.c
     test/rtest.c
     )
 

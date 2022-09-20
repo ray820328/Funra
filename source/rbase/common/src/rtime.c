@@ -53,8 +53,7 @@ static unsigned char g_day_per_mon[MONTH_PER_YEAR] = { 31, 28, 31, 30, 31, 30, 3
 //  return (0);
 //}
 
-int rtime_gettimeofdayfix(struct timeval * tp, struct timezone * tzp)
-{
+int rtime_gettimeofdayfix(struct timeval * tp, struct timezone * tzp) {
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
     // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
     // until 00:00:00 January 1, 1970 
@@ -83,7 +82,7 @@ int rtime_gettimeofdayfix(struct timeval * tp, struct timezone * tzp)
 #endif
 
 // 获取纳秒值，windows只能取到相对值，只能做比较不能转毫秒等
-int64_t rtime_nanosec() {
+R_API int64_t rtime_nanosec() {
 #ifdef WIN32
     static LARGE_INTEGER frequency = {0};
     if (frequency.QuadPart == 0) {
@@ -104,7 +103,7 @@ int64_t rtime_nanosec() {
 
 static struct timezone* rtime_zone = NULL;
 // 获取微秒值，注意不是时间戳
-int64_t rtime_microsec() {
+R_API int64_t rtime_microsec() {
   struct timeval tv;
 #ifdef WIN32
   rtime_gettimeofdayfix(&tv, NULL);
@@ -117,41 +116,40 @@ int64_t rtime_microsec() {
 }
 
 // 获取毫秒时间戳（没带时区）
-int64_t rtime_millisec() {
-  struct timeval tv;
+R_API int64_t rtime_millisec() {
+    struct timeval tv;
 #ifdef WIN32
-  rtime_gettimeofdayfix(&tv, NULL);
-  time_t clock;
-  struct tm tm;
-  SYSTEMTIME wtm;
-  GetLocalTime(&wtm);
-  tm.tm_year = wtm.wYear - 1900;
-  tm.tm_mon = wtm.wMonth - 1;
-  tm.tm_mday = wtm.wDay;
-  tm.tm_hour = wtm.wHour;
-  tm.tm_min = wtm.wMinute;
-  tm.tm_sec = wtm.wSecond;
-  tm.tm_isdst = -1;
-  clock = mktime(&tm);
-  int64_t timeMills = clock * 1000 + wtm.wMilliseconds;
-  return timeMills;
+    rtime_gettimeofdayfix(&tv, NULL);
+    time_t clock;
+    struct tm tm;
+    SYSTEMTIME wtm;
+    GetLocalTime(&wtm);
+    tm.tm_year = wtm.wYear - 1900;
+    tm.tm_mon = wtm.wMonth - 1;
+    tm.tm_mday = wtm.wDay;
+    tm.tm_hour = wtm.wHour;
+    tm.tm_min = wtm.wMinute;
+    tm.tm_sec = wtm.wSecond;
+    tm.tm_isdst = -1;
+    clock = mktime(&tm);
+    int64_t timeMills = clock * 1000 + wtm.wMilliseconds;
+    return timeMills;
 #else
-  gettimeofday(&tv, rtime_zone);
-  int64_t val = tv.tv_sec * 1000000 + tv.tv_usec;
-  val /= 1000;
+    gettimeofday(&tv, rtime_zone);
+    int64_t val = tv.tv_sec * 1000000 + tv.tv_usec;
+    val /= 1000;
 
-  return val;
+    return val;
 #endif
 }
 
-//void metis_strftime(time_t t, char *pcTime)
-//{
+//void rtime_2metis(time_t t, char *pcTime) {
 //    struct tm *tm_t;
 //    tm_t = localtime(&t);
 //    strftime(pcTime, 128, "%F %T", tm_t);
 //}
 //
-//long metis_strptime(char *str_time) {
+//long rtimr_4metis(char *str_time) {
 //    struct tm stm;
 //
 //    strptime(str_time, "%Y-%m-%d %H:%M:%S", &stm);
@@ -169,8 +167,7 @@ int64_t rtime_millisec() {
  * 参数：year：需要判断的年份数
  * 返回：闰年返回1，否则返回0
  */
-static unsigned char rlib_is_leap_year(unsigned short year)
-{
+static unsigned char rlib_is_leap_year(unsigned short year) {
     if ((year % 400) == 0) {
         return 1;
     }
@@ -191,8 +188,7 @@ static unsigned char rlib_is_leap_year(unsigned short year)
  *       year：该月所对应的年份数
  * 返回：该月有多少天
  */
-static unsigned char rlib_last_day_of_mon(unsigned char month, unsigned short year)
-{
+static unsigned char rlib_last_day_of_mon(unsigned char month, unsigned short year) {
     if ((month == 0) || (month > 12)) {
         return g_day_per_mon[1] + rlib_is_leap_year(year);
     }
@@ -207,14 +203,14 @@ static unsigned char rlib_last_day_of_mon(unsigned char month, unsigned short ye
 
 
 static int rtime_zone_int = 8;
-extern void rtime_set_time_zone(int timeZone) {
+R_API void rtime_set_time_zone(int timeZone) {
     rtime_zone_int = timeZone;
 }
-extern int rtime_get_time_zone() {
+R_API int rtime_get_time_zone() {
     return rtime_zone_int;
 }
 
-extern int* rtime_from_time_millis_security(int64_t timeMillis, int* datas) {
+R_API int* rtime_from_time_millis_security(int64_t time_millis, int* datas) {
 	static int rtime_datas[7] = { 0 ,0, 0, 0, 0, 0, 0 };
     if (!datas) {
         datas = rtime_datas;
@@ -225,47 +221,42 @@ extern int* rtime_from_time_millis_security(int64_t timeMillis, int* datas) {
     int hour = 0;
     int minute = 0;
     int second = 0;
-    int mills = timeMillis % 1000;
+    int mills = time_millis % 1000;
 
-    timeMillis /= 1000;
+    time_millis /= 1000;
 
     //将时间戳值转化成天数。通过天数可以比较方便地算出年、月、日。
-    int days = (int)(timeMillis / SEC_PER_DAY);
+    int days = (int)(time_millis / SEC_PER_DAY);
     //这个时间戳值的年。
-    int yearTmp = 0;
-    int dayTmp = 0;
+    int year_temp = 0;
+    int day_temp = 0;
     //使用夹逼法计算 days 天中包含的年数。
-    for (yearTmp = UTC_BASE_YEAR; days > 0; yearTmp++) {
-        dayTmp = (DAY_PER_YEAR + rlib_is_leap_year(yearTmp)); //这一年有多少天？
-        if (days >= dayTmp) //条件成立，则 yearTmp 即是这个时间戳值所代表的年数。
-        {
-            days -= dayTmp;
-        }
-        else
-        {
+    for (year_temp = UTC_BASE_YEAR; days > 0; year_temp++) {
+        day_temp = (DAY_PER_YEAR + rlib_is_leap_year(year_temp)); //这一年有多少天？
+        if (days >= day_temp) { //条件成立，则 year_temp 即是这个时间戳值所代表的年数。
+            days -= day_temp;
+        } else {
             break;
         }
     }
-    year = yearTmp;
+    year = year_temp;
 
     //这个时间戳值的月
-    int monthTmp = 0;
-    for (monthTmp = 1; monthTmp < MONTH_PER_YEAR; monthTmp++) {
-        dayTmp = rlib_last_day_of_mon(monthTmp, year);
-        if (days >= dayTmp) {
-            days -= dayTmp;
-        }
-        else
-        {
+    int month_temp = 0;
+    for (month_temp = 1; month_temp < MONTH_PER_YEAR; month_temp++) {
+        day_temp = rlib_last_day_of_mon(month_temp, year);
+        if (days >= day_temp) {
+            days -= day_temp;
+        } else {
             break;
         }
     }
-    month = monthTmp;
+    month = month_temp;
 
     day = days + 1;
 
     //转化成秒。
-    int secs = timeMillis % SEC_PER_DAY;
+    int secs = time_millis % SEC_PER_DAY;
     //这个时间戳值的小时数。
     hour = (secs / SEC_PER_HOUR + rtime_zone_int) % 24;
     //这个时间戳值的分钟数。
@@ -285,8 +276,44 @@ extern int* rtime_from_time_millis_security(int64_t timeMillis, int* datas) {
 }
 
 //不支持多线程
-extern int* rtime_from_time_millis(int64_t timeMillis) {
-    return rtime_from_time_millis_security(timeMillis, NULL);
+R_API int* rtime_from_time_millis(int64_t time_millis) {
+    return rtime_from_time_millis_security(time_millis, NULL);
+}
+
+
+R_API int64_t rtimeout_get_block(rtimeout_t* tm) {
+    if (tm->block < 0 && tm->total < 0) {
+        return -1;
+    }
+    else if (tm->block < 0) {//total > 0，计算total剩余时间
+        int64_t t = tm->total + tm->start - rtime_microsec();
+        return rmax(t, 0);
+    }
+    else if (tm->total < 0) {//直接返回block时间
+        return tm->block;
+    }
+    else {// block & total，返回block，total剩余 的极小值
+        int64_t t = tm->total + tm->start - rtime_microsec();
+        return rmin(tm->block, rmax(t, 0));
+    }
+}
+
+R_API int64_t rtimeout_get_total(rtimeout_t* tm) {
+    if (tm->block < 0 && tm->total < 0) {
+        return -1;
+    }
+    else if (tm->block < 0) {
+        int64_t t = tm->total + tm->start - rtime_microsec();
+        return rmax(t, 0);
+    }
+    else if (tm->total < 0) {
+        int64_t t = tm->block + tm->start - rtime_microsec();
+        return rmax(t, 0);
+    }
+    else {
+        int64_t t = tm->total + tm->start - rtime_microsec();
+        return rmin(tm->block, rmax(t, 0));
+    }
 }
 
 

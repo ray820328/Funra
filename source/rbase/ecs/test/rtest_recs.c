@@ -39,7 +39,6 @@ static void recs_full_test(void **state) {
 
 
 static int setup(void **state) {
-    rthread_init(&socket_thread);
 
     return rcode_ok;
 }

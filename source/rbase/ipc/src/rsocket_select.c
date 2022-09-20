@@ -7,6 +7,7 @@
  * @author: Ray
  */
 
+#include "rtime.h"
 #include "rstring.h"
 #include "rlog.h"
 #include "rsocket_c.h"
@@ -19,82 +20,11 @@
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-/* timeout control structure */
-typedef struct rtimeout_s {
-    double block;          /* maximum time for blocking calls */
-    double total;          /* total number of miliseconds for operation */
-    double start;          /* time of start of operation */
-} rtimeout_t;
-
 typedef struct sockaddr SA;
 
 typedef int rsock_len_t;
 typedef SOCKADDR_STORAGE t_sockaddr_storage;
 typedef SOCKET rsocket_t;
-
-#define rtimeout_is_zero(tm)   ((tm)->block == 0.0)
-
-#ifdef _WIN32
-static double rtimeout_gettime(void) {
-    FILETIME ft;
-    double t;
-    GetSystemTimeAsFileTime(&ft);
-    /* Windows file time (time since January 1, 1601 (UTC)) */
-    t  = ft.dwLowDateTime/1.0e7 + ft.dwHighDateTime*(4294967296.0/1.0e7);
-    /* convert to Unix Epoch time (time since January 1, 1970 (UTC)) */
-    return (t - 11644473600.0);
-}
-#else
-double rtimeout_gettime(void) {
-    struct timeval v;
-    gettimeofday(&v, (struct timezone *) NULL);
-    /* Unix Epoch time (time since January 1, 1970 (UTC)) */
-    return v.tv_sec + v.tv_usec/1.0e6;
-}
-#endif
-
-static void rtimeout_init(rtimeout_t* tm, double block, double total) {
-    tm->block = block;
-    tm->total = total;
-}
-
-static double rtimeout_get(rtimeout_t* tm) {
-    if (tm->block < 0.0 && tm->total < 0.0) {
-        return -1;
-    } else if (tm->block < 0.0) {
-        double t = tm->total - rtimeout_gettime() + tm->start;
-        return rmax(t, 0.0);
-    } else if (tm->total < 0.0) {
-        return tm->block;
-    } else {
-        double t = tm->total - rtimeout_gettime() + tm->start;
-        return rmin(tm->block, rmax(t, 0.0));
-    }
-}
-
-static double rtimeout_getstart(rtimeout_t* tm) {
-    return tm->start;
-}
-
-static double rtimeout_getretry(rtimeout_t* tm) {
-    if (tm->block < 0.0 && tm->total < 0.0) {
-        return -1;
-    } else if (tm->block < 0.0) {
-        double t = tm->total - rtimeout_gettime() + tm->start;
-        return rmax(t, 0.0);
-    } else if (tm->total < 0.0) {
-        double t = tm->block - rtimeout_gettime() + tm->start;
-        return rmax(t, 0.0);
-    } else {
-        double t = tm->total - rtimeout_gettime() + tm->start;
-        return rmin(tm->block, rmax(t, 0.0));
-    }
-}
-
-static rtimeout_t* rtimeout_markstart(rtimeout_t* tm) {
-    tm->start = rtimeout_gettime();
-    return tm;
-}
 
 enum {
     IO_DONE = 0,        /* operation completed successfully */
@@ -136,9 +66,9 @@ static char *io_strerror(int err) {
 #endif
 
 static char *wstrerror(int ret_code);
-static char *socket_strerror(int ret_code);
-static char *socket_ioerror(rsocket_t* sock_item, int ret_code);
-static char *socket_hoststrerror(int ret_code);
+static char *rsocket_strerror(int ret_code);
+static char *rsocket_ioerror(rsocket_t* sock_item, int ret_code);
+static char *rsocket_hoststrerror(int ret_code);
 static char *rsocket_gaistrerror(int ret_code);
 
 static int rsocket_setblocking(rsocket_t* sock_item) {
@@ -175,9 +105,9 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
     int ret_code = 0;
     fd_set rfds, wfds, efds, *rp = NULL, *wp = NULL, *ep = NULL;
     struct timeval tv, *tp = NULL;
-    double time_left = 0;
+    int64_t time_left = 0;
 
-    if (rtimeout_is_zero(tm)) {
+    if (rtimeout_done(tm)) {
         return IO_TIMEOUT;  /* optimize timeout == 0 case */
     }
 
@@ -197,9 +127,8 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
         ep = &efds; 
     }
 
-    if ((time_left = rtimeout_get(tm)) >= 0.0) {
-        tv.tv_sec = (int)time_left;
-        tv.tv_usec = (int) ((time_left - tv.tv_sec) * 1.0e6);
+    if ((time_left = rtimeout_get_block(tm)) >= 0) {
+        rtimeout_2timeval(tm, &tv, time_left);
         tp = &tv;
     }
 
@@ -220,14 +149,13 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
 
 static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
     struct timeval tv;
-    double t = rtimeout_get(tm);
-    tv.tv_sec = (int) t;
-    tv.tv_usec = (int) ((t - tv.tv_sec) * 1.0e6);
+    int64_t time_left = rtimeout_get_block(tm);
+    rtimeout_2timeval(tm, &tv, time_left);
     if (rsock <= 0) {
-        Sleep((DWORD) (1000 * t));
+        Sleep((DWORD) (1000 * time_left));
         return 0;
     } else {
-        return select(0, rfds, wfds, efds, t >= 0.0 ? &tv: NULL);
+        return select(0, rfds, wfds, efds, time_left >= 0 ? &tv: NULL);
     }
 }
 
@@ -274,7 +202,7 @@ static int rsocket_connect(rsocket_t* sock_item, SA *addr, rsock_len_t len, rtim
 		return ret_code;
 	}
     
-	if (rtimeout_is_zero(tm)) {
+	if (rtimeout_done(tm)) {
 		return IO_TIMEOUT;
 	}
 
@@ -514,7 +442,7 @@ static int rsocket_gethostbyname(const char *addr, struct hostent **hp) {
 }
 
 
-static char *socket_hoststrerror(int ret_code) {
+static char *rsocket_hoststrerror(int ret_code) {
     if (ret_code <= 0) {
         return io_strerror(ret_code);
     }
@@ -527,7 +455,7 @@ static char *socket_hoststrerror(int ret_code) {
     }
 }
 
-static char *socket_strerror(int ret_code) {
+static char *rsocket_strerror(int ret_code) {
     if (ret_code <= 0) return io_strerror(ret_code);
     switch (ret_code) {
         case WSAEADDRINUSE: return PIE_ADDRINUSE;
@@ -541,9 +469,9 @@ static char *socket_strerror(int ret_code) {
     }
 }
 
-static char *socket_ioerror(rsocket_t* sock_item, int ret_code) {
+static char *rsocket_ioerror(rsocket_t* sock_item, int ret_code) {
     (void) sock_item;
-    return socket_strerror(ret_code);
+    return rsocket_strerror(ret_code);
 }
 
 static char *wstrerror(int ret_code) {
@@ -682,8 +610,8 @@ static int ripc_open_c(void* ctx) {
     connect_hints.ai_family = family;
     connect_hints.ai_protocol = 0;//IPPROTO_TCP、IPPROTO_UDP 等，设置为0表示所有协议
 
-    rtimeout_init(&tm, 5, -1);
-    rtimeout_markstart(&tm);
+    rtimeout_init_sec(&tm, 5, -1);
+    rtimeout_start(&tm);
 
     ret_code = getaddrinfo(nodename, servname, &connect_hints, &addrinfo_result);
     if (ret_code != rcode_ok) {
@@ -720,11 +648,11 @@ static int ripc_open_c(void* ctx) {
             rinfo("success on connect, family = %d", family);
             break;
         }
-        if (rtimeout_is_zero(&tm)) {
+        if (rtimeout_done(&tm)) {
             ret_code = WSAETIMEDOUT;
         }
         if (ret_code != rcode_ok) {
-            rinfo("failed on connect, code = %d, msg = %s", ret_code, socket_strerror(ret_code));
+            rinfo("failed on connect, code = %d, msg = %s", ret_code, rsocket_strerror(ret_code));
         }
 
     }
@@ -760,7 +688,7 @@ static int ripc_open_c(void* ctx) {
     //        current_family = iterator->ai_family;
     //    }
     //    /* try binding to local address */
-    //    ret_code = socket_strerror(rsocket_bind(&rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen));
+    //    ret_code = rsocket_strerror(rsocket_bind(&rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen));
     //    /* keep trying unless bind succeeded */
     //    if (ret_code == NULL) {
     //        *family = current_family;
@@ -832,8 +760,8 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     int total = 0;
     
     rtimeout_t tm;
-    rtimeout_init(&tm, 1, -1);
-    rtimeout_markstart(&tm);
+    rtimeout_init_millisec(&tm, 3, -1);
+    rtimeout_start(&tm);
 
     while (total < count && ret_code == IO_DONE) {
         ret_code = rsocket_send((rsocket_t*)(ds_client->stream), data_buff, count, &sent_len, &tm);
@@ -875,8 +803,8 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     int total = 0;
 
     rtimeout_t tm;
-    rtimeout_init(&tm, 1, -1);
-    rtimeout_markstart(&tm);
+    rtimeout_init_millisec(&tm, 1, -1);
+    rtimeout_start(&tm);
 
     ret_code = IO_DONE;
     while (ret_code == IO_DONE) {

@@ -9,14 +9,24 @@ INCLUDE_DIRECTORIES(
     ../../3rd/libuv/1.42.0/include
 )
 
+IF(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+SET(SRC_LIB_EXT
+    src/rsocket_select.c
+)
+ELSE()
+SET(SRC_LIB_EXT
+    src/rsocket_poll.c
+)
+ENDIF()
+
 SET(SRC_LIB
     src/ripc.c
-    src/rsocket_select.c
     src/rsocket_s.c
     src/rsocket_c.c
     src/rsocket_uv_s.c
     src/rsocket_uv_c.c
     src/rcodec_default.c
+    ${SRC_LIB_EXT}
 )
 
 SET(SRC_BIN

@@ -23,20 +23,6 @@ static int write_buff_size = 64 * 1024;
 
 static int ripc_close(void* ctx);
 
-static void set_nonblocking(void* sock) {
-    int r;
-#ifdef _WIN32
-    unsigned long on = 1;
-    r = ioctlsocket(sock, FIONBIO, &on);
-    rassert(r == 0, "");
-#else
-    int flags = fcntl(sock, F_GETFL, 0);
-    rassert(flags >= 0, "");
-    r = fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-    rassert(r >= 0, "");
-#endif
-}
-
 static void after_write(void *req, int status) {
     rinfo("end after_write state: %d", status);
 

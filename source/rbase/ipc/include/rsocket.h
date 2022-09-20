@@ -14,6 +14,11 @@
 #include "rinterface.h"
 #include "ripc.h"
 
+#if defined(__linux__)
+#define ntohll(val) be64toh(val)
+#define htonll(val) htobe64(val)
+#endif //__linux__
+
 #ifdef __cplusplus
 extern "C" {
 #endif

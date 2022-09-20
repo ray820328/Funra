@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "rlog.h"
-#include "rbase/ipc/test/rtest.h"
+#include "rbase/rpc/test/rtest.h"
 
 #include "rlist.h"
 #include "rstring.h"

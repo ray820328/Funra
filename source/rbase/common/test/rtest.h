@@ -26,6 +26,7 @@
 
 #include "include/rtest_com.h"
 
+int run_rtime_tests(int benchmark_output);
 int run_rbuffer_tests(int benchmark_output);
 int run_rpool_tests(int benchmark_output);
 int run_rstring_tests(int benchmark_output);

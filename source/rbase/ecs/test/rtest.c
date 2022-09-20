@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "rlog.h"
-#include "rbase/ipc/test/rtest.h"
+#include "rbase/ecs/test/rtest.h"
 
 #include "rlist.h"
 #include "rstring.h"
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     rmem_init();
     rtools_init();
 
-    rlog_init("${date}/rtest_ipc_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rtest_ecs_${index}.log", RLOG_ALL, false, 100);
 
     char* exe_root = rdir_get_exe_root();
     rinfo("当前路径: %s", exe_root);
