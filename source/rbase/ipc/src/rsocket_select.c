@@ -26,7 +26,7 @@ typedef int rsock_len_t;
 typedef SOCKADDR_STORAGE t_sockaddr_storage;
 typedef SOCKET rsocket_t;
 
-enum {
+static enum {
     IO_DONE = 0,        /* operation completed successfully */
     IO_TIMEOUT = -1,    /* operation timed out */
     IO_CLOSED = -2,     /* the connection has been closed */
@@ -649,7 +649,7 @@ static int ripc_open_c(void* ctx) {
             break;
         }
         if (rtimeout_done(&tm)) {
-            ret_code = WSAETIMEDOUT;
+            ret_code = rcode_err_sock_timeout;
         }
         if (ret_code != rcode_ok) {
             rinfo("failed on connect, code = %d, msg = %s", ret_code, rsocket_strerror(ret_code));
@@ -866,6 +866,12 @@ static const ripc_entry_t impl_c = {
 };
 const ripc_entry_t* rsocket_select_c = &impl_c;
 
+
+#undef SOCKET_INVALID
+#undef WAITFD_R
+#undef WAITFD_W
+#undef WAITFD_E
+#undef WAITFD_C
 
 //int inet_aton(const char *cp, struct in_addr *inp) {
 //    unsigned int a = 0, b = 0, c = 0, d = 0;

@@ -502,7 +502,7 @@ static int ripc_open_c(void* ctx) {
             break;
         }
         if (rtimeout_done(&tm)) {
-            ret_code = IO_TIMEOUT;
+            ret_code = rcode_err_sock_timeout;
         }
         if (ret_code != rcode_ok) {
             rinfo("failed on connect, code = %d, msg = %s", ret_code, rsocket_strerror(ret_code));
@@ -718,3 +718,8 @@ static const ripc_entry_t impl_c = {
     NULL// ripc_error_func error;
 };
 const ripc_entry_t* rsocket_select_c = &impl_c;
+
+#undef SOCKET_INVALID
+#undef WAITFD_R
+#undef WAITFD_W
+#undef WAITFD_C
