@@ -14,24 +14,24 @@
 #include "rsocket_s.h"
 #include "rtools.h"
 
+#ifdef WIN32
+ /* POSIX defines 1024 for the FD_SETSIZE，必须在winsock2.h之前定义，默认64 */
+#define FD_SETSIZE 1024
+#endif
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-typedef struct sockaddr SA;
-
-typedef int rsock_len_t;
-typedef SOCKADDR_STORAGE t_sockaddr_storage;
-typedef SOCKET rsocket_t;
-
 static enum {
-    IO_DONE = 0,        /* operation completed successfully */
-    IO_TIMEOUT = -1,    /* operation timed out */
-    IO_CLOSED = -2,     /* the connection has been closed */
+    IO_DONE = 0, //操作成功
+    IO_TIMEOUT = -1,//操作超时
+    IO_CLOSED = -2,//连接已关闭
     IO_UNKNOWN = -3
 };
+
 static char *io_strerror(int err) {
     switch (err) {
     case IO_DONE: return NULL;
@@ -59,11 +59,6 @@ static char *io_strerror(int err) {
 #define WAITFD_W        2
 #define WAITFD_E        4
 #define WAITFD_C        (WAITFD_E|WAITFD_W)
-
-#ifdef WIN32
-/* POSIX defines 1024 for the FD_SETSIZE */
-#define FD_SETSIZE 1024
-#endif
 
 static char *wstrerror(int ret_code);
 static char *rsocket_strerror(int ret_code);
@@ -108,9 +103,10 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
     int64_t time_left = 0;
 
     if (rtimeout_done(tm)) {
-        return IO_TIMEOUT;  /* optimize timeout == 0 case */
+        return IO_TIMEOUT;
     }
 
+    //select使用bit，fd_set内核和用户态共同修改，要么保存状态，要么每次重新分别设置 read/write/error 掩码
     if (sw & WAITFD_R) {
         FD_ZERO(&rfds);
         FD_SET(*sock_item, &rfds);
@@ -132,7 +128,7 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
         tp = &tv;
     }
 
-    ret_code = select(0, rp, wp, ep, tp);
+    ret_code = select(0, rp, wp, ep, tp); //timeout为timeval表示的时间戳微秒，NULL时无限等待
 
     if (ret_code == -1) {
         return WSAGetLastError();
@@ -152,7 +148,7 @@ static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *e
     int64_t time_left = rtimeout_get_block(tm);
     rtimeout_2timeval(tm, &tv, time_left);
     if (rsock <= 0) {
-        Sleep((DWORD) (1000 * time_left));
+        Sleep((DWORD) (time_left / 1000));
         return 0;
     } else {
         return select(0, rfds, wfds, efds, time_left >= 0 ? &tv: NULL);
@@ -187,7 +183,7 @@ static int rsocket_create(rsocket_t* sock_item, int domain, int type, int protoc
     }
 }
 
-static int rsocket_connect(rsocket_t* sock_item, SA *addr, rsock_len_t len, rtimeout_t* tm) {
+static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
 	if (*sock_item == SOCKET_INVALID) {
 		return IO_CLOSED;
@@ -223,7 +219,7 @@ static int rsocket_connect(rsocket_t* sock_item, SA *addr, rsock_len_t len, rtim
 	}
 }
 
-static int rsocket_bind(rsocket_t* sock_item, SA *addr, rsock_len_t len) {
+static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len) {
     int ret_code = IO_DONE;
 
     rsocket_setblocking(sock_item);
@@ -251,7 +247,7 @@ static int rsocket_listen(rsocket_t* sock_item, int backlog) {
     return ret_code;
 }
 
-static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, SA *addr, rsock_len_t *len, rtimeout_t* tm) {
+static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     if (*sock_item == SOCKET_INVALID) {
         return IO_CLOSED;
     }
@@ -306,7 +302,7 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, int count, int *
 }
 
 static int rsocket_send2_addr(rsocket_t* sock_item, const char *data, size_t count, size_t *sent,
-        SA *addr, rsock_len_t len, rtimeout_t* tm) {
+        rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code = 0;
 
     *sent = 0;
@@ -385,7 +381,7 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, int count, int *got, r
 }
 
 static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *got, 
-        SA *addr, rsock_len_t *len, rtimeout_t* tm) {
+        rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     int ret_code, prev = IO_DONE;
 
     *got = 0;
@@ -421,7 +417,7 @@ static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *go
     }
 }
 
-static int rsocket_gethostbyaddr(const char *addr, rsock_len_t len, struct hostent **hp) {
+static int rsocket_gethostbyaddr(const char *addr, rsocket_len_t len, struct hostent **hp) {
     *hp = gethostbyaddr(addr, len, AF_INET);
     if (*hp) {
         return IO_DONE;
@@ -641,7 +637,7 @@ static int ripc_open_c(void* ctx) {
             current_family = iterator->ai_family;
         }
 
-        ret_code = rsocket_connect(rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen, &tm);
+        ret_code = rsocket_connect(rsock_item, (rsockaddr_t *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen, &tm);
         /* success or timeout, break of loop */
         if (ret_code == rcode_ok) {
             family = current_family;
@@ -688,7 +684,7 @@ static int ripc_open_c(void* ctx) {
     //        current_family = iterator->ai_family;
     //    }
     //    /* try binding to local address */
-    //    ret_code = rsocket_strerror(rsocket_bind(&rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen));
+    //    ret_code = rsocket_strerror(rsocket_bind(&rsock_item, (rsockaddr_t *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen));
     //    /* keep trying unless bind succeeded */
     //    if (ret_code == NULL) {
     //        *family = current_family;

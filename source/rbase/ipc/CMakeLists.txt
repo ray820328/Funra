@@ -9,16 +9,6 @@ INCLUDE_DIRECTORIES(
     ../../3rd/libuv/1.42.0/include
 )
 
-IF(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-SET(SRC_LIB_EXT
-    src/rsocket_select.c
-)
-ELSE()
-SET(SRC_LIB_EXT
-    src/rsocket_poll.c
-)
-ENDIF()
-
 SET(SRC_LIB
     src/ripc.c
     src/rsocket_s.c
@@ -26,8 +16,17 @@ SET(SRC_LIB
     src/rsocket_uv_s.c
     src/rsocket_uv_c.c
     src/rcodec_default.c
-    ${SRC_LIB_EXT}
 )
+
+IF(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+LIST(APPEND SRC_LIB
+    src/rsocket_select.c
+)
+ELSE()
+LIST(APPEND SRC_LIB
+    src/rsocket_poll.c
+)
+ENDIF()
 
 SET(SRC_BIN
     ${SRC_LIB}
@@ -38,8 +37,6 @@ SET(SRC_BIN
     test/rtest_rsocket_s.c
     test/rtest_rsocket_c.c
 )
-
-#LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})
 #ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRC_LIB})

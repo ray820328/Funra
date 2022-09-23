@@ -23,6 +23,19 @@
 extern "C" {
 #endif
 
+typedef struct sockaddr rsockaddr_t;
+
+#if defined(__linux__)
+typedef socklen_t rsocket_len_t;
+typedef int rsocket_t;
+typedef struct sockaddr_storage rsockaddr_storage_t;
+#endif //__linux__
+#if defined(_WIN32) || defined(_WIN64)
+typedef int rsocket_len_t;
+typedef SOCKET rsocket_t;
+typedef SOCKADDR_STORAGE rsockaddr_storage_t;
+#endif //_WIN64
+
 #define _rsocket_session_fields \
     ripc_type_t type; \
     uint64_t id; \

@@ -56,10 +56,6 @@
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-typedef struct sockaddr SA;
-typedef int rsocket_t;
-typedef struct sockaddr_storage t_sockaddr_storage;
-
 #define SOCKET_INVALID (-1)
 
 #define WAITFD_R        POLLIN
@@ -93,7 +89,7 @@ static void rsocket_setnonblocking(rsocket_t* sock_item) {
     fcntl(*sock_item, F_SETFL, flags);
 }
 
-static int rsocket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp) {
+static int rsocket_gethostbyaddr(const char *addr, rsocket_len_t len, struct hostent **hp) {
     *hp = gethostbyaddr(addr, len, AF_INET);
     if (*hp) return IO_DONE;
     else if (h_errno) return h_errno;
@@ -164,19 +160,32 @@ static char *rsocket_gaistrerror(int errno) {
 }
 
 static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
-    int ret;
+    int ret_code = 0;
+
     struct pollfd pfd;
     pfd.fd = *sock_item;
-    pfd.events = sw;
-    pfd.revents = 0;
-    if (rtimeout_done(tm)) return IO_TIMEOUT;  /* optimize timeout == 0 case */
+    pfd.events = sw;//poll用户态修改的是events
+    pfd.revents = 0;//poll内核态修改的是revents
+
+    if (rtimeout_done(tm)) {
+        return IO_TIMEOUT;
+    }
+
     do {
         int t = (int)(rtimeout_get_total(tm) / 1000);//毫秒
-        ret = poll(&pfd, 1, t >= 0 ? t : -1);
-    } while (ret == -1 && errno == EINTR);
-    if (ret == -1) return errno;
-    if (ret == 0) return IO_TIMEOUT;
-    if (sw == WAITFD_C && (pfd.revents & (POLLIN | POLLERR))) return IO_CLOSED;
+        ret_code = poll(&pfd, 1, t >= 0 ? t : -1); //timeout为时间差值，精度是毫秒，-1时无限等待
+    } while (ret_code == -1 && rerror_get_osnet_err() == EINTR);
+
+    if (ret_code == -1) {
+        return rerror_get_osnet_err();
+    }
+    if (ret_code == 0) {
+        return IO_TIMEOUT;
+    }
+    if (sw == WAITFD_C && (pfd.revents & (POLLIN | POLLERR))) {
+        return IO_CLOSED;
+    }
+
     return IO_DONE;
 }
 
@@ -216,7 +225,7 @@ static int rsocket_create(rsocket_t* sock_item, int domain, int type, int protoc
     else return errno;
 }
 
-static int rsocket_bind(rsocket_t* sock_item, SA *addr, socklen_t len) {
+static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len) {
     int ret_code = IO_DONE;
     rsocket_setblocking(sock_item);
     if (bind(*sock_item, addr, len) < 0) ret_code = errno;
@@ -234,7 +243,7 @@ static void socket_shutdown(rsocket_t* sock_item, int how) {
     shutdown(*sock_item, how);
 }
 
-static int rsocket_connect(rsocket_t* sock_item, SA *addr, socklen_t len, rtimeout_t* tm) {
+static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
     /* avoid calling on closed sockets */
     if (*sock_item == SOCKET_INVALID) return IO_CLOSED;
@@ -253,7 +262,7 @@ static int rsocket_connect(rsocket_t* sock_item, SA *addr, socklen_t len, rtimeo
     } else return ret_code;
 }
 
-static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, SA *addr, socklen_t *len, rtimeout_t* tm) {
+static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     if (*sock_item == SOCKET_INVALID) return IO_CLOSED;
     for ( ;; ) {
         int ret_code;
@@ -297,7 +306,7 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, size_t count, si
 }
 
 static int rsocket_sendto(rsocket_t* sock_item, const char *data, size_t count, size_t *sent,
-        SA *addr, socklen_t len, rtimeout_t* tm) {
+        rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
     *sent = 0;
     if (*sock_item == SOCKET_INVALID) return IO_CLOSED;
@@ -336,7 +345,7 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, size_t count, size_t *
     return IO_UNKNOWN;
 }
 
-static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *got, SA *addr, socklen_t *len, rtimeout_t* tm) {
+static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *got, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     int ret_code;
     *got = 0;
     if (*sock_item == SOCKET_INVALID) return IO_CLOSED;
@@ -494,7 +503,7 @@ static int ripc_open_c(void* ctx) {
             current_family = iterator->ai_family;
         }
 
-        ret_code = rsocket_connect(rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen, &tm);
+        ret_code = rsocket_connect(rsock_item, (rsockaddr_t *)iterator->ai_addr, (rsocket_len_t)iterator->ai_addrlen, &tm);
         /* success or timeout, break of loop */
         if (ret_code == rcode_ok) {
             family = current_family;
@@ -541,7 +550,7 @@ static int ripc_open_c(void* ctx) {
     //        current_family = iterator->ai_family;
     //    }
     //    /* try binding to local address */
-    //    ret_code = rsocket_strerror(rsocket_bind(&rsock_item, (SA *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen));
+    //    ret_code = rsocket_strerror(rsocket_bind(&rsock_item, (rsockaddr_t *)iterator->ai_addr, (rsocket_len_t)iterator->ai_addrlen));
     //    /* keep trying unless bind succeeded */
     //    if (ret_code == NULL) {
     //        *family = current_family;

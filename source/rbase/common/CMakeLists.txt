@@ -22,8 +22,6 @@ SET(SRC_LIB
         src/rtools.c
         )
 
-#LIST(APPEND uv_test_sources src/win/snprintf.c test/runner-win.c)${CMAKE_CURRENT_SOURCE_DIR}/../../build/lib/${DIR_PLATFORM}
-
 SET(SRC_BIN
     ${SRC_LIB}
     test/rtest_rbuffer.c

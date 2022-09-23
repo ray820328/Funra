@@ -30,7 +30,7 @@ typedef struct rsocket_server_ctx_s {
 } rsocket_server_ctx_t;
 
 
-extern const ripc_entry_t rsocket_s;
+extern const ripc_entry_t* rsocket_s;
 
 
 #ifdef __cplusplus

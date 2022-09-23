@@ -66,14 +66,18 @@ typedef struct rtimeout_s {
         (tval)->tv_sec = (time_left) - (tval)->tv_usec; \
     } while (0)
 
-/** (block >= 0 && total < 0)返回block；
+/**
+  * 单位微秒
+  * (block >= 0 && total < 0)返回block；
   * (block < 0 && total >= 0)返回total剩余值；
   * (block >= 0 && total >= 0)返回 min(block 和 total剩余值)；
   * 错误返回 -1 
   */
 R_API int64_t rtimeout_get_block(rtimeout_t* tm);
 
-/** (block >= 0 && total < 0)返回blockl剩余值；
+/**
+  * 单位微秒
+  * (block >= 0 && total < 0)返回blockl剩余值；
   * (block < 0 && total >= 0)返回total剩余值；
   * (block >= 0 && total >= 0)返回 min(block 和 total剩余值)；
   * 错误返回 -1
