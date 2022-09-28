@@ -7,6 +7,13 @@
  * @author: Ray
  */
 
+#ifdef _MSC_VER
+# define _CRT_SECURE_NO_WARNINGS
+# define _CRT_NONSTDC_NO_WARNINGS
+# pragma warning(disable: 4244) /* int -> char */
+# pragma warning(disable: 4127) /* const in if condition */
+#endif
+
 #include "rtime.h"
 #include "rstring.h"
 #include "rlog.h"
@@ -760,7 +767,7 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     rtimeout_start(&tm);
 
     while (total < count && ret_code == IO_DONE) {
-        ret_code = rsocket_send((rsocket_t*)(ds_client->stream), data_buff, count, &sent_len, &tm);
+        ret_code = rsocket_send((rsocket_t*)(ds_client->stream), data_buff + total, count, &sent_len, &tm);
 
         if (ret_code != IO_DONE) {
             rwarn("end client send_data, code: %d, sent_len: %d, total: %d", ret_code, sent_len, total);
@@ -804,7 +811,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
 
     ret_code = IO_DONE;
     while (ret_code == IO_DONE) {
-        ret_code = rsocket_recv(ds_client->stream, data_buff, count, &received_len, &tm);
+        ret_code = rsocket_recv(ds_client->stream, data_buff + total, count, &received_len, &tm);
         if (received_len == 0) {
             break;
         }

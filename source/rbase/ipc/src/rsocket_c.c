@@ -163,6 +163,6 @@ static const ripc_entry_t impl = {
     NULL,// ripc_receive_func receive;
     NULL// ripc_error_func error;
 };
-const ripc_entry_t* rsocket_c = &impl;
+//const ripc_entry_t* rsocket_c = &impl;
 
 #undef local_write_req_t

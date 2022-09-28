@@ -38,8 +38,10 @@ typedef enum {
 typedef enum {
     ripc_state_unknown = 0,           /** invalid */
     ripc_state_init = 1,
-    ripc_state_ready = 2,
-    ripc_state_working,
+    ripc_state_ready_pending = 2,
+    ripc_state_ready = 3,
+    ripc_state_start,
+    ripc_state_stop,
     ripc_state_disconnect,
     ripc_state_closed,
     ripc_state_error,

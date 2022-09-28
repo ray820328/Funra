@@ -40,7 +40,7 @@ void rthread_init(rthread_t *t) {
 #include <process.h>
 
 static void rthread_errstr(rthread_t *t) {
-    int ret_code;
+    int ret_code = 0;
     DWORD err = GetLastError();
     LPSTR errstr = 0;
 
@@ -64,8 +64,12 @@ int rthread_start(rthread_t *t, void *(*rfunc)(void *), void *arg) {
 
     t->rfunc = rfunc;
     t->arg = arg;
-
+#ifndef _WIN32_WCE
+    //handle是指向“线程的内核对象”的，而不是指向线程本身
     t->id = (HANDLE) _beginthreadex(NULL, 0, rthread_fn, t, 0, NULL);//线程都有自己的errno之类的变量
+#else
+    t->id = (HANDLE) CreateThread(NULL, 0, rthread_fn, t, 0, NULL);
+#endif    
     if (t->id == 0) {
         rthread_errstr(t);
         ret_code = -1;
@@ -103,6 +107,54 @@ exit0:
     if (ret != NULL) {
         *ret = t->ret;
     }
+
+    return ret_code;
+}
+
+int rthread_exit(rthread_t *t, void **ret) {//终止自己
+    int ret_code = 0;
+
+    if (t->id == 0) {
+        rgoto(0);
+    }
+
+    //禁止用TerminateThread，在线程外强制终止线程，线程在占用锁时被杀死不会释放锁（比如该线程在new或delete操作中）
+#ifndef _WIN32_WCE
+    _endthreadex(0);
+#else
+    ExitThread(0);
+#endif
+
+exit0:
+    if (ret != NULL) {
+        *ret = t->ret;
+    }
+    t->id = 0;
+
+    return ret_code;
+}
+
+int rthread_detach(rthread_t *t, void **ret) {
+    int ret_code = 0;
+
+    if (t->id == 0) {
+        rgoto(0);
+    }
+
+    if (CloseHandle(t->id)) {//CloseHandle之后，引用计数减1，当变为0时，系统删除内核对象
+        t->id = 0;
+        ret_code = rcode_ok;
+        rgoto(0);
+    } else {
+        rthread_errstr(t);
+        ret_code = -1;
+    }
+
+exit0:
+    if (ret != NULL) {
+        *ret = t->ret;
+    }
+    t->id = 0;
 
     return ret_code;
 }
@@ -152,6 +204,43 @@ exit0:
     if (ret != NULL) {
         *ret = val;
     }
+
+    return ret_code;
+}
+
+int rthread_exit(rthread_t *t, void **ret) {//终止自己
+    int ret_code = 0;
+
+    if (t->id == 0) {
+        rgoto(0);
+    }
+
+    // t->exitval = 9;
+    pthread_exit(NULL);
+    
+exit0:
+    t->id = 0;
+
+    return ret_code;
+}
+
+int rthread_detach(rthread_t *t, void **ret) {
+    int ret_code = 0;
+
+    if (t->id == 0) {
+        rgoto(0);
+    }
+
+    if (pthread_detach(t->id) == 0) {
+        t->id = 0;
+        ret_code = rcode_ok;
+        rgoto(0);
+    } else {
+        strncpy(t->err, strerror(ret_code), sizeof(t->err) - 1);
+        ret_code = -1;
+    }
+
+exit0:
 
     return ret_code;
 }

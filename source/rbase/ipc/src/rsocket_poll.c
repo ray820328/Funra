@@ -105,17 +105,17 @@ static int rsocket_gethostbyname(const char *addr, struct hostent **hp) {
     else return IO_UNKNOWN;
 }
 
-static char *rsocket_hoststrerror(int errno) {
-    if (errno <= 0) return rio_strerror(errno);
-    switch (errno) {
+static char *rsocket_hoststrerror(int err) {
+    if (err <= 0) return rio_strerror(err);
+    switch (err) {
         case HOST_NOT_FOUND: return PIE_HOST_NOT_FOUND;
-        default: return hstrerror(errno);
+        default: return hstrerror(err);
     }
 }
 
-static char *rsocket_strerror(int errno) {
-    if (errno <= 0) return rio_strerror(errno);
-    switch (errno) {
+static char *rsocket_strerror(int err) {
+    if (err <= 0) return rio_strerror(err);
+    switch (err) {
         case EADDRINUSE: return PIE_ADDRINUSE;
         case EISCONN: return PIE_ISCONN;
         case EACCES: return PIE_ACCESS;
@@ -124,19 +124,19 @@ static char *rsocket_strerror(int errno) {
         case ECONNRESET: return PIE_CONNRESET;
         case ETIMEDOUT: return PIE_TIMEDOUT;
         default: {
-            return strerror(errno);
+            return strerror(err);
         }
     }
 }
 
-static char *rsocket_ioerror(rsocket_t* sock_item, int errno) {
+static char *rsocket_ioerror(rsocket_t* sock_item, int err) {
     (void) sock_item;
-    return rsocket_strerror(errno);
+    return rsocket_strerror(err);
 }
 
-static char *rsocket_gaistrerror(int errno) {
-    if (errno == 0) return NULL;
-    switch (errno) {
+static char *rsocket_gaistrerror(int err) {
+    if (err == 0) return rstr_null;
+    switch (err) {
         case EAI_AGAIN: return PIE_AGAIN;
         case EAI_BADFLAGS: return PIE_BADFLAGS;
 #ifdef EAI_BADHINTS
@@ -154,8 +154,8 @@ static char *rsocket_gaistrerror(int errno) {
 #endif
         case EAI_SERVICE: return PIE_SERVICE;
         case EAI_SOCKTYPE: return PIE_SOCKTYPE;
-        case EAI_SYSTEM: return strerror(errno);
-        default: return gai_strerror(errno);
+        case EAI_SYSTEM: return strerror(err);
+        default: return gai_strerror(err);
     }
 }
 
@@ -214,28 +214,32 @@ static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *e
         rtimeout_2timeval(tm, &tv, time_left);
         /* timeout = 0 means no wait */
         ret_code = select(rsock, rfds, wfds, efds, time_left >= 0 ? &tv: NULL);
-    } while (ret_code < 0 && errno == EINTR);
+    } while (ret_code < 0 && rerror_get_osnet_err() == EINTR);
 
     return ret_code;
 }
 
 static int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol) {
     *sock_item = socket(domain, type, protocol);
-    if (*sock_item != SOCKET_INVALID) return IO_DONE;
-    else return errno;
+    if (*sock_item != SOCKET_INVALID) {
+        return IO_DONE;
+    }
+    else {
+        return rerror_get_osnet_err();
+    }
 }
 
 static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len) {
     int ret_code = IO_DONE;
     rsocket_setblocking(sock_item);
-    if (bind(*sock_item, addr, len) < 0) ret_code = errno;
+    if (bind(*sock_item, addr, len) < 0) ret_code = rerror_get_osnet_err();
     rsocket_setnonblocking(sock_item);
     return ret_code;
 }
 
 static int rsocket_listen(rsocket_t* sock_item, int backlog) {
     int ret_code = IO_DONE;
-    if (listen(*sock_item, backlog)) ret_code = errno;
+    if (listen(*sock_item, backlog)) ret_code = rerror_get_osnet_err();
     return ret_code;
 }
 
@@ -249,7 +253,7 @@ static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_
     if (*sock_item == SOCKET_INVALID) return IO_CLOSED;
     /* call connect until done or failed without being interrupted */
     do if (connect(*sock_item, addr, len) == 0) return IO_DONE;
-    while ((ret_code = errno) == EINTR);
+    while ((ret_code = rerror_get_osnet_err()) == EINTR);
     /* if connection failed immediately, return error code */
     if (ret_code != EINPROGRESS && ret_code != EAGAIN) return ret_code;
     /* zero timeout case optimization */
@@ -258,7 +262,7 @@ static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_
     ret_code = rsocket_waitfd(sock_item, WAITFD_C, tm);
     if (ret_code == IO_CLOSED) {
         if (recv(*sock_item, (char *) &ret_code, 0, 0) == 0) return IO_DONE;
-        else return errno;
+        else return rerror_get_osnet_err();
     } else return ret_code;
 }
 
@@ -267,7 +271,7 @@ static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, rsockaddr_t *addr
     for ( ;; ) {
         int ret_code;
         if ((*pa = accept(*sock_item, addr, len)) != SOCKET_INVALID) return IO_DONE;
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         if (ret_code == EINTR) continue;
         if (ret_code != EAGAIN && ret_code != ECONNABORTED) return ret_code;
         if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != IO_DONE) return ret_code;
@@ -289,7 +293,7 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, size_t count, si
             *sent = put;
             return IO_DONE;
         }
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         /* EPIPE means the connection was closed */
         if (ret_code == EPIPE) return IO_CLOSED;
         /* EPROTOTYPE means the connection is being closed (on Yosemite!)*/
@@ -316,7 +320,7 @@ static int rsocket_sendto(rsocket_t* sock_item, const char *data, size_t count, 
             *sent = put;
             return IO_DONE;
         }
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         if (ret_code == EPIPE) return IO_CLOSED;
         if (ret_code == EPROTOTYPE) continue;
         if (ret_code == EINTR) continue;
@@ -336,7 +340,7 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, size_t count, size_t *
             *got = taken;
             return IO_DONE;
         }
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         if (taken == 0) return IO_CLOSED;
         if (ret_code == EINTR) continue;
         if (ret_code != EAGAIN) return ret_code;
@@ -355,7 +359,7 @@ static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *go
             *got = taken;
             return IO_DONE;
         }
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         if (taken == 0) return IO_CLOSED;
         if (ret_code == EINTR) continue;
         if (ret_code != EAGAIN) return ret_code;
@@ -377,7 +381,7 @@ static int rsocket_write(rsocket_t* sock_item, const char *data, int count, int 
             *sent = put;
             return IO_DONE;
         }
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         /* EPIPE means the connection was closed */
         if (ret_code == EPIPE) return IO_CLOSED;
         /* EPROTOTYPE means the connection is being closed (on Yosemite!)*/
@@ -403,7 +407,7 @@ static int rsocket_read(rsocket_t* sock_item, char *data, size_t count, size_t *
             *got = taken;
             return IO_DONE;
         }
-        ret_code = errno;
+        ret_code = rerror_get_osnet_err();
         if (taken == 0) return IO_CLOSED;
         if (ret_code == EINTR) continue;
         if (ret_code != EAGAIN) return ret_code;
@@ -514,7 +518,7 @@ static int ripc_open_c(void* ctx) {
             ret_code = rcode_err_sock_timeout;
         }
         if (ret_code != rcode_ok) {
-            rinfo("failed on connect, code = %d, msg = %s", ret_code, rsocket_strerror(ret_code));
+            rinfo("failed on connect, code = %d, msg = %s", ret_code, (char*)rsocket_strerror(ret_code));
         }
 
     }
@@ -626,7 +630,7 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     rtimeout_start(&tm);
 
     while (total < count && ret_code == IO_DONE) {
-        ret_code = rsocket_send((rsocket_t*)(ds_client->stream), data_buff, count, &sent_len, &tm);
+        ret_code = rsocket_send((rsocket_t*)(ds_client->stream), data_buff + total, count, &sent_len, &tm);
 
         if (ret_code != IO_DONE) {
             rwarn("end client send_data, code: %d, sent_len: %d, total: %d", ret_code, sent_len, total);
@@ -670,7 +674,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
 
     ret_code = IO_DONE;
     while (ret_code == IO_DONE) {
-        ret_code = rsocket_recv(ds_client->stream, data_buff, count, &received_len, &tm);
+        ret_code = rsocket_recv(ds_client->stream, data_buff + total, count, &received_len, &tm);
         if (received_len == 0) {
             break;
         }

@@ -22,6 +22,8 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
+static rthread_t thread;
+static rthread_t thread2;
 static void rthread_full_test(void **state);
 
 static int setup(void **state) {
@@ -60,14 +62,26 @@ static void* rfunc_test(void* arg) {
     printf("stop, thread: %s, wait = %d\n", (char *) arg, wait_time);
     return arg;
 }
+static void* rfunc_test_exit(void* arg) {
+    srand((unsigned int)(rtime_millisec()));
+    rinfo("start, thread: %s", (char *) arg);
+    printf("start, thread: %s\n", (char *) arg);
+
+    int wait_time = rtools_rand_int(10, 100);
+    rtools_wait_mills(wait_time);
+
+    rinfo("stop, thread: %s, wait = %d", (char *) arg, wait_time);
+    printf("stop, thread: %s, wait = %d\n", (char *) arg, wait_time);
+
+    rthread_exit(&thread, (char *) arg);
+    return arg;
+}
 static void rthread_full_test(void **state) {
     (void)state;
     int count = 10000;
 
     int ret_code;
     void *ret;
-    rthread_t thread;
-    rthread_t thread2;
 
     init_benchmark(1024, "test rthread (%d)", count);
 
@@ -86,9 +100,25 @@ static void rthread_full_test(void **state) {
     start_benchmark(0);
     ret_code = rthread_uninit(&thread);
     assert_true(ret_code == 0);
+    end_benchmark("thread uninit.");
+
+    start_benchmark(0);
+    rthread_init(&thread);
+    ret_code = rthread_start(&thread, rfunc_test, "first");
+    assert_true(ret_code == 0);
+    ret_code = rthread_detach(&thread, &ret);
+    assert_true(ret_code == 0);
     ret_code = rthread_uninit(&thread);
     assert_true(ret_code == 0);
-    end_benchmark("thread uninit.");
+    end_benchmark("thread start/detach/uninit.");
+
+    start_benchmark(0);
+    rthread_init(&thread);
+    ret_code = rthread_start(&thread, rfunc_test, "first");
+    assert_true(ret_code == 0);
+    ret_code = rthread_uninit(&thread);
+    assert_true(ret_code == 0);
+    end_benchmark("thread start/exit/uninit.");
 
     start_benchmark(0);
     rthread_init(&thread);

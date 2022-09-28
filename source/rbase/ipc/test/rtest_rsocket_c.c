@@ -29,12 +29,13 @@ static rthread_t socket_thread;
 static volatile int sent_times = 10;
 
 static void* run_client(void* arg) {
+    int ret_code = 0;
 
-    rsocket_ctx.id = 3001;
+    rsocket_ctx.id = 3008;
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream_state = ripc_state_init;
 
-    rsocket_ctx.ipc_entry = rsocket_select_c;
+    rsocket_ctx.ipc_entry = rsocket_c;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -71,22 +72,26 @@ static void* run_client(void* arg) {
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
-    rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
-    rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+    ret_code = rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
+    assert_true(ret_code == rcode_ok);
+    ret_code = rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+    assert_true(ret_code == rcode_ok);
 
-    rsocket_ctx.ipc_entry->start(&rsocket_ctx);
+    ret_code = rsocket_ctx.ipc_entry->start(&rsocket_ctx);
+    assert_true(ret_code == rcode_ok);
 
 	while (--sent_times > 0) {
 		ripc_data_default_t data;
 		data.cmd = 11;
-		data.data = rstr_cpy("client select_send test", 0);
+		data.data = rstr_cpy("client epoll_send test", 0);
 		data.len = rstr_len(data.data);
 		rsocket_ctx.ipc_entry->send(ds, &data);
+
+        rsocket_ctx.ipc_entry->check(ds, NULL);//send & recv
+
         rdata_free(char*, data.data);
 
         rtools_wait_mills(2000);
-
-        rsocket_ctx.ipc_entry->receive(ds, NULL);
 	}
 
     rsocket_ctx.ipc_entry->stop(&rsocket_ctx);

@@ -59,7 +59,7 @@ static void repeat_cb(uv_timer_t* handle) {
 
 static void* run_client(void* arg) {
 
-    rsocket_ctx.id = 1;
+    rsocket_ctx.id = 3001;
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream = (uv_handle_t*)rdata_new(uv_tcp_t);
     rsocket_ctx.stream_state = ripc_state_init;
@@ -158,10 +158,9 @@ static int setup(void **state) {
     return rcode_ok;
 }
 static int teardown(void **state) {
-    //void* param;
-    //int ret_code = rthread_join(&socket_thread, &param);
-    //assert_true(ret_code == 0);
-    //assert_true(rstr_eq((char *)param, "socket_uv_thread"));
+    void* param;
+    int ret_code = rthread_detach(&socket_thread, &param);
+    assert_true(ret_code == 0);
     
     return rcode_ok;
 }

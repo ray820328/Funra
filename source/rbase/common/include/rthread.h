@@ -108,17 +108,31 @@ char* rthread_err(rthread_t *t);
 /**
  * @param t thread
  * @return  '0' on success,
- *          '-1' on error, call 'sc_thread_err()' for error string.
+ *          '-1' on error
  */
 int rthread_start(rthread_t *t, rthread_func rfunc, void *arg);
 
 /**
  * @param t thread
  * @return  '0' on success,
- *          '-1' on error, call 'sc_thread_err()' for error string.
+ *          '-1' on error
  */
 int rthread_join(rthread_t *t, void **ret);
 
+/**
+ * 终止调用者本身 (尽量不要调)
+ * @param t thread
+ * @return  '0' on success,
+ *          '-1' on error
+ */
+int rthread_exit(rthread_t *t, void **ret);
+
+/**
+ * @param t thread
+ * @return  '0' on success,
+ *          '-1' on error
+ */
+int rthread_detach(rthread_t *t, void **ret);
 
 #ifdef __cplusplus
 }
