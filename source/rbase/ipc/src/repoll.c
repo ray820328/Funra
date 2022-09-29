@@ -18,7 +18,7 @@
 
 #include "repoll.h"
 
-int16_t epoll_get_event_req(int16_t event) {
+int16_t repoll_get_event_req(int16_t event) {
     int16_t rv = 0;
 
     rv |= (event & RIO_POLLIN) ? EPOLLIN : 0;
@@ -82,7 +82,7 @@ int repoll_add(repoll_container_t *container, const repoll_item_t *repoll_item) 
 
     struct epoll_event ev = {0}; //linux内核版本小于 2.6.9 必须初始化
 
-    ev.events = epoll_get_event_req(repoll_item->event_val_req);
+    ev.events = repoll_get_event_req(repoll_item->event_val_req);
 
     ev.data.ptr = (void *)repoll_item;
 
@@ -98,13 +98,13 @@ int repoll_add(repoll_container_t *container, const repoll_item_t *repoll_item) 
 int repoll_modify(repoll_container_t *container, const repoll_item_t *repoll_item) {
     int ret_code = rcode_ok;
 
-    // if (data->eventFlag == flag) {
+    // if (data->event_flag == flag) {
     //     return rcode_ok;
     // }
 
     struct epoll_event ev = {0}; // {flag, {0}} linux内核版本小于 2.6.9 必须初始化
 
-    ev.events = epoll_get_event_req(repoll_item->event_val_req);
+    ev.events = repoll_get_event_req(repoll_item->event_val_req);
 
     ev.data.ptr = (void *)repoll_item;
 

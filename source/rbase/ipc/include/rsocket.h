@@ -132,6 +132,8 @@ typedef enum {
     rcode_io_unknown = -3
 } rcode_io_state;
 
+int rsocket_destroy(rsocket_t* sock_item);
+
 int rsocket_setblocking(rsocket_t* sock_item);
 
 int rsocket_setnonblocking(rsocket_t* sock_item);

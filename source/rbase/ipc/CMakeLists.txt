@@ -13,7 +13,6 @@ SET(SRC_LIB
     src/ripc.c
     src/repoll.c
     src/rsocket.c
-    src/rsocket_s.c
     src/rsocket_c.c
     src/rsocket_uv_s.c
     src/rsocket_uv_c.c
@@ -27,6 +26,7 @@ LIST(APPEND SRC_LIB
 ELSE()
 LIST(APPEND SRC_LIB
     src/rsocket_poll.c
+    src/rsocket_epoll.c
 )
 ENDIF()
 
@@ -36,7 +36,8 @@ SET(SRC_BIN
     test/rtest.c
     test/rtest_rsocket_uv_s.c
     test/rtest_rsocket_uv_c.c
-    test/rtest_rsocket_s.c
+    test/rtest_rsocket_epoll.c
+    test/rtest_rsocket_select.c
     test/rtest_rsocket_c.c
 )
 

@@ -11,7 +11,20 @@
 #include "rlog.h"
 #include "rtime.h"
 #include "rsocket.h"
-#include "rtools.h"
+
+int rsocket_destroy(rsocket_t* sock_item) {
+    if (sock_item && *sock_item != SOCKET_INVALID) {
+#if defined(_WIN32) || defined(_WIN64)
+        rsocket_setblocking(sock_item); /* WIN32可能消耗时间很长 */
+        closesocket(*sock_item);
+#else
+        close(*sock_item);
+#endif
+
+        *sock_item = SOCKET_INVALID;
+    }
+    return rcode_ok;
+}
 
 char* rio_strerror(int err) {
     switch (err) {

@@ -47,7 +47,7 @@ static void* run_client(void* arg) {
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
     rsocket_ctx.cfg = cfg;
     cfg->id = 1;
-    rstr_set(cfg->ip, "10.11.140.87", 0);
+    rstr_set(cfg->ip, "127.0.0.1", 0);
     cfg->port = 23000;
 
     rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
@@ -72,6 +72,8 @@ static void* run_client(void* arg) {
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
+    rtools_wait_mills(5000);
+
     ret_code = rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
     assert_true(ret_code == rcode_ok);
     ret_code = rsocket_ctx.ipc_entry->open(&rsocket_ctx);
@@ -83,7 +85,7 @@ static void* run_client(void* arg) {
 	while (--sent_times > 0) {
 		ripc_data_default_t data;
 		data.cmd = 11;
-		data.data = rstr_cpy("client epoll_send test", 0);
+		data.data = rstr_cpy("client rsocket_c (win=select,linux=poll)  send test", 0);
 		data.len = rstr_len(data.data);
 		rsocket_ctx.ipc_entry->send(ds, &data);
 
@@ -137,9 +139,10 @@ static int setup(void **state) {
 }
 static int teardown(void **state) {
     void* param;
-    int ret_code = rthread_join(&socket_thread, &param);
+    // int ret_code = rthread_join(&socket_thread, &param);
+    int ret_code = rthread_detach(&socket_thread, &param);
     assert_true(ret_code == 0);
-    assert_true(rstr_eq((char *)param, "socket_thread"));
+    // assert_true(rstr_eq((char *)param, "socket_thread"));
     
     return rcode_ok;
 }

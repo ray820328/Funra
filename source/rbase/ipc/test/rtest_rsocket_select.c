@@ -46,7 +46,7 @@ static void* run_client(void* arg) {
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
     rsocket_ctx.cfg = cfg;
     cfg->id = 1;
-    rstr_set(cfg->ip, "10.11.140.87", 0);
+    rstr_set(cfg->ip, "127.0.0.1", 0);
     cfg->port = 23000;
 
     rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
@@ -71,6 +71,8 @@ static void* run_client(void* arg) {
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
+    rtools_wait_mills(5000);
+
     rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
     rsocket_ctx.ipc_entry->open(&rsocket_ctx);
 
@@ -79,7 +81,7 @@ static void* run_client(void* arg) {
 	while (--sent_times > 0) {
 		ripc_data_default_t data;
 		data.cmd = 11;
-		data.data = rstr_cpy("client select_send test", 0);
+		data.data = rstr_cpy("client (win=select, linux=poll) send test", 0);
 		data.len = rstr_len(data.data);
 		rsocket_ctx.ipc_entry->send(ds, &data);
         rdata_free(char*, data.data);
@@ -132,9 +134,10 @@ static int setup(void **state) {
 }
 static int teardown(void **state) {
     void* param;
-    int ret_code = rthread_join(&socket_thread, &param);
+    // int ret_code = rthread_join(&socket_thread, &param);
+    int ret_code = rthread_detach(&socket_thread, &param);
     assert_true(ret_code == 0);
-    assert_true(rstr_eq((char *)param, "socket_thread"));
+    // assert_true(rstr_eq((char *)param, "socket_thread"));
     
     return rcode_ok;
 }
@@ -142,7 +145,7 @@ static struct CMUnitTest test_group2[] = {
     cmocka_unit_test_setup_teardown(rsocket_select_c_test, NULL, NULL),
 };
 
-int run_rsocket_c_tests(int benchmark_output) {
+int run_rsocket_select_tests(int benchmark_output) {
     int result = 0;
 
     int64_t timeNow = rtime_nanosec();

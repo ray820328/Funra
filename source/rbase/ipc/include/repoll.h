@@ -57,7 +57,7 @@ typedef struct repoll_container_s {
 } repoll_container_t;
 
 
-int16_t epoll_get_event_req(int16_t event);
+int16_t repoll_get_event_req(int16_t event);
 int16_t repoll_get_event_rsp(int16_t event);
 int repoll_create(repoll_container_t* container, uint32_t size);
 int repoll_destroy(repoll_container_t* container);

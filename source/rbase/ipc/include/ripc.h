@@ -20,11 +20,11 @@ extern "C" {
 
 typedef enum {
     ripc_data_source_type_unknown = 0,
-    ripc_data_source_type_server,
-    ripc_data_source_type_client,
-    ripc_data_source_type_peer,
-    ripc_data_source_type_session,
-    ripc_data_source_type_mix,
+    ripc_data_source_type_server = 1,
+    ripc_data_source_type_client = 2,
+    ripc_data_source_type_peer = 3,
+    ripc_data_source_type_session = 4,
+    ripc_data_source_type_mix = 5,
 } ripc_data_source_type_t;
 
 typedef enum {

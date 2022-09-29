@@ -235,53 +235,6 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         }
 
     }
-
-    ///*
-    // * Scan for the letter c which signals that we should quit the server.
-    // * If we get cs it means close the stream.
-    // * If we get css it means shutdown the stream.
-    // * If we get cso it means disable linger before close the socket.
-    // */
-    //for (int i = 0; i < nread; i++) {
-    //    if (buf->base[i] == 'c') {
-    //        if (i + 1 < nread && buf->base[i + 1] == 's') {
-    //            int reset = 0;
-    //            if (i + 2 < nread && buf->base[i + 2] == 's')
-    //                shutdown = 1;
-    //            if (i + 2 < nread && buf->base[i + 2] == 'o')
-    //                reset = 1;
-    //            if (reset && handle->type == UV_TCP) {
-    //                ret_code = uv_tcp_close_reset((uv_tcp_t*)handle, on_close);
-    //                if (ret_code != 0) {
-    //                    rerror("uv_tcp_close_reset failed.");
-    //                    return;
-    //                }
-    //            }
-    //            else if (shutdown) {
-    //                break;
-    //            }
-    //            else {
-    //                uv_close((uv_handle_t*)handle, on_close);
-    //            }
-    //            free(buf->base);
-    //            return;
-    //        }
-    //    }
-    //}
-    //wr = (local_write_req_t*)malloc(sizeof *wr);
-    //wr->buf = uv_buf_init(buf->base, nread);
-    //ret_code = uv_write(&wr->req, handle, &wr->buf, 1, after_write);
-    //if (ret_code != 0) {
-    //    rerror("uv_write failed.");
-    //    return;
-    //}
-    //if (shutdown) {
-    //    ret_code = uv_shutdown(malloc(sizeof* sreq), handle, on_shutdown);
-    //    if (ret_code != 0) {
-    //        rerror("uv_write failed, code: %d", ret_code);
-    //        return;
-    //    }
-    //}
 }
 
 static void after_write(uv_write_t *req, int status) {

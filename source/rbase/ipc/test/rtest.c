@@ -67,9 +67,8 @@ int main(int argc, char **argv) {
 }
 
 static int run_tests(int output) {
-    int ret_code;
-
-    ret_code = rcode_ok;
+    int ret_code = rcode_ok;
+    
     ret_code = run_rsocket_c_tests(output);
     if (ret_code != rcode_ok) {
         return ret_code;
@@ -85,7 +84,7 @@ static int run_tests(int output) {
         return ret_code;
     }
 
-    //rtest_add_test_entry(run_rsocket_c_tests);
+    //rtest_add_test_entry(run_rsocket_select_tests);
 
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
     rlist_node_t *node = NULL;

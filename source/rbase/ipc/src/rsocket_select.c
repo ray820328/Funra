@@ -114,16 +114,6 @@ static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *e
     }
 }
 
-static int rsocket_destroy(rsocket_t* sock_item) {
-    if (*sock_item != SOCKET_INVALID) {
-        rsocket_setblocking(sock_item); /* WIN32可能消耗时间很长 */
-        closesocket(*sock_item);
-        *sock_item = SOCKET_INVALID;
-    }
-
-    return rcode_ok;
-}
-
 static int rsocket_shutdown(rsocket_t* sock_item, int how) {
     rsocket_setblocking(sock_item);
     shutdown(*sock_item, how);
@@ -492,7 +482,10 @@ static int ripc_open_c(void* ctx) {
 
         ds_client->stream = rsock_item;
 		rsocket_ctx->stream_state = ripc_state_ready;
-	}
+	} else {
+        rsocket_destroy(rsock_item);
+        rdata_free(rsocket_t, rsock_item);
+    }
 
     //struct addrinfo bind_hints;
     ////指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
@@ -538,10 +531,15 @@ static int ripc_close_c(void* ctx) {
         return rcode_ok;
     }
 
-	rbuffer_release(ds_client->read_cache);
-	rbuffer_release(ds_client->write_buff);
+    if (rsocket_ctx->stream_state == ripc_state_ready || 
+            rsocket_ctx->stream_state == ripc_state_start) {
+    	rbuffer_release(ds_client->read_cache);
+    	rbuffer_release(ds_client->write_buff);
 
-    rdata_free(rsocket_t, ds_client->stream);
+        rsocket_destroy(ds_client->stream);
+        rdata_free(rsocket_t, ds_client->stream);
+    }
+
     rsocket_ctx->stream_state = ripc_state_closed;
 
     return rcode_ok;
@@ -633,13 +631,13 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     rtimeout_start(&tm);
 
     ret_code = rcode_io_done;
-    while (ret_code == rcode_io_done) {
+    do {
         ret_code = rsocket_recv(ds_client->stream, data_buff + total, count, &received_len, &tm);
         if (received_len == 0) {
             break;
         }
         total += received_len;
-    }
+    } while (ret_code == rcode_io_done);
 
     if (ret_code == rcode_io_timeout) {
         ret_code = rcode_io_done;
@@ -653,7 +651,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     }
 
     if (ret_code != rcode_io_done) {
-        rwarn("end client send_data, code: %d, received_len: %d, total: %d", ret_code, received_len, total);
+        rwarn("end client recv_data, code: %d, received_len: %d, total: %d", ret_code, received_len, total);
 
         ripc_close_c(rsocket_ctx);//直接关闭
         if (ret_code == rcode_io_timeout) {
@@ -678,6 +676,11 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     return rcode_ok;
 }
 
+static int ripc_check_data_c(ripc_data_source_t* ds, void* data) {
+
+    return ripc_receive_data_c(ds, data);
+}
+
 static const ripc_entry_t impl_c = {
     (ripc_init_func)ripc_init_c,// ripc_init_func init;
     (ripc_uninit_func)ripc_uninit_c,// ripc_uninit_func uninit;
@@ -686,12 +689,13 @@ static const ripc_entry_t impl_c = {
     (ripc_start_func)ripc_start_c,// ripc_start_func start;
     (ripc_stop_func)ripc_stop_c,// ripc_stop_func stop;
     (ripc_send_func)ripc_send_data_c,// ripc_send_func send;
-    NULL,// ripc_check_func check;
+    (ripc_check_func)ripc_check_data_c,// ripc_check_func check;
     (ripc_receive_func)ripc_receive_data_c,// ripc_receive_func receive;
     NULL// ripc_error_func error;
 };
 const ripc_entry_t* rsocket_select_c = &impl_c;
 
+const ripc_entry_t* rsocket_c = &impl_c;//windows默认client为select
 
 #undef SOCKET_INVALID
 #undef WAITFD_R
