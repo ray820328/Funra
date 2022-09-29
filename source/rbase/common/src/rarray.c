@@ -16,6 +16,8 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdangling-else"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 #endif //__GNUC__
 
 static int compare_func_default(const void* obj1, const void* obj2) {
@@ -250,6 +252,7 @@ rarray_define_set_get_value_func(rdata_type_float);
 rarray_define_set_get_value_func(rdata_type_double);
 
 #ifdef __GNUC__
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif //__GNUC__

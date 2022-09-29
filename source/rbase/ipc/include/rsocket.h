@@ -26,15 +26,48 @@ extern "C" {
 typedef struct sockaddr rsockaddr_t;
 
 #if defined(__linux__)
+
+#include <errno.h>
+/* close function */
+#include <unistd.h>
+/* fnctnl function and associated constants */
+#include <fcntl.h>
+/* struct sockaddr */
+#include <sys/types.h>
+/* socket function */
+#include <sys/socket.h>
+/* struct timeval */
+#include <sys/time.h>
+/* gethostbyname and gethostbyaddr functions */
+#include <netdb.h>
+/* sigpipe handling */
+#include <signal.h>
+/* IP stuff*/
+#include <netinet/in.h>
+#include <arpa/inet.h>
+/* TCP options (nagle algorithm disable) */
+#include <netinet/tcp.h>
+#include <net/if.h>
+
 typedef socklen_t rsocket_len_t;
 typedef int rsocket_t;
 typedef struct sockaddr_storage rsockaddr_storage_t;
+
+#define SOCKET_INVALID (-1)
+
 #endif //__linux__
+
+
 #if defined(_WIN32) || defined(_WIN64)
 typedef int rsocket_len_t;
 typedef SOCKET rsocket_t;
 typedef SOCKADDR_STORAGE rsockaddr_storage_t;
+
+#define SOCKET_INVALID (INVALID_SOCKET)
+
 #endif //_WIN64
+
+
 
 #define _rsocket_session_fields \
     ripc_type_t type; \
@@ -70,6 +103,52 @@ typedef struct rsocket_ctx_s {
 
     ripc_data_source_stream_t* stream;
 } rsocket_ctx_t;
+
+
+#ifndef SO_REUSEPORT
+#define SO_REUSEPORT SO_REUSEADDR
+#endif
+
+#ifndef AI_NUMERICSERV
+#define AI_NUMERICSERV (0)
+#endif
+
+#ifndef IPV6_ADD_MEMBERSHIP
+#ifdef IPV6_JOIN_GROUP
+#define IPV6_ADD_MEMBERSHIP IPV6_JOIN_GROUP
+#endif //IPV6_JOIN_GROUP
+#endif //!IPV6_ADD_MEMBERSHIP
+
+#ifndef IPV6_DROP_MEMBERSHIP
+#ifdef IPV6_LEAVE_GROUP
+#define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
+#endif //IPV6_LEAVE_GROUP
+#endif //!IPV6_DROP_MEMBERSHIP
+
+typedef enum {
+    rcode_io_done = 0, //操作成功
+    rcode_io_timeout = -1,//操作超时
+    rcode_io_closed = -2,//连接已关闭
+    rcode_io_unknown = -3
+} rcode_io_state;
+
+int rsocket_setblocking(rsocket_t* sock_item);
+
+int rsocket_setnonblocking(rsocket_t* sock_item);
+
+int rsocket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp);
+
+int rsocket_gethostbyname(const char *addr, struct hostent **hp);
+
+char* rio_strerror(int err);
+
+char* rsocket_hoststrerror(int err);
+
+char* rsocket_strerror(int err);
+
+char* rsocket_ioerror(rsocket_t* sock_item, int err);
+
+char* rsocket_gaistrerror(int err);
 
 #ifdef __cplusplus
 }

@@ -32,58 +32,10 @@
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-static enum {
-    IO_DONE = 0, //操作成功
-    IO_TIMEOUT = -1,//操作超时
-    IO_CLOSED = -2,//连接已关闭
-    IO_UNKNOWN = -3
-};
-
-static char *io_strerror(int err) {
-    switch (err) {
-    case IO_DONE: return NULL;
-    case IO_CLOSED: return "closed";
-    case IO_TIMEOUT: return "timeout";
-    default: return "unknown error";
-    }
-}
-
-#ifndef IPV6_V6ONLY
-#define IPV6_V6ONLY 27
-#endif
-
-#define SOCKET_INVALID (INVALID_SOCKET)
-
-#ifndef SO_REUSEPORT
-#define SO_REUSEPORT SO_REUSEADDR
-#endif
-
-#ifndef AI_NUMERICSERV
-#define AI_NUMERICSERV (0)
-#endif
-
 #define WAITFD_R        1
 #define WAITFD_W        2
 #define WAITFD_E        4
 #define WAITFD_C        (WAITFD_E|WAITFD_W)
-
-static char *wstrerror(int ret_code);
-static char *rsocket_strerror(int ret_code);
-static char *rsocket_ioerror(rsocket_t* sock_item, int ret_code);
-static char *rsocket_hoststrerror(int ret_code);
-static char *rsocket_gaistrerror(int ret_code);
-
-static int rsocket_setblocking(rsocket_t* sock_item) {
-    u_long argp = 0;
-    ioctlsocket(*sock_item, FIONBIO, &argp);
-    return rcode_ok;
-}
-
-static int rsocket_setnonblocking(rsocket_t* sock_item) {
-    u_long argp = 1;
-    ioctlsocket(*sock_item, FIONBIO, &argp);
-    return rcode_ok;
-}
 
 static int rsocket_open(void) {
     WSADATA wsaData;
@@ -110,7 +62,7 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
     int64_t time_left = 0;
 
     if (rtimeout_done(tm)) {
-        return IO_TIMEOUT;
+        return rcode_io_timeout;
     }
 
     //select使用bit，fd_set内核和用户态共同修改，要么保存状态，要么每次重新分别设置 read/write/error 掩码
@@ -141,13 +93,13 @@ static int rsocket_waitfd(rsocket_t* sock_item, int sw, rtimeout_t* tm) {
         return WSAGetLastError();
     }
     if (ret_code == 0) {
-        return IO_TIMEOUT;
+        return rcode_io_timeout;
     }
     if (sw == WAITFD_C && FD_ISSET(*sock_item, &efds)) {
-        return IO_CLOSED;
+        return rcode_io_closed;
     }
 
-    return IO_DONE;
+    return rcode_io_done;
 }
 
 static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
@@ -193,11 +145,11 @@ static int rsocket_create(rsocket_t* sock_item, int domain, int type, int protoc
 static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
 	if (*sock_item == SOCKET_INVALID) {
-		return IO_CLOSED;
+		return rcode_io_closed;
 	}
 
 	if (connect(*sock_item, addr, len) == 0) {
-		return IO_DONE;
+		return rcode_io_done;
 	}
     
     ret_code = WSAGetLastError();
@@ -206,20 +158,20 @@ static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_
 	}
     
 	if (rtimeout_done(tm)) {
-		return IO_TIMEOUT;
+		return rcode_io_timeout;
 	}
 
     /* wait until something happens */
     ret_code = rsocket_waitfd(sock_item, WAITFD_C, tm);
 
-    if (ret_code == IO_CLOSED) {
+    if (ret_code == rcode_io_closed) {
         int elen = sizeof(ret_code);
         /* give windows time to set the error (yes, disgusting) */
         Sleep(10);
 
         getsockopt(*sock_item, SOL_SOCKET, SO_ERROR, (char *)&ret_code, &elen);
         
-        return ret_code > 0 ? ret_code : IO_UNKNOWN;
+        return ret_code > 0 ? ret_code : rcode_io_unknown;
 	}
 	else {
 		return ret_code;
@@ -227,7 +179,7 @@ static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_
 }
 
 static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len) {
-    int ret_code = IO_DONE;
+    int ret_code = rcode_io_done;
 
     rsocket_setblocking(sock_item);
 
@@ -241,7 +193,7 @@ static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t l
 }
 
 static int rsocket_listen(rsocket_t* sock_item, int backlog) {
-    int ret_code = IO_DONE;
+    int ret_code = rcode_io_done;
 
     rsocket_setblocking(sock_item);
 
@@ -256,14 +208,14 @@ static int rsocket_listen(rsocket_t* sock_item, int backlog) {
 
 static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     if (*sock_item == SOCKET_INVALID) {
-        return IO_CLOSED;
+        return rcode_io_closed;
     }
 
     for ( ;; ) {
         int ret_code = 0;
         /* try to get client socket */
         if ((*pa = accept(*sock_item, addr, len)) != SOCKET_INVALID) {
-            return IO_DONE;
+            return rcode_io_done;
         }
         /* find out why we failed */
         ret_code = WSAGetLastError();
@@ -272,7 +224,7 @@ static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, rsockaddr_t *addr
             return ret_code;
         }
         /* call select to avoid busy wait */
-        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != IO_DONE) {
+        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != rcode_io_done) {
             return ret_code;
         }
     }
@@ -284,7 +236,7 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, int count, int *
 
     *sent = 0;
 	if (*sock_item == SOCKET_INVALID) {
-		return IO_CLOSED;
+		return rcode_io_closed;
 	}
 
     int sent_once = 0;
@@ -293,7 +245,7 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, int count, int *
         /* if we sent something, we are done */
         if (sent_once > 0) {
             *sent = sent_once;
-            return IO_DONE;
+            return rcode_io_done;
         }
 
         ret_code = WSAGetLastError();
@@ -302,7 +254,7 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, int count, int *
 			return ret_code;
 		}
         /* avoid busy wait */
-		if ((ret_code = rsocket_waitfd(sock_item, WAITFD_W, tm)) != IO_DONE) {
+		if ((ret_code = rsocket_waitfd(sock_item, WAITFD_W, tm)) != rcode_io_done) {
 			return ret_code;
 		}
     }
@@ -314,7 +266,7 @@ static int rsocket_send2_addr(rsocket_t* sock_item, const char *data, size_t cou
 
     *sent = 0;
     if (*sock_item == SOCKET_INVALID) {
-        return IO_CLOSED;
+        return rcode_io_closed;
     }
 
     int sent_once = 0;
@@ -322,25 +274,25 @@ static int rsocket_send2_addr(rsocket_t* sock_item, const char *data, size_t cou
         sent_once = sendto(*sock_item, data, (int) count, 0, addr, len);
         if (sent_once > 0) {
             *sent = sent_once;
-            return IO_DONE;
+            return rcode_io_done;
         }
 
         ret_code = WSAGetLastError();
         if (ret_code != WSAEWOULDBLOCK) {
             return ret_code;
         }
-        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_W, tm)) != IO_DONE) {
+        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_W, tm)) != rcode_io_done) {
             return ret_code;
         }
     }
 }
 
 static int rsocket_recv(rsocket_t* sock_item, char *data, int count, int *got, rtimeout_t* tm) {
-    int ret_code = 0, prev = IO_DONE;
+    int ret_code = 0, prev = rcode_io_done;
 
     *got = 0;
     if (*sock_item == SOCKET_INVALID) {
-        return IO_CLOSED;
+        return rcode_io_closed;
     }
 
     int recv_once = 0;
@@ -360,15 +312,15 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, int count, int *got, r
 
         if (recv_once > 0) {
             *got = recv_once;
-            return IO_DONE;
+            return rcode_io_done;
         }
         if (recv_once == 0) {
-            return IO_CLOSED;
+            return rcode_io_closed;
         }
 
         ret_code = WSAGetLastError();
         if (ret_code == WSAEWOULDBLOCK) {
-            return IO_DONE;
+            return rcode_io_done;
         } else {
             /* UDP, conn reset simply means the previous send failed. try again.
              * TCP, it means our socket is now useless, so the error passes.
@@ -380,7 +332,7 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, int count, int *got, r
 
             //select阻塞直到read 或者 timeout
             ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm);
-            if (ret_code != IO_DONE) {
+            if (ret_code != rcode_io_done) {
                 return ret_code;
             }
         }
@@ -389,11 +341,11 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, int count, int *got, r
 
 static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *got, 
         rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
-    int ret_code, prev = IO_DONE;
+    int ret_code, prev = rcode_io_done;
 
     *got = 0;
     if (*sock_item == SOCKET_INVALID) {
-        return IO_CLOSED;
+        return rcode_io_closed;
     }
 
     int recv_once = 0;
@@ -402,10 +354,10 @@ static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *go
 
         if (recv_once > 0) {
             *got = recv_once;
-            return IO_DONE;
+            return rcode_io_done;
         }
         if (recv_once == 0) {
-            return IO_CLOSED;
+            return rcode_io_closed;
         }
 
         ret_code = WSAGetLastError();
@@ -418,138 +370,9 @@ static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *go
             }
             prev = ret_code;
         }
-        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != IO_DONE) {
+        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != rcode_io_done) {
             return ret_code;
         }
-    }
-}
-
-static int rsocket_gethostbyaddr(const char *addr, rsocket_len_t len, struct hostent **hp) {
-    *hp = gethostbyaddr(addr, len, AF_INET);
-    if (*hp) {
-        return IO_DONE;
-    }
-    else {
-        return WSAGetLastError();
-    }
-}
-
-static int rsocket_gethostbyname(const char *addr, struct hostent **hp) {
-    *hp = gethostbyname(addr);
-    if (*hp) {
-        return IO_DONE;
-    }
-    else {
-        return  WSAGetLastError();
-    }
-}
-
-
-static char *rsocket_hoststrerror(int ret_code) {
-    if (ret_code <= 0) {
-        return io_strerror(ret_code);
-    }
-
-    switch (ret_code) {
-        case WSAHOST_NOT_FOUND: 
-            return PIE_HOST_NOT_FOUND;
-        default: 
-            return wstrerror(ret_code);
-    }
-}
-
-static char *rsocket_strerror(int ret_code) {
-    if (ret_code <= 0) return io_strerror(ret_code);
-    switch (ret_code) {
-        case WSAEADDRINUSE: return PIE_ADDRINUSE;
-        case WSAECONNREFUSED : return PIE_CONNREFUSED;
-        case WSAEISCONN: return PIE_ISCONN;
-        case WSAEACCES: return PIE_ACCESS;
-        case WSAECONNABORTED: return PIE_CONNABORTED;
-        case WSAECONNRESET: return PIE_CONNRESET;
-        case WSAETIMEDOUT: return PIE_TIMEDOUT;
-        default: return wstrerror(ret_code);
-    }
-}
-
-static char *rsocket_ioerror(rsocket_t* sock_item, int ret_code) {
-    (void) sock_item;
-    return rsocket_strerror(ret_code);
-}
-
-static char *wstrerror(int ret_code) {
-    switch (ret_code) {
-        case WSAEINTR: return "Interrupted function call";
-        case WSAEACCES: return PIE_ACCESS; // "Permission denied";
-        case WSAEFAULT: return "Bad address";
-        case WSAEINVAL: return "Invalid argument";
-        case WSAEMFILE: return "Too many open files";
-        case WSAEWOULDBLOCK: return "Resource temporarily unavailable";
-        case WSAEINPROGRESS: return "Operation now in progress";
-        case WSAEALREADY: return "Operation already in progress";
-        case WSAENOTSOCK: return "Socket operation on non socket";
-        case WSAEDESTADDRREQ: return "Destination address required";
-        case WSAEMSGSIZE: return "Message too long";
-        case WSAEPROTOTYPE: return "Protocol wrong type for socket";
-        case WSAENOPROTOOPT: return "Bad protocol option";
-        case WSAEPROTONOSUPPORT: return "Protocol not supported";
-        case WSAESOCKTNOSUPPORT: return PIE_SOCKTYPE; // "Socket type not supported";
-        case WSAEOPNOTSUPP: return "Operation not supported";
-        case WSAEPFNOSUPPORT: return "Protocol family not supported";
-        case WSAEAFNOSUPPORT: return PIE_FAMILY; // "Address family not supported by protocol family";
-        case WSAEADDRINUSE: return PIE_ADDRINUSE; // "Address already in use";
-        case WSAEADDRNOTAVAIL: return "Cannot assign requested address";
-        case WSAENETDOWN: return "Network is down";
-        case WSAENETUNREACH: return "Network is unreachable";
-        case WSAENETRESET: return "Network dropped connection on reset";
-        case WSAECONNABORTED: return "Software caused connection abort";
-        case WSAECONNRESET: return PIE_CONNRESET; // "Connection reset by peer";
-        case WSAENOBUFS: return "No buffer space available";
-        case WSAEISCONN: return PIE_ISCONN; // "Socket is already connected";
-        case WSAENOTCONN: return "Socket is not connected";
-        case WSAESHUTDOWN: return "Cannot send after socket shutdown";
-        case WSAETIMEDOUT: return PIE_TIMEDOUT; // "Connection timed out";
-        case WSAECONNREFUSED: return PIE_CONNREFUSED; // "Connection refused";
-        case WSAEHOSTDOWN: return "Host is down";
-        case WSAEHOSTUNREACH: return "No route to host";
-        case WSAEPROCLIM: return "Too many processes";
-        case WSASYSNOTREADY: return "Network subsystem is unavailable";
-        case WSAVERNOTSUPPORTED: return "Winsock.dll version out of range";
-        case WSANOTINITIALISED:
-            return "Successful WSAStartup not yet performed";
-        case WSAEDISCON: return "Graceful shutdown in progress";
-        case WSAHOST_NOT_FOUND: return PIE_HOST_NOT_FOUND; // "Host not found";
-        case WSATRY_AGAIN: return "Non authoritative host not found";
-        case WSANO_RECOVERY: return PIE_FAIL; // "Nonrecoverable name lookup error";
-        case WSANO_DATA: return "Valid name, no data record of requested type";
-        default: return "Unknown error";
-    }
-}
-
-static char *rsocket_gaistrerror(int ret_code) {
-    if (ret_code == 0) return NULL;
-    switch (ret_code) {
-        case EAI_AGAIN: return PIE_AGAIN;
-        case EAI_BADFLAGS: return PIE_BADFLAGS;
-#ifdef EAI_BADHINTS
-        case EAI_BADHINTS: return PIE_BADHINTS;
-#endif
-        case EAI_FAIL: return PIE_FAIL;
-        case EAI_FAMILY: return PIE_FAMILY;
-        case EAI_MEMORY: return PIE_MEMORY;
-        case EAI_NONAME: return PIE_NONAME;
-#ifdef EAI_OVERFLOW
-        case EAI_OVERFLOW: return PIE_OVERFLOW;
-#endif
-#ifdef EAI_PROTOCOL
-        case EAI_PROTOCOL: return PIE_PROTOCOL;
-#endif
-        case EAI_SERVICE: return PIE_SERVICE;
-        case EAI_SOCKTYPE: return PIE_SOCKTYPE;
-#ifdef EAI_SYSTEM
-        case EAI_SYSTEM: return strerror(errno);
-#endif
-        default: return gai_strerror(ret_code);
     }
 }
 
@@ -739,7 +562,7 @@ static int ripc_stop_c(void* ctx) {
     return rcode_ok;
 }
 static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
-    int ret_code = IO_DONE;
+    int ret_code = rcode_io_done;
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
 
@@ -754,7 +577,7 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
             rerror("error on handler process, code: %d", ret_code);
             return ret_code;
         }
-        ret_code = IO_DONE;
+        ret_code = rcode_io_done;
     }
 
     const char* data_buff = rbuffer_read_start_dest(ds_client->write_buff);
@@ -766,14 +589,14 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     rtimeout_init_millisec(&tm, 3, -1);
     rtimeout_start(&tm);
 
-    while (total < count && ret_code == IO_DONE) {
+    while (total < count && ret_code == rcode_io_done) {
         ret_code = rsocket_send((rsocket_t*)(ds_client->stream), data_buff + total, count, &sent_len, &tm);
 
-        if (ret_code != IO_DONE) {
+        if (ret_code != rcode_io_done) {
             rwarn("end client send_data, code: %d, sent_len: %d, total: %d", ret_code, sent_len, total);
 
             ripc_close_c(rsocket_ctx);//直接关闭
-            if (ret_code == IO_TIMEOUT) {
+            if (ret_code == rcode_io_timeout) {
                 return rcode_err_sock_timeout;
             }
             else {
@@ -789,7 +612,7 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
 }
 
 static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
-    int ret_code = IO_DONE;
+    int ret_code = rcode_io_done;
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
     ripc_data_raw_t data_raw;//直接在栈上
@@ -809,8 +632,8 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     rtimeout_init_millisec(&tm, 1, -1);
     rtimeout_start(&tm);
 
-    ret_code = IO_DONE;
-    while (ret_code == IO_DONE) {
+    ret_code = rcode_io_done;
+    while (ret_code == rcode_io_done) {
         ret_code = rsocket_recv(ds_client->stream, data_buff + total, count, &received_len, &tm);
         if (received_len == 0) {
             break;
@@ -818,22 +641,22 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
         total += received_len;
     }
 
-    if (ret_code == IO_TIMEOUT) {
-        ret_code = IO_DONE;
-    } else if (ret_code == IO_CLOSED) {//udp & tcp
+    if (ret_code == rcode_io_timeout) {
+        ret_code = rcode_io_done;
+    } else if (ret_code == rcode_io_closed) {//udp & tcp
         if (total > 0) {//有可能已经关闭了，下一次再触发会是0
-            ret_code = IO_DONE;
+            ret_code = rcode_io_done;
         }
         else {
-            ret_code = IO_CLOSED;
+            ret_code = rcode_io_closed;
         }
     }
 
-    if (ret_code != IO_DONE) {
+    if (ret_code != rcode_io_done) {
         rwarn("end client send_data, code: %d, received_len: %d, total: %d", ret_code, received_len, total);
 
         ripc_close_c(rsocket_ctx);//直接关闭
-        if (ret_code == IO_TIMEOUT) {
+        if (ret_code == rcode_io_timeout) {
             return rcode_err_sock_timeout;
         }
         else {
@@ -849,7 +672,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
             rerror("error on handler process, code: %d", ret_code);
             return rcode_err_logic_decode;
         }
-        ret_code = IO_DONE;
+        ret_code = rcode_io_done;
     }
 
     return rcode_ok;

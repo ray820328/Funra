@@ -83,11 +83,11 @@ extern "C" {
     }
 
 /* ------------------------------- Structs ------------------------------------*/
-    struct rarray_t* ar;
-    typedef int(*rarray_type_set_value_func)(struct rarray_t* ar, const rarray_size_t offset, const void* obj);
-    typedef void* (*rarray_type_get_value_func)(struct rarray_t* ar, const rarray_size_t offset);
+    struct rarray_s;
+    typedef int(*rarray_type_set_value_func)(struct rarray_s* ar, const rarray_size_t offset, const void* obj);
+    typedef void* (*rarray_type_get_value_func)(struct rarray_s* ar, const rarray_size_t offset);
     typedef void* (*rarray_type_copy_value_func)(const void* obj);
-    typedef int (*rarray_type_remove_value_func)(struct rarray_t* ar, const rarray_size_t index);
+    typedef int (*rarray_type_remove_value_func)(struct rarray_s* ar, const rarray_size_t index);
     typedef void (*rarray_type_free_value_func)(void* obj);
 
     typedef enum rarray_code_s {
