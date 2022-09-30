@@ -14,10 +14,11 @@
 #include "rlist.h"
 #include "rfile.h"
 #include "rtools.h"
-
-#include "rbase/ipc/test/rtest.h"
 #include "rsocket_c.h"
 #include "rcodec_default.h"
+#include "repoll.h"
+
+#include "rbase/ipc/test/rtest.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -25,17 +26,20 @@
 #endif //__GNUC__
 
 static rsocket_ctx_t rsocket_ctx;//非线程安全
-static rthread_t socket_thread;
-static volatile int sent_times = 10;
+static rthread_t epoll_client_thread;
+static volatile int sent_times = 5;
 
 static void* run_client(void* arg) {
     int ret_code = 0;
+
+    repoll_container_t epoll_obj;
+    rsocket_ctx.user_data = &epoll_obj;
 
     rsocket_ctx.id = 3008;
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream_state = ripc_state_init;
 
-    rsocket_ctx.ipc_entry = rsocket_c;
+    rsocket_ctx.ipc_entry = rsocket_epoll_c;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -111,16 +115,16 @@ static void* run_client(void* arg) {
     return arg;
 }
 
-static void rsocket_select_c_test(void **state) {
+static void rsocket_epoll_client_test(void **state) {
     (void)state;
     int count = 1;
-    init_benchmark(1024, "test rsocket_c (%d)", count);
+    init_benchmark(1024, "test rsocket_epoll_client_test (%d)", count);
 
     int ret_code = 0;
 
     start_benchmark(0);
-    ret_code = rthread_start(&socket_thread, run_client, "socket_thread"); // 0;// 
-    //run_client("socket_thread");
+    ret_code = rthread_start(&epoll_client_thread, run_client, "epoll_client_thread"); // 0;// 
+    //run_client("epoll_client_thread");
     assert_true(ret_code == 0);
     end_benchmark("open connection.");
 
@@ -133,21 +137,21 @@ static void rsocket_select_c_test(void **state) {
 
 
 static int setup(void **state) {
-    rthread_init(&socket_thread);
+    rthread_init(&epoll_client_thread);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
     void* param;
-    // int ret_code = rthread_join(&socket_thread, &param);
-    int ret_code = rthread_detach(&socket_thread, &param);
+    // int ret_code = rthread_join(&epoll_client_thread, &param);
+    int ret_code = rthread_detach(&epoll_client_thread, &param);
     assert_true(ret_code == 0);
-    assert_true(rstr_eq((char *)param, "socket_thread"));
+    // assert_true(rstr_eq((char *)param, "epoll_client_thread"));
     
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rsocket_select_c_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rsocket_epoll_client_test, NULL, NULL),
 };
 
 int run_rsocket_epoll_tests(int benchmark_output) {

@@ -11,9 +11,7 @@ INCLUDE_DIRECTORIES(
 
 SET(SRC_LIB
     src/ripc.c
-    src/repoll.c
     src/rsocket.c
-    src/rsocket_c.c
     src/rsocket_uv_s.c
     src/rsocket_uv_c.c
     src/rcodec_default.c
@@ -25,6 +23,7 @@ LIST(APPEND SRC_LIB
 )
 ELSE()
 LIST(APPEND SRC_LIB
+    src/repoll.c
     src/rsocket_poll.c
     src/rsocket_epoll.c
 )
@@ -36,10 +35,16 @@ SET(SRC_BIN
     test/rtest.c
     test/rtest_rsocket_uv_s.c
     test/rtest_rsocket_uv_c.c
-    test/rtest_rsocket_epoll.c
-    test/rtest_rsocket_select.c
     test/rtest_rsocket_c.c
 )
+
+IF(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+
+ELSE()
+LIST(APPEND SRC_BIN
+    test/rtest_rsocket_epoll.c
+)
+ENDIF()
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})
 #ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRC_LIB})

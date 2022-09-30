@@ -27,7 +27,7 @@
 #include "include/rtest_com.h"
 
 int run_rsocket_c_tests(int benchmark_output);
-int run_rsocket_select_tests(int benchmark_output);
+int run_rsocket_epoll_tests(int benchmark_output);
 int run_rsocket_uv_s_tests(int benchmark_output);
 int run_rsocket_uv_c_tests(int benchmark_output);
 int run_rcodec_default_tests(int benchmark_output);

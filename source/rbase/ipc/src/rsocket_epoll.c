@@ -21,15 +21,11 @@
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-static repoll_container_t test_container_obj;
-static repoll_container_t* test_container = &test_container_obj;
-
 static int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol) {
     *sock_item = socket(domain, type, protocol);
     if (*sock_item != SOCKET_INVALID) {
         return rcode_io_done;
-    }
-    else {
+    } else {
         return rerror_get_osnet_err();
     }
 }
@@ -56,8 +52,7 @@ static void socket_shutdown(rsocket_t* sock_item, int how) {
 
 static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code = 0;
-    repoll_container_t* container = test_container;
-
+    
     /* avoid calling on closed sockets */
     if (*sock_item == SOCKET_INVALID) {
         rerror("invalid socket. code = %d", ret_code);
@@ -304,7 +299,7 @@ static int ripc_init_c(void* ctx, const void* cfg_data) {
 
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
-    repoll_container_t* container = test_container;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
     ret_code = repoll_create(container, 10);
@@ -322,7 +317,7 @@ static int ripc_uninit_c(void* ctx) {
 
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
-    repoll_container_t* container = test_container;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
     ret_code = repoll_destroy(container);
@@ -339,7 +334,7 @@ static int ripc_open_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     rsocket_cfg_t* cfg = rsocket_ctx->cfg;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
-    repoll_container_t* container = test_container;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
     rinfo("socket client open.");
@@ -470,7 +465,7 @@ static int ripc_open_c(void* ctx) {
 static int ripc_close_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
-    repoll_container_t* container = test_container;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
 
     rinfo("socket client close.");
 
@@ -498,7 +493,7 @@ static int ripc_close_c(void* ctx) {
 static int ripc_start_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds = rsocket_ctx->stream;
-    repoll_container_t* container = test_container;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
     rtimeout_t tm;
@@ -668,7 +663,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
 
 static int ripc_check_data_c(ripc_data_source_t* ds, void* data) {
     rsocket_ctx_t* rsocket_ctx = ds->ctx;
-    repoll_container_t* container = test_container;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
     ret_code = repoll_poll(container, 1);//不要用边缘触发模式，可能会调用多次，单线程不会惊群
@@ -723,7 +718,7 @@ static const ripc_entry_t impl_c = {
     (ripc_receive_func)ripc_receive_data_c,// ripc_receive_func receive;
     NULL// ripc_error_func error;
 };
-const ripc_entry_t* rsocket_c = &impl_c;
+const ripc_entry_t* rsocket_epoll_c = &impl_c;
 
 static const ripc_entry_t impl_s = {
     (ripc_init_func)ripc_init_c,// ripc_init_func init;

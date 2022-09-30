@@ -605,6 +605,8 @@ static const ripc_entry_t impl_c = {
 };
 const ripc_entry_t* rsocket_select_c = &impl_c;//linux默认poll代替select
 
+const ripc_entry_t* rsocket_c = &impl_c;//linux默认client为poll
+
 #undef SOCKET_INVALID
 #undef WAITFD_R
 #undef WAITFD_W

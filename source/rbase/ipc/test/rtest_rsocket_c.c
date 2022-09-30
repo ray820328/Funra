@@ -26,7 +26,7 @@
 
 static rsocket_ctx_t rsocket_ctx;//非线程安全
 static rthread_t socket_thread;
-static volatile int sent_times = 10;
+static volatile int sent_times = 5;
 
 static void* run_client(void* arg) {
     int ret_code = 0;
@@ -35,7 +35,7 @@ static void* run_client(void* arg) {
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream_state = ripc_state_init;
 
-    rsocket_ctx.ipc_entry = rsocket_c;
+    rsocket_ctx.ipc_entry = rsocket_c;//windows默认sellect，linux默认poll
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;

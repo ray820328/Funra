@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
 static int run_tests(int output) {
     int ret_code = rcode_ok;
-    
+
     ret_code = run_rsocket_c_tests(output);
     if (ret_code != rcode_ok) {
         return ret_code;
@@ -79,6 +79,13 @@ static int run_tests(int output) {
         return ret_code;
     }
 
+#if defined(__linux__)
+    ret_code = run_rsocket_epoll_tests(output);
+    if (ret_code != rcode_ok) {
+        return ret_code;
+    }
+#endif
+    
     ret_code = run_rsocket_uv_s_tests(output);
     if (ret_code != rcode_ok) {
         return ret_code;

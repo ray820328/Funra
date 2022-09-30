@@ -84,7 +84,8 @@ typedef SOCKADDR_STORAGE rsockaddr_storage_t;
     ripc_entry_t* ipc_entry; \
     rdata_handler_t* in_handler; \
     rdata_handler_t* out_handler; \
-    ripc_state_t stream_state
+    ripc_state_t stream_state; \
+    void* user_data
 
 typedef struct rsocket_cfg_s {
     uint64_t id;
