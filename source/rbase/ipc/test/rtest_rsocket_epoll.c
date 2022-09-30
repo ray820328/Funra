@@ -34,6 +34,8 @@ static void* run_client(void* arg) {
 
     repoll_container_t epoll_obj;
     rsocket_ctx.user_data = &epoll_obj;
+    ret_code = repoll_create(&epoll_obj, 10);
+    assert_true(ret_code == rcode_ok);
 
     rsocket_ctx.id = 3008;
     rsocket_ctx.stream_type = ripc_type_tcp;
@@ -104,6 +106,9 @@ static void* run_client(void* arg) {
 
     rsocket_ctx.ipc_entry->close(&rsocket_ctx);
     rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
+
+    ret_code = repoll_destroy(&epoll_obj);
+    assert_true(ret_code == rcode_ok);
 
     rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
     rdata_free(rdata_handler_t, rsocket_ctx.out_handler);

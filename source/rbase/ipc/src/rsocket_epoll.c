@@ -10,6 +10,7 @@
 #include "rstring.h"
 #include "rlog.h"
 #include "rtime.h"
+#include "rdict.h"
 #include "rsocket_c.h"
 #include "rsocket_s.h"
 #include "rtools.h"
@@ -52,7 +53,7 @@ static void socket_shutdown(rsocket_t* sock_item, int how) {
 
 static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code = 0;
-    
+
     /* avoid calling on closed sockets */
     if (*sock_item == SOCKET_INVALID) {
         rerror("invalid socket. code = %d", ret_code);
@@ -300,17 +301,11 @@ static int ripc_init_c(void* ctx, const void* cfg_data) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
-    int ret_code = 0;
-
-    ret_code = repoll_create(container, 10);
-    if (ret_code != rcode_ok) {
-        rerror("failed on open, code = %d", ret_code);
-        return ret_code;
-    }
+    int ret_code = rcode_ok;
 
     ds_client->stream = NULL;
     
-    return rcode_ok;
+    return ret_code;
 }
 static int ripc_uninit_c(void* ctx) {
     rinfo("socket client uninit.");
@@ -318,17 +313,11 @@ static int ripc_uninit_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
-    int ret_code = 0;
-
-    ret_code = repoll_destroy(container);
-    if (ret_code != rcode_ok) {
-        rerror("failed on close, code = %d", ret_code);
-        return ret_code;
-    }
+    int ret_code = rcode_ok;
 
     rsocket_ctx->stream_state = ripc_state_uninit;
 
-    return rcode_ok;
+    return ret_code;
 }
 static int ripc_open_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
@@ -705,6 +694,9 @@ static int ripc_check_data_c(ripc_data_source_t* ds, void* data) {
     return rcode_ok;
 }
 
+static int ripc_on_error_c(ripc_data_source_t* ds, void* data) {
+    rerror("socket error.");
+}
 
 static const ripc_entry_t impl_c = {
     (ripc_init_func)ripc_init_c,// ripc_init_func init;
@@ -716,13 +708,55 @@ static const ripc_entry_t impl_c = {
     (ripc_send_func)ripc_send_data_2buffer_c,// ripc_send_func send;
     (ripc_check_func)ripc_check_data_c,// ripc_check_func check;
     (ripc_receive_func)ripc_receive_data_c,// ripc_receive_func receive;
-    NULL// ripc_error_func error;
+    (ripc_error_func)ripc_on_error_c// ripc_error_func error;
 };
 const ripc_entry_t* rsocket_epoll_c = &impl_c;
 
+
+
+
+
+
+static int ripc_init_server(void* ctx, const void* cfg_data) {
+    /* 忽略信号SIGPIPE，避免导致崩溃 */
+    signal(SIGPIPE, SIG_IGN);//SIG_DFL
+
+    rinfo("socket server init.");
+
+    rsocket_server_ctx_uv_t* rsocket_ctx = (rsocket_server_ctx_uv_t*)ctx;
+    ripc_data_source_t* ds_server = rsocket_ctx->stream;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+
+    int ret_code = rcode_ok;
+
+    rdict_t* dict_ins = NULL;
+    rdict_init(dict_ins, rdata_type_uint64, rdata_type_ptr, 2000, 0);
+    rassert(dict_ins != NULL, "");
+    rsocket_ctx->map_clients = dict_ins;
+
+    ds_server->stream = NULL;
+
+    return ret_code;
+}
+
+static int ripc_uninit_server(void* ctx) {
+    rinfo("socket server uninit.");
+
+    rsocket_server_ctx_uv_t* rsocket_ctx = (rsocket_server_ctx_uv_t*)ctx;
+    int ret_code = rcode_ok;
+
+    if (rsocket_ctx->map_clients != NULL) {
+        rdict_free(rsocket_ctx->map_clients);
+    }
+
+    rsocket_ctx->stream_state = ripc_state_uninit;
+
+    return ret_code;
+}
+
 static const ripc_entry_t impl_s = {
-    (ripc_init_func)ripc_init_c,// ripc_init_func init;
-    (ripc_uninit_func)ripc_uninit_c,// ripc_uninit_func uninit;
+    (ripc_init_func)ripc_init_server,// ripc_init_func init;
+    (ripc_uninit_func)ripc_uninit_server,// ripc_uninit_func uninit;
     (ripc_open_func)ripc_open_c,// ripc_open_func open;
     (ripc_close_func)ripc_close_c,// ripc_close_func close;
     (ripc_start_func)ripc_start_c,// ripc_start_func start;
