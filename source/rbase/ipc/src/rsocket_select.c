@@ -122,16 +122,6 @@ static int rsocket_shutdown(rsocket_t* sock_item, int how) {
     return rcode_ok;
 }
 
-static int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol) {
-    *sock_item = socket(domain, type, protocol);
-    if (*sock_item != SOCKET_INVALID) {
-        return rcode_ok;
-    }
-    else {
-        return WSAGetLastError();
-    }
-}
-
 static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
 	if (*sock_item == SOCKET_INVALID) {
@@ -419,6 +409,7 @@ static int ripc_open_c(void* ctx) {
     int opt = 1;
 	rsocket_t* rsock_item = rdata_new(rsocket_t);
 	*rsock_item = SOCKET_INVALID;
+    int current_family = family;
 
     //指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
     memset(&connect_hints, 0, sizeof(connect_hints));
@@ -435,10 +426,10 @@ static int ripc_open_c(void* ctx) {
             freeaddrinfo(addrinfo_result);
         }
         rerror("failed on getaddrinfo, code = %d, msg = %s", ret_code, rsocket_gaistrerror(ret_code));
-        return ret_code;
+        
+        rgoto(1);
     }
 
-    int current_family = family;
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
         if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
             rsocket_destroy(rsock_item);
@@ -474,52 +465,24 @@ static int ripc_open_c(void* ctx) {
     }
     freeaddrinfo(addrinfo_result);
 
-	if (ret_code == rcode_ok) {
-		ds_client->read_cache = NULL;
-		rbuffer_init(ds_client->read_cache, read_cache_size);
-		ds_client->write_buff = NULL;
-		rbuffer_init(ds_client->write_buff, write_buff_size);
+	if (ret_code != rcode_ok) {
+        rgoto(1);
+	}
 
-        ds_client->stream = rsock_item;
-		rsocket_ctx->stream_state = ripc_state_ready;
-	} else {
-        rsocket_destroy(rsock_item);
-        rdata_free(rsocket_t, rsock_item);
-    }
+    ds_client->read_cache = NULL;
+    rbuffer_init(ds_client->read_cache, read_cache_size);
+    ds_client->write_buff = NULL;
+    rbuffer_init(ds_client->write_buff, write_buff_size);
 
-    //struct addrinfo bind_hints;
-    ////指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
-    //memset(&bind_hints, 0, sizeof(bind_hints));
-    //bind_hints.ai_socktype = socktype;//SOCK_STREAM、SOCK_DGRAM、SOCK_RAW, 设置为0表示所有类型都可以
-    //bind_hints.ai_family = family;
-    //bind_hints.ai_flags = AI_PASSIVE;//nodename=NULL, 返回socket地址可用于bind()函数（*.*.*.* Any），AI_NUMERICHOST则不能是域名
-    ////nodename 不是NULL，那么 AI_PASSIVE 标志被忽略；
-    ////未设置AI_PASSIVE标志, 返回的socket地址可以用于connect(), sendto(), 或者 sendmsg()函数。
-    ////nodename 是NULL，网络地址会被设置为lookback接口地址，这种情况下，应用是想与运行在同一个主机上另一个应用通信
-    //bind_hints.ai_protocol = 0;//IPPROTO_TCP、IPPROTO_UDP 等，设置为0表示所有协议
-
-    //for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
-    //    if (current_family != iterator->ai_family || &rsock_item == SOCKET_INVALID) {
-    //        rsocket_destroy(&rsock_item);
-    //        ret_code = inet_trycreate(&rsock_item, iterator->ai_family,
-    //            iterator->ai_socktype, iterator->ai_protocol);
-    //        if (ret_code) continue;
-    //        current_family = iterator->ai_family;
-    //    }
-    //    /* try binding to local address */
-    //    ret_code = rsocket_strerror(rsocket_bind(&rsock_item, (rsockaddr_t *)iterator->ai_addr, (socklen_t)iterator->ai_addrlen));
-    //    /* keep trying unless bind succeeded */
-    //    if (ret_code == NULL) {
-    //        *family = current_family;
-    //        /* set to non-blocking after bind */
-    //        rsocket_setnonblocking(&rsock_item);
-    //        break;
-    //    }
-    //}
-    //freeaddrinfo(addrinfo_result);
-
+    ds_client->stream = rsock_item;
+    rsocket_ctx->stream_state = ripc_state_ready;
 
     return rcode_ok;
+
+exit1:
+    rsocket_destroy(rsock_item);
+    rdata_free(rsocket_t, rsock_item);
+    return ret_code;
 }
 static int ripc_close_c(void* ctx) {
 	rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;

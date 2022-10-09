@@ -167,6 +167,19 @@ char* rstr_fmt(char* dest, const char* fmt, int max_len, ...) {
     return dest;
 }
 
+R_API int rstr_fmt_num(char* ret_num_str, void* num, const char* fmt) {
+    int len_num_str = 0;
+    if (fmt != NULL) {
+        len_num_str = sprintf(ret_num_str, fmt, num);/**警告不会执行**/
+    } else {
+        int64_t num_temp_value = num;
+        len_num_str = sprintf(ret_num_str, "%"PRId64, num_temp_value);
+    }
+    rassert((len_num_str < rstr_number_max_bytes), "rnum2str");
+
+    return rcode_ok;
+}
+
 char* rstr_cpy(const void* data, size_t len){
     if (data == NULL || data == rstr_empty) {
 		return rstr_empty;

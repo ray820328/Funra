@@ -18,6 +18,10 @@
 extern "C" {
 #endif
 
+#ifndef ripc_code_ext
+#define ripc_code_ext
+#endif //ripc_code_ext 给外部定义逻辑类型
+
 typedef enum {
     ripc_data_source_type_unknown = 0,
     ripc_data_source_type_server = 1,
@@ -58,6 +62,8 @@ typedef enum {
     ripc_code_error_magic,
     ripc_code_cache_full,
     ripc_code_cache_null,
+
+    ripc_code_ext
 } ripc_code_t;
 
 typedef struct ripc_data_raw_s {

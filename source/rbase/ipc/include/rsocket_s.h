@@ -21,8 +21,7 @@ extern "C" {
 
 typedef struct rsocket_server_ctx_s {
     rsocket_ctx_fields;
-
-    //rsocket_ctx_uv_fields;
+    void* stream;
 
     uint64_t sid_cur;
 

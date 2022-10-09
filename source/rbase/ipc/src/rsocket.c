@@ -12,6 +12,16 @@
 #include "rtime.h"
 #include "rsocket.h"
 
+int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol) {
+    *sock_item = socket(domain, type, protocol);
+    if (*sock_item != SOCKET_INVALID) {
+        return rcode_io_done;
+    }
+    else {
+        return rerror_get_osnet_err();
+    }
+}
+
 int rsocket_destroy(rsocket_t* sock_item) {
     if (sock_item && *sock_item != SOCKET_INVALID) {
 #if defined(_WIN32) || defined(_WIN64)
@@ -20,7 +30,7 @@ int rsocket_destroy(rsocket_t* sock_item) {
 #else
         close(*sock_item);
 #endif
-
+        rdebug("destroy socket, %p", sock_item);
         *sock_item = SOCKET_INVALID;
     }
     return rcode_ok;
@@ -68,6 +78,22 @@ int rsocket_gethostbyname(const char* addr, struct hostent **hp) {
     else if (h_errno) return h_errno;
     else if (errno) return errno;
     else return rcode_io_unknown;
+
+    // if (addr.ss_family == AF_INET6) {
+    //       ipSize = sizeof(ip);
+    //       struct sockaddr_in6* addrV6 = (struct sockaddr_in6*)&addr;
+    //       inet_ntop(AF_INET6, &addrV6->sin6_addr, ip, ipSize);
+    //       port = ntohs(addrV6->sin6_port);
+    //       rinfo("accept %s:%d socket(%d)", ip, port, *sock);
+    //   } else if (addr.ss_family == AF_INET) {
+    //       struct sockaddr_in* addrV4 = (struct sockaddr_in*)&addr;
+    //       ip = inet_ntoa(addrV4->sin_addr);
+    //       port = ntohs(addrV4->sin_port);
+    //       rinfo("accept %s:%d socket(%d)", ip, port, *sock);
+    //   } else {
+    //       rassert(false, "");
+    //       rinfo("accept error net family (%d)", (int)addr.ss_family);
+    //   }
 }
 
 char* rsocket_hoststrerror(int err) {

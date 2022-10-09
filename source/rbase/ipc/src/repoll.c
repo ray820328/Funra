@@ -77,7 +77,7 @@ int repoll_destroy(repoll_container_t* container) {
     close(container->epoll_fd);
 }
 
-int repoll_add(repoll_container_t *container, const repoll_item_t *repoll_item) {
+int repoll_add(repoll_container_t* container, const repoll_item_t* repoll_item) {
     int ret_code = rcode_ok;
 
     struct epoll_event ev = {0}; //linux内核版本小于 2.6.9 必须初始化
@@ -95,7 +95,7 @@ int repoll_add(repoll_container_t *container, const repoll_item_t *repoll_item) 
     return ret_code;
 }
 
-int repoll_modify(repoll_container_t *container, const repoll_item_t *repoll_item) {
+int repoll_modify(repoll_container_t* container, const repoll_item_t* repoll_item) {
     int ret_code = rcode_ok;
 
     // if (data->event_flag == flag) {
@@ -117,7 +117,7 @@ int repoll_modify(repoll_container_t *container, const repoll_item_t *repoll_ite
     return ret_code;
 }
 
-int repoll_remove(repoll_container_t *container, const repoll_item_t *repoll_item) {
+int repoll_remove(repoll_container_t* container, const repoll_item_t* repoll_item) {
     int ret_code = rcode_ok;
 
     struct epoll_event ev = {0}; //linux内核版本小于 2.6.9 必须初始化
@@ -138,7 +138,7 @@ int repoll_remove(repoll_container_t *container, const repoll_item_t *repoll_ite
     return rcode_ok;
 }
 
-int repoll_poll(repoll_container_t *container, int timeout) {
+int repoll_poll(repoll_container_t* container, int timeout) {
     int ret_code = rcode_ok;
 
     int poll_amount = epoll_wait(container->epoll_fd, container->event_list, container->fd_amount, timeout);//毫秒
@@ -150,7 +150,7 @@ int repoll_poll(repoll_container_t *container, int timeout) {
         container->fd_dest_count = 0;
         ret_code = rcode_ok;//超时而已
     } else {
-        const repoll_item_t *fdptr;
+        const repoll_item_t* fdptr;
 
         for (int i = 0; i < poll_amount; i++) {
             fdptr = (repoll_item_t*)(container->event_list[i].data.ptr);
@@ -170,7 +170,7 @@ int repoll_poll(repoll_container_t *container, int timeout) {
 
 //EPOLLET //边缘触发(Edge Triggered)事件改变仅第一次返回内核事件，水平触发(Level Triggered)有事件每次wait都返回
 //EPOLLONESHOT //只监听一次事件，当监听完这次事件之后，如果还需要继续监听，需要再次把fd加入到EPOLL参数里
-int repoll_reset_oneshot(repoll_container_t *container, int fd) {
+int repoll_reset_oneshot(repoll_container_t* container, int fd) {
     int ret_code = rcode_ok;
 
     struct epoll_event event = {0, {0}};

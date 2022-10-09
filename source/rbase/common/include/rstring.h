@@ -30,6 +30,8 @@ extern char* rstr_empty_const;
 #define rstr_blank ' '
 #define rstr_array_end NULL
 
+#define rstr_number_max_bytes 32
+
 #define rstr_new(size) (char*)raymalloc((size) + 1u)
 #define rstr_init(rstr) ((char*)(rstr))[0] = rstr_end
 #define rstr_uninit(rstr) ((char*)(rstr))[0] = rstr_end
@@ -61,20 +63,26 @@ extern char* rstr_empty_const;
         rdata_free_array(rstr); \
     }
     
-//注意类型长度默认lld，num为int等溢出
 #define rnum2str(ret_num_str, num, fmt_str) \
     do { \
-        char _num_temp_str_[32]; \
+        char _num_temp_str_[rstr_number_max_bytes]; \
+        rstr_fmt_num((_num_temp_str_), (void*)(num), (const char*)(fmt_str)); \
+        (ret_num_str) = _num_temp_str_; \
+    } while(0)
+/**
+#define rnum2str(ret_num_str, num, fmt_str) \
+    do { \
+        char _num_temp_str_[rstr_number_max_bytes]; \
 		int _len_num_str_ = 0; \
 		if ((fmt_str) != NULL) { \
-			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str) ? (fmt_str) : "", (num));/**警告不会执行**/ \
+			_len_num_str_ = sprintf((_num_temp_str_), (fmt_str) ? (fmt_str) : "", (num));//警告不会执行 \
 		} else {  \
 			int64_t _num_temp_value_ = (num); \
 			_len_num_str_ = sprintf(_num_temp_str_, "%"PRId64, _num_temp_value_); \
 		} \
-        rassert((_len_num_str_ < 32), "rnum2str"); \
+        rassert((_len_num_str_ < rstr_number_max_bytes), "rnum2str"); \
         (ret_num_str) = _num_temp_str_; \
-    } while(0)
+    } while(0) **/
 #define rformat_s(buffer_str, fmt_str, ...) \
     do { \
         if (sprintf((buffer_str), (fmt_str), ##__VA_ARGS__) >= (int)sizeof((buffer_str))) { \
@@ -148,6 +156,7 @@ R_API char* rstr_concat_array(const char** src, const char* delim, bool suffix);
 R_API char* rstr_join(const char* src, ...);
 
 R_API char* rstr_fmt(char* dest, const char* fmt, int max_len, ...);
+R_API int rstr_fmt_num(char* ret_num_str, void* num, const char* fmt);
 /** len为0时到src结尾 **/
 R_API char* rstr_cpy(const void *src, size_t len);
 R_API char* rstr_cpy_full(const void *key);

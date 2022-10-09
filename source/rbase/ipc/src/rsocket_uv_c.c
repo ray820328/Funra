@@ -1,4 +1,4 @@
-﻿/** 
+/** 
  * Copyright (c) 2016
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -311,7 +311,7 @@ static int ripc_stop(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
     rinfo("socket client stop.");
-
+    
     uv_close((uv_handle_t*)rsocket_ctx->stream, on_close);
 
     return rcode_ok;
