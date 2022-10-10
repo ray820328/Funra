@@ -22,18 +22,35 @@ int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol) {
     }
 }
 
-int rsocket_destroy(rsocket_t* sock_item) {
+int rsocket_close(rsocket_t* sock_item) {
     if (sock_item && *sock_item != SOCKET_INVALID) {
 #if defined(_WIN32) || defined(_WIN64)
-        rsocket_setblocking(sock_item); /* WIN32可能消耗时间很长 */
+        rsocket_setblocking(sock_item); /* WIN32可能消耗时间很长，SO_LINGER */
         closesocket(*sock_item);
 #else
         close(*sock_item);
 #endif
-        rdebug("destroy socket, %p", sock_item);
+        rdebug("close socket, %p", sock_item);
         *sock_item = SOCKET_INVALID;
     }
     return rcode_ok;
+}
+
+int rsocket_shutdown(rsocket_t* sock_item, int how) {
+    int ret_code = 0;
+    if (sock_item && *sock_item != SOCKET_INVALID) {
+#if defined(_WIN32) || defined(_WIN64)
+        ret_code = shutdown(*sock_item, how);//how: SD_RECEIVE，SD_SEND，SD_BOTH
+#else
+        ret_code = shutdown(*sock_item, how);
+#endif
+        if (ret_code < 0) {
+            rerror("error on shutdown %p, %d - %d", sock_item, how, ret_code);
+        }
+        rdebug("shutdown socket, %p", sock_item);
+        *sock_item = SOCKET_INVALID;
+    }
+    return ret_code;
 }
 
 char* rio_strerror(int err) {

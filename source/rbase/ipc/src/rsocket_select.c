@@ -432,7 +432,7 @@ static int ripc_open_c(void* ctx) {
 
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
         if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
-            rsocket_destroy(rsock_item);
+            rsocket_close(rsock_item);
 
             ret_code = rsocket_create(rsock_item, family, socktype, protocol);
             if (ret_code != rcode_ok) {
@@ -480,7 +480,7 @@ static int ripc_open_c(void* ctx) {
     return rcode_ok;
 
 exit1:
-    rsocket_destroy(rsock_item);
+    rsocket_close(rsock_item);
     rdata_free(rsocket_t, rsock_item);
     return ret_code;
 }
@@ -495,11 +495,14 @@ static int ripc_close_c(void* ctx) {
     }
 
     if (rsocket_ctx->stream_state == ripc_state_ready || 
-            rsocket_ctx->stream_state == ripc_state_start) {
+            rsocket_ctx->stream_state == ripc_state_disconnect || 
+            rsocket_ctx->stream_state == ripc_state_start || 
+            rsocket_ctx->stream_state == ripc_state_stop || 
+            rsocket_ctx->stream_state == ripc_state_disconnect) {
     	rbuffer_release(ds_client->read_cache);
     	rbuffer_release(ds_client->write_buff);
 
-        rsocket_destroy(ds_client->stream);
+        rsocket_close(ds_client->stream);
         rdata_free(rsocket_t, ds_client->stream);
     }
 
@@ -512,6 +515,8 @@ static int ripc_start_c(void* ctx) {
 
     rinfo("socket client start.");
 
+    rsocket_ctx->stream_state = ripc_state_start;
+
     return 0;
 }
 static int ripc_stop_c(void* ctx) {
@@ -519,6 +524,7 @@ static int ripc_stop_c(void* ctx) {
 
     rinfo("socket client stop.");
 
+    rsocket_ctx->stream_state = ripc_state_stop;
 
     return rcode_ok;
 }
@@ -527,7 +533,7 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
 
-    if (rsocket_ctx->stream_state != ripc_state_ready) {
+    if (rsocket_ctx->stream_state != ripc_state_start) {
         rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
         return rcode_err_sock_disconnect;
     }
@@ -578,7 +584,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
     ripc_data_raw_t data_raw;//直接在栈上
 
-    if (rsocket_ctx->stream_state != ripc_state_ready) {
+    if (rsocket_ctx->stream_state != ripc_state_start) {
         rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
         return rcode_err_sock_disconnect;
     }

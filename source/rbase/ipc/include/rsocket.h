@@ -136,7 +136,9 @@ typedef enum {
 
 int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol);
 
-int rsocket_destroy(rsocket_t* sock_item);
+int rsocket_close(rsocket_t* sock_item);
+
+int rsocket_shutdown(rsocket_t* sock_item, int how);
 
 int rsocket_setblocking(rsocket_t* sock_item);
 

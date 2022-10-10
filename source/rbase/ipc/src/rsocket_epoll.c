@@ -105,43 +105,6 @@ static int rsocket_accept(rsocket_t* sock_listen, rsocket_t* sock_item,
             return ret_code;
         }
     }
-  //   struct sockaddr_storage addr;
-  // int len = sizeof(addr);
-  // uint16_t port = 0;
-  // uint32_t ipBufSize = 0;
-  // char* ipPtr = NULL;
-  // char ipBuf[64];
-
-  // *sock = accept(listen_sock,
-  //                reinterpret_cast<sockaddr*>(&addr),
-  //                reinterpret_cast<socklen_t*>(&len));
-  // if (*sock == INVALID_SOCKET) {
-  //   if (ERRNO == ERR_EAGAIN) {
-  //     return 1;
-  //   }
-  //   LogErrFmtPrint("[Net] Accept error(%d):%s",
-  //                            ERRNO,
-  //                            ERRSTR);
-  //   return -1;
-  // } else {
-  //     if (addr.ss_family == AF_INET6) {
-  //         ipBufSize = sizeof(ipBuf);
-  //         struct sockaddr_in6* addrV6 = (struct sockaddr_in6*)&addr;
-  //         inet_ntop(AF_INET6, &addrV6->sin6_addr, ipBuf, ipBufSize);
-  //         port = ntohs(addrV6->sin6_port);
-  //         LogDebugFmtPrint("[Net] accept %s:%d socket(%d)", ipBuf, port, *sock);
-  //     } else if (addr.ss_family == AF_INET) {
-  //         struct sockaddr_in* addrV4 = (struct sockaddr_in*)&addr;
-  //         ipPtr = inet_ntoa(addrV4->sin_addr);
-  //         port = ntohs(addrV4->sin_port);
-  //         LogDebugFmtPrint("[Net] accept %s:%d socket(%d)", ipPtr, port, *sock);
-  //     } else {
-  //         KGLOG_ASSERT(false);
-  //         LogErrFmtPrint("[Net] accept error net family (%d)", (int)addr.ss_family);
-  //     }
-
-  //   return 0;
-  // }
     
     return rcode_io_unknown;
 }
@@ -417,7 +380,7 @@ static int ripc_open_c(void* ctx) {
 
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
         if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
-            rsocket_destroy(rsock_item);
+            rsocket_close(rsock_item);
 
             ret_code = rsocket_create(rsock_item, family, socktype, protocol);
             if (ret_code != rcode_ok) {
@@ -473,7 +436,7 @@ static int ripc_open_c(void* ctx) {
     return rcode_ok;
 
 exit1:
-    rsocket_destroy(rsock_item);
+    rsocket_close(rsock_item);
     // rdata_free(rsocket_t, rsock_item);
 
     if(repoll_item != NULL) {
@@ -500,7 +463,7 @@ static int ripc_close_c(void* ctx) {
     if (ds_client->stream != NULL) {
         repoll_remove(container, (repoll_item_t*)ds_client->stream);
 
-        rsocket_destroy(&(((repoll_item_t*)ds_client->stream)->fd));
+        rsocket_close(&(((repoll_item_t*)ds_client->stream)->fd));
         // rdata_free(rsocket_t, ((repoll_item_t*)ds_client->stream)->fd);
 
         rdata_free(repoll_item_t, ds_client->stream);
@@ -838,7 +801,7 @@ static int ripc_open_server(void* ctx) {
 
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
         if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
-            rsocket_destroy(rsock_item);
+            rsocket_close(rsock_item);
 
             ret_code = rsocket_create(rsock_item, family, socktype, protocol);
             if (ret_code != rcode_ok) {
@@ -900,7 +863,7 @@ static int ripc_open_server(void* ctx) {
     return rcode_ok;
 
 exit1:
-    rsocket_destroy(rsock_item);
+    rsocket_close(rsock_item);
     // rdata_free(rsocket_t, rsock_item);
 
     if(repoll_item != NULL) {
@@ -909,7 +872,6 @@ exit1:
 
     return ret_code;
 }
-
 
 static int ripc_close_server(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
@@ -926,7 +888,7 @@ static int ripc_close_server(void* ctx) {
     if (ds_server->stream != NULL) {
         repoll_remove(container, (repoll_item_t*)ds_server->stream);
 
-        rsocket_destroy(&(((repoll_item_t*)ds_server->stream)->fd));
+        rsocket_close(&(((repoll_item_t*)ds_server->stream)->fd));
         // rdata_free(rsocket_t, ((repoll_item_t*)ds_server->stream)->fd);
 
         rdata_free(repoll_item_t, ds_server->stream);
@@ -941,6 +903,9 @@ static int ripc_start_server(void* ctx) {
     ripc_data_source_t* ds = rsocket_ctx->stream;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
+
+    rsocket_ctx->stream_state = ripc_state_start;
+    rinfo("socket server start.");
 
     return ret_code;
 }
@@ -1063,12 +1028,77 @@ static int ripc_receive_data_server(ripc_data_source_t* ds_client, void* data) {
     return rcode_ok;
 }
 
+static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
+    int ret_code = rcode_ok;
+    rsocket_ctx_t* rsocket_ctx = ds_server->ctx;
+
+    uint16_t port = 0;
+    char* ip = NULL;
+    char ip_buffer[64];
+    // uint32_t ip_size= 0;
+
+    rsockaddr_storage_t addr;
+    rsocket_len_t addr_len;
+
+    rsocket_t rsock_item_obj;
+    rsocket_t* rsock_item = &rsock_item_obj;
+    *rsock_item = SOCKET_INVALID;
+
+    repoll_item_t* repoll_item = NULL;
+
+    rtimeout_t tm;
+    rtimeout_init_millisec(&tm, 3, -1);
+    rtimeout_start(&tm);
+
+    ret_code = rsocket_accept(&(((repoll_item_t*)ds_server->stream)->fd), 
+        rsock_item, &addr, &addr_len, &tm);
+
+    if (ret_code != rcode_io_done) {
+        rerror("accept error. code = %d", ret_code);
+
+        rgoto(1);
+    }
+
+    if (addr.ss_family == AF_INET) {
+        struct sockaddr_in* addr_v4 = (struct sockaddr_in*)&addr;
+        ip = inet_ntoa(addr_v4->sin_addr);
+        port = ntohs(addr_v4->sin_port);
+    } else if (addr.ss_family == AF_INET6) {
+        struct sockaddr_in6* addr_v6 = (struct sockaddr_in6*)&addr;
+        inet_ntop(AF_INET6, &addr_v6->sin6_addr, ip_buffer, 64);
+        ip = ip_buffer;
+        port = ntohs(addr_v6->sin6_port);
+    } else {
+        rwarn("accept client, unknown address family. family = %d, AF_INET = %d, family = %d", 
+            addr.ss_family, AF_INET, AF_INET6);
+
+        rgoto(1);
+    }
+
+    rinfo("accept client %d (%s:%d)", addr.ss_family, ip, port);
+
+    return rcode_ok;
+
+exit1:
+
+    return ret_code;
+}
+
+static int ripc_append_server(ripc_data_source_t* ds_server, void* data) {
+    int ret_code = rcode_ok;
+    rsocket_ctx_t* rsocket_ctx = ds_server->ctx;
+
+    rdebug("client on service.");
+
+    return ret_code;
+}
+
 static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
     rsocket_ctx_t* rsocket_ctx = ds->ctx;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
-    ret_code = repoll_poll(container, 1);//不要用边缘触发模式，可能会调用多次，单线程不会惊群
+    ret_code = repoll_poll(container, 1);//不要用边缘触发模式，可能会调用多次，单进程单线程不会惊群
     if (ret_code != rcode_ok){
         rerror("epoll_wait failed. code = %d", ret_code);
         return ret_code;
@@ -1083,9 +1113,34 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
                 continue;
             }
 
+            if (dest_item->ds == ds){
+                if (repoll_check_event_err(dest_item->event_val_rsp)) {
+                    rerror("error of socket, fd = ", dest_item->fd);
+                    ripc_close_server(rsocket_ctx);//直接关闭
+                    continue;
+                }
+
+                if (repoll_check_event_out(dest_item->event_val_rsp)) {//add success
+                    if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                        ripc_append_server(ds, data);
+                    } else {
+                        rwarn("server not on service.");
+                    }
+                }
+
+                if (repoll_check_event_in(dest_item->event_val_rsp)) {//accept
+                    if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                        ripc_accept_server(ds, NULL);
+                    } else {
+                        rwarn("server not on service.");
+                    }
+                }
+                continue;
+            }
+
             // if (repoll_check_event_err(dest_item->event_val_rsp)) {
             //     rerror("error of socket, fd = ", dest_item->fd);
-            //     ripc_close_server(rsocket_ctx);//直接关闭
+            //     ripc_close_client(rsocket_ctx);//直接关闭
             //     continue;
             // }
 
@@ -1109,6 +1164,15 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
 
 static int ripc_on_error_server(ripc_data_source_t* ds, void* data) {
     rerror("socket error server.");
+
+    rsocket_ctx_t* rsocket_ctx = ds->ctx;
+    if (rsocket_ctx->in_handler) {
+        // ret_code = rsocket_ctx->in_handler->on_error(rsocket_ctx->out_handler, ds_client, data);
+        // if (ret_code != ripc_code_success) {
+        //     rerror("error on handler error, code: %d", ret_code);
+        //     return ret_code;
+        // }
+    }
 }
 
 static const ripc_entry_t impl_s = {

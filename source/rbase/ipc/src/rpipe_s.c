@@ -200,7 +200,7 @@ static ripc_item* get_ipc_item(const char* key) {
     return NULL;
 }
 
-const ripc_item rsocket_s = {
+const ripc_item rpipe_s = {
     NULL,// rdata_handler_t* handler;
 
     ripc_init,// ripc_init_func init;

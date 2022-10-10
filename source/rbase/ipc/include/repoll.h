@@ -12,6 +12,7 @@
 
 #include "rcommon.h"
 #include "rinterface.h"
+#include "ripc.h"
 
 #ifdef __cplusplus
 extern "C" {

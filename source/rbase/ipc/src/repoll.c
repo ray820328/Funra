@@ -7,11 +7,11 @@
  * @author: Ray
  */
 
+#include <fcntl.h>
+
 #include "rstring.h"
 #include "rlog.h"
 #include "rtime.h"
-#include "rsocket_c.h"
-#include "rsocket_s.h"
 #include "rtools.h"
 
 #if defined(__linux__)

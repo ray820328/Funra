@@ -18,6 +18,7 @@ struct rdata_handler_s;
 
 typedef int (*rdata_handler_on_before_func)(struct rdata_handler_s* handler, void* ds, void* data);
 typedef int (*rdata_handler_process_func)(struct rdata_handler_s* handler, void* ds, void* data);
+typedef int (*rdata_handler_on_error_func)(struct rdata_handler_s* handler, void* ds, void* data);
 typedef int (*rdata_handler_on_after_func)(struct rdata_handler_s* handler, void* ds, void* data);
 typedef void (*rdata_handler_on_next_func)(struct rdata_handler_s* handler, void* ds, void* data);
 
@@ -30,6 +31,7 @@ typedef struct rdata_handler_s {
 
     rdata_handler_on_before_func on_before;
     rdata_handler_process_func process;
+    rdata_handler_on_error_func on_error;
     rdata_handler_on_after_func on_after;
     rdata_handler_on_next_func on_next;
 

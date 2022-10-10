@@ -72,6 +72,7 @@ static void* run_server(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
     handler->process = rcodec_decode_default.process;
+    handler->on_error = rcodec_decode_default.on_error;
     handler->on_after = rcodec_decode_default.on_after;
     handler->on_next = rcodec_decode_default.on_next;
     handler->on_notify = rcodec_decode_default.on_notify;
@@ -83,14 +84,28 @@ static void* run_server(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_encode_default.on_before;
     handler->process = rcodec_encode_default.process;
+    handler->on_error = rcodec_encode_default.on_error;
     handler->on_after = rcodec_encode_default.on_after;
     handler->on_next = rcodec_encode_default.on_next;
     handler->on_notify = rcodec_encode_default.on_notify;
     handler->notify = rcodec_encode_default.notify;
 
-    rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
-    rsocket_ctx.ipc_entry->open(&rsocket_ctx);
-    rsocket_ctx.ipc_entry->start(&rsocket_ctx);//loop until to call stop
+    ret_code = rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
+    assert_true(ret_code == rcode_ok);
+    ret_code = rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+    assert_true(ret_code == rcode_ok);
+    ret_code = rsocket_ctx.ipc_entry->start(&rsocket_ctx);//loop until to call stop
+    assert_true(ret_code == rcode_ok);
+
+    while (true) {
+        ret_code = rsocket_ctx.ipc_entry->check(ds, NULL);//send & recv
+        if (ret_code != rcode_ok) {
+            break;
+        }
+
+        rtools_wait_mills(5);
+    }
+
 
     rsocket_ctx.ipc_entry->close(&rsocket_ctx);
     rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
@@ -142,6 +157,7 @@ static void* run_client(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
     handler->process = rcodec_decode_default.process;
+    handler->on_error = rcodec_decode_default.on_error;
     handler->on_after = rcodec_decode_default.on_after;
     handler->on_next = rcodec_decode_default.on_next;
     handler->on_notify = rcodec_decode_default.on_notify;
@@ -153,6 +169,7 @@ static void* run_client(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_encode_default.on_before;
     handler->process = rcodec_encode_default.process;
+    handler->on_error = rcodec_encode_default.on_error;
     handler->on_after = rcodec_encode_default.on_after;
     handler->on_next = rcodec_encode_default.on_next;
     handler->on_notify = rcodec_encode_default.on_notify;
@@ -232,7 +249,7 @@ static void rsocket_epoll_client_test(void **state) {
 
     rtools_wait_mills(1000);
 
-    rinfo("client select started.");
+    rinfo("client epoll started.");
 
     uninit_benchmark();
 }
@@ -246,10 +263,12 @@ static int setup(void **state) {
 }
 static int teardown(void **state) {
     void* param;
+    rinfo("detach epoll_client_thread.");
     // int ret_code = rthread_join(&epoll_client_thread, &param);
     int ret_code = rthread_detach(&epoll_client_thread, &param);
     assert_true(ret_code == 0);
 
+    rinfo("join epoll_server_thread.");
     ret_code = rthread_join(&epoll_server_thread, &param);
     assert_true(ret_code == 0);
     assert_true(rstr_eq((char *)param, "epoll_server_thread"));
