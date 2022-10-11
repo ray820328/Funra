@@ -25,6 +25,7 @@ int16_t repoll_get_event_req(int16_t event) {
     rv |= (event & RIO_POLLPRI) ? EPOLLPRI : 0;
     rv |= (event & RIO_POLLOUT) ? EPOLLOUT : 0;
 
+    repoll_trace("req: %#x|%#x|%#x, %#x", EPOLLIN, EPOLLPRI, EPOLLOUT, rv);
     return rv;
 }
 
@@ -37,6 +38,7 @@ int16_t repoll_get_event_rsp(int16_t event) {
     rv |= (event & EPOLLERR) ? RIO_POLLERR : 0;
     rv |= (event & EPOLLHUP) ? RIO_POLLHUP : 0;
 
+    repoll_trace("rsp: %#x|%#x, %#x", EPOLLERR, EPOLLHUP, rv);
     return rv;
 }
 
@@ -92,6 +94,7 @@ int repoll_add(repoll_container_t* container, const repoll_item_t* repoll_item) 
         ret_code = rerror_get_osnet_err();
     }
 
+    repoll_trace("add (fd = %d) to (%d) with (ev = %d)", repoll_item->fd, container->epoll_fd, ev.events);
     return ret_code;
 }
 
@@ -114,7 +117,18 @@ int repoll_modify(repoll_container_t* container, const repoll_item_t* repoll_ite
         ret_code = rerror_get_osnet_err();
     }
 
+    repoll_trace("modify (fd = %d) to (%d) with (ev = %d)", repoll_item->fd, container->epoll_fd, ev.events);
     return ret_code;
+}
+
+int repoll_check(repoll_container_t* container, const repoll_item_t* repoll_item) {
+    for (int i = 0; i < container->fd_dest_count; i++) {
+        if (container->dest_items[i].fd == repoll_item->fd) {
+            return rcode_ok;
+        }
+    }
+
+    return rcode_invalid;
 }
 
 int repoll_remove(repoll_container_t* container, const repoll_item_t* repoll_item) {
@@ -135,6 +149,7 @@ int repoll_remove(repoll_container_t* container, const repoll_item_t* repoll_ite
         }
     }
 
+    repoll_trace("remove (fd = %d) from (%d)", repoll_item->fd, container->epoll_fd);
     return rcode_ok;
 }
 
@@ -150,13 +165,13 @@ int repoll_poll(repoll_container_t* container, int timeout) {
         container->fd_dest_count = 0;
         ret_code = rcode_ok;//超时而已
     } else {
-        const repoll_item_t* fdptr;
+        const repoll_item_t* fd_ptr;
 
         for (int i = 0; i < poll_amount; i++) {
-            fdptr = (repoll_item_t*)(container->event_list[i].data.ptr);
-            //fdptr = &(((pfd_elem_t *) (container->event_list[i].data.ptr))->pfd);
+            fd_ptr = (repoll_item_t*)(container->event_list[i].data.ptr);
+            repoll_trace("poll (fd = %d) from (%d) with (ev = %d)", fd_ptr->fd, container->epoll_fd, container->dest_items[i].event_val_rsp);
 
-            container->dest_items[i] = *fdptr;
+            container->dest_items[i] = *fd_ptr;
             container->dest_items[i].event_val_rsp = repoll_get_event_rsp(container->event_list[i].events);
         }
 
@@ -182,6 +197,7 @@ int repoll_reset_oneshot(repoll_container_t* container, int fd) {
         ret_code = rerror_get_osnet_err();
     }
 
+    repoll_trace("reset oneshot (fd = %d) to (%d)", fd, container->epoll_fd);
     return ret_code;
 }
 

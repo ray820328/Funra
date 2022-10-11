@@ -125,92 +125,92 @@ static void* run_server(void* arg) {
 
 
 static void* run_client(void* arg) {
-    int ret_code = 0;
+    // int ret_code = 0;
 
-    repoll_container_t epoll_obj;
-    rsocket_client_ctx.user_data = &epoll_obj;
-    ret_code = repoll_create(&epoll_obj, 10);
-    assert_true(ret_code == rcode_ok);
+    // repoll_container_t epoll_obj;
+    // rsocket_client_ctx.user_data = &epoll_obj;
+    // ret_code = repoll_create(&epoll_obj, 10);
+    // assert_true(ret_code == rcode_ok);
 
-    rsocket_client_ctx.id = 3008;
-    rsocket_client_ctx.stream_type = ripc_type_tcp;
-    rsocket_client_ctx.stream_state = ripc_state_init;
+    // rsocket_client_ctx.id = 3008;
+    // rsocket_client_ctx.stream_type = ripc_type_tcp;
+    // rsocket_client_ctx.stream_state = ripc_state_init;
 
-    rsocket_client_ctx.ipc_entry = rsocket_epoll_c;
+    // rsocket_client_ctx.ipc_entry = rsocket_epoll_c;
 
-    ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
-    ds->ds_type = ripc_data_source_type_client;
-    ds->ds_id = rsocket_client_ctx.id;
-    ds->ctx = &rsocket_client_ctx;
+    // ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
+    // ds->ds_type = ripc_data_source_type_client;
+    // ds->ds_id = rsocket_client_ctx.id;
+    // ds->ctx = &rsocket_client_ctx;
 
-    rsocket_client_ctx.stream = ds;
+    // rsocket_client_ctx.stream = ds;
 
-    rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
-    rsocket_client_ctx.cfg = cfg;
-    cfg->id = 1;
-    rstr_set(cfg->ip, "127.0.0.1", 0);
-    cfg->port = 23000;
+    // rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
+    // rsocket_client_ctx.cfg = cfg;
+    // cfg->id = 1;
+    // rstr_set(cfg->ip, "127.0.0.1", 0);
+    // cfg->port = 23000;
 
-    rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    rsocket_client_ctx.in_handler = handler;
-    handler->prev = NULL;
-    handler->next = NULL;
-    handler->on_before = rcodec_decode_default.on_before;
-    handler->process = rcodec_decode_default.process;
-    handler->on_error = rcodec_decode_default.on_error;
-    handler->on_after = rcodec_decode_default.on_after;
-    handler->on_next = rcodec_decode_default.on_next;
-    handler->on_notify = rcodec_decode_default.on_notify;
-    handler->notify = rcodec_decode_default.notify;
+    // rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
+    // rsocket_client_ctx.in_handler = handler;
+    // handler->prev = NULL;
+    // handler->next = NULL;
+    // handler->on_before = rcodec_decode_default.on_before;
+    // handler->process = rcodec_decode_default.process;
+    // handler->on_error = rcodec_decode_default.on_error;
+    // handler->on_after = rcodec_decode_default.on_after;
+    // handler->on_next = rcodec_decode_default.on_next;
+    // handler->on_notify = rcodec_decode_default.on_notify;
+    // handler->notify = rcodec_decode_default.notify;
 
-    handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    rsocket_client_ctx.out_handler = handler;
-    handler->prev = NULL;
-    handler->next = NULL;
-    handler->on_before = rcodec_encode_default.on_before;
-    handler->process = rcodec_encode_default.process;
-    handler->on_error = rcodec_encode_default.on_error;
-    handler->on_after = rcodec_encode_default.on_after;
-    handler->on_next = rcodec_encode_default.on_next;
-    handler->on_notify = rcodec_encode_default.on_notify;
-    handler->notify = rcodec_encode_default.notify;
+    // handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
+    // rsocket_client_ctx.out_handler = handler;
+    // handler->prev = NULL;
+    // handler->next = NULL;
+    // handler->on_before = rcodec_encode_default.on_before;
+    // handler->process = rcodec_encode_default.process;
+    // handler->on_error = rcodec_encode_default.on_error;
+    // handler->on_after = rcodec_encode_default.on_after;
+    // handler->on_next = rcodec_encode_default.on_next;
+    // handler->on_notify = rcodec_encode_default.on_notify;
+    // handler->notify = rcodec_encode_default.notify;
 
-    rtools_wait_mills(5000);
+    // rtools_wait_mills(5000);
 
-    ret_code = rsocket_client_ctx.ipc_entry->init(&rsocket_client_ctx, rsocket_client_ctx.cfg);
-    assert_true(ret_code == rcode_ok);
-    ret_code = rsocket_client_ctx.ipc_entry->open(&rsocket_client_ctx);
-    assert_true(ret_code == rcode_ok);
+    // ret_code = rsocket_client_ctx.ipc_entry->init(&rsocket_client_ctx, rsocket_client_ctx.cfg);
+    // assert_true(ret_code == rcode_ok);
+    // ret_code = rsocket_client_ctx.ipc_entry->open(&rsocket_client_ctx);
+    // assert_true(ret_code == rcode_ok);
 
-    ret_code = rsocket_client_ctx.ipc_entry->start(&rsocket_client_ctx);
-    assert_true(ret_code == rcode_ok);
+    // ret_code = rsocket_client_ctx.ipc_entry->start(&rsocket_client_ctx);
+    // assert_true(ret_code == rcode_ok);
 
-    while (--sent_times > 0) {
-        ripc_data_default_t data;
-        data.cmd = 11;
-        data.data = rstr_cpy("client epoll_send test", 0);
-        data.len = rstr_len(data.data);
-        rsocket_client_ctx.ipc_entry->send(ds, &data);
+    // while (--sent_times > 0) {
+    //     ripc_data_default_t data;
+    //     data.cmd = 11;
+    //     data.data = rstr_cpy("client epoll_send test", 0);
+    //     data.len = rstr_len(data.data);
+    //     rsocket_client_ctx.ipc_entry->send(ds, &data);
 
-        rsocket_client_ctx.ipc_entry->check(ds, NULL);//send & recv
+    //     rsocket_client_ctx.ipc_entry->check(ds, NULL);//send & recv
 
-        rdata_free(char*, data.data);
+    //     rdata_free(char*, data.data);
 
-        rtools_wait_mills(2000);
-    }
+    //     rtools_wait_mills(2000);
+    // }
 
-    rsocket_client_ctx.ipc_entry->stop(&rsocket_client_ctx);
+    // rsocket_client_ctx.ipc_entry->stop(&rsocket_client_ctx);
 
-    rsocket_client_ctx.ipc_entry->close(&rsocket_client_ctx);
-    rsocket_client_ctx.ipc_entry->uninit(&rsocket_client_ctx);
+    // rsocket_client_ctx.ipc_entry->close(&rsocket_client_ctx);
+    // rsocket_client_ctx.ipc_entry->uninit(&rsocket_client_ctx);
 
-    ret_code = repoll_destroy(&epoll_obj);
-    assert_true(ret_code == rcode_ok);
+    // ret_code = repoll_destroy(&epoll_obj);
+    // assert_true(ret_code == rcode_ok);
 
-    rdata_free(rdata_handler_t, rsocket_client_ctx.in_handler);
-    rdata_free(rdata_handler_t, rsocket_client_ctx.out_handler);
-    rdata_free(ripc_data_source_t, ds);
-    rdata_free(rsocket_cfg_t, cfg);
+    // rdata_free(rdata_handler_t, rsocket_client_ctx.in_handler);
+    // rdata_free(rdata_handler_t, rsocket_client_ctx.out_handler);
+    // rdata_free(ripc_data_source_t, ds);
+    // rdata_free(rsocket_cfg_t, cfg);
 
     rinfo("end, run_client success: %s", (char *)arg);
 

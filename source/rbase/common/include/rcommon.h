@@ -29,6 +29,7 @@ extern "C" {
 #include "rmemory.h"
 
 #define rcode_ok 0
+#define rcode_invalid 1
 
 #define rcode_lt -1
 #define rcode_eq 0

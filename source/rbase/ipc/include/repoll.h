@@ -18,17 +18,21 @@
 extern "C" {
 #endif
 
+// #define repoll_trace(...) rtrace(__VA_ARGS__)
+#define repoll_trace(...)
+
 typedef struct sockaddr rsockaddr_t;
 
 #if defined(__linux__)
 
 #include <sys/epoll.h>
 
+//自定义值一样，EPOLLIN, EPOLLPRI, EPOLLOUT, EPOLLERR, EPOLLHUP 对应 0x1|0x2|0x4|0x8|0x10
 #define RIO_POLLIN    0x001     //Can read without blocking
 #define RIO_POLLPRI   0x002     //Priority data available
 #define RIO_POLLOUT   0x004     //Can write without blocking
 #define RIO_POLLERR   0x010     //Pending error
-#define RIO_POLLHUP   0x020     //Hangup occurred POLLHUP永远不会被发送到一个普通的文件
+#define RIO_POLLHUP   0x020     //Hangup POLLHUP永远不会被发送到一个普通的文件
 #define RIO_POLLNVAL  0x040     //非法fd
 
 #define repoll_set_event_in(val) (val) |= RIO_POLLIN
@@ -63,6 +67,7 @@ int16_t repoll_get_event_rsp(int16_t event);
 int repoll_create(repoll_container_t* container, uint32_t size);
 int repoll_destroy(repoll_container_t* container);
 int repoll_add(repoll_container_t *container, const repoll_item_t *repoll_item);
+int repoll_check(repoll_container_t* container, const repoll_item_t* repoll_item);
 int repoll_modify(repoll_container_t *container, const repoll_item_t *repoll_item);
 int repoll_remove(repoll_container_t *container, const repoll_item_t *repoll_item);
 int repoll_poll(repoll_container_t *container, int timeout);
