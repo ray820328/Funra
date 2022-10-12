@@ -46,6 +46,12 @@ do { \
 	abort(); \
 } while (0)
 
+typedef struct rdata_userdata_s rdata_userdata_t;
+struct rdata_userdata_s {
+    rdata_userdata_t* next;
+    const char* key;
+    void* data;
+};
 
 typedef enum rdata_plain_type_t {
     rdata_type_unknown = 0,           /** no type */

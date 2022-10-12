@@ -58,7 +58,7 @@ int repoll_create(repoll_container_t* container, uint32_t size) {
         return ret_code;
     }
 
-    fd_flags |= FD_CLOEXEC;
+    fd_flags |= FD_CLOEXEC;//避免子进程泄漏
     if (fcntl(fd, F_SETFD, fd_flags) == -1) {
         ret_code = rerror_get_osnet_err();
         close(fd);

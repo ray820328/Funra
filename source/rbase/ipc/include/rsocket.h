@@ -126,6 +126,23 @@ typedef struct rsocket_ctx_s {
 #endif //IPV6_LEAVE_GROUP
 #endif //!IPV6_DROP_MEMBERSHIP
 
+
+// typedef struct rsocket_s {
+//     int socketdes;
+//     int type;
+//     int protocol;
+//     rsockaddr_t *local_addr;
+//     rsockaddr_t *remote_addr;
+//     rinterval_time_t timeout; 
+//     int state;
+//     int local_port_unknown;
+//     int local_interface_unknown;
+//     int remote_addr_unknown;
+//     int32_t options;
+//     int32_t inherit;
+//     rdata_userdata_t *userdata;
+// } rsocket_t;
+
 typedef enum {
     rcode_io_done = 0, //操作成功
     rcode_io_timeout = -1,//操作超时

@@ -68,10 +68,25 @@ char* rio_strerror(int err) {
 #include <sys/poll.h>
 #include <sys/epoll.h>
 
+// int rsocket_setoptions(rsocket_t* sock_item, int option, bool on, int flag) {
+//     if (on) {
+//         sock_item->options |= (option);
+//     } else {
+//         sock_item->options &= ~(option);
+//     }
+//     setsockopt(*sock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&flag, sizeof(flag));
+//     int ret = setsockopt(*sock_item, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+    // if (ret < 0) {
+    //     return rcode_invalid;
+    // }
+//     return rcode_ok;    
+// }
+
 int rsocket_setblocking(rsocket_t* sock_item) {
     int flags = fcntl(*sock_item, F_GETFL, 0);
     flags &= (~(O_NONBLOCK));
     fcntl(*sock_item, F_SETFL, flags);
+    return rcode_ok;
 }
 
 int rsocket_setnonblocking(rsocket_t* sock_item) {

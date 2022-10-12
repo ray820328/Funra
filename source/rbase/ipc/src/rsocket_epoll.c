@@ -27,41 +27,39 @@ static int write_buff_size = 64 * 1024;
 
 static int close_session(ripc_data_source_t* ds_client);
 
-static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t* addr, rsocket_len_t len) {
+static int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t* addr, rsocket_len_t len) {
     int ret_code = rcode_ok;
-    rsocket_setblocking(sock_item);
-    if (bind(*sock_item, addr, len) < 0) {
+    if (bind(*rsock_item, addr, len) < 0) {
         ret_code = rerror_get_osnet_err();
         rinfo("bind failed, code = %d", ret_code);
     }
-    rsocket_setnonblocking(sock_item);
     return ret_code;
 }
 
-static int rsocket_listen(rsocket_t* sock_item, int backlog) {
+static int rsocket_listen(rsocket_t* rsock_item, int backlog) {
     int ret_code = rcode_ok;
-    if (listen(*sock_item, backlog)) {
+    if (listen(*rsock_item, backlog)) {
         ret_code = rerror_get_osnet_err();
         rinfo("listen failed, code = %d", ret_code);
     }
     return ret_code;
 }
 
-static void socket_shutdown(rsocket_t* sock_item, int how) {
-    shutdown(*sock_item, how);
+static void socket_shutdown(rsocket_t* rsock_item, int how) {
+    shutdown(*rsock_item, how);
 }
 
-static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
+static int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code = rcode_ok;
 
     /* avoid calling on closed sockets */
-    if (*sock_item == SOCKET_INVALID) {
+    if (*rsock_item == SOCKET_INVALID) {
         rerror("invalid socket. code = %d", ret_code);
         return rcode_io_closed;
     }
     /* call connect until done or failed without being interrupted */
     do {
-        if (connect(*sock_item, addr, len) == 0) {
+        if (connect(*rsock_item, addr, len) == 0) {
             return rcode_io_done;
         }
     } while ((ret_code = rerror_get_osnet_err()) == EINTR);
@@ -81,7 +79,7 @@ static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_
     return rcode_ok;//epoll connect 返回 EINPROGRESS 也视为成功，监听write事件处理
 }
 
-static int rsocket_accept(rsocket_t* sock_listen, rsocket_t* sock_item, 
+static int rsocket_accept(rsocket_t* sock_listen, rsocket_t* rsock_item, 
         rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     int ret_code = 0;
     if (*sock_listen == SOCKET_INVALID) {
@@ -89,8 +87,14 @@ static int rsocket_accept(rsocket_t* sock_listen, rsocket_t* sock_item,
     }
 
     for ( ;; ) {
-        *sock_item = accept(*sock_listen, addr, len);
-        if (*sock_item != SOCKET_INVALID) {
+// #if defined(SOCK_NONBLOCK_NOT_INHERITED)
+//         //With FreeBSD accept4() (avail in 10+), O_NONBLOCK is not inherited
+//         flags |= SOCK_NONBLOCK;//从外面传
+//         *rsock_item = accept4(*sock_listen, addr, len, flags);
+// #else
+        *rsock_item = accept(*sock_listen, addr, len);
+// #endif
+        if (*rsock_item != SOCKET_INVALID) {
             return rcode_io_done;
         }
 
@@ -103,25 +107,32 @@ static int rsocket_accept(rsocket_t* sock_listen, rsocket_t* sock_item,
         if (ret_code == EINTR) {
             continue;
         }
-        if (ret_code != EAGAIN && ret_code != ECONNABORTED) {
-            return ret_code;
+        if (ret_code == EAGAIN || ret_code == EWOULDBLOCK) {
+            return rcode_io_done;
         }
+
+        // ECONNABORTED： software caused connection abort, 三次握手后，客户 TCP 发送了一个 RST
+        // ECONNRESET： connection reset by peer，对方复位连接
+        // ETIMEDOUT： connect time out
+        // EPIPE： broken pipe
+        rtrace("accept with code = %d, (%d, %d, %d, %d)", ret_code, ECONNABORTED, ECONNRESET, ETIMEDOUT, EPIPE);
+        return ret_code;
     }
     
     return rcode_io_unknown;
 }
 
-static int rsocket_send(rsocket_t* sock_item, const char *data, size_t count, size_t *sent, rtimeout_t* tm) {
+static int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent, rtimeout_t* tm) {
     int ret_code;
     *sent = 0;
     long sent_len = 0;
     
-    if (*sock_item == SOCKET_INVALID) {
+    if (*rsock_item == SOCKET_INVALID) {
         return rcode_io_closed;
     }
     
     for ( ;; ) {
-        sent_len = (long) send(*sock_item, data, count, 0);
+        sent_len = (long) send(*rsock_item, data, count, 0);
         /* if we sent anything, we are done */
         if (sent_len >= 0) {
             *sent = sent_len;
@@ -146,15 +157,15 @@ static int rsocket_send(rsocket_t* sock_item, const char *data, size_t count, si
     return rcode_io_unknown;
 }
 
-static int rsocket_sendto(rsocket_t* sock_item, const char *data, size_t count, size_t *sent,
+static int rsocket_sendto(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent,
         rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
     *sent = 0;
     long sent_len = 0;
 
-    if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
+    if (*rsock_item == SOCKET_INVALID) return rcode_io_closed;
     for ( ;; ) {
-        sent_len = (long) sendto(*sock_item, data, count, 0, addr, len); 
+        sent_len = (long) sendto(*rsock_item, data, count, 0, addr, len); 
         if (sent_len >= 0) {
             *sent = sent_len;
             return rcode_io_done;
@@ -168,12 +179,12 @@ static int rsocket_sendto(rsocket_t* sock_item, const char *data, size_t count, 
     return rcode_io_unknown;
 }
 
-static int rsocket_recv(rsocket_t* sock_item, char *data, size_t count, size_t *got, rtimeout_t* tm) {
+static int rsocket_recv(rsocket_t* rsock_item, char *data, size_t count, size_t *got, rtimeout_t* tm) {
     int ret_code = 0;
     *got = 0;
     long read_len = 0;
 
-    if (*sock_item == SOCKET_INVALID) {
+    if (*rsock_item == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
@@ -190,7 +201,7 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, size_t count, size_t *
         // MSG_NOSIGNAL is a flag used by send() in some implementations of the Berkeley sockets API.
         // 对于服务器端，可以使用这个标志。目的是不让其发送SIG_PIPE信号，导致程序退出。
         // 还有其它的几个选项,不过实际上用的很少
-        read_len = (long) recv(*sock_item, data, count, 0);
+        read_len = (long) recv(*rsock_item, data, count, 0);
         if (read_len >= 0) {
             *got = read_len;
             return rcode_io_done;
@@ -214,14 +225,14 @@ static int rsocket_recv(rsocket_t* sock_item, char *data, size_t count, size_t *
     return rcode_io_unknown;
 }
 
-static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *got, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
+static int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *got, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
     int ret_code;
     *got = 0;
     long read_len = 0;
 
-    if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
+    if (*rsock_item == SOCKET_INVALID) return rcode_io_closed;
     for ( ;; ) {
-        read_len = (long) recvfrom(*sock_item, data, count, 0, addr, len);
+        read_len = (long) recvfrom(*rsock_item, data, count, 0, addr, len);
         if (read_len > 0) {
             *got = read_len;
             return rcode_io_done;
@@ -234,16 +245,16 @@ static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *go
     return rcode_io_unknown;
 }
 
-static int rsocket_write(rsocket_t* sock_item, const char *data, int count, int *sent, rtimeout_t* tm) {
+static int rsocket_write(rsocket_t* rsock_item, const char *data, int count, int *sent, rtimeout_t* tm) {
     int ret_code;
     *sent = 0;
     long sent_len = 0;
 
     /* avoid making system calls on closed sockets */
-    if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
+    if (*rsock_item == SOCKET_INVALID) return rcode_io_closed;
     /* loop until we send something or we give up on error */
     for ( ;; ) {
-        sent_len = (long) write(*sock_item, data, count);
+        sent_len = (long) write(*rsock_item, data, count);
         /* if we sent anything, we are done */
         if (sent_len >= 0) {
             *sent = sent_len;
@@ -277,17 +288,17 @@ static int rsocket_write(rsocket_t* sock_item, const char *data, int count, int 
     return rcode_io_unknown;
 }
 
-static int rsocket_read(rsocket_t* sock_item, char *data, size_t count, size_t *got, rtimeout_t* tm) {
+static int rsocket_read(rsocket_t* rsock_item, char *data, size_t count, size_t *got, rtimeout_t* tm) {
     int ret_code = 0;
     *got = 0;
     long read_len = 0;
 
-    if (*sock_item == SOCKET_INVALID) {
+    if (*rsock_item == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
     for ( ;; ) {
-        read_len = (long) read(*sock_item, data, count);
+        read_len = (long) read(*rsock_item, data, count);
         if (read_len > 0) {
             *got = read_len;
             return rcode_io_done;
@@ -814,17 +825,18 @@ static int ripc_open_server(void* ctx) {
             if (family == AF_INET6) {
                 setsockopt(*rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
             }
-            // rsocket_setnonblocking(rsock_item);
 
             current_family = iterator->ai_family;
-       }
+        }
        
-       ret_code = rsocket_bind(rsock_item, (rsockaddr_t*)iterator->ai_addr, (rsocket_len_t)iterator->ai_addrlen);
-       /* keep trying unless bind succeeded */
-       if (ret_code == rcode_ok) {
+        rsocket_setblocking(rsock_item);
+        ret_code = rsocket_bind(rsock_item, (rsockaddr_t*)iterator->ai_addr, (rsocket_len_t)iterator->ai_addrlen);
+
+        /* keep trying unless bind succeeded */
+        if (ret_code == rcode_ok) {
            family = current_family;
            break;
-       }
+        }
     }
     freeaddrinfo(addrinfo_result);
 
@@ -834,12 +846,16 @@ static int ripc_open_server(void* ctx) {
         rgoto(1);
     }
 
+    rsocket_setblocking(rsock_item);
     ret_code = rsocket_listen(rsock_item, 128);
+
     if (ret_code != rcode_ok) {
         rerror("error on start server, listen failed, code: %d", ret_code);
 
         rgoto(1);
     }
+
+    rsocket_setnonblocking(rsock_item);
 
     //添加到epoll对象
     repoll_item = rdata_new(repoll_item_t);
@@ -951,8 +967,10 @@ static int close_session(ripc_data_source_t* ds_client) {
 //写入自定义缓冲区
 static int ripc_send_data_2buffer_server(ripc_data_source_t* ds_client, void* data) {
     int ret_code = rcode_io_done;
-    rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
+    rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ds_client->ctx;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    repoll_item_t* repoll_item = NULL;
 
     if (rsocket_ctx->stream_state != ripc_state_start) {
         rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
@@ -967,14 +985,28 @@ static int ripc_send_data_2buffer_server(ripc_data_source_t* ds_client, void* da
         }
         ret_code = rcode_io_done;
     }
-    rdebug("end send_data_2buffer, code: %d", ret_code);
+
+    if (rbuffer_size(ds_client->write_buff) > 0) {
+        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_set_event_out(repoll_item->event_val_req);
+
+        ret_code = repoll_modify(container, repoll_item);
+        if (ret_code != rcode_ok){
+            rerror("modify to epoll failed. code = %d", ret_code);
+            return ret_code;
+        }
+    }
+
+    rtrace("end send_data_2buffer, code: %d", ret_code);
 
     return rcode_ok;
 }
 static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
     int ret_code = rcode_io_done;
-    rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
+    rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ds_client->ctx;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    repoll_item_t* repoll_item = NULL;
 
     const char* data_buff = rbuffer_read_start_dest(ds_client->write_buff);
     int count = rbuffer_size(ds_client->write_buff);
@@ -988,7 +1020,6 @@ static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
     if (ret_code != rcode_io_done) {
         rwarn("end send_data, code: %d, sent_len: %d, buff_size: %d", ret_code, sent_len, count);
 
-        ripc_close_c(rsocket_ctx);//直接关闭
         if (ret_code == rcode_io_timeout) {
             return rcode_err_sock_timeout;
         }
@@ -996,9 +1027,21 @@ static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
             return rcode_err_sock_disconnect;//所有未知错误都断开
         }
     }
-    rdebug("end send_data, code: %d, sent_len: %d", ret_code, sent_len);
 
     rbuffer_skip(ds_client->write_buff, sent_len);
+    if (rbuffer_size(ds_client->write_buff) == 0) {
+        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_unset_event_out(repoll_item->event_val_req);
+
+        ret_code = repoll_modify(container, repoll_item);
+        if (ret_code != rcode_ok){
+            rerror("modify to epoll failed. code = %d", ret_code);
+            return ret_code;
+        }
+    }
+
+    rtrace("end send_data, code: %d, sent_len: %d", ret_code, sent_len);
+
     return rcode_ok;
 }
 
@@ -1095,13 +1138,16 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
             break;
     }
 
-    ret_code = rsocket_accept(&(((repoll_item_t*)ds_server->stream)->fd), 
-        rsock_item, &addr, &addr_len, &tm);
+    ret_code = rsocket_accept(&(((repoll_item_t*)ds_server->stream)->fd), rsock_item, &addr, &addr_len, &tm);
 
     if (ret_code != rcode_io_done) {
         rerror("accept error. code = %d", ret_code);
 
         rgoto(1);
+    }
+
+    if (*rsock_item == SOCKET_INVALID) {
+        rgoto(0);
     }
 
     if (addr.ss_family == AF_INET) {
@@ -1131,12 +1177,13 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
 
     rdict_add(rsocket_ctx->map_clients, (void*)ds_client->ds_id, ds_client);
 
+    rsocket_setnonblocking(rsock_item);
     //添加到epoll对象
     repoll_item = rdata_new(repoll_item_t);
     repoll_item->fd = *rsock_item;
     repoll_item->ds = ds_client;
     repoll_item->event_val_req = 0;
-    repoll_set_event_all(repoll_item->event_val_req);
+    repoll_set_event_in(repoll_item->event_val_req);
 
     ret_code = repoll_add(container, (const repoll_item_t*)repoll_item);
     if (ret_code != rcode_ok){
@@ -1152,6 +1199,7 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
 
     rinfo("accept client %d (%s:%d)", addr.ss_family, ip, port);
 
+exit0:
     return rcode_ok;
 
 exit1:
@@ -1190,13 +1238,14 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
-    ret_code = repoll_poll(container, 1);//不要用边缘触发模式，可能会调用多次，单进程单线程不会惊群
+    ret_code = repoll_poll(container, 0);//不要用边缘触发模式，可能会调用多次，单进程单线程不会惊群，不等待
     if (ret_code != rcode_ok){
         rerror("epoll_wait failed. code = %d", ret_code);
         return ret_code;
     }
-
+    
     if (container->fd_dest_count > 0) {
+        rtrace("fd count = %d", container->fd_dest_count);
         repoll_item_t* dest_item = NULL;
 
         for (int i = 0; i < container->fd_dest_count; i++) {
@@ -1231,13 +1280,13 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
                         rwarn("server not on service.");
                     }
                 }
-                
+
                 continue;
             }
 
             //已连接端口事件处理
             if (repoll_check_event_err(dest_item->event_val_rsp)) {
-                rerror("error of socket, fd = ", dest_item->fd);
+                rinfo("error of socket, fd = %d", dest_item->fd);
                 close_session(dest_item->ds);//直接关闭
                 continue;
             }
@@ -1249,7 +1298,6 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
             }
 
             if (repoll_check_event_in(dest_item->event_val_rsp)) {
-                rinfo("ripc_receive_data_server state = %d", rsocket_ctx->stream_state);
                 if likely(rsocket_ctx->stream_state == ripc_state_start) {
                     ripc_receive_data_server(dest_item->ds, data);
                 }

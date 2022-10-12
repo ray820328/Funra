@@ -100,10 +100,11 @@ static void* run_server(void* arg) {
     while (true) {
         ret_code = rsocket_ctx.ipc_entry->check(ds, NULL);//send & recv
         if (ret_code != rcode_ok) {
+            rwarn("epoll wait stopped.");
             break;
         }
 
-        rtools_wait_mills(5);
+        rtools_wait_mills(100);
     }
 
 

@@ -18,8 +18,8 @@
 extern "C" {
 #endif
 
-// #define repoll_trace(...) rtrace(__VA_ARGS__)
-#define repoll_trace(...)
+#define repoll_trace(...) rtrace(__VA_ARGS__)
+// #define repoll_trace(...)
 
 typedef struct sockaddr rsockaddr_t;
 
@@ -35,9 +35,9 @@ typedef struct sockaddr rsockaddr_t;
 #define RIO_POLLHUP   0x020     //Hangup POLLHUP永远不会被发送到一个普通的文件
 #define RIO_POLLNVAL  0x040     //非法fd
 
-#define repoll_set_event_in(val) (val) |= RIO_POLLIN
-#define repoll_set_event_out(val) (val) |= RIO_POLLOUT
-#define repoll_set_event_all(val) (val) |= RIO_POLLIN | RIO_POLLOUT | RIO_POLLPRI
+#define repoll_set_event_in(val) (val) |= RIO_POLLIN | EPOLLHUP | RIO_POLLERR
+#define repoll_set_event_out(val) (val) |= RIO_POLLOUT | EPOLLHUP | RIO_POLLERR
+#define repoll_set_event_all(val) (val) |= RIO_POLLIN | RIO_POLLOUT | RIO_POLLPRI | EPOLLHUP | RIO_POLLERR
 #define repoll_unset_event_in(val) (val) &= (~RIO_POLLIN)
 #define repoll_unset_event_out(val) (val) &= (~RIO_POLLOUT)
 #define repoll_check_event_in(val) (((val) & (RIO_POLLIN | RIO_POLLPRI)) != 0)
