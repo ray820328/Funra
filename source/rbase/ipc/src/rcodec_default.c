@@ -105,7 +105,7 @@ static int encode_on_after(rdata_handler_t* handler, void* ds, void* data) {
 
 static int encode_on_error(rdata_handler_t* handler, void* ds, void* data) {
     rerror("on error.");
-    return rcode_ok;
+    return ripc_code_success;
 }
 
 static void encode_on_next(rdata_handler_t* handler, void* ds, void* data) {
@@ -245,7 +245,7 @@ static int decode_on_after(rdata_handler_t* handler, void* ds, void* data) {
 
 static int decode_on_error(rdata_handler_t* handler, void* ds, void* data) {
     rerror("on error.");
-    return rcode_ok;
+    return ripc_code_success;
 }
 
 static void decode_on_next(rdata_handler_t* handler, void* ds, void* data) {

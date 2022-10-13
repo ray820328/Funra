@@ -132,6 +132,16 @@ static int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, s
     }
     
     for ( ;; ) {
+        // flags （同recv）
+        // flags = 0,则recv/send和read/write一样的操作
+        // MSG_DONTROUTE: send函数使用这个标志告诉目的主机在本地网络上面,没有必要查找表.一般用网络诊断和路由程序里面.
+        // MSG_OOB: 表示可以接收和发送带外的数据.
+        // MSG_PEEK: recv函数的使用标志, 只从系统缓冲区中读取内容,而不清除系统缓冲区的内容.下次读的时候,仍然是一样的内容.比如多个进程读写数据时
+        // MSG_WAITALL: recv函数的使用标志,等到所有的信息到达时才返回.recv一直阻塞,直到指定的条件满足,或者是发生了错误. 
+        // 1)当读到了指定的字节时,函数正常返回.返回值等于len 
+        // 2)当读到了文件的结尾时,函数正常返回.返回值小于len 
+        // 3)当操作发生错误时,返回-1,且设置错误为相应的错误号(errno)
+        // MSG_NOSIGNAL: 使用这个标志。不让其发送SIG_PIPE信号，导致程序退出。
         sent_len = (long) send(*rsock_item, data, count, 0);
         /* if we sent anything, we are done */
         if (sent_len >= 0) {
@@ -189,18 +199,6 @@ static int rsocket_recv(rsocket_t* rsock_item, char *data, size_t count, size_t 
     }
 
     for ( ;; ) {
-        // flags
-        // 如果flags为0,则recv/send和read/write一样的操作
-        // MSG_DONTROUTE:是 send函数使用的标志.这个标志告诉IP.目的主机在本地网络上面,没有必要查找表.这个标志一般用网络诊断和路由程序里面.
-        // MSG_OOB:表示可以接收和发送带外的数据.关于带外数据我们以后会解释的.
-        // MSG_PEEK:是recv函数的使用标志, 表示只是从系统缓冲区中读取内容,而不清除系统缓冲区的内容.这样下次读仍然是一样的内容.在有多个进程读写数据时可以使用这个标志.
-        // MSG_WAITALL 是recv函数的使用标志,表示等到所有的信息到达时才返回.使用这个标志的时候recv回一直阻塞,直到指定的条件满足,或者是发生了错误. 
-        // 1)当读到了指定的字节时,函数正常返回.返回值等于len 
-        // 2)当读到了文件的结尾时,函数正常返回.返回值小于len 
-        // 3)当操作发生错误时,返回-1,且设置错误为相应的错误号(errno)
-        // MSG_NOSIGNAL is a flag used by send() in some implementations of the Berkeley sockets API.
-        // 对于服务器端，可以使用这个标志。目的是不让其发送SIG_PIPE信号，导致程序退出。
-        // 还有其它的几个选项,不过实际上用的很少
         read_len = (long) recv(*rsock_item, data, count, 0);
         if (read_len >= 0) {
             *got = read_len;
@@ -245,76 +243,6 @@ static int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *g
     return rcode_io_unknown;
 }
 
-static int rsocket_write(rsocket_t* rsock_item, const char *data, int count, int *sent, rtimeout_t* tm) {
-    int ret_code;
-    *sent = 0;
-    long sent_len = 0;
-
-    /* avoid making system calls on closed sockets */
-    if (*rsock_item == SOCKET_INVALID) return rcode_io_closed;
-    /* loop until we send something or we give up on error */
-    for ( ;; ) {
-        sent_len = (long) write(*rsock_item, data, count);
-        /* if we sent anything, we are done */
-        if (sent_len >= 0) {
-            *sent = sent_len;
-            return rcode_io_done;
-        }
-
-        ret_code = rerror_get_osnet_err();
-
-        if (rtimeout_done(tm)) {
-            rinfo("write timeout. code = %d", ret_code);
-            return rcode_io_timeout;
-        }
-        /* EPIPE means the connection was closed */
-        if (ret_code == EPIPE) {
-            return rcode_io_closed;
-        }
-        /* EPROTOTYPE means the connection is being closed (on Yosemite!)*/
-        if (ret_code == EPROTOTYPE) {
-            continue;
-        }
-        /* we call was interrupted, just try again */
-        if (ret_code == EINTR) {
-            continue;
-        }
-        /* if failed fatal reason, report error */
-        if (ret_code != EAGAIN) {
-            return ret_code;
-        }
-    }
-    /* can't reach here */
-    return rcode_io_unknown;
-}
-
-static int rsocket_read(rsocket_t* rsock_item, char *data, size_t count, size_t *got, rtimeout_t* tm) {
-    int ret_code = 0;
-    *got = 0;
-    long read_len = 0;
-
-    if (*rsock_item == SOCKET_INVALID) {
-        return rcode_io_closed;
-    }
-
-    for ( ;; ) {
-        read_len = (long) read(*rsock_item, data, count);
-        if (read_len > 0) {
-            *got = read_len;
-            return rcode_io_done;
-        }
-
-        ret_code = rerror_get_osnet_err();
-
-        if (rtimeout_done(tm)) {
-            return rcode_io_timeout;
-        }
-        if (read_len == 0) return rcode_io_closed;
-        if (ret_code == EINTR) continue;
-        if (ret_code != EAGAIN) return ret_code;
-    }
-    return rcode_io_unknown;
-}
 
 
 static int ripc_init_c(void* ctx, const void* cfg_data) {
@@ -433,7 +361,7 @@ static int ripc_open_c(void* ctx) {
     repoll_item->fd = *rsock_item;
     repoll_item->ds = ds_client;
     repoll_item->event_val_req = 0;
-    repoll_set_event_all(repoll_item->event_val_req);
+    repoll_set_event_in(repoll_item->event_val_req);
 
     ret_code = repoll_add(container, repoll_item);
     if (ret_code != rcode_ok){
@@ -552,6 +480,8 @@ static int ripc_send_data_2buffer_c(ripc_data_source_t* ds_client, void* data) {
     int ret_code = rcode_io_done;
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    repoll_item_t* repoll_item = NULL;
 
     if (rsocket_ctx->stream_state != ripc_state_start) {
         rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
@@ -566,6 +496,18 @@ static int ripc_send_data_2buffer_c(ripc_data_source_t* ds_client, void* data) {
         }
         ret_code = rcode_io_done;
     }
+
+    if (rbuffer_size(ds_client->write_buff) > 0) {
+        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_set_event_out(repoll_item->event_val_req);
+
+        ret_code = repoll_modify(container, repoll_item);
+        if (ret_code != rcode_ok){
+            rerror("modify to epoll failed. code = %d", ret_code);
+            return ret_code;
+        }
+    }
+
     rdebug("end send_data_2buffer, code: %d", ret_code);
 
     return rcode_ok;
@@ -574,6 +516,8 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     int ret_code = rcode_io_done;
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    repoll_item_t* repoll_item = NULL;
 
     const char* data_buff = rbuffer_read_start_dest(ds_client->write_buff);
     int count = rbuffer_size(ds_client->write_buff);
@@ -598,6 +542,17 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     rdebug("end send_data, code: %d, sent_len: %d", ret_code, sent_len);
 
     rbuffer_skip(ds_client->write_buff, sent_len);
+    if (rbuffer_size(ds_client->write_buff) == 0) {
+        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_unset_event_out(repoll_item->event_val_req);
+
+        ret_code = repoll_modify(container, repoll_item);
+        if (ret_code != rcode_ok){
+            rerror("modify to epoll failed. code = %d", ret_code);
+            return ret_code;
+        }
+    }
+
     return rcode_ok;
 }
 
@@ -1303,6 +1258,11 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
                 }
             }
         }
+    }
+
+    if (rsocket_ctx->stream_state != ripc_state_start) {
+        rwarn("server not on service.");
+        return rcode_invalid;
     }
 
     return rcode_ok;

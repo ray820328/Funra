@@ -15,9 +15,17 @@
 int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol) {
     *sock_item = socket(domain, type, protocol);
     if (*sock_item != SOCKET_INVALID) {
+#if defined(_WIN32) || defined(_WIN64)
+
+
+#else   
+        int flag = 0;
+        if (setsockopt(*sock_item, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(flag)) == -1) {
+            return rerror_get_osnet_err();
+        }
+#endif
         return rcode_io_done;
-    }
-    else {
+    } else {
         return rerror_get_osnet_err();
     }
 }
@@ -68,17 +76,17 @@ char* rio_strerror(int err) {
 #include <sys/poll.h>
 #include <sys/epoll.h>
 
-// int rsocket_setoptions(rsocket_t* sock_item, int option, bool on, int flag) {
-//     if (on) {
-//         sock_item->options |= (option);
-//     } else {
-//         sock_item->options &= ~(option);
-//     }
+// int rsocket_setopt(rsocket_t* sock_item, int option, bool on, int flag) {
+//     // if (on) {
+//     //     sock_item->options |= (option);
+//     // } else {
+//     //     sock_item->options &= ~(option);
+//     // }
 //     setsockopt(*sock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&flag, sizeof(flag));
 //     int ret = setsockopt(*sock_item, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
-    // if (ret < 0) {
-    //     return rcode_invalid;
-    // }
+//     if (ret < 0) {
+//         return rcode_invalid;
+//     }
 //     return rcode_ok;    
 // }
 

@@ -74,24 +74,6 @@ static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *e
     return ret_code;
 }
 
-static int rsocket_bind(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len) {
-    int ret_code = rcode_io_done;
-    rsocket_setblocking(sock_item);
-    if (bind(*sock_item, addr, len) < 0) ret_code = rerror_get_osnet_err();
-    rsocket_setnonblocking(sock_item);
-    return ret_code;
-}
-
-static int rsocket_listen(rsocket_t* sock_item, int backlog) {
-    int ret_code = rcode_io_done;
-    if (listen(*sock_item, backlog)) ret_code = rerror_get_osnet_err();
-    return ret_code;
-}
-
-static void socket_shutdown(rsocket_t* sock_item, int how) {
-    shutdown(*sock_item, how);
-}
-
 static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
     /* avoid calling on closed sockets */
@@ -109,20 +91,6 @@ static int rsocket_connect(rsocket_t* sock_item, rsockaddr_t *addr, rsocket_len_
         if (recv(*sock_item, (char *) &ret_code, 0, 0) == 0) return rcode_io_done;
         else return rerror_get_osnet_err();
     } else return ret_code;
-}
-
-static int rsocket_accept(rsocket_t* sock_item, rsocket_t* pa, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
-    if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
-    for ( ;; ) {
-        int ret_code;
-        if ((*pa = accept(*sock_item, addr, len)) != SOCKET_INVALID) return rcode_io_done;
-        ret_code = rerror_get_osnet_err();
-        if (ret_code == EINTR) continue;
-        if (ret_code != EAGAIN && ret_code != ECONNABORTED) return ret_code;
-        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != rcode_io_done) return ret_code;
-    }
-    
-    return rcode_io_unknown;
 }
 
 static int rsocket_send(rsocket_t* sock_item, const char *data, size_t count, size_t *sent, rtimeout_t* tm) {
@@ -200,54 +168,6 @@ static int rsocket_recvfrom(rsocket_t* sock_item, char *data, int count, int *go
     if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
     for ( ;; ) {
         long taken = (long) recvfrom(*sock_item, data, count, 0, addr, len);
-        if (taken > 0) {
-            *got = taken;
-            return rcode_io_done;
-        }
-        ret_code = rerror_get_osnet_err();
-        if (taken == 0) return rcode_io_closed;
-        if (ret_code == EINTR) continue;
-        if (ret_code != EAGAIN) return ret_code;
-        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_R, tm)) != rcode_io_done) return ret_code;
-    }
-    return rcode_io_unknown;
-}
-
-static int rsocket_write(rsocket_t* sock_item, const char *data, int count, int *sent, rtimeout_t* tm) {
-    int ret_code;
-    *sent = 0;
-    /* avoid making system calls on closed sockets */
-    if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
-    /* loop until we send something or we give up on error */
-    for ( ;; ) {
-        long put = (long) write(*sock_item, data, count);
-        /* if we sent anything, we are done */
-        if (put >= 0) {
-            *sent = put;
-            return rcode_io_done;
-        }
-        ret_code = rerror_get_osnet_err();
-        /* EPIPE means the connection was closed */
-        if (ret_code == EPIPE) return rcode_io_closed;
-        /* EPROTOTYPE means the connection is being closed (on Yosemite!)*/
-        if (ret_code == EPROTOTYPE) continue;
-        /* we call was interrupted, just try again */
-        if (ret_code == EINTR) continue;
-        /* if failed fatal reason, report error */
-        if (ret_code != EAGAIN) return ret_code;
-        /* wait until we can send something or we timeout */
-        if ((ret_code = rsocket_waitfd(sock_item, WAITFD_W, tm)) != rcode_io_done) return ret_code;
-    }
-    /* can't reach here */
-    return rcode_io_unknown;
-}
-
-static int rsocket_read(rsocket_t* sock_item, char *data, size_t count, size_t *got, rtimeout_t* tm) {
-    int ret_code;
-    *got = 0;
-    if (*sock_item == SOCKET_INVALID) return rcode_io_closed;
-    for ( ;; ) {
-        long taken = (long) read(*sock_item, data, count);
         if (taken > 0) {
             *got = taken;
             return rcode_io_done;
