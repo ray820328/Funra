@@ -58,7 +58,7 @@ typedef struct rtimeout_s {
 
 #define rtimeout_set_done(tm) ((tm)->block = 0)
 
-#define rtimeout_done(tm) ((tm)->block == 0)
+#define rtimeout_done(tm) (rtimeout_get_block(tm) == 0)
 
 #define rtimeout_2timeval(tm, tval, time_left) \
     do { \

@@ -20,10 +20,10 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
-static void rtools_full_test(void **state) {
+static void rtools_rand_test(void **state) {
 	(void)state;
 	int count = 10;
-	init_benchmark(1024, "test rtools (%d)", count);
+	init_benchmark(1024, "test rtools rand (%d)", count);
 
     start_benchmark(0);
     int rand_val = 0;
@@ -39,6 +39,25 @@ static void rtools_full_test(void **state) {
     uninit_benchmark();
 }
 
+static void rtools_timeout_test(void **state) {
+	(void)state;
+	int count = 1;
+	init_benchmark(1024, "test rtools rtimeout (%d)", count);
+
+	start_benchmark(0);
+	rtimeout_t tm;
+	for (int i = 0; i < count; i++) {
+		rtimeout_init_millisec(&tm, 2, 0);
+		rtimeout_start(&tm);
+		rtools_wait_mills(3);
+		rinfo("t = %lld", rtimeout_get_block(&tm));
+		assert_true(rtimeout_done(&tm));
+	}
+	end_benchmark("rtools rtimeout.");
+
+	uninit_benchmark();
+}
+
 
 static int setup(void **state) {
 
@@ -49,7 +68,8 @@ static int teardown(void **state) {
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rtools_full_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rtools_rand_test, NULL, NULL),
+	cmocka_unit_test_setup_teardown(rtools_timeout_test, NULL, NULL),
 };
 
 int run_rtools_tests(int benchmark_output) {

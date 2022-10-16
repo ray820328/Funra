@@ -1,0 +1,5 @@
+----------------------
+--- IMPORTANT TODO ---
+----------------------
+- rpc protocol should not hardcode method_index (although it's fine
+  for API to do so)
