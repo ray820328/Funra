@@ -12,15 +12,12 @@
 #include "rsocket_uv_c.h"
 #include "rtools.h"
 
-//static uv_pipe_t queue;
-
-//typedef struct rsocket_session_uv_s {
-//    rsocket_session_fields;
-//
-//    uv_tcp_t tcp;
-//    uv_connect_t connect_req;
-//    uv_shutdown_t shutdown_req;
-//} rsocket_ctx_uv_t;
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 typedef struct {
     ripc_data_source_t* ds;
@@ -62,8 +59,8 @@ static void after_write(uv_write_t *req, int status) {
 
     rdebug("writing buff left bytes: %d - %d", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
 }
-static void send_data(ripc_data_source_t* ds, void* data) {
-    int ret_code = 0;
+static int send_data(ripc_data_source_t* ds, void* data) {
+    int ret_code = rcode_ok;
     local_write_req_t* wr;
     ripc_data_source_t* ds_client = ds;// ((uv_tcp_t*)(rsocket_ctx->peer))->data;
     rsocket_ctx_uv_t* ctx = (rsocket_ctx_uv_t*)ds->ctx;
@@ -73,7 +70,7 @@ static void send_data(ripc_data_source_t* ds, void* data) {
         ret_code = ctx->out_handler->process(ctx->out_handler, ds_client, data);
         if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d", ret_code);
-            return;
+            return ret_code;
         }
     }
 
@@ -94,10 +91,12 @@ static void send_data(ripc_data_source_t* ds, void* data) {
     rdebug("end client send_data, req: %p, buf: %p", req, &buf);
     //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p", data->len, data->data, buf.base);
 
-    if (ret_code != 0) {
+    if (ret_code != rcode_ok) {
         rerror("uv_write failed. code: %d", ret_code);
-        return;
+        return ret_code;
     }
+
+    return rcode_ok;
 }
 
 static void on_close(uv_handle_t* peer) {
@@ -229,7 +228,7 @@ static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
     }
 
     connect_req->data = rsocket_ctx;
-    ret_code = uv_tcp_connect(connect_req, rsocket_ctx->stream, (const struct sockaddr*) &addr, connect_cb);
+    ret_code = uv_tcp_connect(connect_req, (uv_tcp_t*)rsocket_ctx->stream, (const struct sockaddr*) &addr, connect_cb);
     if (ret_code != 0) {
         rerror("error on connecting, code: %d", ret_code);
         rgoto(1);
@@ -250,7 +249,7 @@ static int ripc_init(void* ctx, const void* cfg_data) {
     int ret_code;
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    ret_code = uv_tcp_init(rsocket_ctx->loop, rsocket_ctx->stream);
+    ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)rsocket_ctx->stream);
     if (ret_code != 0) {
         rerror("error on init loop.");
         return ret_code;
@@ -331,3 +330,8 @@ const ripc_entry_t rsocket_uv_c = {
 };
 
 #undef local_write_req_t
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#endif

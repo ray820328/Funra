@@ -13,6 +13,7 @@
 #include "rcommon.h"
 #include "rinterface.h"
 #include "ripc.h"
+#include "rtime.h"
 
 #if defined(__linux__)
 #define ntohll(val) be64toh(val)
@@ -102,7 +103,8 @@ typedef struct rsocket_cfg_s {
 typedef struct rsocket_ctx_s {
     rsocket_ctx_fields;
 
-    ripc_data_source_stream_t* stream;
+    ripc_data_source_t* stream;
+    // ripc_data_source_stream_t* stream;
 } rsocket_ctx_t;
 
 
@@ -144,35 +146,40 @@ typedef struct rsocket_ctx_s {
 // } rsocket_t;
 
 typedef enum {
-    rcode_io_done = 0, //操作成功
-    rcode_io_timeout = -1,//操作超时
+    rcode_io_unknown = -3,
     rcode_io_closed = -2,//连接已关闭
-    rcode_io_unknown = -3
+    rcode_io_timeout = -1,//操作超时
+    rcode_io_done = 0, //操作成功
+    rcode_io_nothing = 1, //操作成功但是无数据
 } rcode_io_state;
 
 
-int rsocket_create(rsocket_t* sock_item, int domain, int type, int protocol);
+int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol);
+int rsocket_close(rsocket_t* rsock_item);
+int rsocket_shutdown(rsocket_t* rsock_item, int how);
 
-int rsocket_close(rsocket_t* sock_item);
+int rsocket_setblocking(rsocket_t* rsock_item);
+int rsocket_setnonblocking(rsocket_t* rsock_item);
 
-int rsocket_shutdown(rsocket_t* sock_item, int how);
-
-int rsocket_setblocking(rsocket_t* sock_item);
-
-int rsocket_setnonblocking(rsocket_t* sock_item);
+int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t* addr, rsocket_len_t len);
+int rsocket_listen(rsocket_t* rsock_item, int backlog);
+int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm);
+int rsocket_accept(rsocket_t* sock_listen, rsocket_t* rsock_item, 
+        rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm);
+int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm);
+int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent, rtimeout_t* tm);
+int rsocket_sendto(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent,
+        rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm);
+int rsocket_recv(rsocket_t* rsock_item, char *data, size_t count, size_t *got, rtimeout_t* tm);
+int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *got, 
+        rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm);
 
 int rsocket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp);
-
 int rsocket_gethostbyname(const char *addr, struct hostent **hp);
-
 char* rio_strerror(int err);
-
 char* rsocket_hoststrerror(int err);
-
 char* rsocket_strerror(int err);
-
-char* rsocket_ioerror(rsocket_t* sock_item, int err);
-
+char* rsocket_ioerror(rsocket_t* rsock_item, int err);
 char* rsocket_gaistrerror(int err);
 
 #ifdef __cplusplus

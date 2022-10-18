@@ -46,7 +46,7 @@ static void* run_server(void* arg) {
 #endif
     ctx->loop = &loop;
 
-	rsocket_ctx.ipc_entry = &rsocket_uv_s;
+	rsocket_ctx.ipc_entry = (ripc_entry_t*)&rsocket_uv_s;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_server;

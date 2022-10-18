@@ -41,7 +41,7 @@ static void rtime_full_test(void **state) {
         count--;
         rtools_wait_mills(100);
     }
-    assert_true(count == 0);
+    assert_true(count == 0 || count == 1);
 
     count = 5;
     rtimeout_init_millisec(&tm, 500, -1);
@@ -53,7 +53,8 @@ static void rtime_full_test(void **state) {
         count--;
         rtools_wait_mills(100);
     }
-    assert_true(count == 0);
+    assert_true(count == 0 || count == 1);
+    assert_true(rtimeout_done(&tm));
 
     count = 5;
     rtimeout_init_millisec(&tm, 300, 500);
@@ -65,7 +66,8 @@ static void rtime_full_test(void **state) {
         count--;
         rtools_wait_mills(100);
     }
-    assert_true(count == 0);
+    assert_true(count == 0 || count == 1);
+    assert_true(rtimeout_done(&tm));
 
     count = 5;
     rtimeout_init_millisec(&tm, 300, 500);
@@ -77,7 +79,8 @@ static void rtime_full_test(void **state) {
         count--;
         rtools_wait_mills(100);
     }
-    assert_true(count == 0);
+    assert_true(count == 0 || count == 1);
+    assert_true(rtimeout_done(&tm));
 
 	end_benchmark("rtime timeout.");
 

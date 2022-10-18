@@ -26,7 +26,7 @@
 
 static rsocket_ctx_uv_t rsocket_ctx;//非线程安全
 static rthread_t socket_thread;//uv非线程安全，只能在loop线程启动和收发，否则用uv_async_send
-static volatile int repeat_cb_count = 5;
+static volatile int repeat_cb_count = 3;
 
 static void repeat_cb(uv_timer_t* handle) {
     assert_true(handle != NULL);
@@ -44,16 +44,16 @@ static void repeat_cb(uv_timer_t* handle) {
    rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
    rdata_free(char*, data.data);
 
-   repeat_cb_count--;
+   if (--repeat_cb_count <= 0) {
+        rtools_wait_mills(1000);
 
-   if (repeat_cb_count <= 0) {
-		data.cmd = 999;
-		data.data = rstr_cpy("client uv_close test", 0);
-		data.len = rstr_len(data.data);
-       rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
-       rdata_free(char*, data.data);
+        data.cmd = 999;
+        data.data = rstr_cpy("client uv_close test", 0);
+        data.len = rstr_len(data.data);
+        rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+        rdata_free(char*, data.data);
 
-       //uv_close((uv_handle_t*)handle, NULL);
+        //uv_close((uv_handle_t*)handle, NULL);
    }
 }
 
@@ -72,7 +72,7 @@ static void* run_client(void* arg) {
 #endif
     rsocket_ctx.loop = &loop;// uv_default_loop();
 
-    rsocket_ctx.ipc_entry = &rsocket_uv_c;
+    rsocket_ctx.ipc_entry = (ripc_entry_t*)&rsocket_uv_c;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -117,7 +117,7 @@ static void* run_client(void* arg) {
 
     uv_timer_t timer_repeat;
     uv_timer_init(rsocket_ctx.loop, &timer_repeat);
-    uv_timer_start(&timer_repeat, repeat_cb, 1000, 1000);
+    uv_timer_start(&timer_repeat, repeat_cb, 2000, 2000);
 
     rsocket_ctx.ipc_entry->start(&rsocket_ctx);
 

@@ -53,7 +53,7 @@ int rmem_init() {
 #ifdef rmemory_enable_tracer
     if (rmem_trace_map == NULL) {
         rdict_init_full(rmem_trace_map, rdata_type_uint64, rdata_type_ptr, rmemory_dict_size, 0, 
-            malloc, calloc, free, NULL, NULL, NULL, NULL, NULL, mem_dict_free_value_func);
+            malloc, calloc, free, NULL, NULL, NULL, NULL, NULL, NULL);//mem_dict_free_value_func);
         rassert(rmem_trace_map != NULL, "");
         rmem_trace_map->free_value_func = (rdict_free_value_func_type)mem_dict_free_value_func;
     }

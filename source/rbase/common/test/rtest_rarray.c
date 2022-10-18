@@ -202,11 +202,11 @@ static void rarray_string_test(void **state) {
     uninit_benchmark();
 }
 
-static struct data_test
-{
+struct data_test {
     int index;
     char* value;
-} data_test;
+};
+
 static struct data_test* copy_value_func_obj(const struct data_test* obj) {
     struct data_test* dest = rdata_new(struct data_test);
     dest->index = obj->index;

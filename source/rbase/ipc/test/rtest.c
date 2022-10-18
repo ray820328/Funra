@@ -86,15 +86,15 @@ static int run_tests(int output) {
     }
 #endif
     
-    ret_code = run_rsocket_uv_c_tests(output);
-    if (ret_code != rcode_ok) {
-        return ret_code;
-    }
+    // ret_code = run_rsocket_uv_c_tests(output);
+    // if (ret_code != rcode_ok) {
+    //     return ret_code;
+    // }
 
-    ret_code = run_rsocket_uv_s_tests(output);
-    if (ret_code != rcode_ok) {
-        return ret_code;
-    }
+    // ret_code = run_rsocket_uv_s_tests(output);
+    // if (ret_code != rcode_ok) {
+    //     return ret_code;
+    // }
 
     //rtest_add_test_entry(run_rsocket_select_tests);
 

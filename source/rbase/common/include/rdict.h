@@ -193,7 +193,7 @@ void rdict_free_value_func_##V(void* data_ext, V##_inner_type obj) { \
         (inst)->free_key_func = (rdict_free_key_func_type)(free_key_f ? free_key_f : rdict_free_key_func_##K); \
         (inst)->compare_key_func = (rdict_compare_key_func_type)(compare_key_f ? compare_key_f : rdict_compare_key_func_##K); \
         (inst)->copy_value_func = (rdict_copy_value_func_type)(copy_value_f ? copy_value_f : rdict_copy_value_func_##V); \
-        (inst)->free_value_func = (rdict_free_value_func_type)(free_value_f ? free_value_f : rdict_free_value_func_##V); \
+        (inst)->free_value_func = (rdict_free_value_func_type)(free_value_f != NULL ? free_value_f : rdict_free_value_func_##V); \
     } while(0)
 #define rdict_init(inst, K, V, capacity, buckets) \
     rdict_init_full(inst, K, V, capacity, buckets, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)

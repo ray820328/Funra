@@ -71,9 +71,9 @@ typedef struct ripc_data_raw_s {
     char* data;
 } ripc_data_raw_t;
 
-typedef struct ripc_data_source_stream_s {
-    void* data;
-} ripc_data_source_stream_t;
+// typedef struct ripc_data_source_stream_s {
+//     void* data;
+// } ripc_data_source_stream_t;
 
 typedef struct ripc_data_source_s {
     uint64_t ds_id;

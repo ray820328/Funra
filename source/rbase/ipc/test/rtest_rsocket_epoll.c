@@ -31,7 +31,7 @@ static rthread_t epoll_server_thread;
 
 static rsocket_ctx_t rsocket_client_ctx;//非线程安全
 static rthread_t epoll_client_thread;
-static volatile int sent_times = 5;
+static volatile int sent_times = 3;
 
 
 static void* run_server(void* arg) {
@@ -47,7 +47,7 @@ static void* run_server(void* arg) {
     rsocket_ctx.stream_state = 1;
 
 
-    rsocket_ctx.ipc_entry = rsocket_s;
+    rsocket_ctx.ipc_entry = (ripc_entry_t*)rsocket_s;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_server;
@@ -138,7 +138,7 @@ static void* run_client(void* arg) {
     rsocket_client_ctx.stream_type = ripc_type_tcp;
     rsocket_client_ctx.stream_state = ripc_state_init;
 
-    rsocket_client_ctx.ipc_entry = rsocket_epoll_c;
+    rsocket_client_ctx.ipc_entry = (ripc_entry_t*)rsocket_epoll_c;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -187,18 +187,19 @@ static void* run_client(void* arg) {
     ret_code = rsocket_client_ctx.ipc_entry->start(&rsocket_client_ctx);
     assert_true(ret_code == rcode_ok);
 
-    while (--sent_times > 0) {
+    while (sent_times-- > 0) {
         ripc_data_default_t data;
         data.cmd = 11;
         data.data = rstr_cpy("client epoll_send test", 0);
         data.len = rstr_len(data.data);
         rsocket_client_ctx.ipc_entry->send(ds, &data);
 
+        rtools_wait_mills(1000);
         rsocket_client_ctx.ipc_entry->check(ds, NULL);//send & recv
 
         rdata_free(char*, data.data);
 
-        rtools_wait_mills(2000);
+        rtools_wait_mills(1000);
     }
 
     rsocket_client_ctx.ipc_entry->stop(&rsocket_client_ctx);
@@ -259,16 +260,17 @@ static void rsocket_epoll_client_test(void **state) {
 
 static int setup(void **state) {
     rthread_init(&epoll_server_thread);
-    rthread_init(&epoll_client_thread);
+    // rthread_init(&epoll_client_thread);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
+    int ret_code = 0;
     void* param;
-    rinfo("detach epoll_client_thread.");
-    // int ret_code = rthread_join(&epoll_client_thread, &param);
-    int ret_code = rthread_detach(&epoll_client_thread, &param);
-    assert_true(ret_code == 0);
+    // rinfo("detach epoll_client_thread.");
+    // // ret_code = rthread_join(&epoll_client_thread, &param);
+    // ret_code = rthread_detach(&epoll_client_thread, &param);
+    // assert_true(ret_code == 0);
 
     rinfo("join epoll_server_thread.");
     ret_code = rthread_join(&epoll_server_thread, &param);
@@ -278,7 +280,7 @@ static int teardown(void **state) {
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rsocket_epoll_client_test, NULL, NULL),
+    // cmocka_unit_test_setup_teardown(rsocket_epoll_client_test, NULL, NULL),
     cmocka_unit_test_setup_teardown(rsocket_epoll_server_test, NULL, NULL),
 };
 

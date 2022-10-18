@@ -21,8 +21,6 @@ extern "C" {
 #define repoll_trace(...) rtrace(__VA_ARGS__)
 // #define repoll_trace(...)
 
-typedef struct sockaddr rsockaddr_t;
-
 #if defined(__linux__)
 
 #include <sys/epoll.h>

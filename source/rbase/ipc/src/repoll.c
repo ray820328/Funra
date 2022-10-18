@@ -77,6 +77,8 @@ int repoll_destroy(repoll_container_t* container) {
     rdata_free(struct epoll_event, container->event_list);
     rdata_free(repoll_item_t, container->dest_items);
     close(container->epoll_fd);
+
+    return rcode_ok;
 }
 
 int repoll_add(repoll_container_t* container, const repoll_item_t* repoll_item) {

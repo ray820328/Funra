@@ -26,7 +26,7 @@
 
 static rsocket_ctx_t rsocket_ctx;//非线程安全
 static rthread_t socket_thread;
-static volatile int sent_times = 5;
+static volatile int sent_times = 3;
 
 static void* run_client(void* arg) {
     int ret_code = 0;
@@ -35,7 +35,7 @@ static void* run_client(void* arg) {
     rsocket_ctx.stream_type = ripc_type_tcp;
     rsocket_ctx.stream_state = ripc_state_init;
 
-    rsocket_ctx.ipc_entry = rsocket_c;//windows默认sellect，linux默认poll
+    rsocket_ctx.ipc_entry = (ripc_entry_t*)rsocket_c;//windows默认sellect，linux默认poll
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
@@ -84,18 +84,19 @@ static void* run_client(void* arg) {
     ret_code = rsocket_ctx.ipc_entry->start(&rsocket_ctx);
     assert_true(ret_code == rcode_ok);
 
-	while (--sent_times > 0) {
+	while (sent_times-- > 0) {
 		ripc_data_default_t data;
 		data.cmd = 11;
 		data.data = rstr_cpy("client rsocket_c (win=select,linux=poll)  send test", 0);
 		data.len = rstr_len(data.data);
 		rsocket_ctx.ipc_entry->send(ds, &data);
 
+        rtools_wait_mills(1000);
         rsocket_ctx.ipc_entry->check(ds, NULL);//send & recv
 
         rdata_free(char*, data.data);
 
-        rtools_wait_mills(2000);
+        rtools_wait_mills(1000);
 	}
 
     rsocket_ctx.ipc_entry->stop(&rsocket_ctx);

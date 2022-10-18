@@ -58,7 +58,7 @@ typedef struct rtimeout_s {
 
 #define rtimeout_set_done(tm) ((tm)->block = 0)
 
-#define rtimeout_done(tm) (rtimeout_get_block(tm) == 0)
+#define rtimeout_done(tm) (rtimeout_get_total(tm) == 0)
 
 #define rtimeout_2timeval(tm, tval, time_left) \
     do { \
@@ -77,7 +77,7 @@ R_API int64_t rtimeout_get_block(rtimeout_t* tm);
 
 /**
   * 单位微秒
-  * (block >= 0 && total < 0)返回blockl剩余值；
+  * (block >= 0 && total < 0)返回block剩余值；
   * (block < 0 && total >= 0)返回total剩余值；
   * (block >= 0 && total >= 0)返回 min(block 和 total剩余值)；
   * 错误返回 -1

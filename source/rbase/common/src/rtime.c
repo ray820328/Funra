@@ -170,14 +170,11 @@ R_API int64_t rtime_millisec() {
 static unsigned char rlib_is_leap_year(unsigned short year) {
     if ((year % 400) == 0) {
         return 1;
-    }
-    else if ((year % 100) == 0) {
+    } else if ((year % 100) == 0) {
         return 0;
-    }
-    else if ((year % 4) == 0) {
+    } else if ((year % 4) == 0) {
         return 1;
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -195,8 +192,7 @@ static unsigned char rlib_last_day_of_mon(unsigned char month, unsigned short ye
 
     if (month != 2) {
         return g_day_per_mon[month - 1];
-    }
-    else {
+    } else {
         return g_day_per_mon[1] + rlib_is_leap_year(year);
     }
 }
@@ -284,15 +280,12 @@ R_API int* rtime_from_time_millis(int64_t time_millis) {
 R_API int64_t rtimeout_get_block(rtimeout_t* tm) {
     if (tm->block < 0 && tm->total < 0) {
         return -1;
-    }
-    else if (tm->block < 0) {//total > 0，计算total剩余时间
+    } else if (tm->block < 0) {//total > 0，计算total剩余时间
         int64_t t = tm->total + tm->start - rtime_microsec();
         return rmax(t, 0);
-    }
-    else if (tm->total < 0) {//直接返回block时间
+    } else if (tm->total < 0) {//直接返回block时间
         return tm->block;
-    }
-    else {// block & total，返回block，total剩余 的极小值
+    } else {// block & total，返回block，total剩余 的极小值
         int64_t t = tm->total + tm->start - rtime_microsec();
         return rmin(tm->block, rmax(t, 0));
     }
@@ -301,16 +294,13 @@ R_API int64_t rtimeout_get_block(rtimeout_t* tm) {
 R_API int64_t rtimeout_get_total(rtimeout_t* tm) {
     if (tm->block < 0 && tm->total < 0) {
         return -1;
-    }
-    else if (tm->block < 0) {
+    } else if (tm->block < 0) {
         int64_t t = tm->total + tm->start - rtime_microsec();
         return rmax(t, 0);
-    }
-    else if (tm->total < 0) {
+    } else if (tm->total < 0) {
         int64_t t = tm->block + tm->start - rtime_microsec();
         return rmax(t, 0);
-    }
-    else {
+    } else {
         int64_t t = tm->total + tm->start - rtime_microsec();
         return rmin(tm->block, rmax(t, 0));
     }

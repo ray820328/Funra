@@ -39,7 +39,7 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
     int ret_code = ripc_code_success;
     int payload_len = 0;
     int write_len = 0;
-    int require_len = 0;
+    // int require_len = 0;
     static int trans_len = ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
     static int header_len = ripc_head_default_version_len + ripc_head_default_magic_len + ripc_head_default_len_len
         + ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
@@ -267,7 +267,7 @@ const rdata_handler_t rcodec_encode_default = {
 
     encode_on_before, //rdata_handler_on_before_func on_before;
     encode_process, //rdata_handler_process_func process;
-    encode_on_error,//rdata_handler_on_error_func
+    encode_on_error,//rdata_handler_on_error_func;
     encode_on_after, //rdata_handler_on_after_func on_after;
     encode_on_next, //rdata_handler_on_next_func on_next;
 
@@ -281,8 +281,8 @@ const rdata_handler_t rcodec_decode_default = {
 
     decode_on_before, //rdata_handler_on_before_func on_before;
     decode_process, //rdata_handler_process_func process;
+    decode_on_error,//rdata_handler_on_error_func;
     decode_on_after, //rdata_handler_on_after_func on_after;
-    decode_on_error,//rdata_handler_on_error_func
     decode_on_next, //rdata_handler_on_next_func on_next;
 
     decode_on_notify, //rdata_handler_on_notify on_notify;// 被通知

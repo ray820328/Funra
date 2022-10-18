@@ -15,6 +15,13 @@
 #include "rsocket_uv_s.h"
 #include "rcodec_default.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
+
 typedef struct {
     ripc_data_source_t* ds;
     int write_size;
@@ -24,7 +31,7 @@ typedef struct {
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
-static void send_data(ripc_data_source_t* ds, void* data);
+static int send_data(ripc_data_source_t* ds, void* data);
 static void after_read(uv_stream_t*, ssize_t nread, const uv_buf_t* buf);
 static void on_session_close(uv_handle_t* peer);
 static void on_server_close(uv_handle_t* handle);
@@ -74,7 +81,9 @@ static void on_connection(uv_stream_t* server, int status) {
     ripc_data_source_t* ds_client = NULL;
 
     uv_stream_t* stream = NULL;
-    int ret_code;
+    uv_tcp_t* stream_tcp = NULL;
+    uv_pipe_t* stream_pipe = NULL;
+    int ret_code = rcode_ok;
 
     if (status != 0) {
         rerror("accept error: %d, %s", status, uv_err_name(status));
@@ -85,13 +94,14 @@ static void on_connection(uv_stream_t* server, int status) {
 
     switch (rsocket_ctx->stream_type) {
     case ripc_type_tcp:
-        stream = rdata_new(uv_tcp_t);
+        stream_tcp = rdata_new(uv_tcp_t);
+        stream = (uv_stream_t*)stream_tcp;
         if (stream == NULL) {
             rerror("stream oom.");
             rgoto(1);
         }
 
-        ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)stream);
+        ret_code = uv_tcp_init(rsocket_ctx->loop, stream_tcp);
         if (ret_code != 0) {
             rerror("streamuv_tcp_init error, %d.", ret_code);
             rgoto(1);
@@ -100,8 +110,9 @@ static void on_connection(uv_stream_t* server, int status) {
         break;
 
     case ripc_type_pipe:
-        stream = rdata_new(uv_pipe_t);
-        ret_code = uv_pipe_init(rsocket_ctx->loop, (uv_pipe_t*)stream, 0);
+        stream_pipe = rdata_new(uv_pipe_t);
+        stream = (uv_stream_t*)stream_pipe;
+        ret_code = uv_pipe_init(rsocket_ctx->loop, stream_pipe, 0);
         if (ret_code != 0) {
             rerror("error on uv_pipe_init: %d", ret_code);
             rgoto(1);
@@ -144,7 +155,7 @@ static void on_connection(uv_stream_t* server, int status) {
     }
 
     rinfo("on_connection accept success, peer = %p", ds_client->stream);
-exit0:
+// exit0:
 
 exit1:
     if (ret_code != 0) {
@@ -155,6 +166,9 @@ exit1:
                 break;
             case ripc_type_pipe:
                 rdata_free(uv_pipe_t, stream);
+                break;
+            default:
+                rtrace("unknown type: %d", rsocket_ctx->stream_type);
                 break;
             }
         }
@@ -197,7 +211,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         /* Error or EOF */
         if (nread != UV_EOF) {//异常，未主动关闭等
             rerror("error on read: %d", nread);
-            uv_close(handle, on_session_close);
+            uv_close((uv_handle_t*)handle, on_session_close);
             return;
         }
 
@@ -253,8 +267,8 @@ static void after_write(uv_write_t *req, int status) {
 
     rdebug("writing buff left bytes: %d - %d", rbuffer_write_start_pos(datasource->write_buff), rbuffer_size(datasource->write_buff));
 }
-static void send_data(ripc_data_source_t* ds, void* data) {
-    int ret_code = 0;
+static int send_data(ripc_data_source_t* ds, void* data) {
+    int ret_code = rcode_ok;
     local_write_req_t* wr;
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ds->ctx;
     uv_write_t* req = NULL;
@@ -265,7 +279,7 @@ static void send_data(ripc_data_source_t* ds, void* data) {
         ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, ds, data);
         if (ret_code != ripc_code_success) {
             rerror("error on handler process, code: %d", ret_code);
-            return;
+            return ret_code;
         }
     }
 
@@ -286,10 +300,12 @@ static void send_data(ripc_data_source_t* ds, void* data) {
     rdebug("end server send_data, req: %p, buf: %p", req, &buf);
     //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p", data->len, data->data, buf.base);
 
-    if (ret_code != 0) {
+    if (ret_code != rcode_ok) {
         rerror("uv_write failed. code: %d", ret_code);
-        return;
+        return ret_code;
     }
+
+    return rcode_ok;
 }
 
 static void on_session_close(uv_handle_t* peer) {
@@ -385,8 +401,8 @@ static int start_server_tcp4(rsocket_ctx_uv_t* rsocket_ctx) {
         return 1;
     }
     
-    uv_stream_set_blocking((uv_handle_t*)rsocket_ctx->stream, 0);//Windows for uv_pipe_t handles. On UNIX platforms, all uv_stream_t handles
-    ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_handle_t*)rsocket_ctx->stream);
+    uv_stream_set_blocking((uv_stream_t*)rsocket_ctx->stream, 0);//Windows for uv_pipe_t handles. On UNIX platforms, all uv_stream_t handles
+    ret_code = uv_tcp_init(rsocket_ctx->loop, (uv_tcp_t*)rsocket_ctx->stream);
     if (ret_code != 0) {
         rerror("socket creation error, code: %d", ret_code);
         return 1;
@@ -616,13 +632,13 @@ static int ripc_stop(void* ctx) {
         rdict_iterator_t it = rdict_it(rsocket_ctx->map_clients);
         for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
             ds_client = (ripc_data_source_t*)(de->value.ptr);
-            uv_close((uv_stream_t*)ds_client->stream, on_session_close);
+            uv_close((uv_handle_t*)ds_client->stream, on_session_close);
         }
         rdict_clear(rsocket_ctx->map_clients);
     }
 
     //uv_shutdown(sreq, rsocket_ctx->stream, after_shutdown_server);
-    uv_close(rsocket_ctx->stream, on_server_close);
+    uv_close((uv_handle_t*)rsocket_ctx->stream, on_server_close);
 
     return rcode_ok;
 }
@@ -641,3 +657,8 @@ const ripc_entry_t rsocket_uv_s = {
 };
 
 #undef local_write_req_t
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#endif
