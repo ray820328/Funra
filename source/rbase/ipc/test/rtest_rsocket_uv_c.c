@@ -121,6 +121,8 @@ static void* run_client(void* arg) {
 
     rsocket_ctx.ipc_entry->start(&rsocket_ctx);
 
+    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
+
     rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
     rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
 

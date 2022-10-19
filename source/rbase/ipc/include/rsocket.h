@@ -69,44 +69,7 @@ typedef SOCKADDR_STORAGE rsockaddr_storage_t;
 #endif //_WIN64
 
 
-
-#define _rsocket_session_fields \
-    ripc_type_t type; \
-    uint64_t id; \
-    void* userdata; \
-    void* context; \
-    int state; \
-    bool is_encrypt
-
-#define rsocket_ctx_fields \
-    uint64_t id; \
-    ripc_type_t stream_type; \
-    rsocket_cfg_t* cfg; \
-    ripc_entry_t* ipc_entry; \
-    rdata_handler_t* in_handler; \
-    rdata_handler_t* out_handler; \
-    ripc_state_t stream_state; \
-    void* user_data
-
-typedef struct rsocket_cfg_s {
-    uint64_t id;
-    uint64_t sid_min;
-    uint64_t sid_max;
-
-    char ip[20];
-    int port;
-    int backlog;
-    uint32_t sock_flag;
-    bool encrypt_msg;
-} rsocket_cfg_t;
-
-typedef struct rsocket_ctx_s {
-    rsocket_ctx_fields;
-
-    ripc_data_source_t* stream;
-    // ripc_data_source_stream_t* stream;
-} rsocket_ctx_t;
-
+/* ------------------------------- Macros ------------------------------------*/
 
 #ifndef SO_REUSEPORT
 #define SO_REUSEPORT SO_REUSEADDR
@@ -128,22 +91,64 @@ typedef struct rsocket_ctx_s {
 #endif //IPV6_LEAVE_GROUP
 #endif //!IPV6_DROP_MEMBERSHIP
 
+#define rsocket_check_option(rsock_item, option)  \
+    (((rsock_item)->options & (option)) == (option))
 
-// typedef struct rsocket_s {
-//     int socketdes;
-//     int type;
-//     int protocol;
-//     rsockaddr_t *local_addr;
-//     rsockaddr_t *remote_addr;
-//     rinterval_time_t timeout; 
-//     int state;
-//     int local_port_unknown;
-//     int local_interface_unknown;
-//     int remote_addr_unknown;
-//     int32_t options;
-//     int32_t inherit;
-//     rdata_userdata_t *userdata;
-// } rsocket_t;
+#define rsocket_set_option(rsock_item, option, on) \
+    do { \
+        if (on) { \
+            (rsock_item)->options |= (option); \
+        } else { \
+            (rsock_item)->options &= ~(option); \
+        } \
+    } while (0)
+
+
+/* ------------------------------- Structs ------------------------------------*/
+
+#define rsocket_ctx_fields \
+    uint64_t id; \
+    ripc_type_t stream_type; \
+    rsocket_cfg_t* cfg; \
+    ripc_entry_t* ipc_entry; \
+    rdata_handler_t* in_handler; \
+    rdata_handler_t* out_handler; \
+    ripc_state_t stream_state; \
+    void* user_data
+
+// typedef struct rsocket_cfg_s {
+//     uint64_t id;
+//     uint64_t sid_min;
+//     uint64_t sid_max;
+
+//     char ip[20];
+//     int port;
+//     int backlog;
+//     uint32_t sock_flag;
+//     bool encrypt_msg;
+// } rsocket_cfg_t;
+
+typedef struct rsocket_ctx_s {
+    rsocket_ctx_fields;
+
+    ripc_data_source_t* stream;
+    // ripc_data_source_stream_t* stream;
+} rsocket_ctx_t;
+
+typedef struct rsocket_s {
+    int socketdes;
+    int type;
+    int protocol;
+    rsockaddr_t* local_addr;
+    rsockaddr_t* remote_addr;
+    int state;
+    int local_port_unknown;
+    int local_interface_unknown;
+    int remote_addr_unknown;
+    int32_t options;
+    int32_t inherit;
+    rdata_userdata_t* userdata;
+} rsocket_t;
 
 typedef enum {
     rcode_io_unknown = -3,
@@ -153,6 +158,8 @@ typedef enum {
     rcode_io_nothing = 1, //操作成功但是无数据
 } rcode_io_state;
 
+
+/* ------------------------------- APIs ------------------------------------*/
 
 int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol);
 int rsocket_close(rsocket_t* rsock_item);

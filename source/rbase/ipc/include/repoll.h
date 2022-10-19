@@ -26,6 +26,7 @@ extern "C" {
 #include <sys/epoll.h>
 
 //自定义值一样，EPOLLIN, EPOLLPRI, EPOLLOUT, EPOLLERR, EPOLLHUP 对应 0x1|0x2|0x4|0x8|0x10
+//内核2.6.17用EPOLLRDHUP捕获对方close事件
 #define RIO_POLLIN    0x001     //Can read without blocking
 #define RIO_POLLPRI   0x002     //Priority data available
 #define RIO_POLLOUT   0x004     //Can write without blocking

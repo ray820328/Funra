@@ -38,7 +38,7 @@ int rsocket_close(rsocket_t* rsock_item) {
 #else
         close(*rsock_item);
 #endif
-        rdebug("close socket, %p", rsock_item);
+        rtrace("close socket, %p", rsock_item);
         *rsock_item = SOCKET_INVALID;
     }
     return rcode_ok;
@@ -57,7 +57,7 @@ int rsocket_shutdown(rsocket_t* rsock_item, int how) {
         if (ret_code < 0) {
             rerror("error on shutdown %p, %d - %d", rsock_item, how, ret_code);
         }
-        rdebug("shutdown socket, %p", rsock_item);
+        rtrace("shutdown socket, %p", rsock_item);
         *rsock_item = SOCKET_INVALID;
     }
     return ret_code;
@@ -78,6 +78,8 @@ char* rio_strerror(int err) {
 #include <sys/poll.h>
 #include <sys/epoll.h>
 
+// int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
+// int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
 // int rsocket_setopt(rsocket_t* rsock_item, int option, bool on, int flag) {
 //     // if (on) {
 //     //     rsock_item->options |= (option);
@@ -206,7 +208,7 @@ int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rt
         rtimeout_2timeval(tm, &tv, time_left);
         /* timeout = 0 means no wait */
         ret_code = select(rsock, rfds, wfds, efds, time_left >= 0 ? &tv : NULL);
-        
+
     } while (ret_code < 0 && rerror_get_osnet_err() == EINTR);
 
     return ret_code;
@@ -305,11 +307,15 @@ int rsocket_recv(rsocket_t* rsock_item, char *data, size_t count, size_t *got, r
     }
 
     for ( ;; ) {
-        read_len = (long) recv(*rsock_item, data, count, 0);
+        read_len = (long) recv(*rsock_item, data, count, 0);//读不到数据返回-1，errorno为EAGAIN或者EINPROGRESS
 
-        if (read_len >= 0) {
+        if (read_len > 0) {
             *got = read_len;
             return rcode_io_done;
+        }
+        if (read_len == 0) {
+            rtrace("closed by peer.");
+            return rcode_io_closed;
         }
 
         ret_code = rerror_get_osnet_err();

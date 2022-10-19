@@ -260,17 +260,17 @@ static void rsocket_epoll_client_test(void **state) {
 
 static int setup(void **state) {
     rthread_init(&epoll_server_thread);
-    // rthread_init(&epoll_client_thread);
+    rthread_init(&epoll_client_thread);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
     int ret_code = 0;
     void* param;
-    // rinfo("detach epoll_client_thread.");
-    // // ret_code = rthread_join(&epoll_client_thread, &param);
-    // ret_code = rthread_detach(&epoll_client_thread, &param);
-    // assert_true(ret_code == 0);
+    rinfo("detach epoll_client_thread.");
+    // ret_code = rthread_join(&epoll_client_thread, &param);
+    ret_code = rthread_detach(&epoll_client_thread, &param);
+    assert_true(ret_code == 0);
 
     rinfo("join epoll_server_thread.");
     ret_code = rthread_join(&epoll_server_thread, &param);
@@ -280,7 +280,7 @@ static int teardown(void **state) {
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    // cmocka_unit_test_setup_teardown(rsocket_epoll_client_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rsocket_epoll_client_test, NULL, NULL),
     cmocka_unit_test_setup_teardown(rsocket_epoll_server_test, NULL, NULL),
 };
 

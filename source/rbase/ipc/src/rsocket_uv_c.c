@@ -88,7 +88,7 @@ static int send_data(ripc_data_source_t* ds, void* data) {
 
     //unix间接调用uv_write2 malloc了buf放到req里再cb，但是win里tcp实现是直接WSASend！操蛋
     ret_code = uv_write(req, (uv_stream_t*)(ctx->stream), &buf, 1, after_write);
-    rdebug("end client send_data, req: %p, buf: %p", req, &buf);
+    rtrace("end client send_data, req: %p, buf: %p", req, &buf);
     //rdebug("send_data, len: %d, dest_len: %p, data_buf: %p", data->len, data->data, buf.base);
 
     if (ret_code != rcode_ok) {
@@ -102,13 +102,15 @@ static int send_data(ripc_data_source_t* ds, void* data) {
 static void on_close(uv_handle_t* peer) {
     //todo Ray 暂时仅tcp
     ripc_data_source_t* ds_client = (ripc_data_source_t*)(peer->data);
-    //rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(datasource->ctx);
-    rinfo("on client close, id = %"PRIu64", ", ds_client->ds_id);
+    rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(ds_client->ctx);
+    rtrace("on client close, id = %"PRIu64", ", ds_client->ds_id);
 
     rbuffer_release(ds_client->read_cache);
     rbuffer_release(ds_client->write_buff);
     //rdata_free(ripc_data_source_t, ds_client);//外面释放
     //rdata_free(uv_tcp_t, peer);
+    
+    uv_stop(rsocket_ctx->loop);
 }
 
 static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
@@ -181,7 +183,7 @@ static void read_alloc_static(uv_handle_t* handle, size_t suggested_size, uv_buf
 }
 static void connect_cb(uv_connect_t* req, int status) {
     if (req == NULL || status != 0) {
-        rerror("client callback, req = %p, status: %d", req, status);
+        rerror("uv client callback, req = %p, status: %d", req, status);
         rgoto(1);
     }
 
@@ -203,7 +205,7 @@ static void connect_cb(uv_connect_t* req, int status) {
         }
     }
 
-    rinfo("connect callback, status: %d", status);
+    rinfo("uv connect callback, status: %d", status);
 
 exit1:
     if (req != NULL) {
@@ -234,7 +236,7 @@ static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
         rgoto(1);
     }
 
-    rinfo("client connecting to {%s:%d}..", ip, port);
+    rinfo("uv client connecting to {%s:%d}..", ip, port);
     
 exit1:
     if (ret_code != 0) {
@@ -244,7 +246,7 @@ exit1:
 
 
 static int ripc_init(void* ctx, const void* cfg_data) {
-    rinfo("socket client init.");
+    rinfo("socket uv client init.");
 
     int ret_code;
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
@@ -264,7 +266,7 @@ static int ripc_init(void* ctx, const void* cfg_data) {
 static int ripc_uninit(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client uninit.");
+    rinfo("socket uv client uninit.");
 
     rsocket_ctx->stream_state = ripc_state_uninit;
 
@@ -274,7 +276,7 @@ static int ripc_uninit(void* ctx) {
 static int ripc_open(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client open.");
+    rinfo("socket uv client open.");
 
     client_connect(rsocket_ctx);
 
@@ -285,7 +287,7 @@ static int ripc_close(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
     ripc_data_source_t* datasource = (ripc_data_source_t*)((uv_tcp_t*)(rsocket_ctx->stream))->data;
 
-    rinfo("socket client close.");
+    rinfo("socket uv client close, state = %d", rsocket_ctx->stream_state);
 
     if (rsocket_ctx->stream_state == ripc_state_closed) {
         return rcode_ok;
@@ -293,7 +295,7 @@ static int ripc_close(void* ctx) {
 
     rsocket_ctx->stream_state = ripc_state_closed;
 
-    uv_stop(rsocket_ctx->loop);
+    uv_close((uv_handle_t*)rsocket_ctx->stream, on_close);
 
     return rcode_ok;
 }
@@ -301,7 +303,7 @@ static int ripc_close(void* ctx) {
 static int ripc_start(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client start.");
+    rinfo("socket uv client start.");
 
     return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
 }
@@ -309,10 +311,8 @@ static int ripc_start(void* ctx) {
 static int ripc_stop(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
 
-    rinfo("socket client stop.");
+    rinfo("socket uv client stop.");
     
-    uv_close((uv_handle_t*)rsocket_ctx->stream, on_close);
-
     return rcode_ok;
 }
 

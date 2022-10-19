@@ -84,17 +84,23 @@ static int run_tests(int output) {
     if (ret_code != rcode_ok) {
         return ret_code;
     }
-#endif
-    
-    // ret_code = run_rsocket_uv_c_tests(output);
-    // if (ret_code != rcode_ok) {
-    //     return ret_code;
-    // }
 
-    // ret_code = run_rsocket_uv_s_tests(output);
-    // if (ret_code != rcode_ok) {
-    //     return ret_code;
-    // }
+    //开始uv服务器测试
+    ret_code = run_rsocket_c_tests(output);
+    if (ret_code != rcode_ok) {
+        return ret_code;
+    }
+
+    ret_code = run_rsocket_uv_c_tests(output);
+    if (ret_code != rcode_ok) {
+        return ret_code;
+    }
+#endif
+
+    ret_code = run_rsocket_uv_s_tests(output);
+    if (ret_code != rcode_ok) {
+        return ret_code;
+    }
 
     //rtest_add_test_entry(run_rsocket_select_tests);
 

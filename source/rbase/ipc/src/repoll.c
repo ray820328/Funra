@@ -163,6 +163,11 @@ int repoll_poll(repoll_container_t* container, int timeout) {
     if (poll_amount < 0) {
         container->fd_dest_count = 0;
         ret_code = rerror_get_osnet_err();
+        if (ret_code == EINTR) {//中断下次继续
+            ret_code = rcode_ok;
+        } else {
+            repoll_trace("poll from (%d) failed with code (%d)", container->epoll_fd, ret_code);
+        }
     } else if (poll_amount == 0) {
         container->fd_dest_count = 0;
         ret_code = rcode_ok;//超时而已
