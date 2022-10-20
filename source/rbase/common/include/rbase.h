@@ -48,9 +48,9 @@ do { \
 
 typedef struct rdata_userdata_s rdata_userdata_t;
 struct rdata_userdata_s {
-    rdata_userdata_t* next;
     const char* key;
     void* data;
+    rdata_userdata_t* next;
 };
 
 typedef enum rdata_plain_type_t {

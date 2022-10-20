@@ -81,9 +81,8 @@ static int ripc_open_c(void* ctx) {
     int socktype = SOCK_STREAM; // udp = SOCK_DGRAM
     int protocol = 0;
     int opt = 1;
-    rsocket_t rsock_item_obj;
-    rsocket_t* rsock_item = &rsock_item_obj;
-    *rsock_item = SOCKET_INVALID;
+    rsocket_t* rsock_item = rdata_new(rsocket_t);
+    rsock_item->fd = SOCKET_INVALID;
     int current_family = family;
 
     //指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
@@ -106,7 +105,7 @@ static int ripc_open_c(void* ctx) {
     }
 
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
-        if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
+        if (current_family != iterator->ai_family || rsock_item->fd == SOCKET_INVALID) {
             rsocket_close(rsock_item);
 
             ret_code = rsocket_create(rsock_item, family, socktype, protocol);
@@ -116,7 +115,7 @@ static int ripc_open_c(void* ctx) {
             }
 
             if (family == AF_INET6) {
-                setsockopt(*rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
+                setsockopt(rsock_item->fd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
             }
             rsocket_setnonblocking(rsock_item);
 
@@ -144,7 +143,7 @@ static int ripc_open_c(void* ctx) {
 
     //添加到epoll对象
     repoll_item = rdata_new(repoll_item_t);
-    repoll_item->fd = *rsock_item;
+    repoll_item->fd = rsock_item->fd;
     repoll_item->ds = ds_client;
     repoll_item->event_val_req = 0;
     repoll_set_event_all(repoll_item->event_val_req);
@@ -157,7 +156,11 @@ static int ripc_open_c(void* ctx) {
         rgoto(1);
     }
 
-    ds_client->stream = repoll_item;//stream间接指向sock, ds_client->stream->fd
+    rsock_item->userdata.key = rstr_empty;
+    rsock_item->userdata.data = repoll_item;
+    rsock_item->userdata.next = NULL;
+
+    ds_client->stream = rsock_item;//stream间接指向fd
     rsocket_ctx->stream_state = ripc_state_ready_pending;
 
     rtrace("socket client open success. fd = %d", repoll_item->fd);
@@ -166,7 +169,7 @@ static int ripc_open_c(void* ctx) {
 
 exit1:
     rsocket_close(rsock_item);
-    // rdata_free(rsocket_t, rsock_item);
+    rsocket_destroy(rsock_item);
 
     if(repoll_item != NULL) {
         rdata_free(repoll_item_t, repoll_item);
@@ -178,6 +181,8 @@ static int ripc_close_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = rsocket_ctx->stream;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
+    repoll_item_t* repoll_item = NULL;
 
     rinfo("socket client close.");
 
@@ -189,13 +194,13 @@ static int ripc_close_c(void* ctx) {
     rbuffer_release(ds_client->write_buff);
 
     //从epoll移除，销毁socket对象
-    if (ds_client->stream != NULL) {
-        repoll_remove(container, (repoll_item_t*)ds_client->stream);
+    if (rsock_item != NULL) {
+        repoll_item = (repoll_item_t*)rsock_item->userdata.data;
+        repoll_remove(container, repoll_item);
+        rdata_free(repoll_item_t, repoll_item);
 
-        rsocket_close(&(((repoll_item_t*)ds_client->stream)->fd));
-        // rdata_free(rsocket_t, ((repoll_item_t*)ds_client->stream)->fd);
-
-        rdata_free(repoll_item_t, ds_client->stream);
+        rsocket_close(rsock_item);
+        rsocket_destroy(rsock_item);
     }
 
     rsocket_ctx->stream_state = ripc_state_closed;
@@ -207,6 +212,11 @@ static int ripc_start_c(void* ctx) {
     ripc_data_source_t* ds = rsocket_ctx->stream;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
+
+    if (ds->stream == NULL) {
+        rerror("rsocket not inited.");
+        return rcode_invalid;
+    }
 
     rtimeout_t tm;
     rtimeout_init_sec(&tm, 3, 3);
@@ -221,10 +231,10 @@ static int ripc_start_c(void* ctx) {
 
         if (container->fd_dest_count > 0) {
             repoll_item_t* dest_item = NULL;
-
+            
             for (int i = 0; i < container->fd_dest_count; i++) {
                 dest_item = &(container->dest_items[i]);
-                if (dest_item->fd != ((repoll_item_t*)ds->stream)->fd) {
+                if (dest_item->fd != ((rsocket_t*)ds->stream)->fd) {
                     continue;
                 }
 
@@ -260,7 +270,7 @@ static int ripc_start_c(void* ctx) {
         }
     } while (!rtimeout_done(&tm));
 
-    rtrace("epoll socket client connect timeout, fd = %d", ((repoll_item_t*)ds->stream)->fd);
+    rtrace("epoll socket client connect timeout, fd = %d", ((rsocket_t*)ds->stream)->fd);
 
     return rcode_io_timeout;
 }
@@ -279,9 +289,10 @@ static int ripc_send_data_2buffer_c(ripc_data_source_t* ds_client, void* data) {
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
-    if (rsocket_ctx->stream_state != ripc_state_start) {
+    if (rsock_item == NULL || rsocket_ctx->stream_state != ripc_state_start) {
         rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
         return rcode_err_sock_disconnect;
     }
@@ -296,7 +307,7 @@ static int ripc_send_data_2buffer_c(ripc_data_source_t* ds_client, void* data) {
     }
 
     if (rbuffer_size(ds_client->write_buff) > 0) {
-        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_item = (repoll_item_t*)rsock_item->userdata.data;
         repoll_set_event_out(repoll_item->event_val_req);
 
         ret_code = repoll_modify(container, repoll_item);
@@ -315,30 +326,29 @@ static int ripc_send_data_c(ripc_data_source_t* ds_client, void* data) {
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
     const char* data_buff = rbuffer_read_start_dest(ds_client->write_buff);
     int count = rbuffer_size(ds_client->write_buff);
     int sent_len = 0;//立即处理
-    
+
     rtimeout_t tm;
     rtimeout_init_millisec(&tm, 3, 3);
     rtimeout_start(&tm);
 
-    ret_code = rsocket_send((rsocket_t*)(&((repoll_item_t*)ds_client->stream)->fd), 
-        data_buff, (size_t)count, (size_t*)&sent_len, &tm);
+    ret_code = rsocket_send(rsock_item, data_buff, (size_t)count, (size_t*)&sent_len, &tm);
+
     if (ret_code != rcode_io_done) {
         rwarn("end send_data, code: %d, sent_len: %d, buff_size: %d", ret_code, sent_len, count);
-
         ripc_on_error_c(ds_client, NULL);
-
         return rcode_io_closed;//所有未知错误都断开
     }
     rdebug("end send_data, code: %d, sent_len: %d", ret_code, sent_len);
 
     rbuffer_skip(ds_client->write_buff, sent_len);
     if (rbuffer_size(ds_client->write_buff) == 0) {
-        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_item = (repoll_item_t*)rsock_item->userdata.data;
         repoll_unset_event_out(repoll_item->event_val_req);
 
         ret_code = repoll_modify(container, repoll_item);
@@ -355,6 +365,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     int ret_code = 0;
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     ripc_data_raw_t data_raw;//直接在栈上
 
     if (rsocket_ctx->stream_state != ripc_state_start) {
@@ -371,8 +382,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     rtimeout_init_millisec(&tm, 1, 1);
     rtimeout_start(&tm);
 
-    ret_code = rsocket_recv((rsocket_t*)(&((repoll_item_t*)ds_client->stream)->fd), 
-        data_buff, (size_t)count, (size_t*)&received_len, &tm);
+    ret_code = rsocket_recv(rsock_item, data_buff, (size_t)count, (size_t*)&received_len, &tm);
 
     if (ret_code == rcode_io_timeout) {
         ret_code = rcode_io_done;
@@ -548,10 +558,8 @@ static int ripc_open_server(void* ctx) {
     int socktype = SOCK_STREAM; // udp = SOCK_DGRAM
     int protocol = 0;
     int opt = 1;
-    // rsocket_t* rsock_item = rdata_new(rsocket_t);
-    rsocket_t rsock_item_obj;
-    rsocket_t* rsock_item = &rsock_item_obj;
-    *rsock_item = SOCKET_INVALID;
+    rsocket_t* rsock_item = rdata_new(rsocket_t);
+    rsock_item->fd = SOCKET_INVALID;
 
     repoll_item_t* repoll_item = NULL;
     int current_family = family;
@@ -578,7 +586,7 @@ static int ripc_open_server(void* ctx) {
     }
 
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
-        if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
+        if (current_family != iterator->ai_family || rsock_item->fd == SOCKET_INVALID) {
             rsocket_close(rsock_item);
 
             ret_code = rsocket_create(rsock_item, family, socktype, protocol);
@@ -588,7 +596,7 @@ static int ripc_open_server(void* ctx) {
             }
 
             if (family == AF_INET6) {
-                setsockopt(*rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
+                setsockopt(rsock_item->fd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
             }
 
             current_family = iterator->ai_family;
@@ -624,7 +632,7 @@ static int ripc_open_server(void* ctx) {
 
     //添加到epoll对象
     repoll_item = rdata_new(repoll_item_t);
-    repoll_item->fd = *rsock_item;
+    repoll_item->fd = rsock_item->fd;
     repoll_item->ds = ds_server;
     repoll_item->event_val_req = 0;
     repoll_set_event_all(repoll_item->event_val_req);
@@ -637,17 +645,20 @@ static int ripc_open_server(void* ctx) {
         rgoto(1);
     }
 
-    ds_server->stream = repoll_item;//stream间接指向sock, ds->stream->fd
+    rsock_item->userdata.key = rstr_empty;
+    rsock_item->userdata.data = repoll_item;
+    rsock_item->userdata.next = NULL;
+
+    ds_server->stream = rsock_item;//stream间接指向fd
     // rsocket_ctx->stream_state = ripc_state_ready_pending;
 
     rsocket_ctx->stream_state = ripc_state_ready;
 
-    // rdata_free(rsocket_t, rsock_item);
     return rcode_ok;
 
 exit1:
     rsocket_close(rsock_item);
-    // rdata_free(rsocket_t, rsock_item);
+    rsocket_destroy(rsock_item);
 
     if(repoll_item != NULL) {
         rdata_free(repoll_item_t, repoll_item);
@@ -660,6 +671,8 @@ static int ripc_close_server(void* ctx) {
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ctx;
     ripc_data_source_t* ds_server = rsocket_ctx->stream;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    rsocket_t* rsock_item = (rsocket_t*)ds_server->stream;
+    repoll_item_t* repoll_item = (repoll_item_t*)rsock_item->userdata.data;
 
     rinfo("socket server close. state = %d", rsocket_ctx->stream_state);
 
@@ -668,13 +681,12 @@ static int ripc_close_server(void* ctx) {
     }
 
     //从epoll移除，销毁socket对象
-    if (ds_server->stream != NULL) {
-        repoll_remove(container, (repoll_item_t*)ds_server->stream);
+    if (rsock_item != NULL) {
+        repoll_remove(container, repoll_item);
+        rdata_free(repoll_item_t, repoll_item);
 
-        rsocket_close(&(((repoll_item_t*)ds_server->stream)->fd));
-        // rdata_free(rsocket_t, ((repoll_item_t*)ds_server->stream)->fd);
-
-        rdata_free(repoll_item_t, ds_server->stream);
+        rsocket_close(rsock_item);
+        rsocket_destroy(rsock_item);
     }
 
     if (rsocket_ctx->map_clients && rdict_size(rsocket_ctx->map_clients) > 0) {
@@ -715,6 +727,8 @@ static int ripc_stop_server(void* ctx) {
 static int close_session(ripc_data_source_t* ds_client) {
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ds_client->ctx;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
+    repoll_item_t* repoll_item = NULL;
 
     rinfo("socket session close.");
 
@@ -728,12 +742,13 @@ static int close_session(ripc_data_source_t* ds_client) {
     rbuffer_release(ds_client->write_buff);
 
     //从epoll移除，销毁socket对象
-    if (ds_client->stream != NULL) {
-        repoll_remove(container, (repoll_item_t*)ds_client->stream);
+    if (rsock_item != NULL) {
+        repoll_item = (repoll_item_t*)rsock_item->userdata.data;
+        repoll_remove(container, repoll_item);
+        rdata_free(repoll_item_t, repoll_item);
 
-        rsocket_close(&(((repoll_item_t*)ds_client->stream)->fd));
-
-        rdata_free(repoll_item_t, ds_client->stream);
+        rsocket_close(rsock_item);
+        rsocket_destroy(rsock_item);
     }
 
     rdata_free(ripc_data_source_t, ds_client);
@@ -749,9 +764,10 @@ static int ripc_send_data_2buffer_server(ripc_data_source_t* ds_client, void* da
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ds_client->ctx;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
-    if (rsocket_ctx->stream_state != ripc_state_start) {
+    if (rsock_item != NULL && rsocket_ctx->stream_state != ripc_state_start) {
         rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
         return rcode_err_sock_disconnect;
     }
@@ -766,7 +782,7 @@ static int ripc_send_data_2buffer_server(ripc_data_source_t* ds_client, void* da
     }
 
     if (rbuffer_size(ds_client->write_buff) > 0) {
-        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_item = (repoll_item_t*)rsock_item->userdata.data;
         repoll_set_event_out(repoll_item->event_val_req);
 
         ret_code = repoll_modify(container, repoll_item);
@@ -785,6 +801,7 @@ static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ds_client->ctx;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
     const char* data_buff = rbuffer_read_start_dest(ds_client->write_buff);
@@ -795,8 +812,8 @@ static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
     rtimeout_init_millisec(&tm, 3, 3);
     rtimeout_start(&tm);
 
-    ret_code = rsocket_send((rsocket_t*)(&((repoll_item_t*)ds_client->stream)->fd), 
-        data_buff, (size_t)count, (size_t*)&sent_len, &tm);
+    ret_code = rsocket_send(rsock_item, data_buff, (size_t)count, (size_t*)&sent_len, &tm);
+
     if (ret_code != rcode_io_done) {
         rwarn("end send_data, code: %d, sent_len: %d, buff_size: %d", ret_code, sent_len, count);
 
@@ -810,7 +827,7 @@ static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
 
     rbuffer_skip(ds_client->write_buff, sent_len);
     if (rbuffer_size(ds_client->write_buff) == 0) {
-        repoll_item = (repoll_item_t*)ds_client->stream;
+        repoll_item = (repoll_item_t*)rsock_item->userdata.data;
         repoll_unset_event_out(repoll_item->event_val_req);
 
         ret_code = repoll_modify(container, repoll_item);
@@ -829,6 +846,7 @@ static int ripc_receive_data_server(ripc_data_source_t* ds_client, void* data) {
     int ret_code = 0;
     rsocket_ctx_t* rsocket_ctx = ds_client->ctx;
     //rsocket_cfg_t* cfg = rsocket_ctx->cfg;
+    rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     ripc_data_raw_t data_raw;//直接在栈上
 
     if (rsocket_ctx->stream_state != ripc_state_start) {
@@ -845,8 +863,7 @@ static int ripc_receive_data_server(ripc_data_source_t* ds_client, void* data) {
     rtimeout_init_millisec(&tm, 1, 1);
     rtimeout_start(&tm);
 
-    ret_code = rsocket_recv((rsocket_t*)(&((repoll_item_t*)ds_client->stream)->fd), 
-        data_buff, (size_t)count, (size_t*)&received_len, &tm);
+    ret_code = rsocket_recv(rsock_item, data_buff, (size_t)count, (size_t*)&received_len, &tm);
 
     if (ret_code == rcode_io_timeout) {
         ret_code = rcode_io_done;
@@ -878,6 +895,7 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
     int ret_code = rcode_ok;
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ds_server->ctx;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
+    rsocket_t* rsock_server = (rsocket_t*)ds_server->stream;
 
     ripc_data_source_t* ds_client = NULL;
 
@@ -889,9 +907,8 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
     rsockaddr_storage_t addr;
     rsocket_len_t addr_len;
 
-    rsocket_t rsock_item_obj;
-    rsocket_t* rsock_item = &rsock_item_obj;
-    *rsock_item = SOCKET_INVALID;
+    rsocket_t* rsock_item = rdata_new(rsocket_t);
+    rsock_item->fd = SOCKET_INVALID;
 
     repoll_item_t* repoll_item = NULL;
 
@@ -911,7 +928,7 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
             break;
     }
 
-    ret_code = rsocket_accept(&(((repoll_item_t*)ds_server->stream)->fd), rsock_item, (rsockaddr_t*)&addr, &addr_len, &tm);
+    ret_code = rsocket_accept(rsock_server, rsock_item, (rsockaddr_t*)&addr, &addr_len, &tm);
 
     if (ret_code != rcode_io_done) {
         rerror("accept error. code = %d", ret_code);
@@ -919,8 +936,11 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
         rgoto(1);
     }
 
-    if (*rsock_item == SOCKET_INVALID) {
-        rgoto(0);
+    if (rsock_item->fd == SOCKET_INVALID) {
+        // rtrace("accept nothing");
+        ret_code = rcode_invalid;
+        
+        rgoto(1);
     }
 
     if (addr.ss_family == AF_INET) {
@@ -935,6 +955,7 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
     } else {
         rerror("accept client, unknown address family. family = %d, AF_INET = %d, family = %d", 
             addr.ss_family, AF_INET, AF_INET6);
+        ret_code = rcode_invalid;
 
         rgoto(1);
     }
@@ -953,7 +974,7 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
     rsocket_setnonblocking(rsock_item);
     //添加到epoll对象
     repoll_item = rdata_new(repoll_item_t);
-    repoll_item->fd = *rsock_item;
+    repoll_item->fd = rsock_item->fd;
     repoll_item->ds = ds_client;
     repoll_item->event_val_req = 0;
     repoll_set_event_in(repoll_item->event_val_req);
@@ -966,13 +987,16 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
         rgoto(1);
     }
 
-    ds_client->stream = repoll_item;//stream间接指向sock, ds->stream->fd
+    rsock_item->userdata.key = rstr_empty;
+    rsock_item->userdata.data = repoll_item;
+    rsock_item->userdata.next = NULL;
 
+    ds_client->stream = rsock_item;//stream间接指向fd
     // rsocket_ctx->stream_state = ripc_state_ready_pending;
 
     rinfo("accept client %d (%s:%d)", addr.ss_family, ip, port);
 
-exit0:
+// exit0:
     return rcode_ok;
 
 exit1:
@@ -993,6 +1017,7 @@ exit1:
     }
 
     rsocket_close(rsock_item);
+    rsocket_destroy(rsock_item);
 
     return ret_code;
 }
@@ -1045,7 +1070,7 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
 
                 if (repoll_check_event_in(dest_item->event_val_rsp)) {//accept
                     if likely(rsocket_ctx->stream_state == ripc_state_start) {
-                        int accept_count = 10;
+                        int accept_count = 10;//todo Ray 读配置，一次最大accept个数
                         while (ripc_accept_server(ds, NULL) == rcode_ok && --accept_count > 0) {
                             
                         }

@@ -13,14 +13,14 @@
 #include "rsocket.h"
 
 int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol) {
-    *rsock_item = socket(domain, type, protocol);
-    if (*rsock_item != SOCKET_INVALID) {
+    rsock_item->fd = socket(domain, type, protocol);
+    if (rsock_item->fd != SOCKET_INVALID) {
 #if defined(_WIN32) || defined(_WIN64)
 
 
 #else   
         int flag = 0;
-        if (setsockopt(*rsock_item, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(flag)) == -1) {
+        if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(flag)) == -1) {
             return rerror_get_osnet_err();
         }
 #endif
@@ -31,35 +31,42 @@ int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol) {
 }
 
 int rsocket_close(rsocket_t* rsock_item) {
-    if (rsock_item && *rsock_item != SOCKET_INVALID) {
+    if (rsock_item && rsock_item->fd != SOCKET_INVALID) {
 #if defined(_WIN32) || defined(_WIN64)
         rsocket_setblocking(rsock_item); /* WIN32可能消耗时间很长，SO_LINGER */
-        closesocket(*rsock_item);
+        closesocket(rsock_item->fd);
 #else
-        close(*rsock_item);
+        close(rsock_item->fd);
 #endif
         rtrace("close socket, %p", rsock_item);
-        *rsock_item = SOCKET_INVALID;
+        rsock_item->fd = SOCKET_INVALID;
     }
     return rcode_ok;
 }
 
 int rsocket_shutdown(rsocket_t* rsock_item, int how) {
     int ret_code = 0;
-    if (rsock_item && *rsock_item != SOCKET_INVALID) {
+    if (rsock_item && rsock_item->fd != SOCKET_INVALID) {
 #if defined(_WIN32) || defined(_WIN64)
         rsocket_setblocking(rsock_item);
-        ret_code = shutdown(*rsock_item, how);//how: SD_RECEIVE，SD_SEND，SD_BOTH
+        ret_code = shutdown(rsock_item->fd, how);//how: SD_RECEIVE，SD_SEND，SD_BOTH
         rsocket_setnonblocking(rsock_item);
 #else
-        ret_code = shutdown(*rsock_item, how);
+        ret_code = shutdown(rsock_item->fd, how);
 #endif
         if (ret_code < 0) {
             rerror("error on shutdown %p, %d - %d", rsock_item, how, ret_code);
         }
         rtrace("shutdown socket, %p", rsock_item);
-        *rsock_item = SOCKET_INVALID;
+        rsock_item->fd = SOCKET_INVALID;
     }
+    return ret_code;
+}
+
+int rsocket_destroy(rsocket_t* rsock_item) {
+    int ret_code = rcode_ok;
+
+    rdata_free(rsocket_t, rsock_item);
     return ret_code;
 }
 
@@ -86,8 +93,8 @@ char* rio_strerror(int err) {
 //     // } else {
 //     //     rsock_item->options &= ~(option);
 //     // }
-//     setsockopt(*rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&flag, sizeof(flag));
-//     int ret = setsockopt(*rsock_item, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+//     setsockopt(rsock_item->fd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&flag, sizeof(flag));
+//     int ret = setsockopt(rsock_item->fd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
 //     if (ret < 0) {
 //         return rcode_invalid;
 //     }
@@ -95,23 +102,23 @@ char* rio_strerror(int err) {
 // }
 
 int rsocket_setblocking(rsocket_t* rsock_item) {
-    int flags = fcntl(*rsock_item, F_GETFL, 0);
+    int flags = fcntl(rsock_item->fd, F_GETFL, 0);
     flags &= (~(O_NONBLOCK));
-    fcntl(*rsock_item, F_SETFL, flags);
+    fcntl(rsock_item->fd, F_SETFL, flags);
     return rcode_ok;
 }
 
 int rsocket_setnonblocking(rsocket_t* rsock_item) {
-    int flags = fcntl(*rsock_item, F_GETFL, 0);
+    int flags = fcntl(rsock_item->fd, F_GETFL, 0);
     flags |= O_NONBLOCK;
-    fcntl(*rsock_item, F_SETFL, flags);
+    fcntl(rsock_item->fd, F_SETFL, flags);
     return rcode_ok;
 }
 
 
 int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t* addr, rsocket_len_t len) {
     int ret_code = rcode_ok;
-    if (bind(*rsock_item, addr, len) < 0) {
+    if (bind(rsock_item->fd, addr, len) < 0) {
         ret_code = rerror_get_osnet_err();
         rinfo("bind failed, code = %d", ret_code);
     }
@@ -120,7 +127,7 @@ int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t* addr, rsocket_len_t len) {
 
 int rsocket_listen(rsocket_t* rsock_item, int backlog) {
     int ret_code = rcode_ok;
-    if (listen(*rsock_item, backlog)) {
+    if (listen(rsock_item->fd, backlog)) {
         ret_code = rerror_get_osnet_err();
         rinfo("listen failed, code = %d", ret_code);
     }
@@ -131,13 +138,13 @@ int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len,
     int ret_code = rcode_io_done;
 
     /* avoid calling on closed sockets */
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         rerror("invalid socket. code = %d", ret_code);
         return rcode_io_closed;
     }
     /* call connect until done or failed without being interrupted */
     do {
-        if (connect(*rsock_item, addr, len) == 0) {
+        if (connect(rsock_item->fd, addr, len) == 0) {
             return rcode_io_done;
         }
     } while ((ret_code = rerror_get_osnet_err()) == EINTR);
@@ -158,9 +165,9 @@ int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len,
 }
 
 int rsocket_accept(rsocket_t* sock_listen, rsocket_t* rsock_item, 
-        rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
+        rsockaddr_t* addr, rsocket_len_t* len, rtimeout_t* tm) {
     int ret_code = 0;
-    if (*sock_listen == SOCKET_INVALID) {
+    if (sock_listen->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
@@ -168,11 +175,11 @@ int rsocket_accept(rsocket_t* sock_listen, rsocket_t* rsock_item,
 // #if defined(SOCK_NONBLOCK_NOT_INHERITED)
 //         //With FreeBSD accept4() (avail in 10+), O_NONBLOCK is not inherited
 //         flags |= SOCK_NONBLOCK;//从外面传
-//         *rsock_item = accept4(*sock_listen, addr, len, flags);
+//         rsock_item->fd = accept4(*(sock_listen->fd), addr, len, flags);
 // #else
-        *rsock_item = accept(*sock_listen, addr, len);
+        rsock_item->fd = accept(sock_listen->fd, addr, len);
 // #endif
-        if (*rsock_item != SOCKET_INVALID) {
+        if (rsock_item->fd != SOCKET_INVALID) {
             return rcode_io_done;
         }
 
@@ -200,14 +207,14 @@ int rsocket_accept(rsocket_t* sock_listen, rsocket_t* rsock_item,
     return rcode_io_unknown;
 }
 
-int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
+int rsocket_select(rsocket_t* rsock_item, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
     int ret_code = 0;
     do {
         struct timeval tv;
         int64_t time_left = rtimeout_get_block(tm);
         rtimeout_2timeval(tm, &tv, time_left);
         /* timeout = 0 means no wait */
-        ret_code = select(rsock, rfds, wfds, efds, time_left >= 0 ? &tv : NULL);
+        ret_code = select(rsock_item->fd, rfds, wfds, efds, time_left >= 0 ? &tv : NULL);
 
     } while (ret_code < 0 && rerror_get_osnet_err() == EINTR);
 
@@ -219,7 +226,7 @@ int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, size_t *
     *sent = 0;
     long sent_len = 0;
     
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
     
@@ -234,7 +241,7 @@ int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, size_t *
         // 2)当读到了文件的结尾时,函数正常返回.返回值小于len 
         // 3)当操作发生错误时,返回-1,且设置错误为相应的错误号(errno)
         // MSG_NOSIGNAL: 使用这个标志。不让其发送SIG_PIPE信号，导致程序退出。
-        sent_len = (long) send(*rsock_item, data, count, 0);
+        sent_len = (long) send(rsock_item->fd, data, count, 0);
 
         /* if we sent anything, we are done */
         if (sent_len >= 0) {
@@ -273,9 +280,9 @@ int rsocket_sendto(rsocket_t* rsock_item, const char *data, size_t count, size_t
     *sent = 0;
     long sent_len = 0;
 
-    if (*rsock_item == SOCKET_INVALID) return rcode_io_closed;
+    if (rsock_item->fd == SOCKET_INVALID) return rcode_io_closed;
     for ( ;; ) {
-        sent_len = (long) sendto(*rsock_item, data, count, 0, addr, len); 
+        sent_len = (long) sendto(rsock_item->fd, data, count, 0, addr, len); 
 
         if (sent_len >= 0) {
             *sent = sent_len;
@@ -302,12 +309,12 @@ int rsocket_recv(rsocket_t* rsock_item, char *data, size_t count, size_t *got, r
     *got = 0;
     long read_len = 0;
 
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
     for ( ;; ) {
-        read_len = (long) recv(*rsock_item, data, count, 0);//读不到数据返回-1，errorno为EAGAIN或者EINPROGRESS
+        read_len = (long) recv(rsock_item->fd, data, count, 0);//读不到数据返回-1，errorno为EAGAIN或者EINPROGRESS
 
         if (read_len > 0) {
             *got = read_len;
@@ -341,9 +348,9 @@ int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *got, rso
     *got = 0;
     long read_len = 0;
 
-    if (*rsock_item == SOCKET_INVALID) return rcode_io_closed;
+    if (rsock_item->fd == SOCKET_INVALID) return rcode_io_closed;
     for ( ;; ) {
-        read_len = (long) recvfrom(*rsock_item, data, count, 0, addr, len);
+        read_len = (long) recvfrom(rsock_item->fd, data, count, 0, addr, len);
 
         if (read_len > 0) {
             *got = read_len;
@@ -600,13 +607,13 @@ char* rsocket_gaistrerror(int err) {
 
 int rsocket_setblocking(rsocket_t* rsock_item) {
     u_long argp = 0;
-    ioctlsocket(*rsock_item, FIONBIO, &argp);
+    ioctlsocket(rsock_item->fd, FIONBIO, &argp);
     return rcode_ok;
 }
 
 int rsocket_setnonblocking(rsocket_t* rsock_item) {
     u_long argp = 1;
-    ioctlsocket(*rsock_item, FIONBIO, &argp);
+    ioctlsocket(rsock_item->fd, FIONBIO, &argp);
     return rcode_ok;
 }
 

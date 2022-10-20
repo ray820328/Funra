@@ -78,6 +78,7 @@ typedef struct ripc_data_raw_s {
 typedef struct ripc_data_source_s {
     uint64_t ds_id;
     ripc_data_source_type_t ds_type;
+    ripc_state_t state;
     rbuffer_t* read_cache;
     rbuffer_t* write_buff;
     void* ctx;

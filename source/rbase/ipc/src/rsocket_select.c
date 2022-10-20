@@ -68,17 +68,17 @@ static int rsocket_waitfd(rsocket_t* rsock_item, int sw, rtimeout_t* tm) {
     //select使用bit，fd_set内核和用户态共同修改，要么保存状态，要么每次重新分别设置 read/write/error 掩码
     if (sw & WAITFD_R) {
         FD_ZERO(&rfds);
-        FD_SET(*rsock_item, &rfds);
+        FD_SET(rsock_item->fd, &rfds);
         rp = &rfds;
     }
     if (sw & WAITFD_W) { 
         FD_ZERO(&wfds); 
-        FD_SET(*rsock_item, &wfds); 
+        FD_SET(rsock_item->fd, &wfds); 
         wp = &wfds; 
     }
     if (sw & WAITFD_C) { 
         FD_ZERO(&efds); 
-        FD_SET(*rsock_item, &efds); 
+        FD_SET(rsock_item->fd, &efds); 
         ep = &efds; 
     }
 
@@ -95,18 +95,18 @@ static int rsocket_waitfd(rsocket_t* rsock_item, int sw, rtimeout_t* tm) {
     if (ret_code == 0) {
         return rcode_io_timeout;
     }
-    if (sw == WAITFD_C && FD_ISSET(*rsock_item, &efds)) {
+    if (sw == WAITFD_C && FD_ISSET(rsock_item->fd, &efds)) {
         return rcode_io_closed;
     }
 
     return rcode_io_done;
 }
 
-static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
+static int rsocket_select(rsocket_t* rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
     struct timeval tv;
     int64_t time_left = rtimeout_get_block(tm);
     rtimeout_2timeval(tm, &tv, time_left);
-    if (rsock <= 0) {
+    if (rsock->fd <= 0) {
         Sleep((DWORD) (time_left / 1000));
         return 0;
     } else {
@@ -116,11 +116,11 @@ static int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *e
 
 static int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
     int ret_code;
-	if (*rsock_item == SOCKET_INVALID) {
+	if (rsock_item->fd == SOCKET_INVALID) {
 		return rcode_io_closed;
 	}
 
-	if (connect(*rsock_item, addr, len) == 0) {
+	if (connect(rsock_item->fd, addr, len) == 0) {
 		return rcode_io_done;
 	}
     
@@ -141,7 +141,7 @@ static int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len
         /* give windows time to set the error (yes, disgusting) */
         Sleep(10);
 
-        getsockopt(*rsock_item, SOL_SOCKET, SO_ERROR, (char *)&ret_code, &elen);
+        getsockopt(rsock_item->fd, SOL_SOCKET, SO_ERROR, (char *)&ret_code, &elen);
         
         return ret_code > 0 ? ret_code : rcode_io_unknown;
 	}
@@ -155,7 +155,7 @@ static int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t 
 
     rsocket_setblocking(rsock_item);
 
-    if (bind(*rsock_item, addr, len) < 0) {
+    if (bind(rsock_item->fd, addr, len) < 0) {
         ret_code = WSAGetLastError();
     }
 
@@ -169,7 +169,7 @@ static int rsocket_listen(rsocket_t* rsock_item, int backlog) {
 
     rsocket_setblocking(rsock_item);
 
-    if (listen(*rsock_item, backlog) < 0) {
+    if (listen(rsock_item->fd, backlog) < 0) {
         ret_code = WSAGetLastError();
     }
 
@@ -179,14 +179,14 @@ static int rsocket_listen(rsocket_t* rsock_item, int backlog) {
 }
 
 static int rsocket_accept(rsocket_t* rsock_item, rsocket_t* pa, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
     for ( ;; ) {
         int ret_code = 0;
         /* try to get client socket */
-        if ((*pa = accept(*rsock_item, addr, len)) != SOCKET_INVALID) {
+        if ((pa->fd = accept(rsock_item->fd, addr, len)) != SOCKET_INVALID) {
             return rcode_io_done;
         }
         /* find out why we failed */
@@ -207,13 +207,13 @@ static int rsocket_send(rsocket_t* rsock_item, const char *data, int count, int 
     int ret_code = 0;
 
     *sent = 0;
-	if (*rsock_item == SOCKET_INVALID) {
+	if (rsock_item->fd == SOCKET_INVALID) {
 		return rcode_io_closed;
 	}
 
     int sent_once = 0;
     for ( ;; ) {
-        sent_once = send(*rsock_item, data, (int) count, 0);
+        sent_once = send(rsock_item->fd, data, (int) count, 0);
         /* if we sent something, we are done */
         if (sent_once > 0) {
             *sent = sent_once;
@@ -237,13 +237,13 @@ static int rsocket_send2_addr(rsocket_t* rsock_item, const char *data, size_t co
     int ret_code = 0;
 
     *sent = 0;
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
     int sent_once = 0;
     for ( ;; ) {
-        sent_once = sendto(*rsock_item, data, (int) count, 0, addr, len);
+        sent_once = sendto(rsock_item->fd, data, (int) count, 0, addr, len);
         if (sent_once > 0) {
             *sent = sent_once;
             return rcode_io_done;
@@ -263,7 +263,7 @@ static int rsocket_recv(rsocket_t* rsock_item, char *data, int count, int *got, 
     int ret_code = 0, prev = rcode_io_done;
 
     *got = 0;
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
@@ -280,7 +280,7 @@ static int rsocket_recv(rsocket_t* rsock_item, char *data, int count, int *got, 
         //ENOTSOCK：sock索引的不是套接字 当返回值是0时，为正常关闭连接；
         //注意：返回值 < 0 时并且(errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN)的情况下认为连接是正常的，继续接收
         //对非阻塞socket而言，EAGAIN不是一种错误。在VxWorks和Windows上，EAGAIN的名字叫做EWOULDBLOCK
-        recv_once = recv(*rsock_item, data, (int)count, 0);
+        recv_once = recv(rsock_item->fd, data, (int)count, 0);
 
         if (recv_once > 0) {
             *got = recv_once;
@@ -316,13 +316,13 @@ static int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *g
     int ret_code, prev = rcode_io_done;
 
     *got = 0;
-    if (*rsock_item == SOCKET_INVALID) {
+    if (rsock_item->fd == SOCKET_INVALID) {
         return rcode_io_closed;
     }
 
     int recv_once = 0;
     for ( ;; ) {
-        recv_once = recvfrom(*rsock_item, data, (int) count, 0, addr, len);
+        recv_once = recvfrom(rsock_item->fd, data, (int) count, 0, addr, len);
 
         if (recv_once > 0) {
             *got = recv_once;
@@ -399,8 +399,8 @@ static int ripc_open_c(void* ctx) {
     int socktype = SOCK_STREAM; // udp = SOCK_DGRAM
     int protocol = 0;
     int opt = 1;
-	rsocket_t* rsock_item = rdata_new(rsocket_t);
-	*rsock_item = SOCKET_INVALID;
+    rsocket_t* rsock_item = rdata_new(rsocket_t);
+    rsock_item->fd = SOCKET_INVALID;
     int current_family = family;
 
     //指向用户设定的 struct addrinfo 结构体，只能设定 ai_family、ai_socktype、ai_protocol 和 ai_flags 四个域
@@ -423,7 +423,8 @@ static int ripc_open_c(void* ctx) {
     }
 
     for (iterator = addrinfo_result; iterator; iterator = iterator->ai_next) {
-        if (current_family != iterator->ai_family || *rsock_item == SOCKET_INVALID) {
+        rtrace("fd = %d", rsock_item->fd);
+        if (current_family != iterator->ai_family || rsock_item->fd == SOCKET_INVALID) {
             rsocket_close(rsock_item);
 
             ret_code = rsocket_create(rsock_item, family, socktype, protocol);
@@ -433,7 +434,7 @@ static int ripc_open_c(void* ctx) {
             }
 
             if (family == AF_INET6) {
-                setsockopt(*rsock_item, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
+                setsockopt(rsock_item->fd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&opt, sizeof(opt));
             }
             rsocket_setnonblocking(rsock_item);
 
@@ -473,7 +474,7 @@ static int ripc_open_c(void* ctx) {
 
 exit1:
     rsocket_close(rsock_item);
-    rdata_free(rsocket_t, rsock_item);
+    rsocket_destroy(rsock_item);
     return ret_code;
 }
 static int ripc_close_c(void* ctx) {
@@ -494,8 +495,8 @@ static int ripc_close_c(void* ctx) {
     	rbuffer_release(ds_client->read_cache);
     	rbuffer_release(ds_client->write_buff);
 
-        rsocket_close(ds_client->stream);
-        rdata_free(rsocket_t, ds_client->stream);
+        rsocket_close((rsocket_t*)(ds_client->stream));
+        rsocket_destroy((rsocket_t*)ds_client->stream);
     }
 
     rsocket_ctx->stream_state = ripc_state_closed;
@@ -593,7 +594,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
 
     ret_code = rcode_io_done;
     do {
-        ret_code = rsocket_recv(ds_client->stream, data_buff + total, count, &received_len, &tm);
+        ret_code = rsocket_recv((rsocket_t*)ds_client->stream, data_buff + total, count, &received_len, &tm);
         if (received_len == 0) {
             break;
         }

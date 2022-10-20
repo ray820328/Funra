@@ -51,7 +51,7 @@ typedef struct sockaddr rsockaddr_t;
 #include <net/if.h>
 
 typedef socklen_t rsocket_len_t;
-typedef int rsocket_t;
+typedef int rsocket_fd_t;
 typedef struct sockaddr_storage rsockaddr_storage_t;
 
 #define SOCKET_INVALID (-1)
@@ -61,7 +61,7 @@ typedef struct sockaddr_storage rsockaddr_storage_t;
 
 #if defined(_WIN32) || defined(_WIN64)
 typedef int rsocket_len_t;
-typedef SOCKET rsocket_t;
+typedef SOCKET rsocket_fd_t;
 typedef SOCKADDR_STORAGE rsockaddr_storage_t;
 
 #define SOCKET_INVALID (INVALID_SOCKET)
@@ -116,17 +116,17 @@ typedef SOCKADDR_STORAGE rsockaddr_storage_t;
     ripc_state_t stream_state; \
     void* user_data
 
-// typedef struct rsocket_cfg_s {
-//     uint64_t id;
-//     uint64_t sid_min;
-//     uint64_t sid_max;
+typedef struct rsocket_cfg_s {
+    uint64_t id;
+    uint64_t sid_min;
+    uint64_t sid_max;
 
-//     char ip[20];
-//     int port;
-//     int backlog;
-//     uint32_t sock_flag;
-//     bool encrypt_msg;
-// } rsocket_cfg_t;
+    char ip[32];
+    int port;
+    int backlog;
+    uint32_t sock_flag;
+    bool encrypt_msg;
+} rsocket_cfg_t;
 
 typedef struct rsocket_ctx_s {
     rsocket_ctx_fields;
@@ -136,7 +136,7 @@ typedef struct rsocket_ctx_s {
 } rsocket_ctx_t;
 
 typedef struct rsocket_s {
-    int socketdes;
+    rsocket_fd_t fd;
     int type;
     int protocol;
     rsockaddr_t* local_addr;
@@ -147,7 +147,7 @@ typedef struct rsocket_s {
     int remote_addr_unknown;
     int32_t options;
     int32_t inherit;
-    rdata_userdata_t* userdata;
+    rdata_userdata_t userdata;
 } rsocket_t;
 
 typedef enum {
@@ -164,6 +164,7 @@ typedef enum {
 int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol);
 int rsocket_close(rsocket_t* rsock_item);
 int rsocket_shutdown(rsocket_t* rsock_item, int how);
+int rsocket_destroy(rsocket_t* rsock_item);
 
 int rsocket_setblocking(rsocket_t* rsock_item);
 int rsocket_setnonblocking(rsocket_t* rsock_item);
@@ -173,7 +174,7 @@ int rsocket_listen(rsocket_t* rsock_item, int backlog);
 int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm);
 int rsocket_accept(rsocket_t* sock_listen, rsocket_t* rsock_item, 
         rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm);
-int rsocket_select(rsocket_t rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm);
+int rsocket_select(rsocket_t* rsock_item, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm);
 int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent, rtimeout_t* tm);
 int rsocket_sendto(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent,
         rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm);
