@@ -36,12 +36,12 @@ static void repeat_cb(uv_timer_t* handle) {
 
     ripc_data_source_t* ds = (ripc_data_source_t*)ctx->ds;
     rinfo("code = %d", ds->state);
-    if (ds->state == ripc_state_init || ds->state == ripc_state_closed) {
+    if (ds->state == ripc_state_start) {
         rtools_wait_mills(3000);
         ctx->ipc_entry->open(ctx);
         return;
     }
-    if (ds->state != ripc_state_start) {
+    if (ds->state != ripc_state_ready) {
         rerror("invalid state = %d", ds->state);
         return;
     }
@@ -136,7 +136,6 @@ static void* run_client(void* arg) {
     uv_timer_start(&timer_repeat, repeat_cb, 2000, 2000);
 
     ret_code = ctx->ipc_entry->start(ctx);
-    rinfo("code = %d", ret_code);
     rassert(ret_code == rcode_ok, "");
 
     ret_code = ctx->ipc_entry->close(ctx);
