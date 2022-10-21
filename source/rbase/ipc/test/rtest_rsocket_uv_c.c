@@ -31,9 +31,18 @@ static volatile int repeat_cb_count = 3;
 static void repeat_cb(uv_timer_t* handle) {
     assert_true(handle != NULL);
     assert_true(1 == uv_is_active((uv_handle_t*)handle));
-    if (rsocket_ctx.stream_state != ripc_state_ready) {
+
+    rsocket_ctx_uv_t* ctx = &rsocket_ctx;
+
+    ripc_data_source_t* ds = (ripc_data_source_t*)ctx->ds;
+    rinfo("code = %d", ds->state);
+    if (ds->state == ripc_state_init || ds->state == ripc_state_closed) {
         rtools_wait_mills(3000);
-        rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+        ctx->ipc_entry->open(ctx);
+        return;
+    }
+    if (ds->state != ripc_state_start) {
+        rerror("invalid state = %d", ds->state);
         return;
     }
 
@@ -41,7 +50,7 @@ static void repeat_cb(uv_timer_t* handle) {
    data.cmd = 11;
    data.data = rstr_cpy("client uv send test", 0);
    data.len = rstr_len(data.data);
-   rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+   ctx->ipc_entry->send(ds, &data);//发送数据
    rdata_free(char*, data.data);
 
    if (--repeat_cb_count <= 0) {
@@ -50,7 +59,7 @@ static void repeat_cb(uv_timer_t* handle) {
         data.cmd = 999;
         data.data = rstr_cpy("client uv_close test", 0);
         data.len = rstr_len(data.data);
-        rsocket_ctx.ipc_entry->send(((uv_tcp_t*)(rsocket_ctx.stream))->data, &data);//发送数据
+        ctx->ipc_entry->send(ds, &data);//发送数据
         rdata_free(char*, data.data);
 
         //uv_close((uv_handle_t*)handle, NULL);
@@ -58,11 +67,12 @@ static void repeat_cb(uv_timer_t* handle) {
 }
 
 static void* run_client(void* arg) {
+    int ret_code = rcode_ok;
 
-    rsocket_ctx.id = 3001;
-    rsocket_ctx.stream_type = ripc_type_tcp;
-    rsocket_ctx.stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-    rsocket_ctx.stream_state = ripc_state_init;
+    rsocket_ctx_uv_t* ctx = &rsocket_ctx;
+
+    ctx->id = 3001;
+    ctx->stream_type = ripc_type_tcp;
     uv_loop_t loop;
     assert_true(0 == uv_loop_init(&loop));
 #ifdef _WIN32
@@ -70,25 +80,30 @@ static void* run_client(void* arg) {
 #else
     assert_true(0 == uv_loop_configure(&loop, UV_LOOP_BLOCK_SIGNAL, SIGPROF));
 #endif
-    rsocket_ctx.loop = &loop;// uv_default_loop();
+    ctx->loop = &loop;// uv_default_loop();
 
-    rsocket_ctx.ipc_entry = (ripc_entry_t*)&rsocket_uv_c;
+    ctx->ipc_entry = (ripc_entry_t*)&rsocket_uv_c;
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
-    ds->ds_id = rsocket_ctx.id;
-    ds->ctx = &rsocket_ctx;
+    ds->ds_id = ctx->id;
+    ds->ctx = ctx;
 
-    ((uv_tcp_t*)(rsocket_ctx.stream))->data = ds;
+    ctx->ds = ds;
+
+    uv_handle_t* uv_handle = (uv_handle_t*)rdata_new(uv_tcp_t);
+    uv_handle->data = ds;
+
+    ds->stream = uv_handle;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
-    rsocket_ctx.cfg = cfg;
+    ctx->cfg = cfg;
     cfg->id = 1;
     rstr_set(cfg->ip, "127.0.0.1", 0);
     cfg->port = 23000;
 
     rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    rsocket_ctx.in_handler = handler;
+    ctx->in_handler = handler;
     handler->prev = NULL;
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
@@ -100,7 +115,7 @@ static void* run_client(void* arg) {
     handler->notify = rcodec_decode_default.notify;
 
     handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    rsocket_ctx.out_handler = handler;
+    ctx->out_handler = handler;
     handler->prev = NULL;
     handler->next = NULL;
     handler->on_before = rcodec_encode_default.on_before;
@@ -113,24 +128,30 @@ static void* run_client(void* arg) {
 
     rtools_wait_mills(5000);
 
-    rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
+    ret_code = ctx->ipc_entry->init(ctx, ctx->cfg);
+    rassert(ret_code == rcode_ok, "");
 
     uv_timer_t timer_repeat;
-    uv_timer_init(rsocket_ctx.loop, &timer_repeat);
+    uv_timer_init(ctx->loop, &timer_repeat);
     uv_timer_start(&timer_repeat, repeat_cb, 2000, 2000);
 
-    rsocket_ctx.ipc_entry->start(&rsocket_ctx);
+    ret_code = ctx->ipc_entry->start(ctx);
+    rinfo("code = %d", ret_code);
+    rassert(ret_code == rcode_ok, "");
 
-    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
+    ret_code = ctx->ipc_entry->close(ctx);
+    rassert(ret_code == rcode_ok, "");
 
-    rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
-    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
+    ret_code = ctx->ipc_entry->stop(ctx);
+    rassert(ret_code == rcode_ok, "");
+    ret_code = ctx->ipc_entry->uninit(ctx);
+    rassert(ret_code == rcode_ok, "");
 
-    rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
-    rdata_free(rdata_handler_t, rsocket_ctx.out_handler);
+    rdata_free(rdata_handler_t, ctx->in_handler);
+    rdata_free(rdata_handler_t, ctx->out_handler);
+    rdata_free(uv_tcp_t, ds->stream);
     rdata_free(ripc_data_source_t, ds);
     rdata_free(rsocket_cfg_t, cfg);
-    rdata_free(uv_tcp_t, rsocket_ctx.stream);
 
     rinfo("end, run_uv_client success: %s", (char *)arg);
 

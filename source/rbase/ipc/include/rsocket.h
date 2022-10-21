@@ -60,6 +60,14 @@ typedef struct sockaddr_storage rsockaddr_storage_t;
 
 
 #if defined(_WIN32) || defined(_WIN64)
+
+ /* POSIX defines 1024 for the FD_SETSIZE，必须在winsock2.h之前定义，默认64 */
+#define FD_SETSIZE 1024
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+
 typedef int rsocket_len_t;
 typedef SOCKET rsocket_fd_t;
 typedef SOCKADDR_STORAGE rsockaddr_storage_t;
@@ -113,7 +121,7 @@ typedef SOCKADDR_STORAGE rsockaddr_storage_t;
     ripc_entry_t* ipc_entry; \
     rdata_handler_t* in_handler; \
     rdata_handler_t* out_handler; \
-    ripc_state_t stream_state; \
+    ripc_data_source_t* ds; \
     void* user_data
 
 typedef struct rsocket_cfg_s {
@@ -131,8 +139,6 @@ typedef struct rsocket_cfg_s {
 typedef struct rsocket_ctx_s {
     rsocket_ctx_fields;
 
-    ripc_data_source_t* stream;
-    // ripc_data_source_stream_t* stream;
 } rsocket_ctx_t;
 
 typedef struct rsocket_s {

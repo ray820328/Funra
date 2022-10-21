@@ -38,7 +38,7 @@ static int ripc_init_c(void* ctx, const void* cfg_data) {
     rinfo("socket client init.");
 
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
-    ripc_data_source_t* ds_client = rsocket_ctx->stream;
+    ripc_data_source_t* ds_client = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = rcode_ok;
 
@@ -50,18 +50,18 @@ static int ripc_uninit_c(void* ctx) {
     rinfo("socket client uninit.");
 
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
-    ripc_data_source_t* ds_client = rsocket_ctx->stream;
+    ripc_data_source_t* ds_client = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = rcode_ok;
 
-    rsocket_ctx->stream_state = ripc_state_uninit;
+    ds_client->state = ripc_state_uninit;
 
     return ret_code;
 }
 static int ripc_open_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     rsocket_cfg_t* cfg = rsocket_ctx->cfg;
-    ripc_data_source_t* ds_client = rsocket_ctx->stream;
+    ripc_data_source_t* ds_client = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
@@ -161,7 +161,7 @@ static int ripc_open_c(void* ctx) {
     rsock_item->userdata.next = NULL;
 
     ds_client->stream = rsock_item;//stream间接指向fd
-    rsocket_ctx->stream_state = ripc_state_ready_pending;
+    ds_client->state = ripc_state_ready_pending;
 
     rtrace("socket client open success. fd = %d", repoll_item->fd);
 
@@ -179,14 +179,14 @@ exit1:
 }
 static int ripc_close_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
-    ripc_data_source_t* ds_client = rsocket_ctx->stream;
+    ripc_data_source_t* ds_client = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
     rinfo("socket client close.");
 
-    if (rsocket_ctx->stream_state == ripc_state_closed) {
+    if (ds_client->state == ripc_state_closed) {
         return rcode_ok;
     }
 
@@ -203,13 +203,13 @@ static int ripc_close_c(void* ctx) {
         rsocket_destroy(rsock_item);
     }
 
-    rsocket_ctx->stream_state = ripc_state_closed;
+    ds_client->state = ripc_state_closed;
 
     return rcode_ok;
 }
 static int ripc_start_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
-    ripc_data_source_t* ds = rsocket_ctx->stream;
+    ripc_data_source_t* ds = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
@@ -245,7 +245,7 @@ static int ripc_start_c(void* ctx) {
                 }
 
                 if (repoll_check_event_out(dest_item->event_val_rsp)) {
-                    if (rsocket_ctx->stream_state == ripc_state_ready_pending) {
+                    if (ds_client->state == ripc_state_ready_pending) {
                         repoll_unset_event_out(dest_item->event_val_req);//重置掉
 
                         ret_code = repoll_modify(container, dest_item);
@@ -259,8 +259,8 @@ static int ripc_start_c(void* ctx) {
                         ds->write_buff = NULL;
                         rbuffer_init(ds->write_buff, write_buff_size);
 
-                        // rsocket_ctx->stream_state = ripc_state_ready;
-                        rsocket_ctx->stream_state = ripc_state_start;
+                        // ds_client->state = ripc_state_ready;
+                        ds_client->state = ripc_state_start;
                         rinfo("epoll socket client start.");
 
                         return rcode_ok;
@@ -277,7 +277,7 @@ static int ripc_start_c(void* ctx) {
 static int ripc_stop_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
 
-    rsocket_ctx->stream_state = ripc_state_stop;
+    ds_client->state = ripc_state_stop;
     rinfo("socket client stop.");
 
 
@@ -292,8 +292,8 @@ static int ripc_send_data_2buffer_c(ripc_data_source_t* ds_client, void* data) {
     rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
-    if (rsock_item == NULL || rsocket_ctx->stream_state != ripc_state_start) {
-        rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
+    if (rsock_item == NULL || ds_client->state != ripc_state_start) {
+        rinfo("sock not ready, state: %d", ds_client->state);
         return rcode_err_sock_disconnect;
     }
 
@@ -368,8 +368,8 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
     rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     ripc_data_raw_t data_raw;//直接在栈上
 
-    if (rsocket_ctx->stream_state != ripc_state_start) {
-        rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
+    if (ds_client->state != ripc_state_start) {
+        rinfo("sock not ready, state: %d", ds_client->state);
         return rcode_err_sock_disconnect;
     }
     
@@ -443,13 +443,13 @@ static int ripc_check_data_c(ripc_data_source_t* ds, void* data) {
             }
 
             if (repoll_check_event_out(dest_item->event_val_rsp)) {
-                if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                if likely(ds_client->state == ripc_state_start) {
                     ripc_send_data_c(ds, data);
                 }
             }
 
             if (repoll_check_event_in(dest_item->event_val_rsp)) {
-                if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                if likely(ds_client->state == ripc_state_start) {
                     ripc_receive_data_c(ds, data);
                 }
             }
@@ -506,7 +506,7 @@ static int ripc_init_server(void* ctx, const void* cfg_data) {
     rinfo("socket server init.");
 
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ctx;
-    ripc_data_source_t* ds_server = (ripc_data_source_t*)rsocket_ctx->stream;
+    ripc_data_source_t* ds_server = (ripc_data_source_t*)rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
 
     int ret_code = rcode_ok;
@@ -531,7 +531,7 @@ static int ripc_uninit_server(void* ctx) {
         rdict_free(rsocket_ctx->map_clients);
     }
 
-    rsocket_ctx->stream_state = ripc_state_uninit;
+    ds_client->state = ripc_state_uninit;
 
     return ret_code;
 }
@@ -540,7 +540,7 @@ static int ripc_open_server(void* ctx) {
     rinfo("socket server open.");
 
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ctx;
-    ripc_data_source_t* ds_server = rsocket_ctx->stream;
+    ripc_data_source_t* ds_server = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     rsocket_cfg_t* cfg = rsocket_ctx->cfg;
 
@@ -650,9 +650,9 @@ static int ripc_open_server(void* ctx) {
     rsock_item->userdata.next = NULL;
 
     ds_server->stream = rsock_item;//stream间接指向fd
-    // rsocket_ctx->stream_state = ripc_state_ready_pending;
+    // ds_client->state = ripc_state_ready_pending;
 
-    rsocket_ctx->stream_state = ripc_state_ready;
+    ds_client->state = ripc_state_ready;
 
     return rcode_ok;
 
@@ -669,14 +669,14 @@ exit1:
 
 static int ripc_close_server(void* ctx) {
     rsocket_server_ctx_t* rsocket_ctx = (rsocket_server_ctx_t*)ctx;
-    ripc_data_source_t* ds_server = rsocket_ctx->stream;
+    ripc_data_source_t* ds_server = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     rsocket_t* rsock_item = (rsocket_t*)ds_server->stream;
     repoll_item_t* repoll_item = (repoll_item_t*)rsock_item->userdata.data;
 
-    rinfo("socket server close. state = %d", rsocket_ctx->stream_state);
+    rinfo("socket server close. state = %d", ds_client->state);
 
-    if (rsocket_ctx->stream_state == ripc_state_closed) {
+    if (ds_client->state == ripc_state_closed) {
         return rcode_ok;
     }
 
@@ -699,17 +699,17 @@ static int ripc_close_server(void* ctx) {
         rdict_clear(rsocket_ctx->map_clients);
     }
 
-    rsocket_ctx->stream_state = ripc_state_closed;
+    ds_client->state = ripc_state_closed;
 
     return rcode_ok;
 }
 static int ripc_start_server(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
-    ripc_data_source_t* ds = rsocket_ctx->stream;
+    ripc_data_source_t* ds = rsocket_ctx->ds;
     repoll_container_t* container = (repoll_container_t*)rsocket_ctx->user_data;
     int ret_code = 0;
 
-    rsocket_ctx->stream_state = ripc_state_start;
+    ds_client->state = ripc_state_start;
     rinfo("socket server start.");
 
     return ret_code;
@@ -717,7 +717,7 @@ static int ripc_start_server(void* ctx) {
 static int ripc_stop_server(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
 
-    rsocket_ctx->stream_state = ripc_state_stop;
+    ds_client->state = ripc_state_stop;
     rinfo("socket server stop.");
 
 
@@ -732,7 +732,7 @@ static int close_session(ripc_data_source_t* ds_client) {
 
     rinfo("socket session close.");
 
-    // if (rsocket_ctx->stream_state == ripc_state_closed) {
+    // if (ds_client->state == ripc_state_closed) {
     //     return rcode_ok;
     // }
 
@@ -753,7 +753,7 @@ static int close_session(ripc_data_source_t* ds_client) {
 
     rdata_free(ripc_data_source_t, ds_client);
 
-    // rsocket_ctx->stream_state = ripc_state_closed;
+    // ds_client->state = ripc_state_closed;
 
     return rcode_ok;
 }
@@ -767,8 +767,8 @@ static int ripc_send_data_2buffer_server(ripc_data_source_t* ds_client, void* da
     rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     repoll_item_t* repoll_item = NULL;
 
-    if (rsock_item != NULL && rsocket_ctx->stream_state != ripc_state_start) {
-        rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
+    if (rsock_item != NULL && ds_client->state != ripc_state_start) {
+        rinfo("sock not ready, state: %d", ds_client->state);
         return rcode_err_sock_disconnect;
     }
 
@@ -849,8 +849,8 @@ static int ripc_receive_data_server(ripc_data_source_t* ds_client, void* data) {
     rsocket_t* rsock_item = (rsocket_t*)ds_client->stream;
     ripc_data_raw_t data_raw;//直接在栈上
 
-    if (rsocket_ctx->stream_state != ripc_state_start) {
-        rinfo("sock not ready, state: %d", rsocket_ctx->stream_state);
+    if (ds_client->state != ripc_state_start) {
+        rinfo("sock not ready, state: %d", ds_client->state);
         return rcode_err_sock_disconnect;
     }
     
@@ -992,7 +992,7 @@ static int ripc_accept_server(ripc_data_source_t* ds_server, void* data) {
     rsock_item->userdata.next = NULL;
 
     ds_client->stream = rsock_item;//stream间接指向fd
-    // rsocket_ctx->stream_state = ripc_state_ready_pending;
+    ds_client->state = ripc_state_ready_pending;
 
     rinfo("accept client %d (%s:%d)", addr.ss_family, ip, port);
 
@@ -1061,7 +1061,7 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
                 }
 
                 if (repoll_check_event_out(dest_item->event_val_rsp)) {//add success
-                    if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                    if likely(ds_client->state == ripc_state_start) {
                         ripc_append_server(ds, data);
                     } else {
                         rwarn("server not on service.");
@@ -1069,7 +1069,7 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
                 }
 
                 if (repoll_check_event_in(dest_item->event_val_rsp)) {//accept
-                    if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                    if likely(ds_client->state == ripc_state_start) {
                         int accept_count = 10;//todo Ray 读配置，一次最大accept个数
                         while (ripc_accept_server(ds, NULL) == rcode_ok && --accept_count > 0) {
                             
@@ -1090,20 +1090,20 @@ static int ripc_check_data_server(ripc_data_source_t* ds, void* data) {
             }
 
             if (repoll_check_event_out(dest_item->event_val_rsp)) {
-                if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                if likely(ds_client->state == ripc_state_start) {
                     ripc_send_data_server(dest_item->ds, data);
                 }
             }
 
             if (repoll_check_event_in(dest_item->event_val_rsp)) {
-                if likely(rsocket_ctx->stream_state == ripc_state_start) {
+                if likely(ds_client->state == ripc_state_start) {
                     ripc_receive_data_server(dest_item->ds, data);
                 }
             }
         }
     }
 
-    if (rsocket_ctx->stream_state != ripc_state_start) {
+    if (ds_client->state != ripc_state_start) {
         rwarn("server not on service.");
         return rcode_invalid;
     }

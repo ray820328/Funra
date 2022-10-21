@@ -18,9 +18,12 @@
 extern "C" {
 #endif
 
+typedef struct rsocket_uv_s {
+    uv_handle_t* stream;
+} rsocket_uv_t;
+
 #define rsocket_ctx_uv_fields \
-    uv_loop_t* loop; \
-    uv_handle_t* stream
+    uv_loop_t* loop
 
 typedef struct rsocket_ctx_uv_s {
     rsocket_ctx_fields;

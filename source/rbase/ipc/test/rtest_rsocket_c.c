@@ -31,27 +31,28 @@ static volatile int sent_times = 3;
 static void* run_client(void* arg) {
     int ret_code = 0;
 
-    rsocket_ctx.id = 3008;
-    rsocket_ctx.stream_type = ripc_type_tcp;
-    rsocket_ctx.stream_state = ripc_state_init;
+    rsocket_ctx_t* ctx = &rsocket_ctx;
 
-    rsocket_ctx.ipc_entry = (ripc_entry_t*)rsocket_c;//windows默认sellect，linux默认poll
+    ctx->id = 3008;
+    ctx->stream_type = ripc_type_tcp;
+
+    ctx->ipc_entry = (ripc_entry_t*)rsocket_c;//windows默认sellect，linux默认poll
 
     ripc_data_source_t* ds = rdata_new(ripc_data_source_t);
     ds->ds_type = ripc_data_source_type_client;
-    ds->ds_id = rsocket_ctx.id;
+    ds->ds_id = ctx->id;
     ds->ctx = &rsocket_ctx;
 
-    rsocket_ctx.stream = ds;
+    ctx->ds = ds;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
-    rsocket_ctx.cfg = cfg;
+    ctx->cfg = cfg;
     cfg->id = 1;
     rstr_set(cfg->ip, "127.0.0.1", 0);
     cfg->port = 23000;
 
     rdata_handler_t* handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    rsocket_ctx.in_handler = handler;
+    ctx->in_handler = handler;
     handler->prev = NULL;
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
@@ -63,7 +64,7 @@ static void* run_client(void* arg) {
     handler->notify = rcodec_decode_default.notify;
 
     handler = (rdata_handler_t*)rdata_new(rdata_handler_t);
-    rsocket_ctx.out_handler = handler;
+    ctx->out_handler = handler;
     handler->prev = NULL;
     handler->next = NULL;
     handler->on_before = rcodec_encode_default.on_before;
@@ -76,12 +77,12 @@ static void* run_client(void* arg) {
 
     rtools_wait_mills(5000);
 
-    ret_code = rsocket_ctx.ipc_entry->init(&rsocket_ctx, rsocket_ctx.cfg);
+    ret_code = ctx->ipc_entry->init(&rsocket_ctx, ctx->cfg);
     assert_true(ret_code == rcode_ok);
-    ret_code = rsocket_ctx.ipc_entry->open(&rsocket_ctx);
+    ret_code = ctx->ipc_entry->open(&rsocket_ctx);
     assert_true(ret_code == rcode_ok);
 
-    ret_code = rsocket_ctx.ipc_entry->start(&rsocket_ctx);
+    ret_code = ctx->ipc_entry->start(&rsocket_ctx);
     assert_true(ret_code == rcode_ok);
 
 	while (sent_times-- > 0) {
@@ -89,23 +90,23 @@ static void* run_client(void* arg) {
 		data.cmd = 11;
 		data.data = rstr_cpy("client rsocket_c (win=select,linux=poll)  send test", 0);
 		data.len = rstr_len(data.data);
-		rsocket_ctx.ipc_entry->send(ds, &data);
+		ctx->ipc_entry->send(ds, &data);
 
         rtools_wait_mills(1000);
-        rsocket_ctx.ipc_entry->check(ds, NULL);//send & recv
+        ctx->ipc_entry->check(ds, NULL);//send & recv
 
         rdata_free(char*, data.data);
 
         rtools_wait_mills(1000);
 	}
 
-    rsocket_ctx.ipc_entry->stop(&rsocket_ctx);
+    ctx->ipc_entry->stop(&rsocket_ctx);
 
-    rsocket_ctx.ipc_entry->close(&rsocket_ctx);
-    rsocket_ctx.ipc_entry->uninit(&rsocket_ctx);
+    ctx->ipc_entry->close(&rsocket_ctx);
+    ctx->ipc_entry->uninit(&rsocket_ctx);
 
-    rdata_free(rdata_handler_t, rsocket_ctx.in_handler);
-    rdata_free(rdata_handler_t, rsocket_ctx.out_handler);
+    rdata_free(rdata_handler_t, ctx->in_handler);
+    rdata_free(rdata_handler_t, ctx->out_handler);
     rdata_free(ripc_data_source_t, ds);
     rdata_free(rsocket_cfg_t, cfg);
 

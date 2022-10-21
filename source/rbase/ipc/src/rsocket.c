@@ -605,6 +605,11 @@ char* rsocket_gaistrerror(int err) {
 
 #if defined(_WIN32) || defined(_WIN64)
 
+#define WAITFD_R        1
+#define WAITFD_W        2
+#define WAITFD_E        4
+#define WAITFD_C        (WAITFD_E|WAITFD_W)
+
 int rsocket_setblocking(rsocket_t* rsock_item) {
     u_long argp = 0;
     ioctlsocket(rsock_item->fd, FIONBIO, &argp);
@@ -617,6 +622,300 @@ int rsocket_setnonblocking(rsocket_t* rsock_item) {
     return rcode_ok;
 }
 
+int rsocket_waitfd(rsocket_t* rsock_item, int sw, rtimeout_t* tm) {
+    int ret_code = 0;
+    fd_set rfds, wfds, efds, *rp = NULL, *wp = NULL, *ep = NULL;
+    struct timeval tv, *tp = NULL;
+    int64_t time_left = 0;
+
+    if (rtimeout_done(tm)) {
+        return rcode_io_timeout;
+    }
+
+    //select使用bit，fd_set内核和用户态共同修改，要么保存状态，要么每次重新分别设置 read/write/error 掩码
+    if (sw & WAITFD_R) {
+        FD_ZERO(&rfds);
+        FD_SET(rsock_item->fd, &rfds);
+        rp = &rfds;
+    }
+    if (sw & WAITFD_W) {
+        FD_ZERO(&wfds);
+        FD_SET(rsock_item->fd, &wfds);
+        wp = &wfds;
+    }
+    if (sw & WAITFD_C) {
+        FD_ZERO(&efds);
+        FD_SET(rsock_item->fd, &efds);
+        ep = &efds;
+    }
+
+    if ((time_left = rtimeout_get_block(tm)) >= 0) {
+        rtimeout_2timeval(tm, &tv, time_left);
+        tp = &tv;
+    }
+
+    ret_code = select(0, rp, wp, ep, tp); //timeout为timeval表示的时间戳微秒，NULL时无限等待
+
+    if (ret_code == -1) {
+        return rerror_get_osnet_err();
+    }
+    if (ret_code == 0) {
+        return rcode_io_timeout;
+    }
+    if (sw == WAITFD_C && FD_ISSET(rsock_item->fd, &efds)) {
+        return rcode_io_closed;
+    }
+
+    return rcode_io_done;
+}
+
+int rsocket_select(rsocket_t* rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, rtimeout_t* tm) {
+    struct timeval tv;
+    int64_t time_left = rtimeout_get_block(tm);
+    rtimeout_2timeval(tm, &tv, time_left);
+    if (rsock->fd <= 0) {
+        Sleep((DWORD)(time_left / 1000));
+        return 0;
+    }
+    else {
+        return select(0, rfds, wfds, efds, time_left >= 0 ? &tv : NULL);
+    }
+}
+
+int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
+    int ret_code;
+    if (rsock_item->fd == SOCKET_INVALID) {
+        return rcode_io_closed;
+    }
+
+    if (connect(rsock_item->fd, addr, len) == 0) {
+        return rcode_io_done;
+    }
+
+    ret_code = rerror_get_osnet_err();
+    if (ret_code != WSAEWOULDBLOCK && ret_code != WSAEINPROGRESS) {
+        return ret_code;
+    }
+
+    if (rtimeout_done(tm)) {
+        return rcode_io_timeout;
+    }
+
+    /* wait until something happens */
+    ret_code = rsocket_waitfd(rsock_item, WAITFD_C, tm);
+
+    if (ret_code == rcode_io_closed) {
+        int elen = sizeof(ret_code);
+        /* give windows time to set the error (yes, disgusting) */
+        Sleep(10);
+
+        getsockopt(rsock_item->fd, SOL_SOCKET, SO_ERROR, (char *)&ret_code, &elen);
+
+        return ret_code > 0 ? ret_code : rcode_io_unknown;
+    }
+    else {
+        return ret_code;
+    }
+}
+
+int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len) {
+    int ret_code = rcode_io_done;
+
+    rsocket_setblocking(rsock_item);
+
+    if (bind(rsock_item->fd, addr, len) < 0) {
+        ret_code = rerror_get_osnet_err();
+    }
+
+    rsocket_setnonblocking(rsock_item);
+
+    return ret_code;
+}
+
+int rsocket_listen(rsocket_t* rsock_item, int backlog) {
+    int ret_code = rcode_io_done;
+
+    rsocket_setblocking(rsock_item);
+
+    if (listen(rsock_item->fd, backlog) < 0) {
+        ret_code = rerror_get_osnet_err();
+    }
+
+    rsocket_setnonblocking(rsock_item);
+
+    return ret_code;
+}
+
+int rsocket_accept(rsocket_t* rsock_item, rsocket_t* pa, rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
+    if (rsock_item->fd == SOCKET_INVALID) {
+        return rcode_io_closed;
+    }
+
+    for (;; ) {
+        int ret_code = 0;
+        /* try to get client socket */
+        if ((pa->fd = accept(rsock_item->fd, addr, len)) != SOCKET_INVALID) {
+            return rcode_io_done;
+        }
+        /* find out why we failed */
+        ret_code = rerror_get_osnet_err();
+        /* if we failed because there was no connectoin, keep trying */
+        if (ret_code != WSAEWOULDBLOCK && ret_code != WSAECONNABORTED) {
+            return ret_code;
+        }
+        /* call select to avoid busy wait */
+        if ((ret_code = rsocket_waitfd(rsock_item, WAITFD_R, tm)) != rcode_io_done) {
+            return ret_code;
+        }
+    }
+}
+
+/** windows单次尽量不要发送1m以上的数据，卡死 **/
+int rsocket_send(rsocket_t* rsock_item, const char *data, int count, int *sent, rtimeout_t* tm) {
+    int ret_code = 0;
+
+    *sent = 0;
+    if (rsock_item->fd == SOCKET_INVALID) {
+        return rcode_io_closed;
+    }
+
+    int sent_once = 0;
+    for (;; ) {
+        sent_once = send(rsock_item->fd, data, (int)count, 0);
+        /* if we sent something, we are done */
+        if (sent_once > 0) {
+            *sent = sent_once;
+            return rcode_io_done;
+        }
+
+        ret_code = rerror_get_osnet_err();
+        /* we can only proceed if there was no serious error */
+        if (ret_code != WSAEWOULDBLOCK) {
+            return ret_code;
+        }
+        /* avoid busy wait */
+        if ((ret_code = rsocket_waitfd(rsock_item, WAITFD_W, tm)) != rcode_io_done) {
+            return ret_code;
+        }
+    }
+}
+
+int rsocket_send2_addr(rsocket_t* rsock_item, const char *data, size_t count, size_t *sent,
+    rsockaddr_t *addr, rsocket_len_t len, rtimeout_t* tm) {
+    int ret_code = 0;
+
+    *sent = 0;
+    if (rsock_item->fd == SOCKET_INVALID) {
+        return rcode_io_closed;
+    }
+
+    int sent_once = 0;
+    for (;; ) {
+        sent_once = sendto(rsock_item->fd, data, (int)count, 0, addr, len);
+        if (sent_once > 0) {
+            *sent = sent_once;
+            return rcode_io_done;
+        }
+
+        ret_code = rerror_get_osnet_err();
+        if (ret_code != WSAEWOULDBLOCK) {
+            return ret_code;
+        }
+        if ((ret_code = rsocket_waitfd(rsock_item, WAITFD_W, tm)) != rcode_io_done) {
+            return ret_code;
+        }
+    }
+}
+
+int rsocket_recv(rsocket_t* rsock_item, char *data, int count, int *got, rtimeout_t* tm) {
+    int ret_code = 0, prev = rcode_io_done;
+
+    *got = 0;
+    if (rsock_item->fd == SOCKET_INVALID) {
+        return rcode_io_closed;
+    }
+
+    int recv_once = 0;
+    for (;; ) {
+        //EAGAIN：套接字已标记为非阻塞，而接收操作被阻塞或者接收超时
+        //EBADF：sock不是有效的描述词
+        //ECONNREFUSE：远程主机阻绝网络连接
+        //EFAULT：内存空间访问出错
+        //EINTR：操作被信号中断
+        //EINVAL：参数无效
+        //ENOMEM：内存不足
+        //ENOTCONN：与面向连接关联的套接字尚未被连接上
+        //ENOTSOCK：sock索引的不是套接字 当返回值是0时，为正常关闭连接；
+        //注意：返回值 < 0 时并且(errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN)的情况下认为连接是正常的，继续接收
+        //对非阻塞socket而言，EAGAIN不是一种错误。在VxWorks和Windows上，EAGAIN的名字叫做EWOULDBLOCK
+        recv_once = recv(rsock_item->fd, data, (int)count, 0);
+
+        if (recv_once > 0) {
+            *got = recv_once;
+            return rcode_io_done;
+        }
+        if (recv_once == 0) {
+            return rcode_io_closed;
+        }
+
+        ret_code = rerror_get_osnet_err();
+        if (ret_code == WSAEWOULDBLOCK) {
+            return rcode_io_done;
+        }
+        else {
+            /* UDP, conn reset simply means the previous send failed. try again.
+             * TCP, it means our socket is now useless, so the error passes.
+             * (We will loop again, exiting because the same error will happen) */
+            if (ret_code != WSAECONNRESET || prev == WSAECONNRESET) {
+                return ret_code;
+            }
+            prev = ret_code;
+
+            //select阻塞直到read 或者 timeout
+            ret_code = rsocket_waitfd(rsock_item, WAITFD_R, tm);
+            if (ret_code != rcode_io_done) {
+                return ret_code;
+            }
+        }
+    }
+}
+
+int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *got,
+    rsockaddr_t *addr, rsocket_len_t *len, rtimeout_t* tm) {
+    int ret_code, prev = rcode_io_done;
+
+    *got = 0;
+    if (rsock_item->fd == SOCKET_INVALID) {
+        return rcode_io_closed;
+    }
+
+    int recv_once = 0;
+    for (;; ) {
+        recv_once = recvfrom(rsock_item->fd, data, (int)count, 0, addr, len);
+
+        if (recv_once > 0) {
+            *got = recv_once;
+            return rcode_io_done;
+        }
+        if (recv_once == 0) {
+            return rcode_io_closed;
+        }
+
+        ret_code = rerror_get_osnet_err();
+        /* UDP, conn reset simply means the previous send failed. try again.
+         * TCP, it means our socket is now useless, so the error passes.
+         * (We will loop again, exiting because the same error will happen) */
+        if (ret_code != WSAEWOULDBLOCK) {
+            if (ret_code != WSAECONNRESET || prev == WSAECONNRESET) {
+                return ret_code;
+            }
+            prev = ret_code;
+        }
+        if ((ret_code = rsocket_waitfd(rsock_item, WAITFD_R, tm)) != rcode_io_done) {
+            return ret_code;
+        }
+    }
+}
 
 
 static char* wstrerror(int ret_code) {
@@ -746,5 +1045,11 @@ char* rsocket_gaistrerror(int ret_code) {
         default: return (char*)gai_strerror(ret_code);
     }
 }
+
+
+#undef WAITFD_R
+#undef WAITFD_W
+#undef WAITFD_E
+#undef WAITFD_C
 
 #endif //_WIN64

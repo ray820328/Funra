@@ -34,9 +34,6 @@ static void* run_server(void* arg) {
     rsocket_ctx_uv_t* ctx = (rsocket_ctx_uv_t*)&rsocket_ctx;
     ctx->id = 2001;
     ctx->stream_type = ripc_type_tcp;
-    ctx->stream = (uv_handle_t*)rdata_new(uv_tcp_t);
-    ctx->stream_state = 1;
-    //ctx->loop = uv_default_loop();
     uv_loop_t loop;
     assert_true(0 == uv_loop_init(&loop));
 #ifdef _WIN32
@@ -53,7 +50,13 @@ static void* run_server(void* arg) {
     ds->ds_id = ctx->id;
     ds->ctx = &rsocket_ctx;
 
-    ((uv_tcp_t*)(ctx->stream))->data = ds;
+    //rsocket_uv_t* rsock_uv_item = rdata_new(rsocket_uv_t);
+    uv_handle_t* uv_handle = (uv_handle_t*)rdata_new(uv_tcp_t);
+    uv_handle->data = ds;
+
+    ds->stream = uv_handle;
+
+    ctx->ds = ds;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
     ctx->cfg = cfg;
@@ -98,9 +101,9 @@ static void* run_server(void* arg) {
 
     rdata_free(rdata_handler_t, ctx->in_handler);
     rdata_free(rdata_handler_t, ctx->out_handler);
+    rdata_free(uv_tcp_t, ds->stream);
     rdata_free(ripc_data_source_t, ds);
     rdata_free(rsocket_cfg_t, cfg);
-    rdata_free(uv_tcp_t, ctx->stream);
 
     rinfo("end, run_uv_server: %s", (char *)arg);
 

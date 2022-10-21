@@ -44,8 +44,6 @@ static void* run_server(void* arg) {
 
     rsocket_ctx.id = 2008;
     rsocket_ctx.stream_type = ripc_type_tcp;
-    rsocket_ctx.stream_state = 1;
-
 
     rsocket_ctx.ipc_entry = (ripc_entry_t*)rsocket_s;
 
@@ -54,7 +52,7 @@ static void* run_server(void* arg) {
     ds->ds_id = rsocket_ctx.id;
     ds->ctx = &rsocket_ctx;
 
-    rsocket_ctx.stream = ds;
+    rsocket_ctx.ds = ds;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
     rsocket_ctx.cfg = cfg;
@@ -145,7 +143,7 @@ static void* run_client(void* arg) {
     ds->ds_id = rsocket_client_ctx.id;
     ds->ctx = &rsocket_client_ctx;
 
-    rsocket_client_ctx.stream = ds;
+    rsocket_client_ctx.ds = ds;
 
     rsocket_cfg_t* cfg = (rsocket_cfg_t*)rdata_new(rsocket_cfg_t);
     rsocket_client_ctx.cfg = cfg;
