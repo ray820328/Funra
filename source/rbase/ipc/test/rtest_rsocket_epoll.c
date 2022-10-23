@@ -134,7 +134,6 @@ static void* run_client(void* arg) {
 
     rsocket_client_ctx.id = 3008;
     rsocket_client_ctx.stream_type = ripc_type_tcp;
-    rsocket_client_ctx.stream_state = ripc_state_init;
 
     rsocket_client_ctx.ipc_entry = (ripc_entry_t*)rsocket_epoll_c;
 

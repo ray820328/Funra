@@ -228,7 +228,7 @@ static void client_connect(rsocket_ctx_uv_t* rsocket_ctx) {
     }
 
     connect_req->data = rsocket_ctx;
-    ret_code = uv_tcp_connect(connect_req, (uv_tcp_t*)rsocket_ctx->ds, (const struct sockaddr*) &addr, connect_cb);
+    ret_code = uv_tcp_connect(connect_req, (uv_tcp_t*)rsocket_ctx->ds->stream, (const struct sockaddr*) &addr, connect_cb);
     if (ret_code != 0) {
         rerror("error on connecting, code: %d", ret_code);
         rgoto(1);
