@@ -434,7 +434,7 @@ static int start_server_tcp4(rsocket_ctx_uv_t* rsocket_ctx) {
         return rcode_invalid;
     }
 
-    ret_code = uv_listen((uv_stream_t*)ds_server->stream, 128, on_connection);
+    ret_code = uv_listen((uv_stream_t*)ds_server->stream, 128, (uv_connection_cb)on_connection);
     if (ret_code) {
         rerror("listen error %s:%d, %s", ip, port, uv_err_name(ret_code));
         return rcode_invalid;

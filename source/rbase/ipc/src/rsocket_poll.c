@@ -24,6 +24,7 @@ static int write_buff_size = 64 * 1024;
 #define wait_write POLLOUT
 #define wait_connect (POLLIN|POLLOUT)
 
+static int ripc_close_c(void* ctx);
 
 static int rsocket_check_fd(rsocket_t* rsock_item, int wait_op, rtimeout_t* tm) {
     int ret_code = 0;
@@ -106,15 +107,16 @@ static int ripc_uninit_c(void* ctx) {
     ripc_data_source_t* ds_client = rsocket_ctx->ds;
     int ret_code = 0;
 
-    ret_code = rsocket_close(ds_client->stream);
-    if (ret_code != rcode_ok) {
-        rerror("failed on close, code = %d", ret_code);
-        return ret_code;
+    if (ds_client->state == ripc_state_uninit) {
+        return rcode_ok;
     }
-    ret_code = rsocket_destroy(ds_client->stream);
-    if (ret_code != rcode_ok) {
-        rerror("failed on destroy, code = %d", ret_code);
-        return ret_code;
+
+    if (ds_client->state != ripc_state_closed) {
+        ret_code = ripc_close_c(ctx);
+        if (ret_code != rcode_ok) {
+            rerror("failed on uninit, code = %d", ret_code);
+            return ret_code;
+        }
     }
 
     ds_client->state = ripc_state_uninit;
@@ -127,7 +129,7 @@ static int ripc_open_c(void* ctx) {
 	ripc_data_source_t* ds_client = rsocket_ctx->ds;
     int ret_code = 0;
 
-    rinfo("socket client open.");
+    rtrace("socket client open.");
 
     char *nodename = cfg->ip;//主机名，域名或ipv4/6
     char *servname = NULL;//服务名可以是十进制的端口号("8000")字符串或NULL/ftp等/etc/services定义的服务
@@ -206,7 +208,16 @@ static int ripc_open_c(void* ctx) {
     freeaddrinfo(addrinfo_result);
 
 	if (ret_code != rcode_ok) {
-	   rgoto(1);
+        rerror("failed on connect, code = %d", ret_code);
+
+	    rgoto(1);
+    }
+
+    if (rsocket_setopt(rsock_item, RSO_NONBLOCK, true) != rcode_ok) {
+        rgoto(1);
+    }
+    if (rsocket_setopt(rsock_item, RTCP_NODELAY, true) != rcode_ok) {
+        rgoto(1);
     }
 
     ds_client->read_cache = NULL;
@@ -229,23 +240,22 @@ static int ripc_close_c(void* ctx) {
 	rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
 	ripc_data_source_t* ds_client = rsocket_ctx->ds;
 
-    rinfo("socket client close.");
+    rtrace("socket client close, state = %d", ds_client->state);
 
-    if (ds_client->state == ripc_state_closed) {
+    if (ds_client->state == ripc_state_closed || ds_client->stream == NULL) {
         return rcode_ok;
     }
-
 
     if (ds_client->state == ripc_state_ready || 
             ds_client->state == ripc_state_disconnect || 
             ds_client->state == ripc_state_start || 
-            ds_client->state == ripc_state_stop || 
-            ds_client->state == ripc_state_disconnect) {
+            ds_client->state == ripc_state_stop) {
     	rbuffer_release(ds_client->read_cache);
     	rbuffer_release(ds_client->write_buff);
 
         rsocket_close(ds_client->stream);
         rsocket_destroy(ds_client->stream);
+        ds_client->stream = NULL;
     }
 
     ds_client->state = ripc_state_closed;
@@ -254,8 +264,9 @@ static int ripc_close_c(void* ctx) {
 }
 static int ripc_start_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
+    ripc_data_source_t* ds_client = rsocket_ctx->ds;
 
-    rinfo("socket client start.");
+    rtrace("socket client start.");
 
     ds_client->state = ripc_state_start;
 
@@ -263,8 +274,9 @@ static int ripc_start_c(void* ctx) {
 }
 static int ripc_stop_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
+    ripc_data_source_t* ds_client = rsocket_ctx->ds;
 
-    rinfo("socket client stop.");
+    rtrace("socket client stop.");
 
     ds_client->state = ripc_state_stop;
 

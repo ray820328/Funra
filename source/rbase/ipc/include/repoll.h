@@ -18,8 +18,8 @@
 extern "C" {
 #endif
 
-#define repoll_trace(...) rtrace(__VA_ARGS__)
-// #define repoll_trace(...)
+// #define repoll_trace(...) rtrace(__VA_ARGS__)
+#define repoll_trace(...)
 
 #if defined(__linux__)
 

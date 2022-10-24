@@ -129,22 +129,22 @@ static void* run_client(void* arg) {
     rtools_wait_mills(5000);
 
     ret_code = ctx->ipc_entry->init(ctx, ctx->cfg);
-    rassert(ret_code == rcode_ok, "");
+    assert_true(ret_code == rcode_ok);
 
     uv_timer_t timer_repeat;
     uv_timer_init(ctx->loop, &timer_repeat);
     uv_timer_start(&timer_repeat, repeat_cb, 2000, 2000);
 
     ret_code = ctx->ipc_entry->start(ctx);
-    rassert(ret_code == rcode_ok, "");
+    assert_true(ret_code == rcode_ok);
 
     ret_code = ctx->ipc_entry->close(ctx);
-    rassert(ret_code == rcode_ok, "");
+    assert_true(ret_code == rcode_ok);
 
     ret_code = ctx->ipc_entry->stop(ctx);
-    rassert(ret_code == rcode_ok, "");
+    assert_true(ret_code == rcode_ok);
     ret_code = ctx->ipc_entry->uninit(ctx);
-    rassert(ret_code == rcode_ok, "");
+    assert_true(ret_code == rcode_ok);
 
     rdata_free(rdata_handler_t, ctx->in_handler);
     rdata_free(rdata_handler_t, ctx->out_handler);

@@ -24,6 +24,8 @@
 static int read_cache_size = 64 * 1024;
 static int write_buff_size = 64 * 1024;
 
+static int ripc_close_c(void* ctx);
+
 static int rsocket_setup(void) {
     WSADATA wsaData;
     WORD wVersionRequested = MAKEWORD(2, 0);
@@ -63,6 +65,18 @@ static int ripc_uninit_c(void* ctx) {
     rsocket_ctx_t* rsocket_ctx = (rsocket_ctx_t*)ctx;
     ripc_data_source_t* ds_client = (ripc_data_source_t*)rsocket_ctx->ds;
     int ret_code = 0;
+
+    if (ds_client->state == ripc_state_uninit) {
+        return rcode_ok;
+    }
+
+    if (ds_client->state != ripc_state_closed) {
+        ret_code = ripc_close_c(ctx);
+        if (ret_code != rcode_ok) {
+            rerror("failed on uninit, code = %d", ret_code);
+            return ret_code;
+        }
+    }
 
     ret_code = rsocket_cleanup();
     if (ret_code != rcode_ok) {
@@ -177,20 +191,20 @@ static int ripc_close_c(void* ctx) {
 
     rinfo("socket client close.");
 
-    if (ds_client->state == ripc_state_closed) {
+    if (ds_client->state == ripc_state_closed || ds_client->stream == NULL) {
         return rcode_ok;
     }
 
     if (ds_client->state == ripc_state_ready || 
             ds_client->state == ripc_state_disconnect || 
             ds_client->state == ripc_state_start || 
-            ds_client->state == ripc_state_stop || 
-            ds_client->state == ripc_state_disconnect) {
+            ds_client->state == ripc_state_stop) {
     	rbuffer_release(ds_client->read_cache);
     	rbuffer_release(ds_client->write_buff);
 
         rsocket_close((rsocket_t*)(ds_client->stream));
         rsocket_destroy((rsocket_t*)ds_client->stream);
+        ds_client->stream = NULL;
     }
 
     ds_client->state = ripc_state_closed;

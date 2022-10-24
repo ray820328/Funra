@@ -24,8 +24,6 @@
 extern "C" {
 #endif
 
-typedef struct sockaddr rsockaddr_t;
-
 #if defined(__linux__)
 
 #include <errno.h>
@@ -75,6 +73,24 @@ typedef SOCKADDR_STORAGE rsockaddr_storage_t;
 #define SOCKET_INVALID (INVALID_SOCKET)
 
 #endif //_WIN64
+
+
+typedef struct sockaddr rsockaddr_t;
+
+#define RSO_LINGER        1 << 0    /** Linger */
+#define RSO_KEEPALIVE     1 << 1    /** Keepalive */
+#define RSO_DEBUG         1 << 2    /** Debug */
+#define RSO_NONBLOCK      1 << 3    /** Non-blocking IO */
+#define RSO_REUSEADDR     1 << 4    /** Reuse addresses */
+#define RSO_SNDBUF        1 << 5    /** Send buffer */
+#define RSO_RCVBUF        1 << 6    /** Receive buffer */
+#define RSO_DISCONNECTED  1 << 7    /** Disconnected */
+#define RTCP_NODELAY      1 << 8    /** TCP_NODELAY */
+#define RTCP_NOPUSH       1 << 9    /** No push */
+#define RIPV6_V6ONLY      1 << 10   /** Don't accept IPv4 connections */
+#define RTCP_DEFER_ACCEPT 1 << 11   /** Delay accepting of new connections until data is available. */
+#define RSO_BROADCAST     1 << 12   /** Allow broadcast */
+#define RSO_FREEBIND      1 << 13   /** Allow binding to addresses not owned by any interface */
 
 
 /* ------------------------------- Macros ------------------------------------*/
@@ -174,6 +190,7 @@ int rsocket_destroy(rsocket_t* rsock_item);
 
 int rsocket_setblocking(rsocket_t* rsock_item);
 int rsocket_setnonblocking(rsocket_t* rsock_item);
+int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on);
 
 int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t* addr, rsocket_len_t len);
 int rsocket_listen(rsocket_t* rsock_item, int backlog);

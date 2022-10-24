@@ -12,6 +12,8 @@
 #include "rtime.h"
 #include "rsocket.h"
 
+#define rsocket_linger_max_secs 30
+
 int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol) {
     rsock_item->fd = socket(domain, type, protocol);
     if (rsock_item->fd != SOCKET_INVALID) {
@@ -19,9 +21,9 @@ int rsocket_create(rsocket_t* rsock_item, int domain, int type, int protocol) {
 
 
 #else   
-        int flag = 0;
-        if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(flag)) == -1) {
-            return rerror_get_osnet_err();
+        int rv = 0;
+        if ((rv = rsocket_setopt(rsock_item, RSO_REUSEADDR, true)) != rcode_ok) {
+            return rv;
         }
 #endif
         return rcode_io_done;
@@ -85,21 +87,147 @@ char* rio_strerror(int err) {
 #include <sys/poll.h>
 #include <sys/epoll.h>
 
-// int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
-// int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
-// int rsocket_setopt(rsocket_t* rsock_item, int option, bool on, int flag) {
-//     // if (on) {
-//     //     rsock_item->options |= (option);
-//     // } else {
-//     //     rsock_item->options &= ~(option);
-//     // }
-//     setsockopt(rsock_item->fd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&flag, sizeof(flag));
-//     int ret = setsockopt(rsock_item->fd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
-//     if (ret < 0) {
-//         return rcode_invalid;
-//     }
-//     return rcode_ok;    
-// }
+int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
+    int flag = 0;
+    int ret_code = 0;
+
+    flag = on ? 1 : 0;
+
+    switch(option) {
+    case RSO_KEEPALIVE:
+#ifdef SO_KEEPALIVE
+        if (on != rsocket_check_option(rsock_item, RSO_KEEPALIVE)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&flag, sizeof(int)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    case RSO_DEBUG:
+        if (on != rsocket_check_option(rsock_item, RSO_DEBUG)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_DEBUG, (void *)&flag, sizeof(int)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+        break;
+    case RSO_BROADCAST:
+#ifdef SO_BROADCAST
+        if (on != rsocket_check_option(rsock_item, RSO_BROADCAST)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_BROADCAST, (void *)&flag, sizeof(int)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    case RSO_REUSEADDR:
+        if (on != rsocket_check_option(rsock_item, RSO_REUSEADDR)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(int)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+        break;
+    case RSO_SNDBUF:
+#ifdef SO_SNDBUF
+        if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_SNDBUF, (void *)&on, sizeof(int)) == -1) {
+            return rerror_get_os_err();
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    case RSO_RCVBUF:
+#ifdef SO_RCVBUF
+        if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_RCVBUF, (void *)&on, sizeof(int)) == -1) {
+            return rerror_get_os_err();
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    case RSO_NONBLOCK:
+        if (on != rsocket_check_option(rsock_item, RSO_NONBLOCK)) {
+            if (on) {
+                if ((ret_code = rsocket_setnonblocking(rsock_item)) != rcode_ok) {
+                    return ret_code;
+                }
+            } else {
+                if ((ret_code = rsocket_setblocking(rsock_item)) != rcode_ok) {
+                    return ret_code;
+                }
+            }
+        }
+        break;
+    case RSO_LINGER:
+#ifdef SO_LINGER
+        if (on != rsocket_check_option(rsock_item, RSO_LINGER)) {
+            struct linger li;
+            li.l_onoff = on;
+            li.l_linger = rsocket_linger_max_secs;
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_LINGER, (char *) &li, sizeof(struct linger)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    case RTCP_DEFER_ACCEPT:
+#if defined(TCP_DEFER_ACCEPT)
+        if (on != rsocket_check_option(rsock_item, RTCP_DEFER_ACCEPT)) {
+            int optlevel = IPPROTO_TCP;
+            int optname = TCP_DEFER_ACCEPT;
+
+            if (setsockopt(rsock_item->fd, optlevel, optname,  (void *)&on, sizeof(int)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    case RTCP_NODELAY:
+#if defined(TCP_NODELAY)
+        if (on != rsocket_check_option(rsock_item, RTCP_NODELAY)) {
+            int optlevel = IPPROTO_TCP;
+            int optname = TCP_NODELAY;
+            // if (rsock_item->protocol == IPPROTO_SCTP) {
+            //     optlevel = IPPROTO_SCTP;
+            //     optname = SCTP_NODELAY;
+            // }
+            if (setsockopt(rsock_item->fd, optlevel, optname, (void *)&on, sizeof(int)) == -1) {
+                return rerror_get_os_err();
+            }
+        }
+#else
+        /* TCP_NODELAY set by default, and can't be turned off*/
+        return rcode_invalid;
+#endif
+        break;
+    case RSO_FREEBIND:
+#if defined(IP_FREEBIND)
+        if (setsockopt(rsock_item->fd, SOL_IP, IP_FREEBIND, (void *)&flag, sizeof(int)) == -1) {
+            return rerror_get_os_err();
+        }
+#else
+        return rcode_invalid;
+#endif
+        break;
+    default:
+        rerror("not supported of option = %u", option);
+        return rcode_invalid;
+    }
+
+    //设置缓存变量
+    rsocket_set_option(rsock_item, option, on);
+
+    rtrace("set option (%u) with (%d) success, value = %o", option, on, rsock_item->options);
+
+    return rcode_ok;    
+}
 
 int rsocket_setblocking(rsocket_t* rsock_item) {
     int flags = fcntl(rsock_item->fd, F_GETFL, 0);
@@ -239,7 +367,7 @@ int rsocket_send(rsocket_t* rsock_item, const char *data, size_t count, size_t *
         // MSG_WAITALL: recv函数的使用标志,等到所有的信息到达时才返回.recv一直阻塞,直到指定的条件满足,或者是发生了错误. 
         // 1)当读到了指定的字节时,函数正常返回.返回值等于len 
         // 2)当读到了文件的结尾时,函数正常返回.返回值小于len 
-        // 3)当操作发生错误时,返回-1,且设置错误为相应的错误号(errno)
+        // 3)当操作发生错误时,返回-1,且设置错误为相应的错误号(rerror_get_os_err())
         // MSG_NOSIGNAL: 使用这个标志。不让其发送SIG_PIPE信号，导致程序退出。
         sent_len = (long) send(rsock_item->fd, data, count, 0);
 
@@ -405,12 +533,12 @@ int rsocket_gethostbyname(const char* addr, struct hostent **hp) {
     //       struct sockaddr_in6* addrV6 = (struct sockaddr_in6*)&addr;
     //       inet_ntop(AF_INET6, &addrV6->sin6_addr, ip, ipSize);
     //       port = ntohs(addrV6->sin6_port);
-    //       rinfo("accept %s:%d socket(%d)", ip, port, *sock);
+    //       rinfo("accept %s:%d socket(%d)", ip, port, *rsock_item);
     //   } else if (addr.ss_family == AF_INET) {
     //       struct sockaddr_in* addrV4 = (struct sockaddr_in*)&addr;
     //       ip = inet_ntoa(addrV4->sin_addr);
     //       port = ntohs(addrV4->sin_port);
-    //       rinfo("accept %s:%d socket(%d)", ip, port, *sock);
+    //       rinfo("accept %s:%d socket(%d)", ip, port, *rsock_item);
     //   } else {
     //       rassert(false, "");
     //       rinfo("accept error net family (%d)", (int)addr.ss_family);
@@ -473,7 +601,7 @@ char* rsocket_gaistrerror(int err) {
     }
 }
 
-// Linux（errno table) 懒得man
+// Linux（rerror_get_os_err() table) 懒得man
 // 124 EMEDIUMTYPEWrong medium type
 // 123 ENOMEDIUMNo medium found
 // 122 EDQUOTDisk quota exceeded
@@ -846,7 +974,7 @@ int rsocket_recv(rsocket_t* rsock_item, char *data, int count, int *got, rtimeou
         //ENOMEM：内存不足
         //ENOTCONN：与面向连接关联的套接字尚未被连接上
         //ENOTSOCK：sock索引的不是套接字 当返回值是0时，为正常关闭连接；
-        //注意：返回值 < 0 时并且(errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN)的情况下认为连接是正常的，继续接收
+        //注意：返回值 < 0 时并且(rerror_get_os_err() == EINTR || rerror_get_os_err() == EWOULDBLOCK || rerror_get_os_err() == EAGAIN)的情况下认为连接是正常的，继续接收
         //对非阻塞socket而言，EAGAIN不是一种错误。在VxWorks和Windows上，EAGAIN的名字叫做EWOULDBLOCK
         recv_once = recv(rsock_item->fd, data, (int)count, 0);
 
@@ -1040,7 +1168,7 @@ char* rsocket_gaistrerror(int ret_code) {
         case EAI_SERVICE: return PIE_SERVICE;
         case EAI_SOCKTYPE: return PIE_SOCKTYPE;
 #ifdef EAI_SYSTEM
-        case EAI_SYSTEM: return (char*)strerror(errno);
+        case EAI_SYSTEM: return (char*)strerror(rerror_get_os_err());
 #endif
         default: return (char*)gai_strerror(ret_code);
     }
@@ -1053,3 +1181,6 @@ char* rsocket_gaistrerror(int ret_code) {
 #undef WAITFD_C
 
 #endif //_WIN64
+
+
+#undef rsocket_linger_max_secs

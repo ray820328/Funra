@@ -299,7 +299,7 @@ static int ripc_close(void* ctx) {
 
     ds->state = ripc_state_closed;
 
-    uv_close((uv_handle_t*)rsocket_ctx->ds, on_close);
+    uv_close((uv_handle_t*)ds->stream, on_close);
 
     return rcode_ok;
 }
@@ -307,12 +307,16 @@ static int ripc_close(void* ctx) {
 static int ripc_start(void* ctx) {
     rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)ctx;
     ripc_data_source_t* ds = rsocket_ctx->ds;
+    int ret_code = rcode_ok;
 
     rinfo("socket uv client start.");
 
     ds->state = ripc_state_start;
 
-    return uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
+    ret_code = uv_run(rsocket_ctx->loop, UV_RUN_DEFAULT);
+    rinfo("end, socket uv client start, code = %d", ret_code);
+
+    return rcode_ok;
 }
 
 static int ripc_stop(void* ctx) {

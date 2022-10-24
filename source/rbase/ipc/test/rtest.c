@@ -85,6 +85,8 @@ static int run_tests(int output) {
         return ret_code;
     }
 
+    rtools_wait_mills(5000);
+
     //开始uv服务器测试
     ret_code = run_rsocket_c_tests(output);
     if (ret_code != rcode_ok) {
