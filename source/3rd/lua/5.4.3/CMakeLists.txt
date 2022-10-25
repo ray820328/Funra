@@ -20,13 +20,7 @@ ENDIF ()
 SET(CMAKE_C_FLAGS_DEBUG "${PROJECT_C_FLAGS_DEBUG}" CACHE STRING "Set debug build flags" FORCE)
 SET(CMAKE_C_FLAGS_RELEASE "${PROJECT_C_FLAGS_RELEASE}" CACHE STRING "Set relese build flags" FORCE)
 
-#OPTION (USE_LUA_SOCKET "Use provided lua socket implementation" ON)
-#IF (USE_LUA_SOCKET)
-#    ADD_SUBDIRECTORY (src/luasocket)
-#    SET (EXTRA_LIBS ${EXTRA_LIBS} luasocket)
-#ENDIF (USE_LUA_SOCKET)
-
-INCLUDE_DIRECTORIES(src include src/luasocket)
+INCLUDE_DIRECTORIES(src include)
 
 SET(SRC_CORE
         src/lapi.c

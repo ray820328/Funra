@@ -89,7 +89,7 @@ char* rio_strerror(int err) {
 
 int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
     int flag = 0;
-    int ret_code = 0;
+    int ret_code = rcode_io_done;
 
     flag = on ? 1 : 0;
 
@@ -98,17 +98,17 @@ int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
 #ifdef SO_KEEPALIVE
         if (on != rsocket_check_option(rsock_item, RSO_KEEPALIVE)) {
             if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&flag, sizeof(int)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RSO_DEBUG:
         if (on != rsocket_check_option(rsock_item, RSO_DEBUG)) {
             if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_DEBUG, (void *)&flag, sizeof(int)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
         break;
@@ -116,47 +116,47 @@ int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
 #ifdef SO_BROADCAST
         if (on != rsocket_check_option(rsock_item, RSO_BROADCAST)) {
             if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_BROADCAST, (void *)&flag, sizeof(int)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RSO_REUSEADDR:
         if (on != rsocket_check_option(rsock_item, RSO_REUSEADDR)) {
             if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(int)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
         break;
     case RSO_SNDBUF:
 #ifdef SO_SNDBUF
         if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_SNDBUF, (void *)&on, sizeof(int)) == -1) {
-            return rerror_get_os_err();
+            ret_code = rerror_get_osnet_err();
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RSO_RCVBUF:
 #ifdef SO_RCVBUF
         if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_RCVBUF, (void *)&on, sizeof(int)) == -1) {
-            return rerror_get_os_err();
+            ret_code = rerror_get_osnet_err();
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RSO_NONBLOCK:
         if (on != rsocket_check_option(rsock_item, RSO_NONBLOCK)) {
             if (on) {
                 if ((ret_code = rsocket_setnonblocking(rsock_item)) != rcode_ok) {
-                    return ret_code;
+                    ret_code = ret_code;
                 }
             } else {
                 if ((ret_code = rsocket_setblocking(rsock_item)) != rcode_ok) {
-                    return ret_code;
+                    ret_code = ret_code;
                 }
             }
         }
@@ -168,11 +168,11 @@ int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
             li.l_onoff = on;
             li.l_linger = rsocket_linger_max_secs;
             if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_LINGER, (char *) &li, sizeof(struct linger)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RTCP_DEFER_ACCEPT:
@@ -182,11 +182,11 @@ int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
             int optname = TCP_DEFER_ACCEPT;
 
             if (setsockopt(rsock_item->fd, optlevel, optname,  (void *)&on, sizeof(int)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RTCP_NODELAY:
@@ -199,26 +199,31 @@ int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
             //     optname = SCTP_NODELAY;
             // }
             if (setsockopt(rsock_item->fd, optlevel, optname, (void *)&on, sizeof(int)) == -1) {
-                return rerror_get_os_err();
+                ret_code = rerror_get_osnet_err();
             }
         }
 #else
         /* TCP_NODELAY set by default, and can't be turned off*/
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     case RSO_FREEBIND:
 #if defined(IP_FREEBIND)
         if (setsockopt(rsock_item->fd, SOL_IP, IP_FREEBIND, (void *)&flag, sizeof(int)) == -1) {
-            return rerror_get_os_err();
+            ret_code = rerror_get_osnet_err();
         }
 #else
-        return rcode_invalid;
+        ret_code = rcode_invalid;
 #endif
         break;
     default:
-        rerror("not supported of option = %u", option);
-        return rcode_invalid;
+        rwarn("not supported of option = %u", option);
+        ret_code = rcode_invalid;
+    }
+
+    if (ret_code != rcode_ok) {
+        rwarn("set option (%u) with (%d) failed, value = %o", option, on, rsock_item->options);
+        return ret_code;
     }
 
     //设置缓存变量
@@ -226,7 +231,7 @@ int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
 
     rtrace("set option (%u) with (%d) success, value = %o", option, on, rsock_item->options);
 
-    return rcode_ok;    
+    return rcode_io_done;
 }
 
 int rsocket_setblocking(rsocket_t* rsock_item) {
@@ -738,6 +743,120 @@ char* rsocket_gaistrerror(int err) {
 #define WAITFD_E        4
 #define WAITFD_C        (WAITFD_E|WAITFD_W)
 
+//todo Ray 懒得写了，win为非部署环境，默认用libuv实现
+int rsocket_setopt(rsocket_t* rsock_item, uint32_t option, bool on) {
+    int flag = 0;
+    int ret_code = rcode_io_done;
+
+    flag = on ? 1 : 0;
+
+    switch(option) {
+    case RSO_KEEPALIVE:
+        if (on != rsocket_check_option(rsock_item, RSO_KEEPALIVE)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&flag, sizeof(int)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+        break;
+    case RSO_DEBUG:
+        if (on != rsocket_check_option(rsock_item, RSO_DEBUG)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_DEBUG, (void *)&flag, sizeof(int)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+        break;
+    case RSO_BROADCAST:
+        if (on != rsocket_check_option(rsock_item, RSO_BROADCAST)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_BROADCAST, (void *)&flag, sizeof(int)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+        break;
+    case RSO_REUSEADDR:
+        if (on != rsocket_check_option(rsock_item, RSO_REUSEADDR)) {
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(int)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+        break;
+    case RSO_SNDBUF:
+        if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_SNDBUF, (void *)&on, sizeof(int)) == -1) {
+            ret_code = rerror_get_osnet_err();
+        }
+        break;
+    case RSO_RCVBUF:
+        if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_RCVBUF, (void *)&on, sizeof(int)) == -1) {
+            ret_code = rerror_get_osnet_err();
+        }
+        break;
+    case RSO_NONBLOCK:
+        if (on != rsocket_check_option(rsock_item, RSO_NONBLOCK)) {
+            if (on) {
+                if ((ret_code = rsocket_setnonblocking(rsock_item)) != rcode_ok) {
+                    
+                }
+            } else {
+                if ((ret_code = rsocket_setblocking(rsock_item)) != rcode_ok) {
+                    
+                }
+            }
+        }
+        break;
+    case RSO_LINGER:
+        if (on != rsocket_check_option(rsock_item, RSO_LINGER)) {
+            struct linger li;
+            li.l_onoff = on;
+            li.l_linger = rsocket_linger_max_secs;
+            if (setsockopt(rsock_item->fd, SOL_SOCKET, SO_LINGER, (char *) &li, sizeof(struct linger)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+        break;
+    case RTCP_DEFER_ACCEPT:
+#if defined(TCP_DEFER_ACCEPT)
+        if (on != rsocket_check_option(rsock_item, RTCP_DEFER_ACCEPT)) {
+            int optlevel = IPPROTO_TCP;
+            int optname = TCP_DEFER_ACCEPT;
+
+            if (setsockopt(rsock_item->fd, optlevel, optname, (void *)&on, sizeof(int)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+#else
+        ret_code = rcode_invalid;
+#endif
+        break;
+    case RTCP_NODELAY:
+        if (on != rsocket_check_option(rsock_item, RTCP_NODELAY)) {
+            int optlevel = IPPROTO_TCP;
+            int optname = TCP_NODELAY;
+            // if (rsock_item->protocol == IPPROTO_SCTP) {
+            //     optlevel = IPPROTO_SCTP;
+            //     optname = SCTP_NODELAY;
+            // }
+            if (setsockopt(rsock_item->fd, optlevel, optname, (void *)&on, sizeof(int)) == -1) {
+                ret_code = rerror_get_osnet_err();
+            }
+        }
+        break;
+    default:
+        rwarn("not supported of option = %u", option);
+        ret_code = rcode_invalid;
+    }
+
+    if (ret_code != rcode_ok) {
+        rwarn("set option (%u) with (%d) failed, value = %o", option, on, rsock_item->options);
+        return ret_code;
+    }
+
+    //设置缓存变量
+    rsocket_set_option(rsock_item, option, on);
+
+    rtrace("set option (%u) with (%d) success, value = %o", option, on, rsock_item->options);
+
+    return rcode_io_done;
+}
+
 int rsocket_setblocking(rsocket_t* rsock_item) {
     u_long argp = 0;
     ioctlsocket(rsock_item->fd, FIONBIO, &argp);
@@ -804,8 +923,7 @@ int rsocket_select(rsocket_t* rsock, fd_set *rfds, fd_set *wfds, fd_set *efds, r
     if (rsock->fd <= 0) {
         Sleep((DWORD)(time_left / 1000));
         return 0;
-    }
-    else {
+    } else {
         return select(0, rfds, wfds, efds, time_left >= 0 ? &tv : NULL);
     }
 }
@@ -840,8 +958,7 @@ int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len,
         getsockopt(rsock_item->fd, SOL_SOCKET, SO_ERROR, (char *)&ret_code, &elen);
 
         return ret_code > 0 ? ret_code : rcode_io_unknown;
-    }
-    else {
+    } else {
         return ret_code;
     }
 }
@@ -849,13 +966,23 @@ int rsocket_connect(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len,
 int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len) {
     int ret_code = rcode_io_done;
 
-    rsocket_setblocking(rsock_item);
+    if ((ret_code = rsocket_setopt(rsock_item, RSO_NONBLOCK, false)) != rcode_ok) {
+        rerror("set block error, code = %d", ret_code);
+        rgoto(1);
+    }
 
     if (bind(rsock_item->fd, addr, len) < 0) {
         ret_code = rerror_get_osnet_err();
     }
 
-    rsocket_setnonblocking(rsock_item);
+    if ((ret_code = rsocket_setopt(rsock_item, RSO_NONBLOCK, true)) != rcode_ok) {
+        rerror("set non block error, code = %d", ret_code);
+        rgoto(1);
+    }
+
+    return rcode_io_done;
+
+exit1:
 
     return ret_code;
 }
@@ -863,13 +990,23 @@ int rsocket_bind(rsocket_t* rsock_item, rsockaddr_t *addr, rsocket_len_t len) {
 int rsocket_listen(rsocket_t* rsock_item, int backlog) {
     int ret_code = rcode_io_done;
 
-    rsocket_setblocking(rsock_item);
+    if ((ret_code = rsocket_setopt(rsock_item, RSO_NONBLOCK, false)) != rcode_ok) {
+        rerror("set block error, code = %d", ret_code);
+        rgoto(1);
+    }
 
     if (listen(rsock_item->fd, backlog) < 0) {
         ret_code = rerror_get_osnet_err();
     }
 
-    rsocket_setnonblocking(rsock_item);
+    if ((ret_code = rsocket_setopt(rsock_item, RSO_NONBLOCK, true)) != rcode_ok) {
+        rerror("set non block error, code = %d", ret_code);
+        rgoto(1);
+    }
+
+    return rcode_io_done;
+
+exit1:
 
     return ret_code;
 }
@@ -989,8 +1126,7 @@ int rsocket_recv(rsocket_t* rsock_item, char *data, int count, int *got, rtimeou
         ret_code = rerror_get_osnet_err();
         if (ret_code == WSAEWOULDBLOCK) {
             return rcode_io_done;
-        }
-        else {
+        } else {
             /* UDP, conn reset simply means the previous send failed. try again.
              * TCP, it means our socket is now useless, so the error passes.
              * (We will loop again, exiting because the same error will happen) */
@@ -1099,8 +1235,7 @@ int rsocket_gethostbyaddr(const char* addr, rsocket_len_t len, struct hostent **
     *hp = gethostbyaddr(addr, len, AF_INET);
     if (*hp) {
         return rcode_io_done;
-    }
-    else {
+    } else {
         return WSAGetLastError();
     }
 }
@@ -1109,8 +1244,7 @@ int rsocket_gethostbyname(const char* addr, struct hostent **hp) {
     *hp = gethostbyname(addr);
     if (*hp) {
         return rcode_io_done;
-    }
-    else {
+    } else {
         return WSAGetLastError();
     }
 }

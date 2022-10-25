@@ -6,8 +6,11 @@ SET(CMAKE_RELEASE_POSTFIX "" CACHE STRING "Set release librbase postfix" FORCE)
 INCLUDE_DIRECTORIES(
     ../
     ../3rd/lua/5.4.3/src
+    ../3rd/lua-protobuf
     ../3rd/libuv/1.42.0/include
     ../rbase/common/include
     ../rbase/ipc/include
+    ../rbase/rpc/include
+    ../rbase/ecs/include
     ../rserver/commonsvr/include
 )
