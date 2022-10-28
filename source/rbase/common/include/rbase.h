@@ -14,11 +14,29 @@
 extern "C" {
 #endif
 
+#ifndef STDC_VERSION
+#define STDC_VERSION 0L
+#endif
+#ifndef STDC_IEC_599
+#define STDC_IEC_599 0
+#endif
+
+#define rversion_major   0
+#define rversion_minor   0
+#define rversion_serial  10
+
 #include <stdint.h>
 #include <stdbool.h>
 
+#define rmacro_2str(x) #x
+#define rmacro_4str(x) rmacro_2str(x)
+#define rmacro_print_macro(x) #x"="rmacro_2str(x)
+
 #define rmem_eq(mem1, mem2, len) \
     (memcmp((mem1), (mem2), (len)) == 0 ? true : false)
+
+#define rversion_get() \
+    rmacro_4str(rversion_major) "." rmacro_4str(rversion_minor) "." rmacro_4str(rversion_serial)
 
 #if defined(_WIN32) || defined(_WIN64)
 
@@ -46,6 +64,9 @@ do { \
 	abort(); \
 } while (0)
 
+#define rdebug_trace(...) rinfo(__VA_ARGS__)
+// #define rdebug_trace(...)
+
 typedef struct rdata_userdata_s rdata_userdata_t;
 struct rdata_userdata_s {
     const char* key;
@@ -53,7 +74,7 @@ struct rdata_userdata_s {
     rdata_userdata_t* next;
 };
 
-typedef enum rdata_plain_type_t {
+typedef enum {
     rdata_type_unknown = 0,           /** no type */
     rdata_type_bool,                  /** bool */
     rdata_type_char,                  /** char */
@@ -74,7 +95,7 @@ typedef enum rdata_plain_type_t {
     rdata_type_data                   /** struct */
 } rdata_plain_type_t;
 
-typedef enum rdata_plain_type_size_t {
+typedef enum {
     rdata_type_unknown_size = 0,                          /** no type */
     rdata_type_bool_size = sizeof(bool),                  /** bool */
     rdata_type_char_size = sizeof(char),                  /** char */
@@ -262,6 +283,17 @@ V##_inner_type rdict_copy_value_func_##V(void* data_ext, const V##_inner_type ob
     return (V##_inner_type)V##_copy(obj); \
 } \
 
+typedef enum {
+    rdata_type_collection_unknown = 100,
+    rdata_type_rarray,
+    rdata_type_rlist,
+    rdata_type_rdict,
+    rdata_type_rhashmap,
+    rdata_type_rtreemap,
+    rdata_type_rtreeset,
+    rdata_type_rrbtree,
+    rdata_type_notimpl
+} rdata_collection_type_t;
 
 #ifdef __cplusplus
 }

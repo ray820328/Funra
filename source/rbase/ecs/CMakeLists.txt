@@ -12,12 +12,14 @@ SET(SRC_LIB
     src/rentity.c
     src/rcomponent.c
     src/rsystem.c
+    src/recs.c
 )
 
 SET(SRC_BIN
     ${SRC_LIB}
     test/rtest.c
     test/rtest_recs.c
+    test/rtest_rentity.c
 )
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRC_LIB})

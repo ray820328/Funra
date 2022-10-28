@@ -52,21 +52,6 @@ typedef struct ripc_data_default_s {
 #pragma pack()
 #pragma pack(show)
 
-typedef struct rcodec_s {
-    // rdata_handler_t* handler;
-
-    int (*init)(void* ctx, const void* cfg_data);
-    int (*uninit)(void* ctx);
-    // int (*open)();
-    // int (*close)();
-    // int (*start)();
-    // int (*stop)();
-    // int (*send)(void* data);
-    // int (*check)(void* data);
-    // int (*receive)(void* data);
-    // int (*error)(void* data);
-} rcodec_t;
-
 extern const rdata_handler_t rcodec_encode_default;
 extern const rdata_handler_t rcodec_decode_default;
 

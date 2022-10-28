@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     rlog_init("${date}/rtest_ecs_${index}.log", RLOG_ALL, false, 100);
 
     char* exe_root = rdir_get_exe_root();
-    rinfo("当前路径: %s", exe_root);
+    rinfo("\n框架版本号: %s\n当前路径: %s", rversion_get(), exe_root);
     rstr_free(exe_root);
 
     init_platform();
@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
 static int run_tests(int output) {
     int ret_code;
 
+    rtest_add_test_entry(run_rentity_tests);
     rtest_add_test_entry(run_recs_tests);
 
     rlist_iterator_t it = rlist_it(test_entries, rlist_dir_tail);
@@ -85,3 +86,26 @@ static int run_tests(int output) {
     return ret_code;
 }
 
+
+recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
+    int ret_code = rcode_ok;
+    recs_cmp_t* data = NULL;
+
+    if (ctx == NULL) {
+        rwarn("invalid params.");
+        rgoto(1);
+    }
+
+    rinfo("recs_ctype_unknown = %d", recs_ctype_unknown);
+    switch (data_type) {
+    case recs_ctype_rtest01:
+        data = rdata_new(struct rtest_cmp_s);
+        break;
+    default:
+        rerror("not defined, data_type = %d", data_type);
+        break;
+    }
+
+exit1:
+    return ret_code;
+}

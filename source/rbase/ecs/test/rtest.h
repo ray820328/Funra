@@ -24,8 +24,26 @@
 
 #include "rcommon.h"
 
+#include "recs.h"
+
 #include "include/rtest_com.h"
 
 int run_recs_tests(int benchmark_output);
+int run_rentity_tests(int benchmark_output);
+
+
+typedef enum {
+
+    recs_ctype_rtest01 = 100001,
+} recs_cmp_type_t;
+
+recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type);
+
+struct rtest_cmp_s {
+    recs_cmp_fields;
+
+    int index;
+    char* value;
+};
 
 #endif /* RTEST_H */

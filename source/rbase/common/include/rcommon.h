@@ -45,9 +45,6 @@ extern "C" {
 
 #define rcheck_value(b, value) (value)
 
-#define macro_print_macro_helper(x)   #x  
-#define macro_print_macro(x)          #x"="macro_print_macro_helper(x)
-
 #define rvoid(x) (void)(x)
 
     //#define rassert(expr, rv) 
@@ -69,7 +66,7 @@ extern "C" {
 #define file_system_unicode         1
 
 #if defined(_WIN32) || defined(_WIN64)
-#pragma message("Platform info: "macro_print_macro(_WIN64))
+#pragma message("Platform info: "rmacro_print_macro(_WIN64))
 
 #if defined(_WIN32_WCE) || defined(WINNT)
 
@@ -197,15 +194,10 @@ extern "C" {
   }                                                       \
  } while (0)
 
-#define rassert_goto(expr, msg, code_int)                 \
+#define rassert_goto(expr, msg, code_int, ...)            \
  do {                                                     \
   if (!(expr)) {                                          \
-    fprintf(stderr,                                       \
-            "Assertion failed in [ %s:%d (%s) ], [%d - %s ]\n", \
-            __FILE__,                                     \
-            __LINE__,                                     \
-            #expr,                                        \
-            (code_int), (msg) ? (msg) : "");              \
+    rerror(msg, __VA_ARGS__);                             \
     goto exit##code_int;                                  \
   }                                                       \
  } while (0)
@@ -215,9 +207,25 @@ extern "C" {
 
 /* ------------------------------- APIs ------------------------------------*/
     
-    /** 1 - 相等; 具体参见上文定义 rcode_eq 等 **/
-    typedef int(*rcom_compare_func_type)(const void* obj1, const void* obj2);
+/** 1 - 相等; 具体参见上文定义 rcode_eq 等 **/
+typedef int (*rcom_compare_func_type)(const void* obj1, const void* obj2);
 
+
+typedef struct riterator_s riterator_t;
+struct riterator_s {
+    rdata_collection_type_t type_id;
+    void* data;
+};
+
+#define riterator_new(type_id, data) \
+    { \
+        type_id, data \
+    }
+
+R_API int riterator_reset(riterator_t* it);
+R_API void* riterator_next(riterator_t* it);
+R_API bool riterator_has_next(riterator_t* it);
+R_API int riterator_destroy(riterator_t* it);
 
 
 #ifdef __cplusplus

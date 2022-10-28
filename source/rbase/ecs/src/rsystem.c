@@ -7,8 +7,9 @@
  * @author: Ray
  */
 
-#include "recs.h"
+#include "rlog.h"
 
+#include "recs.h"
 #include "rsystem.h"
 
 int rrpc_init(const void* cfg_data) {

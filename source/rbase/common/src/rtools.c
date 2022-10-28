@@ -9,6 +9,11 @@
 
 #include "rtools.h"
 #include "rtime.h"
+#include "rlog.h"
+
+#include "rlist.h"
+#include "rarray.h"
+#include "rdict.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -140,6 +145,65 @@ uint64_t rhash_func_murmur(const char *key)
     return h; // (uint32_t)h;
 }
 
+R_API int riterator_reset(riterator_t* it) {
+    switch (it->type_id) {
+    case rdata_type_rlist:
+        rlist_it_first((rlist_iterator_t*)it->data);
+        break;
+    case rdata_type_rarray:
+        rarray_it_first((rarray_iterator_t*)it->data);
+        break;
+    case rdata_type_rdict:
+        rdict_it_first((rdict_iterator_t*)it->data);
+    default:
+        rwarn("not implement of type = %d", it->type_id);
+        break;
+    }
+
+    return rcode_ok;
+}
+
+R_API void* riterator_next(riterator_t* it) {
+    switch (it->type_id) {
+    case rdata_type_rlist:
+        rlist_next((rlist_iterator_t*)it->data);
+    break;
+    case rdata_type_rarray:
+        return rarray_next((rarray_iterator_t*)it->data);
+    break;
+    case rdata_type_rdict:
+        return rdict_next((rdict_iterator_t*)it->data);
+    default:
+        rwarn("not implement of type = %d", it->type_id);
+    break;
+    }
+
+    return NULL;
+}
+
+R_API bool riterator_has_next(riterator_t* it) {
+    
+    switch (it->type_id) {
+    case rdata_type_rarray:
+        return rarray_has_next((rarray_iterator_t*)it->data);
+        break;
+    default:
+        rwarn("not implement of type = %d", it->type_id);
+        break;
+    }
+    return false;
+}
+
+R_API int riterator_destroy(riterator_t* it) {
+
+    switch (it->type_id) {
+    default:
+        rwarn("not implement of type = %d", it->type_id);
+        break;
+    }
+
+    return rcode_ok;
+}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

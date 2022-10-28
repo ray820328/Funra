@@ -18,7 +18,6 @@ extern "C" {
 
 #include "rcommon.h"
 
-// Memory management macros
 #ifdef RLIST_CONFIG_H
 #define _STR(x) #x
 #define STR(x) _STR(x)
@@ -51,8 +50,9 @@ typedef struct rlist_t {
     rcom_compare_func_type compare_node_val;
 } rlist_t;
 
-typedef struct rlist_iterator_t {
-    rlist_node_t *next;
+typedef struct rlist_iterator_s {
+    rlist_t* list;
+    rlist_node_t* next;
     rlist_direction_t direction;
 } rlist_iterator_t;
 
@@ -93,18 +93,15 @@ do { \
 
 #define rlist_it(list, direction) \
     { \
-        ((direction) == rlist_dir_tail) ? (list)->head : (list)->tail, (direction) \
+        (list), ((direction) == rlist_dir_tail) ? (list)->head : (list)->tail, (direction) \
     }
 
 #define rlist_it_first(it) \
-    do { \
-        (it)->next = ((direction) == rlist_dir_tail) ? (list)->head : (list)->tail; \
-        (it)->direction = (direction); \
-    } while(0)
+    (it)->next = ((it)->direction == rlist_dir_tail) ? (it)->list->head : (it)->list->tail;
 
 #define rlist_it_from(list, direction, from) \
     { \
-        (from), (direction) \
+        (list), (from), (direction) \
     }
 
 

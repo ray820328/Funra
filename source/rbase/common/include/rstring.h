@@ -23,6 +23,8 @@ extern char* rstr_empty_const;
 
 /* ------------------------------- Macros ------------------------------------*/
 
+#define rstr_t char
+
 #define rstr_null "NULL"
 #define rstr_empty rstr_empty_const
 #define rstr_end '\0'
@@ -62,7 +64,7 @@ extern char* rstr_empty_const;
         } \
         rdata_free_array(rstr); \
     }
-    
+
 /**    
 #define rnum2str(ret_num_str, num, fmt_str) \
     do { \

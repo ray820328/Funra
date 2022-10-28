@@ -197,6 +197,17 @@ static void rarray_string_test(void **state) {
     assert_true(rarray_size(array_ins) == count);
     end_benchmark("Fill and check.");
 
+    j = 0;
+    riterator_t it_com = riterator_new(rdata_type_rarray, &it);
+    riterator_reset(&it_com);
+    for (; temp = riterator_next(&it_com), riterator_has_next(&it_com); ) {
+        assert_true(temp != NULL);
+        assert_true(rstr_2int(temp) == count - j);
+        rnum2str(temp_str, count - j, 0);
+        assert_true(rstr_eq(temp, temp_str));
+        j++;
+    }
+
     rarray_release(array_ins);
 
     uninit_benchmark();

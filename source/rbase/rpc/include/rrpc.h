@@ -32,6 +32,12 @@ typedef enum {
     rrpc_service_type_ext
 } rrpc_service_type_t;
 
+// typedef struct {
+//    uint32_t method_index;
+//    uint32_t request_id;
+//    ProtobufCMessage *message;
+// } ProtobufC_RPC_Payload;
+
 typedef int (*rrpc_init_func)(void* ctx, const void* cfg_data);
 
 typedef struct rrpc_entry_s {
