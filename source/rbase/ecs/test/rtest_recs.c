@@ -23,15 +23,21 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
+static recs_context_t recs_context;
+
 static void recs_full_test(void **state) {
 	(void)state;
 	int count = 1;
 	init_benchmark(1024, "test recs (%d)", count);
 
     int ret_code = 0;
+    recs_context_t* ctx = &recs_context;
 
     start_benchmark(0);
-    assert_true(ret_code == 0);
+
+    rtest_cmp_t* cmp_item = (rtest_cmp_t*)recs_cmp_new(ctx, recs_ctype_rtest01);
+
+    assert_true(cmp_item->id > 0);
 	end_benchmark("test ecs.");
 
     uninit_benchmark();
@@ -39,14 +45,22 @@ static void recs_full_test(void **state) {
 
 
 static int setup(void **state) {
+    recs_context_t* ctx = &recs_context;
+
+    ctx->sid_min = 10000;
+    ctx->sid_max = 11000;
+    // ctx->on_init = ;
+    // ctx->on_uninit = ;
+    ctx->create_cmp = rtest_recs_cmp_new;
+
+    recs_init(ctx, NULL);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-    //void* param;
-    //int ret_code = rthread_join(&socket_thread, &param);
-    //assert_true(ret_code == 0);
-    //assert_true(rstr_eq((char *)param, "socket_thread"));
+    recs_context_t* ctx = &recs_context;
+
+    recs_uninit(ctx, NULL);
     
     return rcode_ok;
 }

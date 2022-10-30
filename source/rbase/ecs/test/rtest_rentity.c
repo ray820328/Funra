@@ -23,17 +23,23 @@
 
 static void rentity_full_test(void **state);
 
-static recs_context_t ctx_inst;
+static recs_context_t recs_context;
 
 static int setup(void **state) {
-    recs_context_t* ctx = &ctx_inst;
+    recs_context_t* ctx = &recs_context;
+
+    ctx->sid_min = 10000;
+    ctx->sid_max = 11000;
+    // ctx->on_init = ;
+    // ctx->on_uninit = ;
+    ctx->create_cmp = rtest_recs_cmp_new;
 
     recs_init(ctx, NULL);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
-    recs_context_t* ctx = &ctx_inst;
+    recs_context_t* ctx = &recs_context;
 
     recs_uninit(ctx, NULL);
 
@@ -58,77 +64,36 @@ int run_rentity_tests(int benchmark_output) {
 static void rentity_full_test(void **state) {
     (void)state;
 
-    // rarray_size_t count = 100;
-    // int j;
-    // struct data_test* temp;
+    recs_context_t* ctx = &recs_context;
+    int count = 1000;
+    int j;
 
-    // init_benchmark(1024, "test rarray (%d)", count);
+    init_benchmark(1024, "test entity (%d)", count);
 
-    // start_benchmark(0);
-    // rarray_t* array_ins = NULL;
-    // rarray_init(array_ins, rdata_type_ptr, count);
-    // array_ins->copy_value_func = (rarray_type_copy_value_func)copy_value_func_obj;
-    // array_ins->free_value_func = (rarray_type_free_value_func)free_value_func_obj;
-    // assert_true(array_ins);
-    // end_benchmark("create rarray.");
+    start_benchmark(0);
+    recs_entity_t* entity = recs_entity_new(ctx, recs_etype_shared);
+    assert_true(entity != NULL);
+    recs_get_entity(ctx, entity->id, &entity);
+    assert_true(entity != NULL);
+    end_benchmark("create entity.");
 
-    // start_benchmark(0);
-    // struct data_test temp_obj = { 0, NULL };
-    // struct data_test* temp_ptr = &temp_obj;
-    // char* temp_str = NULL;
-    // for (j = 0; j < count; j++) {
-    //     rnum2str(temp_str, j + count, 0);
-    //     temp_ptr->index = j;
-    //     temp_ptr->value = temp_str;
-    //     rarray_add(array_ins, temp_ptr);
-    //     temp = rarray_at(array_ins, j);
-    //     assert_true(temp->index == j);
-    //     assert_true(rstr_2int(temp->value) == j + count);
-    // }
-    // temp = NULL;
-    // assert_true(rarray_size(array_ins) == count);
-    // end_benchmark("Fill array.");
+    start_benchmark(0);
+    rtest_cmp_t* cmp_item = NULL;
 
-    // start_benchmark(0);
-    // rarray_clear(array_ins);
-    // end_benchmark("Clear rarray.");
-
-    // start_benchmark(0);
-    // rarray_iterator_t it = rarray_it(array_ins);
-    // for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-    //     assert_true(temp == NULL);
-    // }
-    // end_benchmark("Iterator rarray.");
-
-    // start_benchmark(0);
-    // for (j = 0; j < count; j++) {
-    //     rnum2str(temp_str, count - j, 0);
-    //     temp_ptr->index = j;
-    //     temp_ptr->value = temp_str;
-    //     rarray_add(array_ins, temp_ptr);
-    //     temp = rarray_at(array_ins, j);
-    //     assert_true(temp->index == j);
-    //     assert_true(rstr_2int(temp->value) == count - j);
-    //     assert_true(rstr_eq(temp->value, temp_str));
-    // }
-
-    // j = 0;
-    // rarray_it_first(&it);
-    // for (; temp = rarray_next(&it), rarray_has_next(&it); ) {
-    //     rinfo("Iterator rarray, value=%s, index=%"rarray_size_t_format"", temp->value, (&it)->index);
-    //     assert_true(rstr_2int(temp->value) == count - j);
-    //     rnum2str(temp_str, count - j, 0);
-    //     assert_true(rstr_eq(temp->value, temp_str));
-    //     j++;
-    // }
-    // temp = NULL;
-    // assert_true(rarray_size(array_ins) == count);
-    // end_benchmark("Fill and check.");
-
-    // rarray_release(array_ins);
+    char* temp_str = NULL;
+    for (j = 0; j < count; j++) {
+        cmp_item = (rtest_cmp_t*)recs_cmp_new(ctx, recs_ctype_rtest01);
+        assert_true(cmp_item != NULL);
+        rnum2str(temp_str, j + count, 0);
+        cmp_item->index = j;
+        cmp_item->value = temp_str;
+        recs_get_cmp(ctx, cmp_item->id, &cmp_item);
+        assert_true(cmp_item != NULL);
+    }
+    end_benchmark("Fill components.");
 
 
-    // uninit_benchmark();
+    uninit_benchmark();
 }
 
 #ifdef __GNUC__

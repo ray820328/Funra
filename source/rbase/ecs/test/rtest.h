@@ -39,11 +39,11 @@ typedef enum {
 
 recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type);
 
-struct rtest_cmp_s {
+typedef struct rtest_cmp_s {
     recs_cmp_fields;
 
     int index;
     char* value;
-};
+} rtest_cmp_t;
 
 #endif /* RTEST_H */

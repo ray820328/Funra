@@ -42,25 +42,15 @@ struct recs_context_s;
     uint64_t id; \
     recs_sys_type_t type_id
 
-#ifndef recs_entity_type_ext
-#define recs_entity_type_ext
-#endif //recs_entity_type_ext 给外部定义逻辑类型
-
 typedef enum {
     recs_etype_unknown = 0,
     recs_etype_shared = 1, //system共享数据集合
 
-    recs_entity_type_ext
 } recs_entity_type_t;
-
-#ifndef recs_cmp_type_ext
-#define recs_cmp_type_ext
-#endif //recs_cmp_type_ext 给外部定义逻辑类型
 
 typedef enum {
     recs_ctype_unknown = 0,
 
-    recs_cmp_type_ext
 } recs_cmp_type_t;
 
 typedef enum {

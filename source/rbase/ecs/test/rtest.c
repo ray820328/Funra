@@ -99,7 +99,7 @@ recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
     rinfo("recs_ctype_unknown = %d", recs_ctype_unknown);
     switch (data_type) {
     case recs_ctype_rtest01:
-        data = rdata_new(struct rtest_cmp_s);
+        data = rdata_new(rtest_cmp_t);
         break;
     default:
         rerror("not defined, data_type = %d", data_type);

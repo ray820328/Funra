@@ -12,12 +12,3 @@
 #include "recs.h"
 #include "rsystem.h"
 
-int rrpc_init(const void* cfg_data) {
-
-    return rcode_ok;
-}
-
-int rrpc_uninit() {
-
-    return rcode_ok;
-}
