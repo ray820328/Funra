@@ -449,6 +449,20 @@ exit1:
     return -1;
 }
 
+long rfile_get_size(const char* filename) {
+    FILE* fp;
+    long size;
+
+    if ((fp = fopen(filename, "rb")) == NULL) {
+        return -1;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    size = ftell(fp);
+    fclose(fp);
+
+    return size;
+}
 
 
 static int _rdir_make_self(const char *path) {

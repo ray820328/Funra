@@ -150,7 +150,7 @@ static char* _rlog_get_filepath(char* rlog_filepath_template, char* log_level_st
     return ret_str;
 }
 
-static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
+static int _rlog_build_items(rlog_t* rlog, bool is_init, const rlog_level_t level, bool file_seperate) {
     rlog_info_t* log_item = NULL;
     int code_ret = 1;
     char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
@@ -161,6 +161,9 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
         if (is_init && rlog->log_items[cur_level]) {
             rinfo("log item already finished, level = %d", cur_level);
             continue;//初始优先级更高，不覆盖
+        }
+        if (file_seperate && (level != RLOG_ALL || level != cur_level)) {
+            continue;
         }
         log_level_str = file_seperate ? rlog_level_2str(cur_level) : rlog_level_2str(RLOG_ALL);
 
@@ -174,6 +177,9 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
             }
             rlog->log_items[cur_level] = log_item;
             log_item->level = cur_level;
+            log_item->file_size = 0;
+            log_item->item_mutex = rdata_new(rmutex_t);
+            rmutex_init(log_item->item_mutex);
 
             //todo Ray ...
             log_item->item_buffer = rdata_new_size(rlog_temp_data_size);
@@ -182,8 +188,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
             log_item->buffer[0] = '\0';
             log_item->item_fmt = rdata_new_size(rlog_temp_data_size);
             log_item->item_fmt[0] = '\0';
-        }
-        else {
+        } else {
             log_item = rlog->log_items[cur_level];
         }
         rassert(log_item != NULL, "");
@@ -202,8 +207,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, bool file_seperate) {
 
             last_filepath = log_item->filename;
             log_item->file_ptr = fopen(log_item->filename, "w+");
-        }
-        else {
+        } else {
             log_item->file_ptr = rlog->log_items[cur_level - 1]->file_ptr;
         }
 
@@ -307,7 +311,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
 
     rlog->filepath_template = _rlog_format_filepath_template(filename);
 
-    code_ret = _rlog_build_items(rlog, true, file_seperate);
+    code_ret = _rlog_build_items(rlog, true, RLOG_ALL, file_seperate);
 
     if (code_ret != rcode_ok) {
         rgoto(1);
@@ -375,6 +379,9 @@ int rlog_uninit_log(rlog_t* rlog) {
                 rlog->log_items[cur_level]->item_fmt = NULL;
             }
 
+            rmutex_uninit(rlog->log_items[cur_level]->item_mutex);
+            rdata_free(rmutex_t, rlog->log_items[cur_level]->item_mutex);
+
 			rdata_free(rlog_info_t, rlog->log_items[cur_level]);
 			rlog->log_items[cur_level] = NULL;
 		}
@@ -392,7 +399,7 @@ int rlog_uninit_log(rlog_t* rlog) {
     return rcode_ok;
 }
 
-int rlog_flush_file(rlog_t* rlog, bool close_file) {
+int rlog_flush_file(rlog_t* rlog, const rlog_level_t level, bool close_file) {
     bool last_flag = rlog_force_flush;
 
     rmutex_lock(rlog->mutex);
@@ -401,23 +408,31 @@ int rlog_flush_file(rlog_t* rlog, bool close_file) {
 	rinfo("log file flushed.");
 
     FILE* last_file = NULL;
-	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
-		if (rlog->log_items[cur_level] != NULL && rlog->log_items[cur_level]->file_ptr != NULL) {
-            if (rlog->log_items[cur_level]->file_ptr != last_file) {
-                fflush(rlog->log_items[cur_level]->file_ptr);
-                if (close_file) {
-                    fclose(rlog->log_items[cur_level]->file_ptr);
-                    last_file = rlog->log_items[cur_level]->file_ptr;
-                    rlog->log_items[cur_level]->file_ptr = NULL;
+
+    if (level == RLOG_ALL || !rlog->file_seperate) {
+    	for (int cur_level = RLOG_VERB; cur_level < RLOG_ALL; ++cur_level) {
+    		if (rlog->log_items[cur_level] != NULL && rlog->log_items[cur_level]->file_ptr != NULL) {
+                if (rlog->log_items[cur_level]->file_ptr != last_file) {
+                    fflush(rlog->log_items[cur_level]->file_ptr);
+                    if (close_file) {
+                        fclose(rlog->log_items[cur_level]->file_ptr);
+                        last_file = rlog->log_items[cur_level]->file_ptr;
+                        rlog->log_items[cur_level]->file_ptr = NULL;
+                    }
+                } else {
+                    if (close_file) {
+                        rlog->log_items[cur_level]->file_ptr = NULL;
+                    }
                 }
-            }
-            else {
-                if (close_file) {
-                    rlog->log_items[cur_level]->file_ptr = NULL;
-                }
-            }
-		}
-	}
+    		}
+    	}
+    } else if (rlog->log_items[level] != NULL && rlog->log_items[level]->file_ptr != NULL) {
+        fflush(rlog->log_items[level]->file_ptr);
+        if (close_file) {
+            fclose(rlog->log_items[level]->file_ptr);
+            rlog->log_items[level]->file_ptr = NULL;
+        }
+    }
 
     rlog_force_flush = last_flag;
 
@@ -436,9 +451,10 @@ int rlog_rolling_file(rlog_t* rlog, const rlog_level_t level) {
 
 	rmutex_lock(&rlog_mutex);
 
-	rlog_flush_file(rlog, true);//已经关闭了filepath对应的文件
+    rlog_info_t* rlog_info = rlog->log_items[level];
+	rlog_flush_file(rlog, level, true);//已经关闭了filepath对应的文件
 
-    code_ret = _rlog_build_items(rlog, false, rlog->file_seperate);
+    code_ret = _rlog_build_items(rlog, false, level, rlog->file_seperate);
     if (code_ret != rcode_ok) {
         rgoto(1);
     }
@@ -549,7 +565,7 @@ int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
 int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
     rlog = rlog != NULL ? rlog : (rlog_all != NULL ? rlog_all[0] : NULL);
 
-    if (rlog == NULL || !rlog->inited) {
+    if (unlikely(rlog == NULL || !rlog->inited)) {
         char* buffer_temp = (char*)malloc(rlog_temp_data_size);
         va_list print_params;
         va_start(print_params, fmt);
@@ -564,7 +580,8 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
         return rcode_ok;
     }
 
-    if (unlikely(rlog->log_items[level] == NULL)) {
+    rlog_info_t* rlog_info = rlog->log_items[level];
+    if (unlikely(rlog_info == NULL)) {
         char* buffer_temp1 = (char*)malloc(rlog_temp_data_size);
         va_list print_params1;
         va_start(print_params1, fmt);
@@ -576,9 +593,9 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
         return -1;
     }
 
-    char* item_buffer = rlog->log_items[level]->item_buffer;
-    //char* buffer = rlog->log_items[level]->buffer;
-    //char* item_fmt = rlog->log_items[level]->item_fmt;
+    char* item_buffer = rlog_info->item_buffer;
+    //char* buffer = rlog_info->buffer;
+    //char* item_fmt = rlog_info->item_fmt;
     char item_fmt[64] = { 0 };
     char* log_level_str = rlog_level_2str(level);
     char time_str[32];
@@ -591,18 +608,32 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
 
     va_list ap;
     va_start(ap, fmt);
-    int writeLen = vsnprintf(item_buffer, rlog_temp_data_size - 1, fmt, ap);
+    int write_len = vsnprintf(item_buffer, rlog_temp_data_size - 1, fmt, ap);
     va_end(ap);
-    rassert(writeLen < rlog_temp_data_size, "");
+    rassert(write_len < rlog_temp_data_size, "overflow of buffer");
+
+#ifdef log_in_multi_thread
+    rmutex_lock(rlog_info->item_mutex);//todo Ray 细化粒度
+#endif // log_in_multi_thread
 
 #ifdef print2file
-    fprintf(rlog->log_items[level]->file_ptr, item_fmt, item_buffer);
-    //fflush(rlog->log_items[level]->file_ptr);
+    fprintf(rlog_info->file_ptr, item_fmt, item_buffer);
+    //fflush(rlog_info->file_ptr);
+
+    rlog_info->file_size += write_len;
+    if (unlikely(rlog_info->file_size > rlog->file_size_max)) {
+        return rlog_rolling_file(rlog, (const rlog_level_t)level);
+    }
+
 #else
     printf(item_fmt, item_buffer);
 #endif // print2file
     item_fmt[0] = '\0';
     //item_buffer[0] = '\0';
+
+#ifdef print2file
+    rmutex_unlock(rlog_info->itme_mutex);
+#endif // log_in_multi_thread
 
     return rcode_ok;
 }

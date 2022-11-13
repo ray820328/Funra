@@ -20,6 +20,7 @@
 #define rlog_temp_data_size 2048
 #define rlog_cache_data_size 5120
 
+#define log_in_multi_thread
 //#define print2file
 
 
@@ -51,9 +52,11 @@ extern "C" {
 
     typedef struct rlog_info_t
     {
+        rlog_level_t level;
+        int file_size;//volatile
+        rmutex_t* item_mutex;
         char* filename;
         FILE* file_ptr;
-        rlog_level_t level;
         char* item_buffer;
         char* buffer;
         char* item_fmt;
@@ -80,7 +83,7 @@ extern "C" {
 
     R_API int rlog_printf_cached(rlog_t* rlog, rlog_level_t level, const char* fmt, ...);
     R_API int rlog_printf(rlog_t* rlog, rlog_level_t evel, const char* fmt, ...);
-    R_API int rlog_flush_file(rlog_t* rlog, bool close_file);
+    R_API int rlog_flush_file(rlog_t* rlog, const rlog_level_t level, bool close_file);
     R_API int rlog_rolling_file(rlog_t* rlog, const rlog_level_t level);
 
 
