@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     rmem_init();
     rtools_init();
 
-    rlog_init("${date}/rtest_ecs_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rtest_ecs_${index}.log", rlog_level_all, false, 100);
 
     char* exe_root = rdir_get_exe_root();
     rinfo("\n框架版本号: %s\n当前路径: %s", rversion_get(), exe_root);

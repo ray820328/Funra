@@ -21,18 +21,18 @@
 #define rlog_cache_data_size 5120
 
 #define log_in_multi_thread
-//#define print2file
+#define print2file
 
 
-#define rlog_level_2str(RLOG_E)    \
-		((RLOG_E) == RLOG_VERB ? "VEBR" : \
-		((RLOG_E) == RLOG_TRACE ? "TRACE" : \
-		((RLOG_E) == RLOG_DEBUG ? "DEBUG" : \
-		((RLOG_E) == RLOG_INFO ? "INFO" : \
-		((RLOG_E) == RLOG_WARN ? "WARN" : \
-		((RLOG_E) == RLOG_ERROR ? "ERROR" : \
-		((RLOG_E) == RLOG_FATAL ? "FATAL" : \
-		((RLOG_E) == RLOG_ALL ? "all" : \
+#define rlog_level_2str(log_level)    \
+		((log_level) == rlog_level_verb ? "VEBR" : \
+		((log_level) == rlog_level_trace ? "TRACE" : \
+		((log_level) == rlog_level_debug ? "DEBUG" : \
+		((log_level) == rlog_level_info ? "INFO" : \
+		((log_level) == rlog_level_warn ? "WARN" : \
+		((log_level) == rlog_level_error ? "ERROR" : \
+		((log_level) == rlog_level_fatal ? "FATAL" : \
+		((log_level) == rlog_level_all ? "ALL" : \
 		"UNDEFINED"))))))))
 
 #ifdef __cplusplus
@@ -40,18 +40,24 @@ extern "C" {
 #endif //__cplusplus
 
     typedef enum {
-        RLOG_VERB = 0,
-        RLOG_TRACE,
-        RLOG_DEBUG,
-        RLOG_INFO,
-        RLOG_WARN,
-        RLOG_ERROR,
-        RLOG_FATAL,
-		RLOG_ALL,
+        rlog_level_verb = 0,
+        rlog_level_trace,
+        rlog_level_debug,
+        rlog_level_info,
+        rlog_level_warn,
+        rlog_level_error,
+        rlog_level_fatal,
+		rlog_level_all,
     } rlog_level_t;
 
-    typedef struct rlog_info_t
-    {
+    typedef enum {
+        rlog_state_init,
+        rlog_state_working,
+        rlog_state_roll_file,
+        rlog_state_uninit,
+    } rlog_state_t;
+
+    typedef struct rlog_info_s {
         rlog_level_t level;
         int file_size;//volatile
         rmutex_t* item_mutex;
@@ -62,15 +68,14 @@ extern "C" {
         char* item_fmt;
     } rlog_info_t;
 
-    typedef struct rlog_t
-    {
-        bool inited;
+    typedef struct rlog_s {
+        rlog_state_t state;
         bool file_seperate;
         rlog_level_t level;
         int file_size_max;
         rmutex_t* mutex;
         char* filepath_template;
-        rlog_info_t* log_items[RLOG_ALL];
+        rlog_info_t* log_items[rlog_level_all];
     } rlog_t;
 
     /** file_size: 单位 m **/

@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
 #endif //_WIN64
 
-    rlog_init("${date}/rtest_common_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rtest_common_${index}.log", rlog_level_all, false, 100);
 
     rinfo("STDC_VERSION = %ld, STDC_IEC_599 = %d", STDC_VERSION, STDC_IEC_599);
 

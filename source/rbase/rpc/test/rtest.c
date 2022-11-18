@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     rmem_init();
     rtools_init();
 
-    rlog_init("${date}/rtest_rpc_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rtest_rpc_${index}.log", rlog_level_all, false, 100);
 
     char* exe_root = rdir_get_exe_root();
     rinfo("当前路径: %s", exe_root);

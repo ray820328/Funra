@@ -194,10 +194,11 @@ extern "C" {
   }                                                       \
  } while (0)
 
+//rerror(msg, __VA_ARGS__); //linux编译错误，win正常
 #define rassert_goto(expr, msg, code_int, ...)            \
  do {                                                     \
   if (!(expr)) {                                          \
-    rerror(msg, __VA_ARGS__);                             \
+    rlog_printf(NULL, rlog_level_error, "[%ld] %s:%s:%d "msg"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__); \
     goto exit##code_int;                                  \
   }                                                       \
  } while (0)
