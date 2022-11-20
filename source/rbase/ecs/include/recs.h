@@ -34,6 +34,10 @@ extern "C" {
 
 struct recs_context_s;
 
+#define recs_entity_type_t int
+
+#define recs_cmp_type_t int
+
 #define recs_cmp_fields \
     uint64_t id; \
     recs_cmp_type_t type_id
@@ -46,12 +50,14 @@ typedef enum {
     recs_etype_unknown = 0,
     recs_etype_shared = 1, //system共享数据集合
 
-} recs_entity_type_t;
+    recs_etype_base_end = 10,
+} recs_etype_base_t;
 
 typedef enum {
     recs_ctype_unknown = 0,
 
-} recs_cmp_type_t;
+    recs_ctype_base_end = 10,
+} recs_ctype_base_t;
 
 typedef enum {
     recs_sype_unknown = 0,

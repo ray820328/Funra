@@ -52,12 +52,15 @@ R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t dat
             rdict_remove(ctx->map_entities, data->id);
             rwarn("create item of (%d) failed.", data_type);
 
+			recs_entity_delete(ctx, data, true);
+            data = NULL;
+
             rgoto(1);
         }
     }
 
 exit1:
-    return ret_code;
+    return data;
 }
 
 R_API int recs_entity_delete(recs_context_t* ctx, recs_entity_t* data, bool destroy) {
@@ -91,6 +94,12 @@ R_API int recs_entity_delete(recs_context_t* ctx, recs_entity_t* data, bool dest
     recs_cmp_remove_all(ctx, data);
 
     rdict_remove(ctx->map_entities, data_id);
+
+    if (destroy) {
+    	//todo Ray components 销毁
+    	
+    	rdata_free(recs_entity_t, data);
+    }
     
 exit1:
     return ret_code;

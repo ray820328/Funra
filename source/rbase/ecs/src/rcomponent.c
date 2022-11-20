@@ -40,13 +40,13 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
         rgoto(1);
     }
 
+    data->type_id = data_type;
     do {
         data->id = recs_get_next_id(ctx);
 
         if likely(!rdict_exists(ctx->map_components, data->id)) {
             break;
-        }
-        else {
+        } else {
             rwarn("id exists, value = %"PRIu64, data->id);
         }
     } while (true);
@@ -60,12 +60,15 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
             rdict_remove(ctx->map_components, data->id);
             rwarn("create item of (%d) failed.", data_type);
 
+            recs_cmp_delete(ctx, data, true);
+            data = NULL;
+            
             rgoto(1);
         }
     }
 
 exit1:
-    return ret_code;
+    return data;
 }
 
 R_API int recs_cmp_delete(recs_context_t* ctx, recs_cmp_t* data, bool destroy) {
@@ -97,6 +100,10 @@ R_API int recs_cmp_delete(recs_context_t* ctx, recs_cmp_t* data, bool destroy) {
     }
 
     rdict_remove(ctx->map_components, data_id);
+
+    if (destroy) {
+	    rdata_free(recs_cmp_t, data);
+	}
 
 exit1:
     return ret_code;

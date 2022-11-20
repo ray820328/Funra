@@ -51,7 +51,7 @@ extern "C" {
     } rlog_level_t;
 
     typedef enum {
-        rlog_state_init,
+        rlog_state_init = 0,
         rlog_state_working,
         rlog_state_roll_file,
         rlog_state_uninit,

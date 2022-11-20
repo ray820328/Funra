@@ -404,12 +404,12 @@ int rlog_flush_file(rlog_t* rlog, const rlog_level_t level, bool close_file) {
 
     rmutex_lock(rlog->mutex);
 
-    if (rlog->state != rlog_state_working) {
+    if (rlog->state != rlog_state_working && rlog->state != rlog_state_roll_file) {
         rinfo("flush failed, invalid state = %d.", rlog->state);
         return rcode_invalid;
     }
 
-	rinfo("log file flushed.");
+    rinfo("log file flush.");
 
     FILE* last_file = NULL;
 
@@ -463,20 +463,23 @@ int rlog_rolling_file(rlog_t* rlog, const rlog_level_t level) {
     rlog->state = rlog_state_roll_file;
 
     // rlog_info_t* rlog_info = rlog->log_items[level];
-	rlog_flush_file(rlog, level, true);//已经关闭了filepath对应的文件
+	code_ret = rlog_flush_file(rlog, level, true);//已经关闭了filepath对应的文件
+
+    if (code_ret != rcode_ok) {
+        rgoto(1);
+    }
 
     code_ret = _rlog_build_items(rlog, false, level, rlog->file_seperate);
-
-    rlog->state = rlog_state_working;
 
     if (code_ret != rcode_ok) {
         rgoto(1);
     }
     
-    code_ret = rcode_ok;
 	rinfo("rolling rlog finished.");
 
 exit1:
+    rlog->state = rlog_state_working;
+
 	rmutex_unlock(rlog->mutex);
 
 	return code_ret;
@@ -639,9 +642,8 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
     fprintf(rlog_info->file_ptr, item_fmt, item_buffer);//暂时直接文件，优化其他ipc，管道/共享内存/socket
 
     rlog_info->file_size += write_len;
-    // if (unlikely(rlog_info->file_size > 10240)) {
-    if (unlikely(rlog_info->file_size > rlog->file_size_max)) {
-        // rlog_rolling_file(rlog, level);
+    if (unlikely((rlog_info->file_size > rlog->file_size_max) && (rlog->state == rlog_state_working))) {
+        rlog_rolling_file(rlog, level);
     }
 
 #ifdef log_in_multi_thread

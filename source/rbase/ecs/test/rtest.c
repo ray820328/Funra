@@ -96,7 +96,7 @@ recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
         rgoto(1);
     }
 
-    rinfo("recs_ctype_unknown = %d", recs_ctype_unknown);
+    // rinfo("recs_cmp_type = %d", data_type);
     switch (data_type) {
     case recs_ctype_rtest01:
         data = rdata_new(rtest_cmp_t);
@@ -107,5 +107,5 @@ recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
     }
 
 exit1:
-    return ret_code;
+    return data;
 }
