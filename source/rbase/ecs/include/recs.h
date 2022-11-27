@@ -85,6 +85,7 @@ typedef struct recs_component_s {//ECS模块组件定义, 宗旨为组件仅含�
 typedef struct recs_system_s {//ECS模块sys定义, 宗旨为仅不含有数据仅逻辑函数
     recs_sys_fields;
 
+    rarray_t* systems;
 } recs_sys_t;
 
 typedef struct recs_context_s recs_context_t;
