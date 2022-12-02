@@ -12,6 +12,8 @@
 
 #include "rcommon.h"
 
+#include "ripc.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -8,19 +8,19 @@
  */
 
 #include "rlog.h"
+#include "rarray.h"
 
 #include "recs.h"
-#include "rsystem.h"
 
-R_API int recs_sys_new(recs_context_t* ctx, recs_sys_type_t sys_type, 
-    recs_system_init init_sys, recs_system_uninit uninit_sys, 
-    recs_system_before_update before_update_sys, recs_system_update update_sys, 
-    recs_system_late_update late_update_sys, recs_system_update_fixed update_fixed_sys) {
+/**按添加自然顺序**/
+R_API int recs_sys_add(recs_context_t* ctx, recs_system_t* sys_item) {
+    
+    rarray_add(ctx->systems, sys_item);
 
 	return rcode_ok;
 }
 
-R_API int recs_sys_delete(recs_context_t* ctx, recs_sys_type_t sys_type, bool stop) {
+R_API int recs_sys_remove(recs_context_t* ctx, recs_sys_type_t sys_type, bool stop) {
 
 	return rcode_ok;
 }

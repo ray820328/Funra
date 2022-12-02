@@ -22,7 +22,7 @@
 #include "rlog.h"
 
 int main(int argc, char **argv) {
-    rlog_init("${date}/rserver_${index}.log", RLOG_ALL, false, 100);
+    rlog_init("${date}/rserver_${index}.log", rlog_level_all, false, 100);
     rinfo("starting rserver...");
 
     int64_t timeNowNano = rtime_nanosec();

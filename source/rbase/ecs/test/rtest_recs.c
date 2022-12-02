@@ -35,10 +35,17 @@ static void recs_full_test(void **state) {
 
     start_benchmark(0);
 
+    ret_code = recs_sys_add(ctx, recs_sys_script_lua);
+    assert_true(ret_code == rcode_ok);
+
+    end_benchmark("test recs_rsystem.");
+
+
+    start_benchmark(0);
     rtest_cmp_t* cmp_item = (rtest_cmp_t*)recs_cmp_new(ctx, recs_ctype_rtest01);
 
     assert_true(cmp_item->id > 0);
-	end_benchmark("test ecs.");
+	end_benchmark("test recs_rcomponent.");
 
     uninit_benchmark();
 }

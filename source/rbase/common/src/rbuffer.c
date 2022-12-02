@@ -29,6 +29,10 @@ rbuffer_t* rbuffer_create(rbuffer_size_t init_capacity) {
 
 /** 上层确保val不会溢出，返回read有效字节数 **/
 int rbuffer_read(rbuffer_t* d, char* val, rbuffer_size_t read_size) {
+    if (d == NULL) {
+        return 0;
+    }
+
     int size = 0;
     if (rstr_is_empty(val)) {
         return 0;
@@ -48,6 +52,10 @@ int rbuffer_read(rbuffer_t* d, char* val, rbuffer_size_t read_size) {
 
 /** 上层确保val不会溢出，返回write有效字节数，size == 0 默认val字符串长度，为0提前截断风险 **/
 int rbuffer_write(rbuffer_t* d, const char* val, rbuffer_size_t size) {
+    if (d == NULL) {
+        return 0;
+    }
+
     int free_size = 0;
     if (val == NULL) {
         return 0;
@@ -76,6 +84,10 @@ int rbuffer_write(rbuffer_t* d, const char* val, rbuffer_size_t size) {
 }
 
 int rbuffer_rewind(rbuffer_t* d) {
+    if (d == NULL) {
+        return rcode_invalid;
+    }
+
     int move_size = 0;
     int size = rbuffer_size(d);
     int block = 0;
@@ -100,6 +112,10 @@ int rbuffer_rewind(rbuffer_t* d) {
 }
 
 int rbuffer_seek(rbuffer_t* d, rbuffer_size_t pos) {
+    if (d == NULL) {
+        return rcode_invalid;
+    }
+
     if (likely(pos >= d->offset && pos < d->capacity)) {
         d->pos = pos;
     }else if (pos < d->offset) {
@@ -113,6 +129,10 @@ int rbuffer_seek(rbuffer_t* d, rbuffer_size_t pos) {
 }
 
 int rbuffer_skip(rbuffer_t* d, rbuffer_size_t size) {
+    if (d == NULL) {
+        return rcode_invalid;
+    }
+
     d->offset += size;
     if (d->offset > d->pos) {
         d->offset = d->pos;
@@ -124,11 +144,19 @@ int rbuffer_skip(rbuffer_t* d, rbuffer_size_t size) {
 }
 
 int rbuffer_revert(rbuffer_t* d) {
+    if (d == NULL) {
+        return rcode_invalid;
+    }
+
     d->offset = d->pos;
     return rcode_ok;
 }
 
 void rbuffer_clear(rbuffer_t* d) {
+    if (d == NULL) {
+        return;
+    }
+
     d->offset = 0;
     d->pos = 0;
 }

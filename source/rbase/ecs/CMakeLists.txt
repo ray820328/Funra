@@ -13,6 +13,7 @@ SET(SRC_LIB
     src/rcomponent.c
     src/rsystem.c
     src/recs.c
+    src/recs_sys_script_lua.c
 )
 
 SET(SRC_BIN

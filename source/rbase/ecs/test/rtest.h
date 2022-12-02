@@ -31,6 +31,9 @@
 int run_recs_tests(int benchmark_output);
 int run_rentity_tests(int benchmark_output);
 
+// typedef enum {
+//     recs_stype_execute_script_xx = recs_stype_execute_base_end + 1,
+// } recs_stype_rtest_t;
 
 typedef enum {
 	recs_ctype_rtest_start = recs_ctype_base_end,

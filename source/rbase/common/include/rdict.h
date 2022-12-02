@@ -84,17 +84,17 @@ typedef struct rdict_t {//非线程安全，扩容为浅拷贝
     float scale_factor;
     void* data_ext;
 
-    rdict_malloc_func_type malloc_func;
-    rdict_calloc_func_type calloc_func;
-    rdict_free_func_type free_func;
+    rdict_malloc_func_type malloc_func; //内存管理相关
+    rdict_calloc_func_type calloc_func; //内存管理相关
+    rdict_free_func_type free_func; //内存管理相关
     rdict_hash_func_type hash_func;
     rdict_set_key_func_type set_key_func;
     rdict_set_value_func_type set_value_func;
     rdict_copy_key_func_type copy_key_func;
     rdict_copy_value_func_type copy_value_func;
     rdict_compare_key_func_type compare_key_func;
-    rdict_free_key_func_type free_key_func;
-    rdict_free_value_func_type free_value_func;
+    rdict_free_key_func_type free_key_func; //在remove和clear的时候都会执行
+    rdict_free_value_func_type free_value_func; //在remove和clear的时候都会执行
     rdict_expand_failed_func_type expand_failed_func;
 } rdict_t;
 

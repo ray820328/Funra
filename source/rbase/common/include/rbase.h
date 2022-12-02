@@ -42,6 +42,10 @@ extern "C" {
 
 #define ros_windows
 
+#elif defined(__APPLE__)
+
+#define ros_darwin
+
 #else //_WIN64
 
 #define ros_linux

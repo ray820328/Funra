@@ -10,8 +10,6 @@
 #include "rlog.h"
 
 #include "recs.h"
-#include "rcomponent.h"
-
 
 R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
     int ret_code = rcode_ok;
@@ -57,7 +55,7 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
         ret_code = ctx->on_new_cmp(ctx, data);
 
         if (ret_code != rcode_ok) {
-            rdict_remove(ctx->map_components, data->id);
+            rdict_remove(ctx->map_components, (const void*)data->id);
             rwarn("create item of (%d) failed.", data_type);
 
             recs_cmp_delete(ctx, data, true);
@@ -66,6 +64,8 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
             rgoto(1);
         }
     }
+
+    rdata_init(data, sizeof(*data));
 
 exit1:
     return data;
@@ -89,6 +89,8 @@ R_API int recs_cmp_delete(recs_context_t* ctx, recs_cmp_t* data, bool destroy) {
         break;
     }
 
+    rdict_remove(ctx->map_components, (const void*)data_id);
+
     if (ctx->on_delete_cmp != NULL) {
         ret_code = ctx->on_delete_cmp(ctx, data);
 
@@ -98,8 +100,6 @@ R_API int recs_cmp_delete(recs_context_t* ctx, recs_cmp_t* data, bool destroy) {
             rgoto(1);
         }
     }
-
-    rdict_remove(ctx->map_components, data_id);
 
     if (destroy) {
 	    rdata_free(recs_cmp_t, data);

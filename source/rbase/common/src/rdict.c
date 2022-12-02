@@ -169,6 +169,10 @@ static int _expand_buckets(rdict_t* d, rdict_size_t capacity) {
 }
 
 int rdict_expand(rdict_t* d, rdict_size_t capacity) {
+    if (d == NULL) {
+        return rcode_invalid;
+    }
+
     rdict_size_t real_capacity = capacity;
     if (real_capacity < rdict_hill_expand_capacity) {//小于峰值，按倍数扩容
         real_capacity *= rdict_expand_factor;
@@ -325,6 +329,10 @@ void rdict_clear(rdict_t* d) {
 }
 
 void rdict_release(rdict_t* d) {
+    if (d == NULL) {
+        return;
+    }
+
     rdict_clear(d);
 
     rdict_entry_t *entry = rdict_get_entry(d, 0);
@@ -343,7 +351,7 @@ void rdict_release(rdict_t* d) {
 }
 
 rdict_entry_t * rdict_find(rdict_t* d, const void* key) {
-    if (!key) {
+    if (d == NULL || key == NULL) {
         return d->entry_null;
     }
 

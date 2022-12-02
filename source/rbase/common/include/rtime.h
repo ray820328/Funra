@@ -12,6 +12,10 @@
 
 #include "rcommon.h"
 
+#if defined(ros_darwin)
+#include <sys/time.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

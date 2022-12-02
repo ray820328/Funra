@@ -75,6 +75,10 @@ rarray_t* rarray_create(rarray_size_t value_size, rarray_size_t init_capacity) {
 }
 
 int rarray_add(rarray_t* ar, void* val) {
+    if (ar == NULL) {
+        return rcode_ok;
+    }
+
     if (ar->size >= ar->capacity) {
         rassert(_rarray_alloc(ar, (rarray_size_t)(ar->capacity * ar->scale_factor)) == rcode_ok, "oom");
     }
@@ -86,6 +90,10 @@ int rarray_add(rarray_t* ar, void* val) {
 }
 
 int rarray_remove(rarray_t* ar, const void* val) {
+    if (ar == NULL) {
+        return rcode_ok;
+    }
+
     rarray_iterator_t it = rarray_it(ar);
     void* temp = NULL;
     for (rarray_size_t index = 0; temp = rarray_next(&it), rarray_has_next(&it); index ++) {
@@ -98,6 +106,10 @@ int rarray_remove(rarray_t* ar, const void* val) {
 }
 
 int rarray_remove_at(rarray_t* ar, rarray_size_t index) {
+    if (ar == NULL) {
+        return rcode_ok;
+    }
+
     if ((index) < 0 || (index) >= (ar)->size) {
         return rarray_code_index_out4_size;
     }
@@ -124,6 +136,10 @@ void** rarray_get_all(rarray_t* ar) {
 }
 
 void rarray_clear(rarray_t* ar) {
+    if (ar == NULL) {
+        return;
+    }
+
     if (ar->free_value_func) {
         rarray_iterator_t it = rarray_it(ar);
         void* temp = NULL;
@@ -149,6 +165,10 @@ void rarray_release(rarray_t* ar) {
 }
 
 bool rarray_exist(rarray_t* ar, const void* data) {
+    if (ar == NULL) {
+        return false;
+    }
+
     rarray_iterator_t it = rarray_it(ar);
     void* temp = NULL;
     for (; temp = rarray_next(&it), rarray_has_next(&it);) {
@@ -161,7 +181,7 @@ bool rarray_exist(rarray_t* ar, const void* data) {
 
 void* rarray_at(rarray_t* ar, rarray_size_t index) {
     //void* temp = NULL;
-    if (!ar || index >= ar->capacity) {
+    if (ar == NULL || index >= ar->capacity) {
         return NULL;
     }
     //temp = ar->get_value_func(ar->items, index);

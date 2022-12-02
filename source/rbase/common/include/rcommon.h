@@ -158,6 +158,7 @@ extern "C" {
 
 #endif //RAY_USE_POOL
 
+#define rdata_init(data, size_block) memset((data), 0, (size_block))
 #define rdata_destroy(ptr, destroy_func) \
     do { \
         (destroy_func)((ptr)); \

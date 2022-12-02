@@ -67,15 +67,21 @@ static void rentity_full_test(void **state) {
     recs_context_t* ctx = &recs_context;
     int count = 1000;
     int j;
+    uint64_t temp_id = 0;
 
     init_benchmark(1024, "test entity (%d)", count);
 
     start_benchmark(0);
     recs_entity_t* entity = recs_entity_new(ctx, recs_etype_shared);
     assert_true(entity != NULL);
-    recs_get_entity(ctx, entity->id, &entity);
+    temp_id = entity->id;
+    recs_get_entity(ctx, temp_id, &entity);
     assert_true(entity != NULL);
-    end_benchmark("create entity.");
+    recs_entity_delete(ctx, entity, true);
+    entity = NULL;
+    recs_get_entity(ctx, temp_id, &entity);
+    assert_true(entity == NULL);
+    end_benchmark("create/destroy entity.");
 
     start_benchmark(0);
     rtest_cmp_t* cmp_item = NULL;

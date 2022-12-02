@@ -8,10 +8,9 @@
  */
 
 #include "rlog.h"
+#include "rdict.h"
 
 #include "recs.h"
-#include "rentity.h"
-
 
 R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t data_type) {
     int ret_code = rcode_ok;
@@ -43,13 +42,13 @@ R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t dat
         }
     } while (true);
 
-    rdict_add(ctx->map_entities, data->id, data);//统一下层数据接口
+    rdict_add(ctx->map_entities, (void*)data->id, data);//统一下层数据接口
 
     if (ctx->on_new_entity != NULL) {
         ret_code = ctx->on_new_entity(ctx, data);
 
         if (ret_code != rcode_ok) {
-            rdict_remove(ctx->map_entities, data->id);
+            rdict_remove(ctx->map_entities, (const void*)data->id);
             rwarn("create item of (%d) failed.", data_type);
 
 			recs_entity_delete(ctx, data, true);
@@ -58,6 +57,8 @@ R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t dat
             rgoto(1);
         }
     }
+
+    rdata_init(data, sizeof(recs_entity_t));
 
 exit1:
     return data;
@@ -81,6 +82,10 @@ R_API int recs_entity_delete(recs_context_t* ctx, recs_entity_t* data, bool dest
         break;
     }
 
+    recs_cmp_remove_all(ctx, data);
+
+    rdict_remove(ctx->map_entities, (const void*)data_id);
+
     if (ctx->on_delete_entity != NULL) {
         ret_code = ctx->on_delete_entity(ctx, data);
 
@@ -90,10 +95,6 @@ R_API int recs_entity_delete(recs_context_t* ctx, recs_entity_t* data, bool dest
             rgoto(1);
         }
     }
-
-    recs_cmp_remove_all(ctx, data);
-
-    rdict_remove(ctx->map_entities, data_id);
 
     if (destroy) {
     	//todo Ray components 销毁
@@ -159,7 +160,14 @@ R_API int recs_cmp_remove(recs_context_t* ctx, recs_entity_t* entity, uint64_t c
 }
 
 R_API int recs_cmp_remove_all(recs_context_t* ctx, recs_entity_t* entity) {
-    rarray_clear(entity->components);
+    if (entity == NULL) {
+        return rcode_ok;
+    }
+
+    if (entity->components != NULL) {
+        rarray_clear(entity->components);
+    }
+
     return rcode_ok;
 }
 

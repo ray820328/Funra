@@ -20,7 +20,7 @@ rlist_t* rlist_create() {
 }
 
 void rlist_clear(rlist_t *self) {
-    if (!self || self->len <= 0) {
+    if (self == NULL || self->len <= 0) {
         return;
     }
     unsigned int len = self->len;
@@ -40,6 +40,10 @@ void rlist_clear(rlist_t *self) {
 }
 
 void rlist_destroy(rlist_t *self) {
+    if (self == NULL) {
+        return;
+    }
+
     unsigned int len = self->len;
     rlist_node_t *next;
     rlist_node_t *curr = self->head;
@@ -60,6 +64,10 @@ void rlist_destroy(rlist_t *self) {
  * and return the node, NULL on failure.
  */
 rlist_node_t* rlist_rpush(rlist_t *self, void* node_val) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     if (!node_val) return NULL;//不支持空节点
 
     rlist_node_t* node = rdata_new(rlist_node_t);
@@ -93,6 +101,10 @@ rlist_node_t* rlist_rpush(rlist_t *self, void* node_val) {
  * Return / detach the last node in the list, or NULL.
  */
 rlist_node_t* rlist_rpop(rlist_t *self) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     if (!self->len) return NULL;
 
     rlist_node_t *node = self->tail;
@@ -112,6 +124,10 @@ rlist_node_t* rlist_rpop(rlist_t *self) {
  * Return / detach the first node in the list, or NULL.
  */
 rlist_node_t* rlist_lpop(rlist_t *self) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     if (!self->len) return NULL;
 
     rlist_node_t *node = self->head;
@@ -132,6 +148,10 @@ rlist_node_t* rlist_lpop(rlist_t *self) {
  * and return the node, NULL on failure.
  */
 rlist_node_t* rlist_lpush(rlist_t *self, void* node_val) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     if (!node_val) return NULL;//不支持空节点
 
     rlist_node_t* node = rdata_new(rlist_node_t);
@@ -164,6 +184,10 @@ rlist_node_t* rlist_lpush(rlist_t *self, void* node_val) {
  * Return the node associated to val or NULL.
  */
 rlist_node_t* rlist_find(rlist_t *self, void *val) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     rlist_iterator_t it = rlist_it(self, rlist_dir_tail);
     rlist_node_t *node;
 
@@ -188,6 +212,10 @@ rlist_node_t* rlist_find(rlist_t *self, void *val) {
  */
 
 rlist_node_t* rlist_at(rlist_t *self, int index) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     rlist_direction_t direction = rlist_dir_tail;
 
     if (index < 0) {
@@ -212,6 +240,10 @@ rlist_node_t* rlist_at(rlist_t *self, int index) {
  * Remove the given node from the list, freeing it and it's value.
  */
 void rlist_remove(rlist_t *self, rlist_node_t *node) {
+    if (self == NULL) {
+        return;
+    }
+
     if (!node) return;
 
     node->prev ? (node->prev->next = node->next) : (self->head = node->next);
@@ -258,7 +290,11 @@ int rlist_merge(rlist_t* dest, rlist_t* temp, rlist_direction_t dir) {
     return count;
 }
 
-rlist_node_t* rlist_next(rlist_iterator_t *self) {
+rlist_node_t* rlist_next(rlist_iterator_t* self) {
+    if (self == NULL) {
+        return NULL;
+    }
+
     rlist_node_t *curr = self->next;
     if (curr) {
         self->next = self->direction == rlist_dir_tail ? curr->next : curr->prev;
