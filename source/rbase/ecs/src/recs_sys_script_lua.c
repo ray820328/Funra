@@ -7,21 +7,27 @@
  * @author: Ray
  */
 
-#include "lua.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#include "lauxlib.h"
+#include "lualib.h"
+#include "lua.h"
+    
 #include "rlog.h"
 
 #include "recs.h"
 
 static int init_lua(recs_context_t* ctx, const void* cfg_data) {
 
-    //recs_entity_t* admin_entity = NULL;
-    //
-    //lua_State* LS = luaL_newstate();
+    recs_entity_t* admin_entity = NULL;
+    
+    lua_State* LS = luaL_newstate();
 
-    //rassert(LS != NULL, "new lua state failed.");
+    rassert(LS != NULL, "new lua state failed.");
 
-    //luaL_openlibs(LS);
+    luaL_openlibs(LS);
 
     return rcode_ok;
 }
@@ -63,3 +69,8 @@ static recs_system_t recs_sys_script_lua_obj = {
 };
 
 const recs_system_t* recs_sys_script_lua = &recs_sys_script_lua_obj;
+
+
+#ifdef __cplusplus
+}
+#endif

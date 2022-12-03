@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
     setlocale(LC_ALL, "zh_CN.UTF-8");
     setlocale(LC_NUMERIC, "zh_CN");
     setlocale(LC_TIME, "zh_CN");
+    setlocale(LC_COLLATE, "C");//"POSIX"或"C"，则strcoll()与strcmp()作用完全相同
 
     rmem_init();
     rtools_init();

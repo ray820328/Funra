@@ -35,7 +35,7 @@ R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t dat
     do {
         data->id = recs_get_next_id(ctx);
 
-        if likely(!rdict_exists(ctx->map_entities, data->id)) {
+        if likely(!rdict_exists(ctx->map_entities, (const void*)data->id)) {
             break;
         } else {
             rwarn("id exists, value = %"PRIu64, data->id);

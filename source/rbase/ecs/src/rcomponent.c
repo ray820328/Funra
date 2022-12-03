@@ -42,14 +42,14 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
     do {
         data->id = recs_get_next_id(ctx);
 
-        if likely(!rdict_exists(ctx->map_components, data->id)) {
+        if likely(!rdict_exists(ctx->map_components, (const void*)data->id)) {
             break;
         } else {
             rwarn("id exists, value = %"PRIu64, data->id);
         }
     } while (true);
 
-    rdict_add(ctx->map_components, data->id, data);//统一下层数据接口
+    rdict_add(ctx->map_components, (void*)data->id, data);//统一下层数据接口
 
     if (ctx->on_new_cmp != NULL) {
         ret_code = ctx->on_new_cmp(ctx, data);

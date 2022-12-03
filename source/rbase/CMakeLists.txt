@@ -31,6 +31,7 @@ ELSEIF (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
     SET(PROJECT_FLAGS_COMMON "/GF /MP /EHsc /Gd /W3 -D_CRT_SECURE_NO_WARNINGS")
     SET(PROJECT_C_FLAGS_DEBUG "${PROJECT_FLAGS_COMMON} /MTd /Ob0 /Od /RTC1 -D_DEBUG -DCHECK_MEM_LEAK")
     SET(PROJECT_C_FLAGS_RELEASE "${PROJECT_FLAGS_COMMON} /MT /Ob2 /O2 -DNDEBUG")
+    SET(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:"MSVCRT.lib;MSVCRTD.lib")
 ENDIF ()
 SET(CMAKE_C_FLAGS_DEBUG "${PROJECT_C_FLAGS_DEBUG}" CACHE STRING "Set debug build flags" FORCE)
 SET(CMAKE_C_FLAGS_RELEASE "${PROJECT_C_FLAGS_RELEASE}" CACHE STRING "Set relese build flags" FORCE)
@@ -80,11 +81,11 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     SET(LINK_LIBS 
         legacy_stdio_definitions
         3rd/cmocka
-        3rd/lua
-        3rd/uv
-        3rd/uv_a
-        rcommon
-        ripc  
+        3rd/lua${RBUILD_TYPE_POSTFIX}
+        3rd/uv${RBUILD_TYPE_POSTFIX}
+        3rd/uv_a${RBUILD_TYPE_POSTFIX}
+        rcommon${RBUILD_TYPE_POSTFIX}
+        ripc${RBUILD_TYPE_POSTFIX}
     )
 else()
     LINK_DIRECTORIES(

@@ -206,7 +206,7 @@ R_API uint64_t recs_get_next_id(recs_context_t* ctx) {
 }
 
 R_API int recs_get_entity(recs_context_t* ctx, uint64_t entity_id, recs_entity_t** ret_entity) {
-    rdict_entry_t* item = rdict_find(ctx->map_entities, entity_id);
+    rdict_entry_t* item = rdict_find(ctx->map_entities, (const void*)entity_id);
     if (item != NULL) {
         *ret_entity = rdict_get_value(item);
     }
@@ -215,7 +215,7 @@ R_API int recs_get_entity(recs_context_t* ctx, uint64_t entity_id, recs_entity_t
 }
 
 R_API int recs_get_cmp(recs_context_t* ctx, uint64_t cmp_id, recs_cmp_t** ret_cmp) {
-    rdict_entry_t* item = rdict_find(ctx->map_components, cmp_id);
+    rdict_entry_t* item = rdict_find(ctx->map_components, (const void*)cmp_id);
     if (item != NULL) {
         *ret_cmp = rdict_get_value(item);
     }

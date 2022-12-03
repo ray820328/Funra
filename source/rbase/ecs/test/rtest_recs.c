@@ -35,7 +35,7 @@ static void recs_full_test(void **state) {
 
     start_benchmark(0);
 
-    ret_code = recs_sys_add(ctx, recs_sys_script_lua);
+    ret_code = recs_sys_add(ctx, (recs_system_t*)recs_sys_script_lua);
     assert_true(ret_code == rcode_ok);
 
     end_benchmark("test recs_rsystem.");
