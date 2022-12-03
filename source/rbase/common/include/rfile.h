@@ -24,6 +24,14 @@ extern "C" {
 #define rfile_path_current "."
 #define rfile_path_parent ".."
 
+/* ------------------------------- Structs ------------------------------------*/
+
+typedef struct rfile_item_s {
+    char* filename;
+    FILE* file;
+    char data[0];
+} rfile_item_t;
+
 /* ------------------------------- APIs ------------------------------------*/
 
 int rfile_create(const char *file_path);
@@ -37,8 +45,10 @@ int rfile_rename(const char* src, const char* dst);
 
 int rfile_remove(const char* file);
 
-//int rfile_open(const char* file_path);
-//int rfile_close(const char* file_path);
+int rfile_open(rfile_item_t* file_item);
+int rfile_read(rfile_item_t* file_item);
+int rfile_write(rfile_item_t* file_item);
+int rfile_close(rfile_item_t* file_item);
 
 /** 不带后缀，形如：/temp/test **/
 int rfile_format_path(char* file);

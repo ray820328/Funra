@@ -360,24 +360,41 @@ int rfile_exists(const char* path) {
     return 0;//已存在
 }
 
-//int rlog_read_file(const char* filename) {
-//    FILE *fp;
-//    //文件以追加的方式打开
-//    if ((fp = fopen(filename, "a+")) == NULL) {
-//        rdebug("Cannot open file, press any key to exit!");
-//        return -1;
-//    }
-//    //while (!feof(fp))
-//    //{
-//    //    int a = 0;
-//    //    int b = 0;
-//    //    fscanf(fp, "%d + %d", &a, &b);
-//    //    rdebug("a = %d, b = %d", a, b);
-//    //    //输出a = 1, b = 2
-//    //}
-//    //fclose(fp);
-//    return rcode_ok;
-//}
+int rfile_open(rfile_item_t* file_item) {
+
+    return rcode_ok;
+}
+
+int rfile_close(rfile_item_t* file_item) {
+
+    return rcode_ok;
+}
+
+int rfile_read(rfile_item_t* file_item) {
+   // FILE *fp;
+   // //文件以追加的方式打开
+   // if ((fp = fopen(filename, "a+")) == NULL) {
+   //     rdebug("Cannot open file, press any key to exit!");
+   //     return -1;
+   // }
+   // //while (!feof(fp))
+   // //{
+   // //    int a = 0;
+   // //    int b = 0;
+   // //    fscanf(fp, "%d + %d", &a, &b);
+   // //    rdebug("a = %d, b = %d", a, b);
+   // //    //输出a = 1, b = 2
+   // //}
+   
+   // fclose(fp);
+
+   return rcode_ok;
+}
+
+int rfile_write(rfile_item_t* file_item) {
+
+    return rcode_ok;
+}
 
 int rfile_copy_file(const char *src, const char *dst) {
     FILE *sfp = NULL, *dfp = NULL;
