@@ -361,6 +361,48 @@ int rfile_exists(const char* path) {
 }
 
 int rfile_open(rfile_item_t* file_item) {
+    if (file_item == NULL || file_item->filename == NULL) {
+        rerror("invalid file item");
+        return rcode_invalid;
+    }
+
+    if (file_item->state == rfile_state_open) {
+        rerror("invalid file status, file = %s, state = %d", file_item->filename, file_item->state);
+        return rcode_invalid;
+    }
+
+    char* open_op = NULL;
+    switch(file_item->state) {
+        case rfile_open_mode_read:
+            open_op = "r";
+            break;
+        case rfile_open_mode_write:
+            open_op = "w";
+            break;
+        case rfile_open_mode_read_write:
+            open_op = "a";
+            break;
+        case rfile_open_mode_append:
+            open_op = "r+";
+            break;
+        case rfile_open_mode_overwrite:
+            open_op = "w+";
+            break;
+        case rfile_open_mode_append_rw:
+            open_op = "a+";
+            break;
+        default:
+            open_op = "r";
+            break;
+    }
+
+    if ((file_item->file = fopen(file_item->filename, open_op)) == NULL) {
+        rerror("open file failed, file = %s, state = %d, op = %s", 
+            file_item->filename, file_item->state, open_op);
+        return rcode_invalid;
+    }
+
+    file_item->state = rfile_state_open;
 
     return rcode_ok;
 }

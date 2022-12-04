@@ -25,8 +25,27 @@ extern "C" {
 #define rfile_path_parent ".."
 
 /* ------------------------------- Structs ------------------------------------*/
+typedef enum {
+    rfile_state_init = 0,
+    rfile_state_create,
+    rfile_state_delete,
+    rfile_state_open,
+    rfile_state_close,
+    rfile_state_uninit,
+} rfile_state_t;
+
+typedef enum {
+    rfile_open_mode_read = 0,
+    rfile_open_mode_write,
+    rfile_open_mode_read_write,
+    rfile_open_mode_append,
+    rfile_open_mode_overwrite,
+    rfile_open_mode_append_rw,
+} rfile_open_mode_t;
 
 typedef struct rfile_item_s {
+	rfile_state_t state;
+    rfile_open_mode_t open_mode;
     char* filename;
     FILE* file;
     char data[0];
