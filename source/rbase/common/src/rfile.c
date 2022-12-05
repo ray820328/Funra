@@ -360,7 +360,48 @@ int rfile_exists(const char* path) {
     return 0;//已存在
 }
 
-int rfile_open(rfile_item_t* file_item) {
+int rfile_init_item(rfile_item_t** file_item, char* filepath) {
+    if (*file_item != NULL) {
+        rerror("invalid file item");
+        return rcode_invalid;
+    }
+
+    if (rfile_exists(filepath) != 0) {
+        rerror("file not exists, path = %s", filepath);
+        return rcode_invalid;
+    }
+
+    *file_item = rdata_new(rfile_item_t);
+    rdata_init(*file_item, sizeof(rfile_item_t));
+
+    (*file_item)->filename = rstr_cpy(filepath, 0);
+    (*file_item)->state = rfile_state_init;
+
+    return rcode_ok;
+}
+
+int rfile_uninit_item(rfile_item_t* file_item) {
+    if (file_item == NULL || file_item->filename == NULL) {
+        rerror("invalid file item");
+        return rcode_invalid;
+    }
+
+    file_item->state = rfile_state_uninit;
+
+    if (file_item->state == rfile_state_open) {
+        rfile_close(file_item);
+    }
+
+    if (file_item->filename != NULL) {
+        rstr_free(file_item->filename);
+    }
+
+    rdata_free(rfile_item_t, file_item);
+
+    return rcode_ok;
+}
+
+int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode) {
     if (file_item == NULL || file_item->filename == NULL) {
         rerror("invalid file item");
         return rcode_invalid;
@@ -374,25 +415,25 @@ int rfile_open(rfile_item_t* file_item) {
     char* open_op = NULL;
     switch(file_item->state) {
         case rfile_open_mode_read:
-            open_op = "r";
+            open_op = "rb";//rb 二进制
             break;
         case rfile_open_mode_write:
-            open_op = "w";
+            open_op = "wb";
             break;
         case rfile_open_mode_read_write:
-            open_op = "a";
+            open_op = "ab";
             break;
         case rfile_open_mode_append:
-            open_op = "r+";
+            open_op = "rb+";
             break;
         case rfile_open_mode_overwrite:
-            open_op = "w+";
+            open_op = "wb+";
             break;
         case rfile_open_mode_append_rw:
-            open_op = "a+";
+            open_op = "ab+";
             break;
         default:
-            open_op = "r";
+            open_op = "rb";
             break;
     }
 
@@ -408,32 +449,56 @@ int rfile_open(rfile_item_t* file_item) {
 }
 
 int rfile_close(rfile_item_t* file_item) {
+    if (file_item == NULL || file_item->file == NULL) {
+        rerror("invalid file item");
+        return rcode_invalid;
+    }
+
+    if (file_item->state != rfile_state_open) {
+        rerror("invalid file status, file = %s, state = %d", 
+            file_item->filename == NULL ? "" : file_item->filename, file_item->state);
+        return rcode_invalid;
+    }
+
+    fflush(file_item->file);
+    fclose(file_item->file);
+    file_item->file = NULL;
+
+    file_item->state = rfile_state_close;
 
     return rcode_ok;
 }
 
-int rfile_read(rfile_item_t* file_item) {
-   // FILE *fp;
-   // //文件以追加的方式打开
-   // if ((fp = fopen(filename, "a+")) == NULL) {
-   //     rdebug("Cannot open file, press any key to exit!");
-   //     return -1;
-   // }
-   // //while (!feof(fp))
-   // //{
-   // //    int a = 0;
-   // //    int b = 0;
-   // //    fscanf(fp, "%d + %d", &a, &b);
-   // //    rdebug("a = %d, b = %d", a, b);
-   // //    //输出a = 1, b = 2
-   // //}
-   
-   // fclose(fp);
+int rfile_read(rfile_item_t* file_item, char* data, int cache_size, int* real_size) {
+   if (file_item == NULL || file_item->file == NULL) {
+        rerror("invalid file item");
+        return rcode_invalid;
+    }
 
-   return rcode_ok;
+    if (file_item->state != rfile_state_open) {
+        rerror("invalid file status, file = %s, state = %d", 
+            file_item->filename == NULL ? "" : file_item->filename, file_item->state);
+        return rcode_invalid;
+    }
+
+    *real_size = read(file_item->file, data, cache_size);
+
+    return rcode_ok;
 }
 
-int rfile_write(rfile_item_t* file_item) {
+int rfile_write(rfile_item_t* file_item, char* data, int buffer_size, int* real_size) {
+    if (file_item == NULL || file_item->file == NULL) {
+        rerror("invalid file item");
+        return rcode_invalid;
+    }
+
+    if (file_item->state != rfile_state_open) {
+        rerror("invalid file status, file = %s, state = %d", 
+            file_item->filename == NULL ? "" : file_item->filename, file_item->state);
+        return rcode_invalid;
+    }
+
+    *real_size = write(file_item->file, data, buffer_size);
 
     return rcode_ok;
 }
