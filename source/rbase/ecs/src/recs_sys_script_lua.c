@@ -19,15 +19,23 @@ extern "C" {
 
 #include "recs.h"
 
+static lua_State* LS = NULL;
+
 static int init_lua(recs_context_t* ctx, const void* cfg_data) {
 
     recs_entity_t* admin_entity = NULL;
     
-    lua_State* LS = luaL_newstate();
+    LS = luaL_newstate();
 
     rassert(LS != NULL, "new lua state failed.");
 
     luaL_openlibs(LS);
+
+    luaL_dofile(LS, "script/main.lua");
+    // luaL_loadfile(LS, "script/main.lua");
+    // int ret_code = lua_pcall(LS, 0, 0, 0);
+
+    rinfo("system init finished.");
 
     return rcode_ok;
 }

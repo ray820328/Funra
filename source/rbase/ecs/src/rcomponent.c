@@ -38,6 +38,7 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
         rgoto(1);
     }
 
+    // rdata_init(data, sizeof(*data));
     data->type_id = data_type;
     do {
         data->id = recs_get_next_id(ctx);
@@ -64,8 +65,6 @@ R_API recs_cmp_t* recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type) {
             rgoto(1);
         }
     }
-
-    rdata_init(data, sizeof(*data));
 
 exit1:
     return data;

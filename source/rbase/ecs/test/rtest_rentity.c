@@ -65,7 +65,7 @@ static void rentity_full_test(void **state) {
     (void)state;
 
     recs_context_t* ctx = &recs_context;
-    int count = 1000;
+    int count = 3;
     int j;
     uint64_t temp_id = 0;
 

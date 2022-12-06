@@ -351,7 +351,11 @@ void rdict_release(rdict_t* d) {
 }
 
 rdict_entry_t * rdict_find(rdict_t* d, const void* key) {
-    if (d == NULL || key == NULL) {
+    if (d == NULL) {
+        return NULL;
+    }
+
+    if (key == NULL) {
         return d->entry_null;
     }
 

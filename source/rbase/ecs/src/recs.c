@@ -24,11 +24,11 @@
 
 //在remove和clear的时候都会执行
 static void recs_entity_dict_free_value(void* data_ext, recs_entity_t* entity) {
-    rinfo("free entity", entity->id);
+    rinfo("free entity, id = %"PRIu64, entity->id);
 }
 
 static void recs_cmp_dict_free_value(void* data_ext, recs_cmp_t* cmp) {
-    rinfo("free cmp", cmp->id);
+    // rinfo("free cmp, id = %"PRIu64, cmp->id);
 }
 
 static recs_system_t* rsystem_copy_value_func(const recs_system_t* obj) {
@@ -191,6 +191,23 @@ R_API int recs_run(recs_context_t* ctx, const void* cfg_data) {
 
     if (ctx->exec_state != recs_execute_state_running) {
         return ret_code;
+    }
+
+    recs_system_t* cur_system = NULL;
+
+    rarray_iterator_t it = rarray_it(ctx->systems);
+    for (; cur_system = rarray_next(&it), rarray_has_next(&it); ) {
+        cur_system->before_update(ctx, cfg_data);
+    }
+
+    rarray_it_first(&it);
+    for (; cur_system = rarray_next(&it), rarray_has_next(&it); ) {
+        cur_system->update(ctx, cfg_data);
+    }
+    
+    rarray_it_first(&it);
+    for (; cur_system = rarray_next(&it), rarray_has_next(&it); ) {
+        cur_system->late_update(ctx, cfg_data);
     }
 
     return ret_code;

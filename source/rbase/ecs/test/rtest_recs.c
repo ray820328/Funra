@@ -27,25 +27,35 @@ static recs_context_t recs_context;
 
 static void recs_full_test(void **state) {
 	(void)state;
-	int count = 1;
+	int count = 5;
 	init_benchmark(1024, "test recs (%d)", count);
 
     int ret_code = 0;
     recs_context_t* ctx = &recs_context;
 
-    start_benchmark(0);
+    assert_true(recs_start(ctx, NULL) == rcode_ok);
 
+    start_benchmark(0);
     ret_code = recs_sys_add(ctx, (recs_system_t*)recs_sys_script_lua);
     assert_true(ret_code == rcode_ok);
-
-    end_benchmark("test recs_rsystem.");
-
+    end_benchmark("test add recs_system.");
 
     start_benchmark(0);
     rtest_cmp_t* cmp_item = (rtest_cmp_t*)recs_cmp_new(ctx, recs_ctype_rtest01);
-
     assert_true(cmp_item->id > 0);
-	end_benchmark("test recs_rcomponent.");
+	end_benchmark("test create recs_component.");
+
+    start_benchmark(0);
+    for (int i = 0; i < count; i++) {
+        recs_run(ctx, NULL);
+        assert_true(ret_code == rcode_ok);
+    }
+    end_benchmark("test running recs.");
+
+    start_benchmark(0);
+    ret_code = recs_sys_remove(ctx, (recs_system_t*)recs_sys_script_lua);
+    assert_true(ret_code == rcode_ok);
+    end_benchmark("test remove recs_system.");
 
     uninit_benchmark();
 }
@@ -53,6 +63,7 @@ static void recs_full_test(void **state) {
 
 static int setup(void **state) {
     recs_context_t* ctx = &recs_context;
+    rdata_init(ctx, sizeof(*ctx));
 
     ctx->sid_min = 10000;
     ctx->sid_max = 11000;
@@ -60,14 +71,14 @@ static int setup(void **state) {
     // ctx->on_uninit = ;
     ctx->create_cmp = rtest_recs_cmp_new;
 
-    recs_init(ctx, NULL);
+    assert_true(recs_init(ctx, NULL) == rcode_ok);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
     recs_context_t* ctx = &recs_context;
 
-    recs_uninit(ctx, NULL);
+    assert_true(recs_uninit(ctx, NULL) == rcode_ok);
     
     return rcode_ok;
 }

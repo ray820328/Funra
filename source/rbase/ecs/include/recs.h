@@ -75,7 +75,8 @@ R_API int recs_cmp_active_all(recs_context_t* ctx, recs_entity_t* entity, bool a
 
 
 R_API int recs_sys_add(recs_context_t* ctx, recs_system_t* sys_item);
-R_API int recs_sys_remove(recs_context_t* ctx, recs_sys_type_t sys_type, bool stop);
+R_API int recs_sys_remove(recs_context_t* ctx, recs_system_t* sys_item);
+R_API recs_system_t* recs_sys_find(recs_context_t* ctx, recs_sys_type_t sys_type);
 
 
 #ifdef __cplusplus
