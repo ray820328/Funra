@@ -30,7 +30,7 @@ typedef enum {
     recs_sype_unknown = 0,
     recs_stype_initialize = 1,
     recs_stype_execute = 2,
-    recs_stype_execute_script_lua = 20001,
+    recs_stype_execute_base_start = 20001,
     recs_stype_execute_base_end = 20100,//框架系统
     recs_stype_reactive = 3,
     recs_stype_teardown = 4,
@@ -59,8 +59,6 @@ typedef struct recs_system_s {//ECS模块system定义, 宗旨为组件仅含有�
 
     char name[0];
 } recs_system_t;
-
-extern const recs_system_t* recs_sys_script_lua;
 
 /* ------------------------------- APIs ------------------------------------*/
 

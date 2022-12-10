@@ -21,7 +21,7 @@
 #define rlog_cache_data_size 5120
 
 #define log_in_multi_thread
-#define print2file
+// #define print2file
 
 
 #define rlog_level_2str(log_level)    \

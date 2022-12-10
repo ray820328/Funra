@@ -15,6 +15,7 @@
 R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t data_type) {
     int ret_code = rcode_ok;
     recs_entity_t* data = rdata_new(recs_entity_t);
+    rdata_init(data, sizeof(recs_entity_t));
 
     if (data == NULL) {
         rwarn("create item of (%d) failed.", data_type);
@@ -57,8 +58,6 @@ R_API recs_entity_t* recs_entity_new(recs_context_t* ctx, recs_entity_type_t dat
             rgoto(1);
         }
     }
-
-    rdata_init(data, sizeof(recs_entity_t));
 
 exit1:
     return data;

@@ -28,7 +28,7 @@ static void recs_entity_dict_free_value(void* data_ext, recs_entity_t* entity) {
 }
 
 static void recs_cmp_dict_free_value(void* data_ext, recs_cmp_t* cmp) {
-    // rinfo("free cmp, id = %"PRIu64, cmp->id);
+    rinfo("free cmp, id = %"PRIu64, cmp->id);
 }
 
 static recs_system_t* rsystem_copy_value_func(const recs_system_t* obj) {

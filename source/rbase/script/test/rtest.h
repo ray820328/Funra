@@ -24,36 +24,10 @@
 
 #include "rcommon.h"
 
-#include "recs.h"
+#include "rscript.h"
 
 #include "include/rtest_com.h"
 
-int run_recs_tests(int benchmark_output);
-int run_rentity_tests(int benchmark_output);
-
-// typedef enum {
-//     recs_stype_execute_script_xx = recs_stype_execute_base_end + 1,
-// } recs_stype_rtest_t;
-
-typedef enum {
-	recs_ctype_rtest_start = recs_ctype_base_end,
-	
-    recs_ctype_rtest01 = 100001,
-} recs_ctype_rtest_t;
-
-recs_cmp_t* rtest_recs_cmp_new(recs_context_t* ctx, recs_cmp_type_t data_type);
-
-typedef struct rtest_cmp_s {
-    recs_cmp_fields;
-
-    int index;
-    char* value;
-} rtest_cmp_t;
-
-typedef enum {
-    recs_stype_execute_test = 20300,//框架系统
-} recs_stype_rtest_t;
-
-extern const recs_system_t* rtest_recs_test_system;
+int run_rscript_tests(int benchmark_output);
 
 #endif /* RTEST_H */

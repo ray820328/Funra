@@ -27,7 +27,7 @@ static recs_context_t recs_context;
 
 static void recs_full_test(void **state) {
 	(void)state;
-	int count = 5;
+	int count = 3;
 	init_benchmark(1024, "test recs (%d)", count);
 
     int ret_code = 0;
@@ -36,7 +36,7 @@ static void recs_full_test(void **state) {
     assert_true(recs_start(ctx, NULL) == rcode_ok);
 
     start_benchmark(0);
-    ret_code = recs_sys_add(ctx, (recs_system_t*)recs_sys_script_lua);
+    ret_code = recs_sys_add(ctx, (recs_system_t*)rtest_recs_test_system);
     assert_true(ret_code == rcode_ok);
     end_benchmark("test add recs_system.");
 
@@ -53,7 +53,7 @@ static void recs_full_test(void **state) {
     end_benchmark("test running recs.");
 
     start_benchmark(0);
-    ret_code = recs_sys_remove(ctx, (recs_system_t*)recs_sys_script_lua);
+    ret_code = recs_sys_remove(ctx, (recs_system_t*)rtest_recs_test_system);
     assert_true(ret_code == rcode_ok);
     end_benchmark("test remove recs_system.");
 
