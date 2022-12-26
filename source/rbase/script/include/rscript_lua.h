@@ -7,13 +7,14 @@
  * @author: Ray
  */
 
-#ifndef RSCRIPT_CONTEXT_H
-#define RSCRIPT_CONTEXT_H
+#ifndef RSCRIPT_LUA_H
+#define RSCRIPT_LUA_H
+
+#include "lua.h"
 
 #include "rcommon.h"
-#include "rarray.h"
-#include "rdict.h"
 #include "rstring.h"
+#include "rarray.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,28 +22,24 @@ extern "C" {
 
 /* ------------------------------- Macros ------------------------------------*/
 
-#define rscript_type_t int
-    
 
 /* ------------------------------- Structs ------------------------------------*/
 
-struct recs_context_s;
+typedef struct rscript_context_lua_s {
+    lua_State* L;
 
-typedef struct rscript_context_s rscript_context_t;
+    rarray_t* all_states;
 
-struct rscript_context_s {
-    rscript_type_t type;
+} rscript_context_lua_t;
 
-    void* ctx_script;
-
-    char name[0];
-};
 
 /* ------------------------------- APIs ------------------------------------*/
 
+
+extern const rscript_t* rscript_lua;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //RSCRIPT_CONTEXT_H
+#endif //RSCRIPT_LUA_H

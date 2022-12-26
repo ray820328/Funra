@@ -19,6 +19,7 @@ extern "C" {
 
 #include "rscript_context.h"
 #include "rscript.h"
+#include "rscript_lua.h"
 
 #define dump_lua_stack(L) dump_stack(L)
 
@@ -214,14 +215,11 @@ exit0:
     return (result && status == LUA_OK) ? rcode_ok : rcode_invalid;
 }
 
-static int call_script_func(lua_State* L, char* func_name, int params_amount, int ret_amouont) {
+static int call_script_lua(lua_State* L, char* func_name, int params_amount, int ret_amouont) {
     int status = -1;
     bool result = false;
-
-    int frame_top = lua_gettop(L);
-
-    lua_pushstring(L, "from c calling...");
-    lua_pushstring(L, "from c 222");
+    
+    int frame_top = lua_gettop(L) - params_amount;
 
     status = set_script_func(L, func_name, frame_top);
     if (status != rcode_ok) {
@@ -257,9 +255,15 @@ exit0:
 static int init_lua(rscript_context_t* ctx, const void* cfg_data) {
     int status = 0;
     
-    L = luaL_newstate();
+    rscript_context_lua_t* ctx_script = rdata_new(rscript_context_lua_t);
+    rdata_init(ctx_script, sizeof(rscript_context_lua_t));
+    ctx->ctx_script = ctx_script;
+
+    lua_State* L = luaL_newstate();
 
     rassert(L != NULL, "new lua L failed.");
+
+    ctx_script->L = L;
 
     luaL_openlibs(L);
 
@@ -270,72 +274,72 @@ static int init_lua(rscript_context_t* ctx, const void* cfg_data) {
     // int ret_code = lua_pcall(L, 0, 0, 0);
 
     if (check_result(L, status)) {
-        rinfo("system init finished.");
+        rinfo("lua init finished.");
         return rcode_ok;
     }
 
-    rerror("system init failed.");
+    rerror("lua init failed.");
 
     return rcode_invalid;
 }
 
 static int uninit_lua(rscript_context_t* ctx, const void* cfg_data) {
+    rscript_context_lua_t* ctx_script = ctx->ctx_script;
 
-    lua_close(L);
+    if (ctx_script == NULL) {
+        rerror("invalid context.");
+        return rcode_invalid;
+    }
 
-    rinfo("system uninit finished.");
+    if (ctx_script->all_states != NULL) {
+        rarray_iterator_t it = rarray_it(ctx_script->all_states);
+        for (lua_State* L = NULL; rarray_has_next(&it); ) {
+            L = rarray_next(&it);
+            lua_close(L);
+        }
+        ctx_script->L = NULL;
+    }
+
+    if (ctx_script->L) {
+        lua_close(ctx_script->L);
+    }
+
+    rdata_free(rscript_context_lua_t, ctx_script);
+
+    rdata_free(rscript_context_t, ctx);
+
+    rinfo("lua uninit finished.");
 
     return rcode_ok;
 }
 
-static int before_update_lua(rscript_context_t* ctx, const void* cfg_data) {
+static int rscript_call_lua(rscript_context_t* ctx, char* func_name, int params, int rets) {
 
-    return rcode_ok;
-}
-
-static int update_lua(rscript_context_t* ctx, const void* cfg_data) {
-    int ret_code = 0;
-
-    char* func_name = "LogErr";
-    ret_code = call_script_func(L, func_name, 2, 1);
-    if (ret_code != rcode_ok) {
-        rgoto(0);
-    }
-    lua_pop(L, 1);
-
-    func_name = "Util.LogErr";
-    ret_code = call_script_func(L, func_name, 2, 2);
-    if (ret_code != rcode_ok) {
-        rgoto(0);
-    }
-    lua_pop(L, 2);
-
-    func_name = "Util.Log:LogErr";
-    ret_code = call_script_func(L, func_name, 3, 2);//self
-    if (ret_code != rcode_ok) {
-        rgoto(0);
-    }
-    lua_pop(L, 2);
-
-exit0:
+    int ret_code = call_script_lua(((rscript_context_lua_t*)ctx->ctx_script)->L, func_name, params, rets);
 
     return ret_code;
 }
 
-static int late_update_lua(rscript_context_t* ctx, const void* cfg_data) {
+static rstr_t* rscript_dump_lua(rscript_context_t* ctx) {
+    if (ctx == NULL || ctx->ctx_script == NULL) {
+        rerror("invalid context.");
+        return rstr_empty;
+    }
+    rscript_context_lua_t* ctx_lua = (rscript_context_lua_t*)ctx->ctx_script;
 
-    return rcode_ok;
-}
+    dump_stack(ctx_lua->L);
 
-static int update_fixed_lua(rscript_context_t* ctx, const void* cfg_data) {
-
-    return rcode_ok;
+    return rstr_empty;
 }
 
 static rscript_t rscript_lua_obj = {
     .type = rscript_type_lua,// rscript_type_t
-    .init = init_lua,//rscript_init
-    .uninit = uninit_lua,//rscript_uninit
+
+    .init = init_lua,//rscript_init_func
+    .uninit = uninit_lua,//rscript_uninit_func
+    .call_script = rscript_call_lua,//rscript_call_func
+    .dump = rscript_dump_lua,//rscript_dump_stack_func
+
     .name = "lua_script_system"// char name[0]
 };
 

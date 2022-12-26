@@ -15,8 +15,10 @@
 #include "rfile.h"
 #include "rtools.h"
 
-#include "rbase/script/test/rtest.h"
 #include "rscript.h"
+#include "rscript_lua.h"
+
+#include "rbase/script/test/rtest.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -32,12 +34,34 @@ static void rscript_full_test(void **state) {
 
     int ret_code = 0;
     rscript_context_t* ctx = &rscript_context;
+    rscript_context_lua_t* ctx_lua = (rscript_context_lua_t*)ctx->ctx_script;
 
     start_benchmark(0);
-    // for (int i = 0; i < count; i++) {
-    //     rscript_run(ctx, NULL);
-    //     assert_true(ret_code == rcode_ok);
-    // }
+    
+    char* func_name = "LogErr";   
+    lua_pushstring(ctx_lua->L, "from c calling...");
+    lua_pushstring(ctx_lua->L, "from c 222");
+
+    ret_code = rscript_lua->call_script(ctx, func_name, 2, 1);
+    assert_true(ret_code == rcode_ok);
+    lua_pop(ctx_lua->L, 1);
+
+    func_name = "Util.LogErr";
+    lua_pushstring(ctx_lua->L, "from c calling...");
+    lua_pushstring(ctx_lua->L, "from c 222");
+
+    ret_code = rscript_lua->call_script(ctx, func_name, 2, 2);
+    assert_true(ret_code == rcode_ok);
+    lua_pop(ctx_lua->L, 2);
+
+    func_name = "Util.Log:LogErr";
+    lua_pushstring(ctx_lua->L, "from c calling...");
+    lua_pushstring(ctx_lua->L, "from c 222");
+
+    ret_code = rscript_lua->call_script(ctx, func_name, 3, 2);//self
+    assert_true(ret_code == rcode_ok);
+    lua_pop(ctx_lua->L, 2);
+
     end_benchmark("test running rscript.");
 
     uninit_benchmark();
