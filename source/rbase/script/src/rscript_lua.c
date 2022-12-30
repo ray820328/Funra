@@ -132,17 +132,24 @@ static int set_script_func(lua_State* L, const char* func_name, int frame_top) {
         //*p = char_tmp;
         q = p + 1;
     }
-    
+
     if (method) {
         //lua_insert(L, func_top + 1);//-1); // //lua_rotate(L, (idx), 1)
         //lua_insert(L, func_top + 2);//-2); //
-        lua_rotate(L, -1, (lua_gettop(L) - frame_top - 2));//self,func -> 1,2
-        lua_rotate(L, frame_top + 2, 1);//func -> 1
+        rdebug("method start, frame_top = %d, func_top = %d", frame_top, func_top);
+        dump_lua_stack(L);
+        lua_rotate(L, frame_top + 1, 2);//self,func -> 1,2
+        dump_lua_stack(L);
+        //lua_rotate(L, frame_top + 2, 1);//func -> 1
+        dump_lua_stack(L);
         lua_settop(L, func_top + 2);
     } else {
+        rdebug("global function start, frame_top = %d, func_top = %d", frame_top, func_top);
         dump_lua_stack(L);
-        //lua_insert(L, func_top + 1);
-        lua_rotate(L, -1, func_top + 1, 1);
+        //lua_insert(L, frame_top + 1);
+        //lua_rotate(L, -1, func_top);//func_top = 2, 346->364
+        //lua_rotate(L, -1, 1);//346->346
+        lua_rotate(L, frame_top + 1, 1);
         dump_lua_stack(L);
         lua_settop(L, func_top + 1);
     }
@@ -248,6 +255,7 @@ exit0:
         lua_settop(L, frame_top);
     }
 
+    dump_lua_stack(L);
     return result ? rcode_ok : rcode_invalid;
 }
 
