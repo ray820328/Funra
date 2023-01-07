@@ -45,20 +45,26 @@ function ReloadFile(fileName)
 end
 
 function LogErr(szContent)
-	print("LogErr time =", os.time(), ", Content =", szContent)
+	-- print("LogErr time =", os.time(), ", Content =", szContent)
+    funra.Log(1, "LogErr time =", os.time(), ", Content =", szContent)
 
 	return true
 end
 
-Util = {}
+Util = Util or { nValue = 8 }
 
 Util.LogErr = function(szContent, sz2)
-	print("Util.Log:LogErr, Content =", szContent, ", sz2 =", sz2)
+	print("Log.LogErr, Content =", szContent, ", sz2 =", sz2)
 	return true, "Util.LogErr"
 end
 
-Util.Log = {}
+function Util:LogInfo(szContent, sz2)
+    print("Util:LogInfo, self =", self.nValue or "nil", ", Content =", szContent, ", sz2 =", sz2)
+    return true, "Util:LogInfo"
+end
+
+Util.Log = Util.Log or {}
 function Util.Log:LogErr(szContent, sz2)
-	print("Util.Log:LogErr, self =", self or "nil", ", Content =", szContent, ", sz2 =", sz2)
+	print("Util.Log:LogErr, self =", self.LogErr or "nil", ", Content =", szContent, ", sz2 =", sz2)
 	return true, "Util.Log:LogErr"
 end
