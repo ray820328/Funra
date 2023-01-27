@@ -84,6 +84,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
         3rd/lua${RBUILD_TYPE_POSTFIX}
         3rd/uv${RBUILD_TYPE_POSTFIX}
         3rd/uv_a${RBUILD_TYPE_POSTFIX}
+        3rd/iconv${RBUILD_TYPE_POSTFIX} 
         rcommon${RBUILD_TYPE_POSTFIX}
         ripc${RBUILD_TYPE_POSTFIX}
     )
@@ -106,6 +107,7 @@ else()
     SET(PROJECT_LINK_OPTIONS
         #-ljemalloc 
         -luv
+        -liconv
         -lstdc++
         -static-libgcc
         -static-libstdc++

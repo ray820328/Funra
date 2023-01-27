@@ -331,7 +331,9 @@ static void on_session_close(uv_handle_t* peer) {
         rdata_free(uv_tcp_t, ds->stream);
         rdata_free(ripc_data_source_t, ds);
     } else if (ds->ds_type == ripc_data_source_type_server) {
-        rerror("on_session_close error, cant release server.");
+        rerror("error, cant release server.");
+    } else {//client not exitst
+        rwarn("client not exists, id = %"PRIu64", peer = %p", ds->ds_id, peer);
     }
 }
 

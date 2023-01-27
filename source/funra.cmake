@@ -8,6 +8,7 @@ INCLUDE_DIRECTORIES(
     ../3rd/lua/5.4.3/src
     ../3rd/lua-protobuf
     ../3rd/libuv/1.42.0/include
+    ../3rd/win-iconv
     ../rbase/common/include
     ../rbase/ipc/include
     ../rbase/rpc/include

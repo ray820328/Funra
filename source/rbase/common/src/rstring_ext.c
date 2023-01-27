@@ -7,17 +7,17 @@
  * @author: Ray
  */
 
-#if defined(_WIN32) || defined(_WIN64)
+#include "rstring.h"
+#include "rarray.h"
+#include "rlog.h"
+
+#ifdef ros_windows
 
 #else
 
 #include <regex.h>
 
 #endif
-
-#include "rstring.h"
-#include "rarray.h"
-#include "rlog.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -136,6 +136,72 @@ char** rstr_make_array(const int count, ...) {
 
 //    return rcode_ok;
 //}
+
+static char hex_table[17] = {
+    '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+};
+
+R_API int rstr_2hex(char* src, char* dest) {
+    int src_len = rstr_len(src);
+
+    while(src_len--) {
+        *(dest++) = hex_table[*src >> 4];
+        *(dest++) = hex_table[*(src++) & 0x0f];
+    }
+    *dest = rstr_end;
+
+    return rcode_ok;
+}
+
+R_API int rstr_4hex(char *src, char *dest) {
+    int src_len = rstr_len(src);
+
+    while(src_len--) {
+        *(dest++) = ((*src > '9' ? *(src++) + 9 : *(src++)) << 4 )
+            | ((*src > '9' ? *(src++) + 9 : *(src++)) & 0x0F );
+    }
+    *dest = rstr_end;
+
+    return rcode_ok;
+}
+
+#ifdef ros_windows
+
+int rstr_utf8_2ansi(char* utf8, char** dest, int dest_size) {//无法用log，可能相互依赖
+    // convert multibyte UTF-8 to wide string UTF-16
+    int length = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)utf8, -1, NULL, 0);
+    if (length > 0) {
+        if (*dest != NULL && dest_size < length) {
+            return rcode_invalid;
+        }
+
+        wchar_t* wide_str = rdata_new_size(sizeof(wchar_t) * length);
+        MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)utf8, -1, wide_str, length);
+
+        // convert it to ANSI, use setlocale() to set your locale, if not set
+        if (*dest == NULL) {
+            *dest = rstr_new(length);
+        }
+        size_t converted_chars = 0;
+        wcstombs_s(&converted_chars, *dest, length, wide_str, _TRUNCATE);
+
+        rdata_free(wchar_t, wide_str);
+    } else {
+        return rcode_invalid;
+    }
+
+    return rcode_ok;
+}
+
+#else //#define ros_windows
+
+//iconv()
+int rstr_utf8_2ansi(char* src, char** dest, int dest_size) {
+    *dest = src;
+    return rcode_ok;
+}
+
+#endif //#define ros_windows
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

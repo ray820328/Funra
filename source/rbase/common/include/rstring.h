@@ -145,6 +145,16 @@ extern char* rstr_empty_const;
 #define rstr_2ld(val) \
     strtold((val))
 
+/* ------------------------------- Structs ------------------------------------*/
+
+typedef struct rstring_s {
+    int32_t capacity;
+    int32_t length;
+    int32_t ref_count;
+    int32_t hash;
+    char data[0];
+} rstring_t;
+
 /* ------------------------------- APIs ------------------------------------*/
 
 R_API void rstr_free_func(char* dest);
@@ -184,6 +194,11 @@ R_API int rstr_trim(char* src);
 R_API int rstr_trim_begin(char* src);
 R_API int rstr_trim_end(char* src);
 
+//调用方保证dest长度
+R_API int rstr_2hex(char* src, char* dest);
+R_API int rstr_4hex(char *src, char *dest);
+
+R_API int rstr_utf8_2ansi(char* src, char** dest, int dest_size);
 
 #ifdef rmemory_enable_tracer
 

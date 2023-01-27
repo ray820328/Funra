@@ -401,6 +401,33 @@ int rfile_uninit_item(rfile_item_t* file_item) {
     return rcode_ok;
 }
 
+// static int _rfile_skip_BOM (FILE* f) {
+//     const char *p = "\xEF\xBB\xBF";  /* UTF-8 BOM mark */
+//     int c;
+//     do {
+//         c = getc(f);
+//         if (c == EOF || c != *(const unsigned char *)p++) {
+//             return c;
+//         }
+//     } while (*p != '\0');
+
+//     return getc(f);  /* return next character */
+// }
+
+// static int _rfile_skip_comment (FILE* f, int *cp) {
+//     int c = *cp = _rfile_skip_BOM(f);
+//     if (c == '#') {  /* first line is a comment (Unix exec. file)? */
+//         do {  /* skip first line */
+//             c = getc(f);
+//         } while (c != EOF && c != '\n');
+//         *cp = getc(f);  /* skip end-of-line, if present */
+        
+//         return 1;  /* there was a comment */
+//     } else {
+//         return 0;  /* no comment */
+//     }
+// }
+
 int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode) {
     if (file_item == NULL || file_item->filename == NULL) {
         rerror("invalid file item");
@@ -437,6 +464,7 @@ int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode) {
             break;
     }
 
+    //freopen(file_item->filename, open_op)
     if ((file_item->file = fopen(file_item->filename, open_op)) == NULL) {
         rerror("open file failed, file = %s, state = %d, op = %s", 
             file_item->filename, file_item->state, open_op);

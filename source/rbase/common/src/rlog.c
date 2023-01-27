@@ -654,11 +654,20 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
     }
 #endif // log_in_multi_thread
 
-#else // print2file
-    rmutex_lock(rlog->mutex);
-    printf(item_fmt, item_buffer);//todo Ray 控制台
-    rmutex_unlock(rlog->mutex);
 #endif // print2file
+
+#ifdef print2stdout
+    rmutex_lock(rlog->mutex);
+
+#ifdef ros_windows
+    //WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), item_buffer, (DWORD)convert_str), NULL, NULL);
+    printf(item_fmt, item_buffer);
+#else
+    printf(item_fmt, item_buffer);//todo Ray 控制台
+#endif
+
+    rmutex_unlock(rlog->mutex);
+#endif // print2stdout
     // item_fmt[0] = '\0';
     //item_buffer[0] = '\0';
 

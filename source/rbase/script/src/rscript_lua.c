@@ -7,6 +7,8 @@
  * @author: Ray
  */
 
+#include "iconv.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,6 +16,8 @@ extern "C" {
 #include "lauxlib.h"
 #include "lualib.h"
 #include "lua.h"
+#include "lobject.h"
+#include "lstate.h"
     
 #include "rlog.h"
 
@@ -68,14 +72,16 @@ static bool _load_3rd(lua_State* L) {
 }
 
 static int lua_log(lua_State* L) {
+    int ret_code = 0;
+
     int log_level = 0;
     int param_amount = 0;
-    char content[1024];//1k以上继续拼参数
-    char* filename;
-    char* func_name;
-    int line;
+    //char content[1024];//1k以上继续拼参数
+    char* content;
+    char* filename = NULL;
+    int line = 0;
 
-    rstr_init(content);
+    //rstr_init(content);
 
     int frame_top = lua_gettop(L);
     //dump_lua_stack(L);
@@ -86,19 +92,86 @@ static int lua_log(lua_State* L) {
             return 0;
         }
 
+        //filename = luaL_checkstring(L, 2);
+        //line = (int)luaL_checkinteger(L, 3);
         param_amount = (int)luaL_checkinteger(L, 2);
     } else {
         rerror("invalid parameters, count = %d", frame_top);
         return 0;
     }
-    
-    for (int index = 3; index < param_amount; index++) {
 
+    lua_Debug ar;
+    if (lua_getstack(L, 2, &ar)) {  /* check function at level */
+        lua_getinfo(L, "Sl", &ar);  /* get info about it */
+        if (ar.currentline > 0) {  /* is there info? */
+            filename = ar.short_src;
+            line = ar.currentline;
+        } else {
+            filename = ar.what; // 'Lua', 'C', 'main', 'tail' （"main": 代码块的主体部分; 'tail': 尾调用）
+            //namewhat = ar.namewhat; // 'global', 'local', 'field', 'method', "upvalue", 或是 ""（Lua 用空串表示其它选项都不符合。）
+            line = -1;
+        }
+    } else {
+        filename = "NULL";
+        line = -1;
     }
+    
+    if (param_amount > 0) {
+        content = luaL_checkstring(L, 3);
+        int content_len = rstr_len(content);
+        char content_dest[1024];
+        int content_dest_len = 0;
+        content_dest[0] = rstr_end;
+        content_dest[1023] = rstr_end;
 
-    //rlog_printf(NULL, log_level, "[%ld] %s:%s:%d %s\n", rthread_cur_id(), filename, func_name, line, content);
+        printf("10: \n");
+        for (int i = 0; i < content_len; i++) {
+            printf("%d|", content[i]);
+        }
+        printf("\nhex: \n");
+        for (int i = 0; i < content_len; i++) {
+            printf("%#x|", content[i] & 0xff);
+        }
 
-    return 1;
+        iconv_t code_opt = iconv_open("CP65001", "UCS4BE");//"UTF-8//IGNORE", "GB18030" = GB2312 -> utf8
+        int code_result = iconv(code_opt, &content, &content_len, &content_dest, &content_dest_len);
+        if (code_result < 0) {
+            rerror("error on code changing. result = %d", code_result);
+        }
+        iconv_close(code_opt);
+
+        //lua 10: -27|-107|-118|  hex: 0xe5|0x95|0x8a|
+        char* test_str = "啊";//编码16进制:E5958A ucs:U+554A Unicode:554A GBK:B0A1 Big5:B0DA
+        printf("\ntest_str = %s\n", test_str);
+        printf("ntest_str_10: \n");//-80|-95|
+        for (int i = 0; i < rstr_len(test_str); i++) {
+            printf("%d|", test_str[i]);
+        }
+        printf("\ntest_str_hex: \n");//0xb0|0xa1|
+        for (int i = 0; i < rstr_len(test_str); i++) {
+            printf("%#x|", test_str[i] & 0xff);
+        }
+
+        printf("\n");
+
+        content = content_dest;
+        // char* content_dest = NULL;
+        // ret_code = rstr_utf8_2ansi(content, &content_dest, 0);
+        // if (ret_code == rcode_ok) {
+        //     content = content_dest;
+        // } else {
+        //     rerror("error on rstr_utf8_2ansi");
+        // }
+    } else {
+        content = rstr_empty;
+    }
+    //for (int index = 3; index < param_amount; index++) {
+
+    //}
+
+    rlog_printf(NULL, log_level, "[%ld] %s:%d %s\n", rthread_cur_id(), filename, line, content);
+
+    return ret_code;
 }
 const struct luaL_Reg funra_funcs[] = {
     {"Log", lua_log},
@@ -275,16 +348,18 @@ static int init_lua(rscript_context_t* ctx, const void* cfg_data) {
 
     _load_funra(L);
 
+    rinfo("lua env init finished.");
+
     status = luaL_dofile(L, "./script/main.lua");
     // luaL_loadfile(L, "script/main.lua");
     // int ret_code = lua_pcall(L, 0, 0, 0);
 
     if (check_result(L, status)) {
-        rinfo("lua init finished.");
+        rinfo("load lua file finished.");
         return rcode_ok;
     }
 
-    rerror("lua init failed.");
+    rerror("load lua file failed.");
 
     return rcode_invalid;
 }

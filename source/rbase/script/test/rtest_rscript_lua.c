@@ -41,21 +41,34 @@ static void rscript_full_test(void **state) {
 
     start_benchmark(0);
     
-    char* func_name = "LogErr";   
+    char* func_name = "LogInfo";   
+    //lua_pushstring(ctx_lua->L, "from c calling...");
+    lua_pushinteger(ctx_lua->L, 1);
+    lua_pushstring(ctx_lua->L, "from c 1");
+
+    ret_code = rscript_lua->call_script(ctx, func_name, 2, 1);
+    assert_true(ret_code == rcode_ok);
+    //lua_ret_int = lua_toboolean(ctx_lua->L, -1);
+    //assert_true(lua_ret_int != 0);
+    //lua_pop(ctx_lua->L, 1);
+
+    func_name = "RTestCase.PrintInfo";
     //lua_pushstring(ctx_lua->L, "from c calling...");
     lua_pushinteger(ctx_lua->L, 1);
     lua_pushstring(ctx_lua->L, "from c 2");
 
-    ret_code = rscript_lua->call_script(ctx, func_name, 2, 1);
+    ret_code = rscript_lua->call_script(ctx, func_name, 2, 2);
     assert_true(ret_code == rcode_ok);
-    lua_ret_int = lua_toboolean(ctx_lua->L, -1);
+    lua_ret_int = lua_toboolean(ctx_lua->L, -2);
     assert_true(lua_ret_int != 0);
-    lua_pop(ctx_lua->L, 1);
+    lua_ret_str = lua_tostring(ctx_lua->L, -1);
+    rinfo("lua_ret_str = %s", lua_ret_str);
+    lua_pop(ctx_lua->L, 2);
 
-    func_name = "Util.LogErr";
+    func_name = "RTestCase:PrintInfoInClass";
     //lua_pushstring(ctx_lua->L, "from c calling...");
     lua_pushinteger(ctx_lua->L, 1);
-    lua_pushstring(ctx_lua->L, "from c 22");
+    lua_pushstring(ctx_lua->L, "from c 3");
 
     ret_code = rscript_lua->call_script(ctx, func_name, 2, 2);
     assert_true(ret_code == rcode_ok);
@@ -65,23 +78,10 @@ static void rscript_full_test(void **state) {
     rinfo("lua_ret_str = %s", lua_ret_str);
     lua_pop(ctx_lua->L, 2);
 
-    func_name = "Util:LogInfo";
+    func_name = "RTestCase.PrintInfoMember:PrintInfoInClass";
     //lua_pushstring(ctx_lua->L, "from c calling...");
     lua_pushinteger(ctx_lua->L, 1);
-    lua_pushstring(ctx_lua->L, "from c 222");
-
-    ret_code = rscript_lua->call_script(ctx, func_name, 2, 2);
-    assert_true(ret_code == rcode_ok);
-    lua_ret_int = lua_toboolean(ctx_lua->L, -2);
-    assert_true(lua_ret_int != 0);
-    lua_ret_str = lua_tostring(ctx_lua->L, -1);
-    rinfo("lua_ret_str = %s", lua_ret_str);
-    lua_pop(ctx_lua->L, 2);
-
-    func_name = "Util.Log:LogErr";
-    //lua_pushstring(ctx_lua->L, "from c calling...");
-    lua_pushinteger(ctx_lua->L, 1);
-    lua_pushstring(ctx_lua->L, "from c 2222");
+    lua_pushstring(ctx_lua->L, "from c 4");
 
     ret_code = rscript_lua->call_script(ctx, func_name, 2, 2);//self
     assert_true(ret_code == rcode_ok);
