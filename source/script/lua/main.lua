@@ -5,6 +5,7 @@
 
 --- 设置脚本加载的搜索路径（添加新的所有路径）
 --package.path = package.path..";"..GetWorkDir().."/script/?.lua;"
+SERVER_NAME = SERVER_NAME or "unknown_server"
 
 print((SERVER_NAME or "nil") .. ", start load user script......");
 IsServer = true
@@ -44,27 +45,65 @@ function ReloadFile(fileName)
     RequireFile(fileName)
 end
 
-function LogErr(szContent)
-	-- print("LogErr time =", os.time(), ", Content =", szContent)
-    funra.Log(1, "LogErr time =", os.time(), ", Content =", szContent)
-
-	return true
+local function _TableConcat(tbParams)
+    local nSize = tbParams.n or 0
+    for i = 1, nSize do
+        tbParams[i] = tostring(tbParams[i]) or ""
+    end
+    
+    if #tbParams == 0 then
+        return ""
+    end
+     
+    return table.concat(tbParams, "   ");
 end
 
-Util = Util or { nValue = 8 }
+local rlog_level_verb = 0
+local rlog_level_trace = 1
+local rlog_level_debug = 2
+local rlog_level_info = 3
+local rlog_level_warn = 4
+local rlog_level_error = 5
+local rlog_level_fatal = 6
 
-Util.LogErr = function(szContent, sz2)
-	print("Log.LogErr, Content =", szContent, ", sz2 =", sz2)
-	return true, "Util.LogErr"
+function LogVerb(...)
+    funra.Log(rlog_level_verb, 1, _TableConcat(table.pack(...)))
+end
+function LogTrace(...)
+    funra.Log(rlog_level_trace, 1, _TableConcat(table.pack(...)))
+end
+function LogDebug(...)
+    funra.Log(rlog_level_debug, 1, _TableConcat(table.pack(...)))
+end
+function LogInfo(...)
+    funra.Log(rlog_level_info, 1, _TableConcat(table.pack(...)))
+end
+function LogWarn(...)
+    funra.Log(rlog_level_warn, 1, _TableConcat(table.pack(...)))
+end
+function LogErr(...)
+    funra.Log(rlog_level_error, 1, _TableConcat(table.pack(...)))
+end
+function LogFatal(...)
+    funra.Log(rlog_level_fatal, 1, _TableConcat(table.pack(...)))
 end
 
-function Util:LogInfo(szContent, sz2)
-    print("Util:LogInfo, self =", self.nValue or "nil", ", Content =", szContent, ", sz2 =", sz2)
-    return true, "Util:LogInfo"
+RTestCase = RTestCase or {}
+
+RTestCase.PrintInfo = function(szContent, sz2)
+	LogInfo("RTestCase.PrintInfo, Content =", szContent, ", sz2 =", sz2)
+	return true, "RTestCase.PrintInfo"
 end
 
-Util.Log = Util.Log or {}
-function Util.Log:LogErr(szContent, sz2)
-	print("Util.Log:LogErr, self =", self.LogErr or "nil", ", Content =", szContent, ", sz2 =", sz2)
-	return true, "Util.Log:LogErr"
+function RTestCase:PrintInfoInClass(szContent, sz2)
+    LogInfo("RTestCase:PrintInfoInClass, self =", self or "nil", ", Content =", szContent, ", sz2 =", sz2)
+    return true, "RTestCase:PrintInfoInClass"
 end
+
+RTestCase.PrintInfoMember = RTestCase.PrintInfoMember or {}
+function RTestCase.PrintInfoMember:PrintInfoInClass(szContent, sz2)
+	LogInfo("RTestCase.PrintInfoMember:PrintInfoInClass, self =", self or "nil", ", Content =", szContent, ", sz2 =", sz2)
+	return true, "RTestCase.PrintInfoMember:PrintInfoInClass"
+end
+
+LogInfo("啊")--逻辑脚本加载完毕")
