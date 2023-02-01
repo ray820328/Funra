@@ -38,6 +38,23 @@ static int init_platform() {
 
 int main(int argc, char **argv) {
 
+    setlocale(LC_ALL, "zh_CN.UTF-8");
+    setlocale(LC_NUMERIC, "zh_CN");
+    setlocale(LC_TIME, "zh_CN");
+    setlocale(LC_COLLATE, "C");//"POSIX"或"C"，则strcoll()与strcmp()作用完全相同
+
+#ifdef ros_windows
+    //system("chcp 65001");//65001 代码页（UTF-8）
+
+    //CONSOLE_FONT_INFOEX info = { 0 };
+    //info.cbSize = sizeof(info);
+    //info.dwFontSize.Y = 20;// 指定字体大小
+    //info.FontWeight = FW_NORMAL;
+    ////info.dwFontSize = FW_NORMAL;
+    //wcscpy_s(info.FaceName, 28, L"Console");// Console 字体
+    //SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), NULL, &info);
+#endif
+
     rmem_init();
     rtools_init();
 

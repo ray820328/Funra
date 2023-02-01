@@ -106,4 +106,4 @@ function RTestCase.PrintInfoMember:PrintInfoInClass(szContent, sz2)
 	return true, "RTestCase.PrintInfoMember:PrintInfoInClass"
 end
 
-LogInfo("啊")--逻辑脚本加载完毕")
+LogInfo("逻辑脚本加载完毕")

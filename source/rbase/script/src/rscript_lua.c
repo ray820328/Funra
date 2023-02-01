@@ -7,11 +7,11 @@
  * @author: Ray
  */
 
-#include "iconv.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "iconv.h"
 
 #include "lauxlib.h"
 #include "lualib.h"
@@ -118,50 +118,14 @@ static int lua_log(lua_State* L) {
     
     if (param_amount > 0) {
         content = luaL_checkstring(L, 3);
-        int content_len = rstr_len(content);
-        char content_dest[1024];
-        int content_dest_len = 0;
-        content_dest[0] = rstr_end;
-        content_dest[1023] = rstr_end;
 
-        printf("10: \n");
-        for (int i = 0; i < content_len; i++) {
-            printf("%d|", content[i]);
-        }
-        printf("\nhex: \n");
-        for (int i = 0; i < content_len; i++) {
-            printf("%#x|", content[i] & 0xff);
-        }
+        //iconv_t code_opt = iconv_open("CP65001", "UCS4BE");//"UTF-8//IGNORE", "GB18030" = GB2312 -> utf8
+        //int code_result = iconv(code_opt, &content, &content_len, &content_dest, &content_dest_len);
+        //if (code_result < 0) {
+        //    rerror("error on code changing. result = %d", code_result);
+        //}
+        //iconv_close(code_opt);
 
-        iconv_t code_opt = iconv_open("CP65001", "UCS4BE");//"UTF-8//IGNORE", "GB18030" = GB2312 -> utf8
-        int code_result = iconv(code_opt, &content, &content_len, &content_dest, &content_dest_len);
-        if (code_result < 0) {
-            rerror("error on code changing. result = %d", code_result);
-        }
-        iconv_close(code_opt);
-
-        //lua 10: -27|-107|-118|  hex: 0xe5|0x95|0x8a|
-        char* test_str = "啊";//编码16进制:E5958A ucs:U+554A Unicode:554A GBK:B0A1 Big5:B0DA
-        printf("\ntest_str = %s\n", test_str);
-        printf("ntest_str_10: \n");//-80|-95|
-        for (int i = 0; i < rstr_len(test_str); i++) {
-            printf("%d|", test_str[i]);
-        }
-        printf("\ntest_str_hex: \n");//0xb0|0xa1|
-        for (int i = 0; i < rstr_len(test_str); i++) {
-            printf("%#x|", test_str[i] & 0xff);
-        }
-
-        printf("\n");
-
-        content = content_dest;
-        // char* content_dest = NULL;
-        // ret_code = rstr_utf8_2ansi(content, &content_dest, 0);
-        // if (ret_code == rcode_ok) {
-        //     content = content_dest;
-        // } else {
-        //     rerror("error on rstr_utf8_2ansi");
-        // }
     } else {
         content = rstr_empty;
     }
