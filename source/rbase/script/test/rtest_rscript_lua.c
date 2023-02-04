@@ -27,6 +27,8 @@
 
 static rscript_context_t rscript_context;
 
+static rscript_lua_cfg_t cfg;
+
 static void rscript_full_test(void **state) {
 	(void)state;
 	int count = 5;
@@ -101,14 +103,20 @@ static int setup(void **state) {
     rscript_context_t* ctx = &rscript_context;
     rdata_init(ctx, sizeof(*ctx));
 
-    assert_true(rscript_lua->init(ctx, NULL) == rcode_ok);
+    cfg.entry = "../../../source/script/lua/main.lua";
+
+    assert_true(rscript_lua->init(ctx, &cfg) == rcode_ok);
+
+    rscript_context_lua_t* ctx_lua = (rscript_context_lua_t*)ctx->ctx_script;
+    lua_pushstring(ctx_lua->L, "../../../source/script/rtest/rscript_test.lua");
+    assert_true(rscript_lua->call_script(ctx, "dofile", 1, 0) == rcode_ok);
 
     return rcode_ok;
 }
 static int teardown(void **state) {
     rscript_context_t* ctx = &rscript_context;
 
-    assert_true(rscript_lua->uninit(ctx, NULL) == rcode_ok);
+    assert_true(rscript_lua->uninit(ctx, &cfg) == rcode_ok);
     
     return rcode_ok;
 }

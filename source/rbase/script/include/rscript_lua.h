@@ -32,6 +32,11 @@ typedef struct rscript_context_lua_s {
 
 } rscript_context_lua_t;
 
+typedef struct rscript_lua_cfg_s {
+    char* entry;
+    char* name;
+} rscript_lua_cfg_t;
+
 
 /* ------------------------------- APIs ------------------------------------*/
 

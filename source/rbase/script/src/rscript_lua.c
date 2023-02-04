@@ -146,6 +146,16 @@ static int _load_funra(lua_State* L) {
     lua_createtable(L, 0, sizeof(funra_funcs) / sizeof((funra_funcs)[0]) - 1);
     luaL_setfuncs(L, funra_funcs, 0);
     lua_setglobal(L, "funra");
+#ifdef ros_windows
+    lua_pushstring(L, "Windows");
+#elif ros_linux
+    lua_pushstring(L, "Linux");
+#elif ros_darwin
+    lua_pushstring(L, "Darwin");
+#else
+    lua_pushstring(L, "UnknownOS");
+#endif
+    lua_setglobal(L, "ROS_TYPE");
 
     return 1;
 }
@@ -296,6 +306,9 @@ exit0:
 static int init_lua(rscript_context_t* ctx, const void* cfg_data) {
     int status = 0;
     
+    rscript_lua_cfg_t* cfg = (rscript_lua_cfg_t*) cfg_data;
+    rassert(cfg != NULL, "get cfg failed.");
+
     rscript_context_lua_t* ctx_script = rdata_new(rscript_context_lua_t);
     rdata_init(ctx_script, sizeof(rscript_context_lua_t));
     ctx->ctx_script = ctx_script;
@@ -314,8 +327,8 @@ static int init_lua(rscript_context_t* ctx, const void* cfg_data) {
 
     rinfo("lua env init finished.");
 
-    status = luaL_dofile(L, "./script/main.lua");
-    // luaL_loadfile(L, "script/main.lua");
+    status = luaL_dofile(L, cfg->entry ? cfg->entry : "./script/main.lua");
+    // luaL_loadfile(L, cfg->entry);
     // int ret_code = lua_pcall(L, 0, 0, 0);
 
     if (check_result(L, status)) {

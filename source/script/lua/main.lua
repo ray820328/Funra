@@ -1,6 +1,6 @@
 -----------------------
 -- 启动脚本
--- 用于加载所有程序使用的脚本文件
+-- 用于加载funra基础脚本文件
 -----------------------
 
 --- 设置脚本加载的搜索路径（添加新的所有路径）
@@ -12,7 +12,7 @@ IsServer = true
 
 unpack = table.unpack or unpack
 
-local szSystem = OS_WINDOWS and "Windows" or "Linux"
+local szSystem = ROS_TYPE
 IsWindows = szSystem == "Windows"
 print("System=", szSystem, ", SERVER_NAME=", SERVER_NAME)
 
@@ -51,7 +51,7 @@ local function _TableConcat(tbParams)
         tbParams[i] = tostring(tbParams[i]) or ""
     end
     
-    if #tbParams == 0 then
+    if nSize == 0 then
         return ""
     end
      
@@ -66,6 +66,7 @@ local rlog_level_warn = 4
 local rlog_level_error = 5
 local rlog_level_fatal = 6
 
+-- 目前仅支持一种log
 function LogVerb(...)
     funra.Log(rlog_level_verb, 1, _TableConcat(table.pack(...)))
 end
@@ -88,22 +89,4 @@ function LogFatal(...)
     funra.Log(rlog_level_fatal, 1, _TableConcat(table.pack(...)))
 end
 
-RTestCase = RTestCase or {}
-
-RTestCase.PrintInfo = function(szContent, sz2)
-	LogInfo("RTestCase.PrintInfo, Content =", szContent, ", sz2 =", sz2)
-	return true, "RTestCase.PrintInfo"
-end
-
-function RTestCase:PrintInfoInClass(szContent, sz2)
-    LogInfo("RTestCase:PrintInfoInClass, self =", self or "nil", ", Content =", szContent, ", sz2 =", sz2)
-    return true, "RTestCase:PrintInfoInClass"
-end
-
-RTestCase.PrintInfoMember = RTestCase.PrintInfoMember or {}
-function RTestCase.PrintInfoMember:PrintInfoInClass(szContent, sz2)
-	LogInfo("RTestCase.PrintInfoMember:PrintInfoInClass, self =", self or "nil", ", Content =", szContent, ", sz2 =", sz2)
-	return true, "RTestCase.PrintInfoMember:PrintInfoInClass"
-end
-
-LogInfo("逻辑脚本加载完毕")
+LogInfo("框架脚本加载完毕")
