@@ -82,6 +82,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
         legacy_stdio_definitions
         3rd/cmocka
         3rd/lua${RBUILD_TYPE_POSTFIX}
+        3rd/lua-protobuf${RBUILD_TYPE_POSTFIX}
         3rd/uv${RBUILD_TYPE_POSTFIX}
         3rd/uv_a${RBUILD_TYPE_POSTFIX}
         3rd/iconv${RBUILD_TYPE_POSTFIX} 
@@ -98,7 +99,8 @@ else()
         dl 
         m 
         pthread
-        liblua${RBUILD_TYPE_POSTFIX}.a 
+        liblua${RBUILD_TYPE_POSTFIX}.a
+        liblua-protobuf${RBUILD_TYPE_POSTFIX}.a  
         libuv${RBUILD_TYPE_POSTFIX}.a 
         libuv_a${RBUILD_TYPE_POSTFIX}.a 
         librcommon${RBUILD_TYPE_POSTFIX}.a

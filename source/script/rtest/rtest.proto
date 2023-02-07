@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package Funra.PB.RTest;
+
+enum RTEST_CMD {
+    RTEST_CMD_INVALID          = 0;
+    RTEST_CMD_BEGIN            = 1;
+
+    RTEST_CMD_2                = 2; // &{RTestMsg}
+
+    RTEST_CMD_END              = 10;
+}
+
+message RTestMsg {
+    uint64 ID                  = 1;
+    string Msg                 = 2;
+}
+

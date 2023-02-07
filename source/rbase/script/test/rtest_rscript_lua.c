@@ -29,7 +29,7 @@ static rscript_context_t rscript_context;
 
 static rscript_lua_cfg_t cfg;
 
-static void rscript_full_test(void **state) {
+static void rscript_base_test(void **state) {
 	(void)state;
 	int count = 5;
 	init_benchmark(1024, "test rscript (%d)", count);
@@ -98,12 +98,20 @@ static void rscript_full_test(void **state) {
     uninit_benchmark();
 }
 
+static void rscript_pb_test(void **state) {
+    (void)state;
+    int count = 5;
+    init_benchmark(1024, "test rscript pb (%d)", count);
+
+
+    uninit_benchmark();
+}
 
 static int setup(void **state) {
     rscript_context_t* ctx = &rscript_context;
     rdata_init(ctx, sizeof(*ctx));
 
-    cfg.entry = "../../../source/script/lua/main.lua";
+    cfg.entry = "../../../source/script/lua/funra.lua";
 
     assert_true(rscript_lua->init(ctx, &cfg) == rcode_ok);
 
@@ -121,7 +129,8 @@ static int teardown(void **state) {
     return rcode_ok;
 }
 static struct CMUnitTest test_group2[] = {
-    cmocka_unit_test_setup_teardown(rscript_full_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rscript_base_test, NULL, NULL),
+    cmocka_unit_test_setup_teardown(rscript_pb_test, NULL, NULL),
 };
 
 int run_rscript_tests(int benchmark_output) {

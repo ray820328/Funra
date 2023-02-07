@@ -18,12 +18,22 @@ extern "C" {
 #include "lua.h"
 #include "lobject.h"
 #include "lstate.h"
-    
+
+#include "pb.h"
+
 #include "rlog.h"
+#include "rfile.h"
 
 #include "rscript_context.h"
 #include "rscript.h"
 #include "rscript_lua.h"
+
+//lua-protobuf
+int luaopen_pb(lua_State *L);
+int luaopen_pb_io(lua_State *L);
+int luaopen_pb_conv(lua_State *L);
+int luaopen_pb_buffer(lua_State *L);
+int luaopen_pb_slice(lua_State *L);
 
 #define dump_lua_stack(L) dump_stack(L, get_filename(__FILE__), __FUNCTION__, __LINE__)
 
@@ -60,11 +70,16 @@ static bool _load_3rd(lua_State* L) {
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
-    // lua_pushcfunction(L, luaopen_pb);
-    // lua_setfield(L, -2, "pb");
-
-    // lua_pushcfunction(L, luaopen_pb_io);
-    // lua_setfield(L, -2, "pb.io");
+    lua_pushcfunction(L, luaopen_pb);
+    lua_setfield(L, -2, "pb");
+    lua_pushcfunction(L, luaopen_pb_io);
+    lua_setfield(L, -2, "pb.io");
+    lua_pushcfunction(L, luaopen_pb_conv);
+    lua_setfield(L, -2, "pb.conv");
+    lua_pushcfunction(L, luaopen_pb_buffer);
+    lua_setfield(L, -2, "pb.buffer");
+    lua_pushcfunction(L, luaopen_pb_slice);
+    lua_setfield(L, -2, "pb.slice");
 
     lua_settop(L, 0);
 
@@ -137,8 +152,19 @@ static int lua_log(lua_State* L) {
 
     return ret_code;
 }
+static int lua_get_exe_root(lua_State* L) {
+    int ret_code = 1;
+    
+    char* root = rdir_get_exe_root();
+    lua_pushstring(L, root);
+    rstr_free(root);
+
+    return ret_code;
+}
+
 const struct luaL_Reg funra_funcs[] = {
     {"Log", lua_log},
+    {"GetWorkRoot", lua_get_exe_root},
     {NULL, NULL},
 };
 
@@ -146,6 +172,7 @@ static int _load_funra(lua_State* L) {
     lua_createtable(L, 0, sizeof(funra_funcs) / sizeof((funra_funcs)[0]) - 1);
     luaL_setfuncs(L, funra_funcs, 0);
     lua_setglobal(L, "funra");
+
 #ifdef ros_windows
     lua_pushstring(L, "Windows");
 #elif ros_linux

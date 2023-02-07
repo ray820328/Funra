@@ -3,48 +3,6 @@
 -- 用于加载funra基础脚本文件
 -----------------------
 
---- 设置脚本加载的搜索路径（添加新的所有路径）
---package.path = package.path..";"..GetWorkDir().."/script/?.lua;"
-SERVER_NAME = SERVER_NAME or "unknown_server"
-
-print((SERVER_NAME or "nil") .. ", start load user script......");
-IsServer = true
-
-unpack = table.unpack or unpack
-
-local szSystem = ROS_TYPE
-IsWindows = szSystem == "Windows"
-print("System=", szSystem, ", SERVER_NAME=", SERVER_NAME)
-
---StartGame();
-print((SERVER_NAME or "nil") .. ", finish load user script......");
-
-
-function RequireFile(fileName, unsafeCall)
-    if not tbRequireFile[fileName] then
-        package.loaded[fileName] = nil
-        tbRequireFile[fileName] = true;
-    end
-    if unsafeCall then
-        return require(fileName)
-    else
-        local bOk, result = xpcall(require, debug.traceback, fileName)
-        if not bOk then
-            local f = LogErr or print
-            f(result .. tostring(fileName));
-        else
-            return result
-        end
-    end
-    --collectgarbage("collect")
-    --print("Loading "..fileName..".lua")
-end
-
-function ReloadFile(fileName)
-    package.loaded[fileName] = nil
-    RequireFile(fileName)
-end
-
 local function _TableConcat(tbParams)
     local nSize = tbParams.n or 0
     for i = 1, nSize do
@@ -88,5 +46,3 @@ end
 function LogFatal(...)
     funra.Log(rlog_level_fatal, 1, _TableConcat(table.pack(...)))
 end
-
-LogInfo("框架脚本加载完毕")
