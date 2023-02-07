@@ -18,7 +18,7 @@ IsWindows = szSystem == "Windows"
 print("System=", szSystem, ", SERVER_NAME=", SERVER_NAME)
 
 local tbRequireFile = {}
-function RequireFile(szFileName, bUnsafeCall)
+function funra.RequireFile(szFileName, bUnsafeCall)
     if not tbRequireFile[szFileName] then
         package.loaded[szFileName] = nil
         tbRequireFile[szFileName] = true
@@ -41,14 +41,14 @@ function RequireFile(szFileName, bUnsafeCall)
     return false
 end
 
-function ReloadFile(szFileName)
+function funra.ReloadFile(szFileName)
     package.loaded[szFileName] = nil
 
-    return RequireFile(szFileName)
+    return funra.RequireFile(szFileName)
 end
 
 
-ReloadFile("lib_funra")
-ReloadFile("log_funra")
+funra.ReloadFile("lib_funra")
+funra.ReloadFile("log_funra")
 
 LogInfo("框架脚本加载完毕")
