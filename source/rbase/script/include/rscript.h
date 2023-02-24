@@ -49,7 +49,7 @@ typedef struct rscript_s {
     rscript_call_func call_script;
     rscript_dump_stack_func dump;
 
-    char name[0];
+    char* name;
 } rscript_t;
 
 #ifdef __cplusplus

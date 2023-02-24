@@ -235,6 +235,11 @@ int rlog_init(const char* log_default_filename, const rlog_level_t log_default_l
     int ret_code = rcode_ok;
     rmutex_init(&rlog_mutex);
 
+    if (rlog_all != NULL) {
+        rerror("Already inited.");
+        return rcode_invalid;
+    }
+
     rlog_t* rlog = rdata_new(rlog_t);
 	memset(rlog, 0, sizeof(rlog_t));
     ret_code = rlog_init_log(rlog, log_default_filename, log_default_level, log_default_seperate_file, file_size);

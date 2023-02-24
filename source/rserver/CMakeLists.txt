@@ -104,7 +104,7 @@ else()
     SET(PROJECT_LINK_OPTIONS
         #-ljemalloc 
         -luv
-        -liconv
+        #-liconv
         -lstdc++
         -static-libgcc
         -static-libstdc++

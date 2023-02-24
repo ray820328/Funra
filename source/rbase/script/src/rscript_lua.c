@@ -39,7 +39,7 @@ int luaopen_pb_slice(lua_State *L);
 
 static lua_State* L = NULL;
 
-static int dump_stack(lua_State *L, char* origin_file, char* origin_func, int origin_line) {
+static int dump_stack(lua_State *L, char* origin_file, const char* origin_func, int origin_line) {
     rdebug("stack info, top = %d, from = [%s:%s:%d]", lua_gettop(L), origin_file, origin_func, origin_line);
     for (int i = 1; i <= lua_gettop(L); i++) {
         //TNONE -1; NIL 0; BOOLEAN 1; LU 2; NUMBER 3; STR 4; TABLE 5; FUNCTION 6; USERDATA 7; THREAD	8; NUMTAGS 9
@@ -173,11 +173,11 @@ static int _load_funra(lua_State* L) {
     luaL_setfuncs(L, funra_funcs, 0);
     lua_setglobal(L, "funra");
 
-#ifdef ros_windows
+#if defined(ros_windows)
     lua_pushstring(L, "Windows");
-#elif ros_linux
+#elif defined(ros_linux)
     lua_pushstring(L, "Linux");
-#elif ros_darwin
+#elif defined(ros_darwin)
     lua_pushstring(L, "Darwin");
 #else
     lua_pushstring(L, "UnknownOS");
@@ -188,8 +188,8 @@ static int _load_funra(lua_State* L) {
 }
 
 //获取脚本function地址，如：xxx.yyy:zzz / xxx.yyy.zzz，不支持Coroutine
-static int set_script_func(lua_State* L, const char* func_name, int frame_top, int* top_add) {
-    int status = -1;
+static int set_script_func(lua_State* L, char* func_name, int frame_top, int* top_add) {
+    // int status = -1;
     bool result = false;
 
     int len = 0;

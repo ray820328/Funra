@@ -33,3 +33,13 @@ local tbSourceProto = {
 local szPbBytes = funra.EncodePB("Funra.PB.RTest.RTestMsg", tbSourceProto)
 local tbDestProto = funra.DecodePB("Funra.PB.RTest.RTestMsg", szPbBytes)
 assert(tbDestProto.ID == tbSourceProto.ID and tbDestProto.Msg == tbSourceProto.Msg, "Invalid PB encode/decode.")
+
+local tbTestMemProfiler = {
+    lv11 = 1,
+    lv12 = "szLv12",
+    -- lv13 = {
+    --     lv21 = tbSourceProto,
+    --     -- lv22 = { tbTestMemProfiler }
+    -- },
+}
+require("rprofiler")(tbTestMemProfiler, 1)

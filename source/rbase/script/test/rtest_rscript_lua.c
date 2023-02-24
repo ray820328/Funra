@@ -25,6 +25,10 @@
 #pragma GCC diagnostic ignored "-Wint-conversion"
 #endif //__GNUC__
 
+#ifdef ros_windows
+#pragma comment(lib, "luad.lib")
+#endif
+
 static rscript_context_t rscript_context;
 
 static rscript_lua_cfg_t cfg;
