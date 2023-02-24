@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package Funra.PB.RRPC;
+
+enum RRPC_CMD {
+    RRPC_CMD_INVALID          = 0;
+    RRPC_CMD_BEGIN            = 1;
+
+    RRPC_CMD_2                = 2; // &{RTestMsg}
+
+    RRPC_CMD_END              = 10;
+}
+
+message RRPCReq {
+    uint64 ID                  = 1;
+    string Msg                 = 2;
+    string Token               = 3;
+}
+
