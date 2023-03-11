@@ -37,13 +37,13 @@ int luaopen_pb_slice(lua_State *L);
 
 #define dump_lua_stack(L) dump_stack(L, get_filename(__FILE__), __FUNCTION__, __LINE__)
 
-static lua_State* L = NULL;
-
 static int dump_stack(lua_State *L, char* origin_file, const char* origin_func, int origin_line) {
     rdebug("stack info, top = %d, from = [%s:%s:%d]", lua_gettop(L), origin_file, origin_func, origin_line);
+    int type = 0;
     for (int i = 1; i <= lua_gettop(L); i++) {
         //TNONE -1; NIL 0; BOOLEAN 1; LU 2; NUMBER 3; STR 4; TABLE 5; FUNCTION 6; USERDATA 7; THREAD	8; NUMTAGS 9
-        rdebug("stack info, [%d: %d -> %p]", i, lua_type(L, i), lua_topointer(L, i));
+        type = lua_type(L, i);
+        rdebug("stack info, [%d: %d -> %p]", i, type, lua_topointer(L, i));
     }
 
     return 1;
@@ -430,6 +430,8 @@ static rscript_t rscript_lua_obj = {
 
 const rscript_t* rscript_lua = &rscript_lua_obj;
 
+
+#undef dump_lua_stack
 
 #ifdef __cplusplus
 }

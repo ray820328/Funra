@@ -37,9 +37,9 @@ assert(tbDestProto.ID == tbSourceProto.ID and tbDestProto.Msg == tbSourceProto.M
 local tbTestMemProfiler = {
     lv11 = 1,
     lv12 = "szLv12",
-    -- lv13 = {
-    --     lv21 = tbSourceProto,
-    --     -- lv22 = { tbTestMemProfiler }
-    -- },
+    lv13 = {
+        lv21 = tbSourceProto,
+        lv22 = { tbTestMemProfiler }
+    },
 }
 require("rprofiler")(tbTestMemProfiler, 1)
