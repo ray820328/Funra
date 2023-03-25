@@ -161,6 +161,7 @@ char* rstr_fmt(char* dest, const char* fmt, int max_len, ...) {
     int write_len = vsnprintf(dest, max_len, fmt, ap);
     va_end(ap);
     if (write_len < 0 || write_len >= max_len) {
+        fprintf(stderr, "%s\n", "error, out of bounds.");
         dest[0] = rstr_end;
         return rstr_empty;
     }

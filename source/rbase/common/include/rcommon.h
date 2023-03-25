@@ -23,6 +23,7 @@ extern "C" {
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/types.h>
 
 #include "rbase.h"
 #include "rerror.h"

@@ -7,8 +7,6 @@
  * @author: Ray
  */
 
-#include "stdlib.h"
-
 #include "rcommon.h"
 #include "rstring.h"
 #include "rfile.h"
@@ -206,7 +204,7 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, const rlog_level_t leve
             }
 
             last_filepath = log_item->filename;
-            log_item->file_ptr = fopen(log_item->filename, "w+");
+            log_item->file_ptr = fopen(log_item->filename, "w+");//,ccs=UTF-8
         } else {
             log_item->file_ptr = rlog->log_items[cur_level - 1]->file_ptr;
         }

@@ -65,7 +65,7 @@ int rfile_rename(const char* src, const char* dst);
 int rfile_remove(const char* file);
 
 int rfile_init_item(rfile_item_t** file_item, char* filepath);
-int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode);
+int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode, bool binary);
 int rfile_read(rfile_item_t* file_item, char* data, int cache_size, int* real_size);
 int rfile_write(rfile_item_t* file_item, char* data, int buffer_size, int* real_size);
 int rfile_close(rfile_item_t* file_item);

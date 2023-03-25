@@ -14,6 +14,10 @@
 extern "C" {
 #endif
 
+#ifdef ros_windows
+#include <malloc.h>
+#endif
+
 #include "rbase.h"
 #include "rdict.h"
 

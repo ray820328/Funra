@@ -34,6 +34,7 @@ extern "C" {
 #include "rpool.h"
 #include "rdict.h"
 #include "rlist.h"
+#include "rfile.h"
 
 #ifdef ros_windows
 #pragma comment(lib, "luad.lib")
@@ -42,10 +43,9 @@ extern "C" {
 static rdict_t* all_data = NULL;
 static rlist_t* travel_list = NULL;
 
-#define key_len_max 32
+#define key_len_max 64
 
 static int inited = 0;
-static int table_level = 1;
 
 #define size_ptr 8
 #define gnode_last(h)    gnode(h, cast(size_t, sizenode(h)))
@@ -61,7 +61,10 @@ struct rprofiler_data_child_s {
 };
 
 struct rprofiler_mem_data_s {
+    int level;
     int size;
+    int table_nodes;
+    int table_arrays;
     int ref_size;//引用对象size
     rprofiler_data_child_t* children;
     rprofiler_data_child_t* parent;//仅临时当前，可能有多个
@@ -92,21 +95,21 @@ static const rprofiler_mem_data_t* read_object(lua_State *L, rprofiler_mem_data_
 
 // static int get_type(lua_State *L, void* p) {
 //     luaL_checkstack(L, LUA_MINSTACK, NULL);
-
 //     int type = lua_type(L, -1);
 //     lua_pop(L,1);
-
 //     return type;
 // }
 
-static int get_table_size(Table *h, bool fast) {
+static int get_table_size(Table* h, int* nodes, int* arrays) {
     // if (fast) {
 #if LUA_VERSION_NUM >= 504
         return ((int)sizenode(h) + (int)h->alimit) * (int)sizeof(Node);
 #else
-        return (int)sizeof(Table) + (int)sizenode(h) * (int)sizeof(Node) + (int)h->sizearray * (int)sizeof(TValue);
+        *nodes = (int)sizenode(h);
+        *arrays = (int)h->sizearray;
+        return (int)sizeof(Table) + (*nodes) * (int)sizeof(Node) + (int)h->sizearray * (int)sizeof(TValue);
 #endif
-    // } else {
+    // } else {//不好统计，short string是共享的
     //     Node *node, *last_node = gnode_last(h);
     //     int size_table = (int)luaH_getn(h) * size_ptr;
     //     for (node = gnode(h, 0); node < last_node; node++) {
@@ -118,17 +121,22 @@ static int get_table_size(Table *h, bool fast) {
     // }
 }
 
-static rprofiler_mem_data_t* init_node_data(int type, void* p, int size, char* desc) {
-    int size_desc = sizeof(rprofiler_mem_data_t) + rstr_len(desc) + key_len_max;//预留一个desc的位置
+static rprofiler_mem_data_t* init_node_data(int level, void* p, int size, char* desc) {
+    int size_desc = sizeof(rprofiler_mem_data_t) + 2 * key_len_max;//预留一个desc的位置rstr_len(desc) + 
     rprofiler_mem_data_t* data = rdata_new_size(size_desc);
 
+    data->level = level;
     data->size = size;
+    data->table_nodes = 0;
+    data->table_arrays = 0;
     data->ref_size = 0;
     data->children = NULL;
     data->parent = NULL;
     data->self = NULL;
-    rstr_fmt(data->desc, "%d-%p-%s", size_desc - 1, type, p, desc == NULL ? rstr_empty : desc);
-    // rinfo("table = %p, fast size = %d", obj, data->size);
+    // rstr_fmt(data->desc, "%d-%p-%s", size_desc - 1, level, p, desc == NULL ? rstr_empty : desc);
+    // rstr_fmt(data->desc, "%s", size_desc - 1, desc == NULL ? rstr_empty : desc);
+    data->desc[0] = rstr_end;
+    rstr_cat(data->desc, desc, 2 * key_len_max - 1);
     return data;
 }
 
@@ -157,37 +165,39 @@ static int add_node_child_data(rprofiler_mem_data_t* data, rprofiler_mem_data_t*
     return 0;
 }
 
-static char* index2string(lua_State *L, int index, char* buffer, size_t size) {
+static char* index2string(lua_State *L, int index, int level, char* prefix, char* buffer, size_t size) {
+    prefix = prefix == NULL ? rstr_empty : prefix;
+
     int t = lua_type(L, index);
     switch (t) {
     case LUA_TSTRING:
         // return lua_tostring(L, index);
-        snprintf(buffer, size, "[%s]", lua_tostring(L, index));
+        snprintf(buffer, size, "%d|%s[%s]", level, prefix, lua_tostring(L, index));
         break;
     case LUA_TNUMBER:
-        snprintf(buffer, size, "[%lg]", lua_tonumber(L, index));
+        snprintf(buffer, size, "%d|%s[%lg]", level, prefix, lua_tonumber(L, index));
         break;
     case LUA_TBOOLEAN:
-        snprintf(buffer, size, "[%s]", lua_toboolean(L, index) ? "true" : "false");
+        snprintf(buffer, size, "%d|%s[%s]", level, prefix, lua_toboolean(L, index) ? "true" : "false");
         break;
     case LUA_TNIL:
-        snprintf(buffer, size, "[nil]");
+        snprintf(buffer, size, "%d|%s[nil]", level, prefix);
         break;
     case LUA_TTABLE:
-        snprintf(buffer, size, "[tb:0x%p]", lua_topointer(L, index));
+        snprintf(buffer, size, "%d|%s[tb_%p]", level, prefix, lua_topointer(L, index));
         break;
     default:
-        snprintf(buffer, size, "[%s:0x%p]", lua_typename(L, t), lua_topointer(L, index));
+        snprintf(buffer, size, "%d|%s[%s_%p]", level, prefix, lua_typename(L, t), lua_topointer(L, index));
         break;
     }
     return buffer;
 }
 
-
-static int travel_table(lua_State *L, rprofiler_mem_data_t* table_data, Table *h, char* var_key) {
+//table_data为h的统计对象
+static int travel_table(lua_State *L, rprofiler_mem_data_t* table_data, Table *h, char* var_key, int table_level) {
     // rprofiler_mem_data_t* temp_data = NULL;
 
-    if (h->metatable != NULL) {//todo Ray 不一定是，参见const
+    if (h->metatable != NULL) {//不一定是，参见const，内部验证
         read_object(L, table_data, LUA_TTABLE, h->metatable, table_level, "[meta]", false);
     }
 
@@ -205,27 +215,30 @@ static int travel_table(lua_State *L, rprofiler_mem_data_t* table_data, Table *h
     int type = 0;
     while (lua_next(L, -2) != NULL) {
         dump_lua_stack(L);
-        char temp[key_len_max * 2];
-        char* key_desc = index2string(L, -2, temp, sizeof(temp));
+        char temp[key_len_max];
+        char temp2[key_len_max];
+        char* key_desc = index2string(L, -2, table_level, NULL, temp, sizeof(temp) - 1);
         type = lua_type(L, -2);
         if (type == LUA_TTABLE) {//todo Ray 其他，table会主动压一次栈
             read_object(L, table_data, type, lua_topointer(L, -2), table_level, key_desc, false);
         } else {
-            data_kv = init_node_data(type, table_data, 1, key_desc);//todo Ray 大小，短字符串共享
+            // data_kv = init_node_data(table_level, table_data, 1, key_desc);//todo Ray 大小，短字符串共享
             // rinfo("ParentTb = %s -> key = %s", var_key, key_desc);
         }
 
-        char* val_desc = index2string(L, -1, temp, sizeof(temp));
+        rstr_cat(key_desc, " => ", 0);
+
+        char* val_desc = index2string(L, -1, table_level, key_desc + 2, temp2, sizeof(temp2) - 1);
         type = lua_type(L, -1);
         if (type == LUA_TTABLE) {//会主动压一次栈
             read_object(L, table_data, type, lua_topointer(L, -1), table_level, val_desc, false);
         } else {
             if (data_kv != NULL) {
                 data_kv->size += 1;//
-                //snprintf(temp, key_len_max * 2, "[%s] -> %s", key_desc, val_desc);
-                rstr_cat(data_kv->desc, val_desc, key_len_max * 2);
+                //snprintf(temp2, key_len_max * 2, "[%s] -> %s", key_desc, val_desc);
+                // rstr_cat(data_kv->desc, val_desc, rstr_len(data_kv->desc) + key_len_max);
             } else {
-                data_kv = init_node_data(type, table_data, 1, val_desc);//todo Ray 大小，短字符串共享
+                data_kv = init_node_data(table_level, table_data, 1, val_desc);//todo Ray 大小，短字符串共享
             }
             // rinfo("ParentTb = %s -> value = %s", var_key, val_desc);
         }
@@ -242,7 +255,7 @@ static int travel_table(lua_State *L, rprofiler_mem_data_t* table_data, Table *h
         }
     }
 
-    rinfo("check end, table = %p", h);
+    // rinfo("check end, level = %d, table = %p", table_level, h);
     
     lua_pop(L, 1);//pop key & tb，5.3自动干掉了key！！
     dump_lua_stack(L);
@@ -303,13 +316,21 @@ static const rprofiler_mem_data_t* read_object(lua_State *L, rprofiler_mem_data_
         return data;
     }
 
+    // rinfo("read_object, level = %d, obj = %p, type = %d, key = %s, go = %d", level, p, type, var_key, travel_immediately);
+
+    int mem_size = 0;
+    int nodes = 0;
+    int arrays = 0;
+
     switch(type) {
     case LUA_TTABLE: {
         Table *h = gco2t(p);
-        data = init_node_data(type, p, get_table_size(h, false), var_key);
 
-        //data->size = get_table_size(h, false);
-        rinfo("table = %p, fast size = %d", p, data->size);
+        mem_size = get_table_size(h, &nodes, &arrays);
+
+        data = init_node_data(level, p, mem_size, var_key);
+        data->table_nodes = nodes;
+        data->table_arrays = arrays;
 
         rdict_add(all_data, p, data);
         if (parent_data != NULL) {
@@ -317,7 +338,7 @@ static const rprofiler_mem_data_t* read_object(lua_State *L, rprofiler_mem_data_
         }
 
         if (travel_immediately) {
-            travel_table(L, data, h, var_key);
+            travel_table(L, data, h, var_key, level);
         } else {
             data->parent = parent_data;
             data->self = h;
@@ -327,7 +348,7 @@ static const rprofiler_mem_data_t* read_object(lua_State *L, rprofiler_mem_data_
         break;
     }
     case LUA_TUSERDATA: {
-        data = init_node_data(type, p, size_ptr, var_key);//懒得统计实际大小，算一个指针
+        data = init_node_data(level, p, size_ptr, var_key);//懒得统计实际大小，算一个指针
         rdict_add(all_data, p, data);
         if (parent_data != NULL) {
             add_node_child_data(parent_data, data);
@@ -339,11 +360,67 @@ static const rprofiler_mem_data_t* read_object(lua_State *L, rprofiler_mem_data_
         break;
     }
     default:
-        rinfo("Unknown type, obj = %p, type = %d, key = %s", p, type, var_key);
+        rinfo("Unknown type, level = %d, obj = %p, type = %d, key = %s", level, p, type, var_key);
         break;
     }
 
     return data;
+}
+
+static int write_json_item(rprofiler_mem_data_t* data, rfile_item_t* file_item) {
+    int total_size = 0;
+    char temp[1024];
+    int real_size = 0;
+    int last_level = 0;
+
+    rprofiler_mem_data_t* data_cur = data;
+    if (data_cur != NULL) {
+        total_size += data_cur->size;
+        last_level = data_cur->level;
+
+        rfile_write(file_item, "{", 0, &real_size);
+
+        // rinfo(" {\"ptr\":\"%p\", \"size\":\"%d#%d#%d\", \"desc\": \"%s\"}\n", data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
+        rstr_fmt(temp, " {\"ptr\":\"%p\", \"size\":\"%d#%d#%d\", \"desc\": \"%s\"}\n", 1024, data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
+        rfile_write(file_item, temp, rstr_len(temp), &real_size);
+
+        rprofiler_data_child_t* child = data_cur->children;
+        while (child != NULL && child->data != NULL) {
+            // rinfo("%d_%s -> %d_%s", last_level, data_cur->desc, child->data->level, child->data->desc);
+            if (last_level <= child->data->level) {
+                total_size += write_json_item(child->data, file_item);
+            }
+
+            child = child->next;
+        }
+
+        rfile_write(file_item, "}\n", 0, &real_size);
+    }
+
+    return total_size;
+}
+
+static int output_json(rprofiler_mem_data_t* root_data) {
+    if (root_data == NULL) {
+        return 0;
+    }
+
+    const char* filename = "./rmem_info.json";
+    if (rfile_exists(filename)) {
+        rfile_remove(filename);
+    }
+
+    rfile_item_t* file_item = NULL;
+    rfile_init_item(&file_item, filename);
+
+    rfile_open(file_item, rfile_open_mode_overwrite, false);//覆盖模式，文件不要占用
+
+    int total_size = 0;
+    total_size = write_json_item(root_data, file_item);
+
+    rfile_uninit_item(file_item);
+
+    return total_size;
 }
 
 static int rprofiler(lua_State *L) {
@@ -387,41 +464,61 @@ static int rprofiler(lua_State *L) {
         type = lua_type(L, 1);
     }
 
-    table_level = 1;//0为遍历所有
+    int table_level_max = 1;//0为遍历所有
     if (frame_top > 1) {
-        table_level = (int)luaL_checkinteger(L, 2);
+        table_level_max = (int)luaL_checkinteger(L, 2);
     }
 
-    rinfo("Start travelling , root = %p, level = %d", root_obj, table_level);
+    rinfo("Start travelling , root = %p, level = %d", root_obj, table_level_max);
     
-    rprofiler_mem_data_t* root_data = read_object(L, NULL, type, root_obj, table_level, "[root]", true);
+    rprofiler_mem_data_t* root_data = read_object(L, NULL, type, root_obj, 0, "[root]", true);
 
     rlist_node_t* table_node = NULL;
     rprofiler_mem_data_t* table_data = NULL;
+    int level_size = rlist_size(travel_list);
+    int level_cur = 1;
+    int total_count = 1;
     while ((table_node = rlist_lpop(travel_list)) != NULL) {
         table_data = table_node->val;
-        travel_table(L, table_data->parent, (Table*)table_data->self, table_data->desc);
+        travel_table(L, table_data, (Table*)table_data->self, table_data->desc, level_cur);
+
+        if (total_count++ % 1000 == 0) {
+            rinfo("read objects, count = %d", total_count);
+        }
 
         rdata_free(rprofiler_mem_data_t, table_data);
         rdata_free(rlist_node_t, table_node);
-    }
 
-    rprofiler_mem_data_t* data_cur = NULL;
-    rdict_iterator_t it = rdict_it(all_data);
-    for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
-        data_cur = (rprofiler_mem_data_t*)de->value.ptr;
+        if (--level_size == 0) {
+            level_size = rlist_size(travel_list);
 
-        rinfo("[%p, %d: %s]", data_cur->parent, data_cur->size, data_cur->desc);
-        rprofiler_data_child_t* child = data_cur->children;
-        while (child != NULL) {
-            rinfo("-[%p, %d: %s]", child->data->parent, child->data->size, child->data->desc);
-
-            child = child->next;
+            if (table_level_max > 0 && ++level_cur > table_level_max) {
+                break;
+            }
         }
     }
+
+    
+    int total_size = 0;
+    // rprofiler_mem_data_t* data_cur = NULL;
+    // rdict_iterator_t it = rdict_it(all_data);
+    // for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
+    //     data_cur = (rprofiler_mem_data_t*)de->value.ptr;//parent可能有多个
+    //     total_size += data_cur->size;
+    //     rinfo("[%p, %d#%d#%d: %s]\n", data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
+    //     rprofiler_data_child_t* child = data_cur->children;
+    //     while (child != NULL && child->data != NULL) {
+    //         rinfo("-[%d: %s]", child->data->size, child->data->desc);
+    //         child = child->next;
+    //     }
+    // }
+
+    total_size = output_json(root_data);
+
     rdict_clear(all_data);
 
-    rinfo("Stop travelling , root = %p, level = %d", root_obj, table_level);
+    rinfo("Stop travelling , root = %p, level = %d, table_amount = %d, total_size = %d", 
+        root_obj, table_level_max, total_count, total_size);
 
     rdestroy_pool(rprofiler_data_child_t);
     rpool_uninit_global();

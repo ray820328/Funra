@@ -139,7 +139,7 @@ int rmem_free(void* ptr, long thread_id, char* filename, const char* func, int l
 
 int rmem_statistics(char* filepath) {
 #ifdef rmemory_enable_tracer
-    FILE* file_ptr = fopen(filepath, "w");
+    FILE* file_ptr = fopen(filepath, "w");//,ccs=UTF-8
     if (file_ptr == NULL) {
         rinfo("error open file: %s", filepath);
         return 1;

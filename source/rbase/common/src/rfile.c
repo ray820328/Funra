@@ -324,7 +324,7 @@ int rfile_create_in(const char *path, const char *filename) {
     file = fopen(file_path, "r");
     if (file == NULL)
     {
-        file = fopen(file_path, "w"); //使用“写入”方式创建文件
+        file = fopen(file_path, "w"); //使用“写入”方式创建文件 
     }
 
     rstr_free(file_path);
@@ -339,7 +339,7 @@ int rfile_create(const char* file_path) {
     file = fopen(file_path, "r");
     if (file == NULL)
     {
-        file = fopen(file_path, "w"); //使用“写入”方式创建文件
+        file = fopen(file_path, "w"); //使用“写入”方式创建文件 
     }
 
     fclose(file);
@@ -428,7 +428,7 @@ int rfile_uninit_item(rfile_item_t* file_item) {
 //     }
 // }
 
-int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode) {
+int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode, bool binary) {
     if (file_item == NULL || file_item->filename == NULL) {
         rerror("invalid file item");
         return rcode_invalid;
@@ -440,27 +440,27 @@ int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode) {
     }
 
     char* open_op = NULL;
-    switch(file_item->state) {
+    switch(mode) {
         case rfile_open_mode_read:
-            open_op = "rb";//rb 二进制
+            open_op = binary ? "rb" : "r";//rb 二进制 ,ccs=UTF-8
             break;
         case rfile_open_mode_write:
-            open_op = "wb";
+            open_op = binary ? "wb" : "w";
             break;
         case rfile_open_mode_read_write:
-            open_op = "ab";
+            open_op = binary ? "ab" : "a";
             break;
         case rfile_open_mode_append:
-            open_op = "rb+";
+            open_op = binary ? "rb+" : "r+";
             break;
         case rfile_open_mode_overwrite:
-            open_op = "wb+";
+            open_op = binary ? "wb+" : "w+";
             break;
         case rfile_open_mode_append_rw:
-            open_op = "ab+";
+            open_op = binary ? "ab+" : "a+";
             break;
         default:
-            open_op = "rb";
+            open_op = binary ? "rb" : "r";
             break;
     }
 
@@ -509,7 +509,8 @@ int rfile_read(rfile_item_t* file_item, char* data, int cache_size, int* real_si
         return rcode_invalid;
     }
 
-    *real_size = read(file_item->file, data, cache_size);
+    // *real_size = read(file_item->file, data, cache_size);
+    *real_size = fread(data, cache_size, 1, file_item->file);
 
     return rcode_ok;
 }
@@ -526,7 +527,9 @@ int rfile_write(rfile_item_t* file_item, char* data, int buffer_size, int* real_
         return rcode_invalid;
     }
 
-    *real_size = write(file_item->file, data, buffer_size);
+    buffer_size = buffer_size <= 0 ? rstr_len(data) : buffer_size;
+    // *real_size = write(file_item->file, data, buffer_size);
+    *real_size = fwrite(data, buffer_size, 1, file_item->file);
 
     return rcode_ok;
 }
@@ -542,7 +545,7 @@ int rfile_copy_file(const char *src, const char *dst) {
     sfp = fopen(src, "rb");
     rassert_goto(sfp == NULL, "unable to open for reading", 1);
 
-    dfp = fopen(dst, "wb+");
+    dfp = fopen(dst, "wb+");//
     rassert_goto(dfp == NULL, "unable to open for writing", 1);
 
     while ((count = fread(buf, 1, sizeof(buf), sfp)) > 0)

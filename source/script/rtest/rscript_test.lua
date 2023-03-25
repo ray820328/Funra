@@ -28,7 +28,7 @@ LogInfo("逻辑脚本加载完毕")
 
 local tbSourceProto = {
     ID = 99,
-    Msg = "Test Msg",
+    Msg = "Test Msg嘎嘎嘎",
 }
 local szPbBytes = funra.EncodePB("Funra.PB.RTest.RTestMsg", tbSourceProto)
 local tbDestProto = funra.DecodePB("Funra.PB.RTest.RTestMsg", szPbBytes)
@@ -42,4 +42,4 @@ local tbTestMemProfiler = {
         lv22 = { tbTestMemProfiler }
     },
 }
-require("rprofiler")(tbTestMemProfiler, 1)
+require("rprofiler")(tbTestMemProfiler, 5)

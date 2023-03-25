@@ -9,6 +9,7 @@
 
 #include <locale.h>
 #include <string.h>
+#include <signal.h>
 
 #include "rmemory.h"
 #include "rlog.h"
@@ -19,6 +20,15 @@
 #include "rstring.h"
 #include "rfile.h"
 #include "rtools.h"
+
+#ifdef ros_windows
+#include <DbgHelp.h>
+#pragma comment(lib, "Dbghelp.lib")
+
+#else
+
+#include <sys/resource.h>
+#endif
 
 static rlist_t *test_entries = NULL;
 
@@ -38,6 +48,33 @@ static int init_platform() {
     return rcode_ok;
 }
 
+/** 禁止直接或间接调用写日志或使用锁（触发一般源于内核中断线程）*/
+static void handle_signal(int signal) {
+    fprintf(stdout, "handle signal, code = %d\n", signal);
+    if (signal == SIGABRT) {
+        fprintf(stderr, "code = %d, handle abort.\n", signal);
+    }
+}
+
+#ifdef ros_windows
+
+static void create_dump_file(LPCSTR lpstrDumpFilePathName, EXCEPTION_POINTERS* pException) {
+    HANDLE hDumpFile = CreateFile(lpstrDumpFilePathName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+    dumpInfo.ExceptionPointers = pException;
+    dumpInfo.ThreadId = GetCurrentThreadId();
+    dumpInfo.ClientPointers = TRUE;
+    MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
+    CloseHandle(hDumpFile);
+}
+
+static LONG WINAPI handle_crash(struct _EXCEPTION_POINTERS* ExceptionInfo) {
+    create_dump_file("core.dmp", ExceptionInfo);
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+#endif //ros_windows
+
 int main(int argc, char **argv) {
     setlocale(LC_ALL, "zh_CN.UTF-8");
     setlocale(LC_NUMERIC, "zh_CN");
@@ -48,10 +85,26 @@ int main(int argc, char **argv) {
     rtools_init();
 
 #ifdef ros_windows
+    _set_error_mode(_OUT_TO_MSGBOX);
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+    signal(SIGABRT, handle_signal);
+
+    SetUnhandledExceptionFilter(handle_crash);
+
     wchar_t local_time[100];
     time_t t = time(NULL);
     wcsftime(local_time, 100, L"%A %c", localtime(&t));
     wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
+#elif ros_linux
+    signal(SIGPIPE, SIG_IGN);
+    signal(SIGSYS, SIG_IGN);
+    signal(SIGTERM, handle_signal);  // when terminal by kill, call OnQuitSignal
+    signal(SIGINT, handle_signal);   // when Ctrl+C, call OnQuitSignal
+
+    rlimit sLimit;
+    sLimit.rlim_cur = -1;
+    sLimit.rlim_max = -1;
+    setrlimit(RLIMIT_CORE, &sLimit);
 #endif //_WIN64
 
     rlog_init("${date}/rtest_common_${index}.log", rlog_level_all, false, 100);
