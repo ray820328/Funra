@@ -75,7 +75,7 @@ struct rprofiler_mem_data_s {
 
 rpool_define_global();
 rpool_declare(rprofiler_data_child_t);// .h
-rdefine_pool(rprofiler_data_child_t, 10000, 5000); // .c
+static rdefine_pool(rprofiler_data_child_t, 10000, 5000); // .c
 
 
 // #define dump_lua_stack(L) dump_stack(L, get_filename(__FILE__), __FUNCTION__, __LINE__)
@@ -145,6 +145,7 @@ static int add_node_child_data(rprofiler_mem_data_t* data, rprofiler_mem_data_t*
         rerror("data cant be null.");
         return 1;
     }
+    // rdebug("add child, %p <- %p", data, child);
 
     // child->ref += 1;
 
@@ -154,7 +155,7 @@ static int add_node_child_data(rprofiler_mem_data_t* data, rprofiler_mem_data_t*
 
     rprofiler_data_child_t* child_last = data->children;
     if (child_last != NULL) {
-        while (child_last->next) {
+        while (child_last->next != NULL) {
             child_last = child_last->next;
         }
 
@@ -369,7 +370,7 @@ static const rprofiler_mem_data_t* read_object(lua_State *L, rprofiler_mem_data_
 
 static int write_json_item(rprofiler_mem_data_t* data, rfile_item_t* file_item) {
     int total_size = 0;
-    char temp[1024];
+    char temp[4096];
     int real_size = 0;
     int last_level = 0;
 
@@ -378,15 +379,17 @@ static int write_json_item(rprofiler_mem_data_t* data, rfile_item_t* file_item) 
         total_size += data_cur->size;
         last_level = data_cur->level;
 
-        rfile_write(file_item, "{", 0, &real_size);
-
-        // rinfo(" {\"ptr\":\"%p\", \"size\":\"%d#%d#%d\", \"desc\": \"%s\"}\n", data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
-        rstr_fmt(temp, " {\"ptr\":\"%p\", \"size\":\"%d#%d#%d\", \"desc\": \"%s\"}\n", 1024, data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
+        // rinfo(" {\"ptr\":\"%p\", \"size\":\"%d#%d#%d\", \"desc\": \"%s\"}", data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
+        rstr_fmt(temp, "\"%p\":{\"size\":\"%d#%d#%d\", \"desc\": \"%s\"", sizeof(temp), data_cur, data_cur->size, data_cur->table_nodes, data_cur->table_arrays, data_cur->desc);
         rfile_write(file_item, temp, rstr_len(temp), &real_size);
+
+        if (data_cur->children != NULL) {
+            rfile_write(file_item, ", nodes = { ", 0, &real_size);
+        }
 
         rprofiler_data_child_t* child = data_cur->children;
         while (child != NULL && child->data != NULL) {
-            // rinfo("%d_%s -> %d_%s", last_level, data_cur->desc, child->data->level, child->data->desc);
+            // rinfo("%d_%p -> [child=%p] %d_%s", last_level, data_cur, child->data, child->data->level, child->data->desc);
             if (last_level <= child->data->level) {
                 total_size += write_json_item(child->data, file_item);
             }
@@ -394,7 +397,13 @@ static int write_json_item(rprofiler_mem_data_t* data, rfile_item_t* file_item) 
             child = child->next;
         }
 
+        if (data_cur->children != NULL) {
+            rfile_write(file_item, " } ", 0, &real_size);
+        }
+
         rfile_write(file_item, "}\n", 0, &real_size);
+
+        rfile_flush(file_item);
     }
 
     return total_size;
@@ -416,7 +425,11 @@ static int output_json(rprofiler_mem_data_t* root_data) {
     rfile_open(file_item, rfile_open_mode_overwrite, false);//覆盖模式，文件不要占用
 
     int total_size = 0;
+    int real_size = 0;
+
+    rfile_write(file_item, "{\n", 0, &real_size);
     total_size = write_json_item(root_data, file_item);
+    rfile_write(file_item, "}", 0, &real_size);
 
     rfile_uninit_item(file_item);
 
@@ -424,12 +437,6 @@ static int output_json(rprofiler_mem_data_t* root_data) {
 }
 
 static int rprofiler(lua_State *L) {
-    rpool_init_global();
-    if (rget_pool(rprofiler_data_child_t) == NULL) {
-        rget_pool(rprofiler_data_child_t) = rcreate_pool(rprofiler_data_child_t);
-        rassert(rget_pool(rprofiler_data_child_t) != NULL, "rprofiler_data_child_t pool");
-    }
-
     if (inited == 0) {
         setlocale(LC_ALL, "zh_CN.UTF-8");
         setlocale(LC_NUMERIC, "zh_CN");
@@ -453,6 +460,12 @@ static int rprofiler(lua_State *L) {
         rinfo("Load rprofiler finished.");
     }
     rdict_clear(all_data);
+
+    rpool_init_global();
+    if (rget_pool(rprofiler_data_child_t) == NULL) {
+        rget_pool(rprofiler_data_child_t) = rcreate_pool(rprofiler_data_child_t);
+        rassert(rget_pool(rprofiler_data_child_t) != NULL, "rprofiler_data_child_t pool");
+    }
 
     const void* root_obj = NULL;
     int type = 0;
@@ -486,7 +499,7 @@ static int rprofiler(lua_State *L) {
             rinfo("read objects, count = %d", total_count);
         }
 
-        rdata_free(rprofiler_mem_data_t, table_data);
+        // rdata_free(rprofiler_mem_data_t, table_data);
         rdata_free(rlist_node_t, table_node);
 
         if (--level_size == 0) {
@@ -517,8 +530,8 @@ static int rprofiler(lua_State *L) {
 
     rdict_clear(all_data);
 
-    rinfo("Stop travelling , root = %p, level = %d, table_amount = %d, total_size = %d", 
-        root_obj, table_level_max, total_count, total_size);
+    rinfo("Stop travelling , root = %p, data = %p, level = %d, table_amount = %d, total_size = %d", 
+        root_obj, root_data, table_level_max, total_count, total_size);
 
     rdestroy_pool(rprofiler_data_child_t);
     rpool_uninit_global();

@@ -80,7 +80,7 @@ int rmem_uninit() {
 void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, const char* func, int line) {
     void* ret = malloc(elem_size);
 #ifdef rmemory_show_detail_realtime
-    rdebug("malloc. %zu-%p from %ld, %s:%s-%d", elem_size, ret, thread_id, filename, func, line);
+    rdebug("malloc. %zu-%p from %ld, %s:%d-%s", elem_size, ret, thread_id, filename, line, func);
 #endif // rmemory_show_detail_realtime
 
     rmem_info_t* info = malloc(sizeof(rmem_info_t));
@@ -101,7 +101,7 @@ void* rmem_malloc_trace(size_t elem_size, long thread_id, char* filename, const 
 void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* filename, const char* func, int line) {
     void* ret = calloc(count, elem_size);
 #ifdef rmemory_show_detail_realtime
-    rdebug("calloc. %zu-%p from %ld, %s:%s-%d", elem_size * count, ret, thread_id, filename, func, line);
+    rdebug("calloc. %zu-%p from %ld, %s:%d-%s", elem_size * count, ret, thread_id, filename, line, func);
 #endif // rmemory_show_detail_realtime
 
     rmem_info_t* info = malloc(sizeof(rmem_info_t));
@@ -121,13 +121,13 @@ void* rmem_cmalloc_trace(size_t elem_size, size_t count, long thread_id, char* f
 
 int rmem_free(void* ptr, long thread_id, char* filename, const char* func, int line) {
 #ifdef rmemory_show_detail_realtime
-    rdebug("free. %d-%p from %ld, %s:%s-%d", 0, ptr, thread_id, filename, func, line);
+    rdebug("free. %d-%p from %ld, %s:%d-%s", 0, ptr, thread_id, filename, line, func);
 #endif // rmemory_show_detail_realtime
 
     rdict_entry_t *de = rdict_find(rmem_trace_map, (void*)((int64_t)ptr));
     if (de == NULL || ((rmem_info_t*)(de->value.ptr))->ptr != ptr) {
-        rerror("free error, not exists. %d-%p != (%p->%p) from %ld, %s:%s-%d", 0, ptr, 
-            de, de == NULL ? NULL : ((rmem_info_t*)(de->value.ptr))->ptr, thread_id, filename, func, line);
+        rerror("free error, not exists. %d-%p != (%p->%p) from %ld, %s:%d-%s", 0, ptr, 
+            de, de == NULL ? NULL : ((rmem_info_t*)(de->value.ptr))->ptr, thread_id, filename, line, func);
         return 1;
     }
     rdict_remove(rmem_trace_map, (void*)((int64_t)ptr));
@@ -154,8 +154,8 @@ int rmem_statistics(char* filepath) {
         rdict_iterator_t it = rdict_it(rmem_trace_map);
         for (rdict_entry_t *de = NULL; (de = rdict_next(&it)) != NULL; ) {
             info = (rmem_info_t*)(de->value.ptr);
-            fprintf(file_ptr, "(%zu * %zu)-%p from %ld, %s:%s-%d"Li, 
-                info->count, info->elem_size, info->ptr, info->thread_id, info->filename, info->func, info->line);
+            fprintf(file_ptr, "(%zu * %zu)-%p from %ld, %s:%d-%s"Li, 
+                info->count, info->elem_size, info->ptr, info->thread_id, info->filename, info->line, info->func);
         }
     }
 

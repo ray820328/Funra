@@ -21,7 +21,7 @@ extern "C" {
 #include "rbase.h"
 #include "rdict.h"
 
-#define rmemory_enable_tracer 1
+// #define rmemory_enable_tracer 1
 
 #ifndef rmemory_enable_tracer
 
@@ -49,7 +49,7 @@ do { \
 
 #endif //rmemory_enable_tracer
 
-//#define rmemory_show_detail_realtime
+// #define rmemory_show_detail_realtime
 #define rmemory_dict_size 200000
 #define rmem_out_filepath_default "./rmem_leak.out"
 

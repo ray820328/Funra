@@ -451,7 +451,7 @@ int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode, bool binary) {
             open_op = binary ? "ab" : "a";
             break;
         case rfile_open_mode_append:
-            open_op = binary ? "rb+" : "r+";
+            open_op = binary ? "wb+" : "w+";
             break;
         case rfile_open_mode_overwrite:
             open_op = binary ? "wb+" : "w+";
@@ -472,6 +472,16 @@ int rfile_open(rfile_item_t* file_item, rfile_open_mode_t mode, bool binary) {
     }
 
     file_item->state = rfile_state_open;
+
+    return rcode_ok;
+}
+
+int rfile_flush(rfile_item_t* file_item) {
+    if (file_item == NULL || file_item->file == NULL || file_item->state != rfile_state_open) {
+        return rcode_invalid;
+    }
+
+    fflush(file_item->file);
 
     return rcode_ok;
 }
