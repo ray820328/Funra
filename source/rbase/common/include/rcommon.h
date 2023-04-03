@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014 ray
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -81,7 +81,7 @@ extern "C" {
 
 #define rattribute_unused(declaration) declaration
 
-#pragma setlocale("chs")
+//#pragma setlocale("chs") //编译指定 /utf-8
 
 #include <io.h>
 #include <winsock2.h>

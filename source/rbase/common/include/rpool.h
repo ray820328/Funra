@@ -1,4 +1,4 @@
-﻿#ifndef RAY_POOL_H
+#ifndef RAY_POOL_H
 #define RAY_POOL_H
 
 #include "rmemory.h"

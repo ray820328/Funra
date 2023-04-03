@@ -1,4 +1,4 @@
-﻿/** 
+/** 
  * Copyright (c) 2014 
  *
  * This library is free software; you can redistribute it and/or modify it
