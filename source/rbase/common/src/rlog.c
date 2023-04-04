@@ -24,6 +24,7 @@ rattribute_unused(static volatile int64_t time_last = 0);
 
 static rmutex_t rlog_mutex;
 static rlog_t** rlog_all = NULL;
+// rlog_define_global();//dll
 
 static bool rlog_force_flush = false;//false启用日志buffer
 static int rlog_flush_max = 30000;//n秒刷一次缓存
@@ -148,7 +149,7 @@ static char* _rlog_get_filepath(char* rlog_filepath_template, char* log_level_st
     return ret_str;
 }
 
-static int _rlog_build_items(rlog_t* rlog, bool is_init, const rlog_level_t level, bool file_seperate) {
+static int _rlog_build_items(rlog_t* rlog, bool is_init, const rlog_level_t level, bool file_separated) {
     rlog_info_t* log_item = NULL;
     int code_ret = 1;
     char* last_filepath = rstr_empty;//只支持两种，全散和单独一个文件
@@ -160,10 +161,10 @@ static int _rlog_build_items(rlog_t* rlog, bool is_init, const rlog_level_t leve
             rinfo("log item already finished, level = %d", cur_level);
             continue;//初始优先级更高，不覆盖
         }
-        if (file_seperate && (level != rlog_level_all || level != cur_level)) {
+        if (file_separated && (level != rlog_level_all || level != cur_level)) {
             continue;
         }
-        log_level_str = file_seperate ? rlog_level_2str(cur_level) : rlog_level_2str(rlog_level_all);
+        log_level_str = file_separated ? rlog_level_2str(cur_level) : rlog_level_2str(rlog_level_all);
 
         if (is_init) {
             log_item = rdata_new(rlog_info_t);
@@ -229,18 +230,19 @@ exit1:
 }
 
 
-int rlog_init(const char* log_default_filename, const rlog_level_t log_default_level, const bool log_default_seperate_file, int file_size) {
+int rlog_init(const char* log_default_filename, const rlog_level_t log_default_level, const bool log_default_separated_file, int file_size) {
     int ret_code = rcode_ok;
-    rmutex_init(&rlog_mutex);
 
-    if (rlog_all != NULL) {
-        rerror("Already inited.");
-        return rcode_invalid;
+    if (rlog_all != NULL) { //todo Ray 共用一个rlog，以lib方式调用
+        rinfo("Already inited.");
+        return rcode_ok;
     }
+
+    rmutex_init(&rlog_mutex);
 
     rlog_t* rlog = rdata_new(rlog_t);
 	memset(rlog, 0, sizeof(rlog_t));
-    ret_code = rlog_init_log(rlog, log_default_filename, log_default_level, log_default_seperate_file, file_size);
+    ret_code = rlog_init_log(rlog, log_default_filename, log_default_level, log_default_separated_file, file_size);
 	if (ret_code != rcode_ok) {
 		rgoto(1);
 	}
@@ -266,9 +268,12 @@ exit1:
 int rlog_uninit() {
     int rcode = 0;
     rlog_t* rlog = NULL;
-    // rlog_info_t* log_item = NULL;
 
-	for (int i = 0; rlog_all && rlog_all[i]; i++) {
+    if (rlog_all == NULL) {
+        return;
+    }
+
+	for (int i = 0; rlog_all[i] != NULL; i++) {
         rlog = rlog_all[i];
 
         rcode = rlog_uninit_log(rlog);
@@ -285,7 +290,7 @@ int rlog_uninit() {
     return rcode_ok;
 }
 
-int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, const bool file_seperate, int file_size) {
+int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, const bool file_separated, int file_size) {
     int code_ret = 1;
 
     if (rlog == NULL || (rlog->state != rlog_state_init && rlog->state != rlog_state_uninit)) {
@@ -298,7 +303,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
     rlog->mutex = rdata_new(rmutex_t);
     rmutex_init(rlog->mutex);
     rlog->level = level == rlog_level_all ? rlog_level_verb : level;
-    rlog->file_seperate = file_seperate;
+    rlog->file_separated = file_separated;
     rlog->file_size_max = file_size < rlog_rollback_size ? rlog_rollback_size * 1024000 : file_size * 1024000;
 
     if (level != rlog_level_all && rlog->log_items[level]) {
@@ -314,7 +319,7 @@ int rlog_init_log(rlog_t* rlog, const char* filename, const rlog_level_t level, 
 
     rlog->filepath_template = _rlog_format_filepath_template(filename);
 
-    code_ret = _rlog_build_items(rlog, true, rlog_level_all, file_seperate);
+    code_ret = _rlog_build_items(rlog, true, rlog_level_all, file_separated);
 
     if (code_ret != rcode_ok) {
         rgoto(1);
@@ -416,7 +421,7 @@ int rlog_flush_file(rlog_t* rlog, const rlog_level_t level, bool close_file) {
 
     FILE* last_file = NULL;
 
-    if (level == rlog_level_all || !rlog->file_seperate) {
+    if (level == rlog_level_all || !rlog->file_separated) {
     	for (int cur_level = rlog_level_verb; cur_level < rlog_level_all; ++cur_level) {
             rlog_info = rlog->log_items[cur_level];
     		if (rlog_info != NULL && rlog_info->file_ptr != NULL) {
@@ -472,7 +477,7 @@ int rlog_rolling_file(rlog_t* rlog, const rlog_level_t level) {
         rgoto(1);
     }
 
-    code_ret = _rlog_build_items(rlog, false, level, rlog->file_seperate);
+    code_ret = _rlog_build_items(rlog, false, level, rlog->file_separated);
 
     if (code_ret != rcode_ok) {
         rgoto(1);
@@ -635,7 +640,7 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
 #ifdef print2file
 
 #ifdef log_in_multi_thread
-    if (unlikely(rlog->file_seperate)) {
+    if (unlikely(rlog->file_separated)) {
         rmutex_lock(rlog_info->item_mutex);
     } else {
         rmutex_lock(rlog->mutex);
@@ -650,7 +655,7 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
     }
 
 #ifdef log_in_multi_thread
-    if (unlikely(rlog->file_seperate)) {
+    if (unlikely(rlog->file_separated)) {
         rmutex_unlock(rlog_info->item_mutex);
     } else {
         rmutex_unlock(rlog->mutex);

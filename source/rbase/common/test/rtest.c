@@ -21,7 +21,7 @@
 #include "rfile.h"
 #include "rtools.h"
 
-#ifdef ros_windows
+#if defined(ros_windows)
 #include <DbgHelp.h>
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
     rmem_init();
     rtools_init();
 
-#ifdef ros_windows
+#if defined(ros_windows)
     _set_error_mode(_OUT_TO_MSGBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
     signal(SIGABRT, handle_signal);
@@ -95,16 +95,16 @@ int main(int argc, char **argv) {
     time_t t = time(NULL);
     wcsftime(local_time, 100, L"%A %c", localtime(&t));
     wprintf(L"PI: %.2f\n当前时间: %Ls\n", 3.14, local_time);
-#elif ros_linux
+#elif defined(ros_linux)
     signal(SIGPIPE, SIG_IGN);
     signal(SIGSYS, SIG_IGN);
     signal(SIGTERM, handle_signal);  // when terminal by kill, call OnQuitSignal
     signal(SIGINT, handle_signal);   // when Ctrl+C, call OnQuitSignal
 
-    rlimit sLimit;
-    sLimit.rlim_cur = -1;
-    sLimit.rlim_max = -1;
-    setrlimit(RLIMIT_CORE, &sLimit);
+    struct rlimit rlimit_data;
+    rlimit_data.rlim_cur = -1;
+    rlimit_data.rlim_max = -1;
+    setrlimit(RLIMIT_CORE, &rlimit_data);
 #endif //_WIN64
 
     rlog_init("${date}/rtest_common_${index}.log", rlog_level_all, false, 100);
