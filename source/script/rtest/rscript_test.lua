@@ -26,6 +26,8 @@ funra.LoadPB("../../../source/script/rtest/rtest.proto") --相对exe目录
 LogInfo("逻辑脚本加载完毕")
 
 
+LogInfo("rprofiler测试开始")
+
 local tbSourceProto = {
     ID = 99,
     Msg = "Test Msg嘎嘎嘎",
@@ -43,3 +45,5 @@ local tbTestMemProfiler = {
     },
 }
 require("rprofiler")(tbTestMemProfiler, 5)
+
+LogInfo("rprofiler测试结束")

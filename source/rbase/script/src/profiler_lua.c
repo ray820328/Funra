@@ -1,4 +1,4 @@
-/** 
+ /**
  * Copyright (c) 2016
  *
  * This library is free software { you can redistribute it and/or modify it
@@ -75,7 +75,8 @@ struct rprofiler_mem_data_s {
 
 rpool_define_global();
 rpool_declare(rprofiler_data_child_t);// .h
-static rdefine_pool(rprofiler_data_child_t, 10000, 5000); // .c
+rdefine_pool(rprofiler_data_child_t, 10000, 5000); // .c
+//static rdefine_pool(rprofiler_data_child_t, 10000, 5000); // .c linux头文件包含问题
 
 
 // #define dump_lua_stack(L) dump_stack(L, get_filename(__FILE__), __FUNCTION__, __LINE__)
@@ -482,7 +483,7 @@ static int rprofiler(lua_State *L) {
         table_level_max = (int)luaL_checkinteger(L, 2);
     }
 
-    rinfo("Start travelling , root = %p, level = %d", root_obj, table_level_max);
+    rinfo("Start travelling , top = %d, root = %p, level = %d", frame_top, root_obj, table_level_max);
     
     rprofiler_mem_data_t* root_data = read_object(L, NULL, type, root_obj, 0, "[root]", true);
 
@@ -530,11 +531,14 @@ static int rprofiler(lua_State *L) {
 
     rdict_clear(all_data);
 
-    rinfo("Stop travelling , root = %p, data = %p, level = %d, table_amount = %d, total_size = %d", 
-        root_obj, root_data, table_level_max, total_count, total_size);
+    frame_top = lua_gettop(L);
+    rinfo("Stop travelling , top = %d, root = %p, data = %p, level = %d, table_amount = %d, total_size = %d", 
+        frame_top, root_obj, root_data, table_level_max, total_count, total_size);
 
     rdestroy_pool(rprofiler_data_child_t);
     rpool_uninit_global();
+
+    lua_settop(L, 0);
 
     return 1;
 }
