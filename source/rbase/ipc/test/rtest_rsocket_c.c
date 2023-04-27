@@ -57,7 +57,7 @@ static void* run_client(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
     handler->process = rcodec_decode_default.process;
-    handler->on_error = rcodec_decode_default.on_error;
+    handler->on_code = rcodec_decode_default.on_code;
     handler->on_after = rcodec_decode_default.on_after;
     handler->on_next = rcodec_decode_default.on_next;
     handler->on_notify = rcodec_decode_default.on_notify;
@@ -69,7 +69,7 @@ static void* run_client(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_encode_default.on_before;
     handler->process = rcodec_encode_default.process;
-    handler->on_error = rcodec_encode_default.on_error;
+    handler->on_code = rcodec_encode_default.on_code;
     handler->on_after = rcodec_encode_default.on_after;
     handler->on_next = rcodec_encode_default.on_next;
     handler->on_notify = rcodec_encode_default.on_notify;
@@ -93,7 +93,11 @@ static void* run_client(void* arg) {
 		ctx->ipc_entry->send(ds, &data);
 
         rtools_wait_mills(1000);
-        ctx->ipc_entry->check(ds, NULL);//send & recv
+
+        rerror_try(excpt_data,
+            ctx->ipc_entry->check(ds, NULL);//send & recv
+        );
+        rerror_catch(excpt_data, rstatement_empty);
 
         rdata_free(char*, data.data);
 

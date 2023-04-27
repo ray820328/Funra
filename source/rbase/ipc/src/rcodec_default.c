@@ -103,8 +103,8 @@ static int encode_on_after(rdata_handler_t* handler, void* ds, void* data) {
     return ripc_code_success;
 }
 
-static int encode_on_error(rdata_handler_t* handler, void* ds, void* data) {
-    rerror("on error.");
+static int encode_on_code(rdata_handler_t* handler, void* ds, void* data, int code) {
+    rerror("on error. code = %d", code);
     return ripc_code_success;
 }
 
@@ -243,8 +243,8 @@ static int decode_on_after(rdata_handler_t* handler, void* ds, void* data) {
 }
 
 
-static int decode_on_error(rdata_handler_t* handler, void* ds, void* data) {
-    rerror("on error.");
+static int decode_on_code(rdata_handler_t* handler, void* ds, void* data, int code) {
+    rerror("on error. code = %d", code);
     return ripc_code_success;
 }
 
@@ -267,7 +267,7 @@ const rdata_handler_t rcodec_encode_default = {
 
     encode_on_before, //rdata_handler_on_before_func on_before;
     encode_process, //rdata_handler_process_func process;
-    encode_on_error,//rdata_handler_on_error_func;
+    encode_on_code,//rdata_handler_on_code_func;
     encode_on_after, //rdata_handler_on_after_func on_after;
     encode_on_next, //rdata_handler_on_next_func on_next;
 
@@ -281,7 +281,7 @@ const rdata_handler_t rcodec_decode_default = {
 
     decode_on_before, //rdata_handler_on_before_func on_before;
     decode_process, //rdata_handler_process_func process;
-    decode_on_error,//rdata_handler_on_error_func;
+    decode_on_code,//rdata_handler_on_code_func;
     decode_on_after, //rdata_handler_on_after_func on_after;
     decode_on_next, //rdata_handler_on_next_func on_next;
 

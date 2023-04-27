@@ -57,14 +57,20 @@ extern "C" {
 // #undef print2file
 // #endif
 
-#define rtrace(format, ...) rlog_printf(NULL, rlog_level_trace, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define rdebug(format, ...) rlog_printf(NULL, rlog_level_debug, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define rinfo(format, ...) rlog_printf(NULL, rlog_level_info, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define rwarn(format, ...) rlog_printf(NULL, rlog_level_warn, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define rerror(format, ...) rlog_printf(NULL, rlog_level_error, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#if defined(__cplusplus) && defined(rbuild_as_cplusplus)
+#define rnull nullptr
+#else
+#define rnull NULL
+#endif
+
+#define rtrace(format, ...) rlog_printf(rnull, rlog_level_trace, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define rdebug(format, ...) rlog_printf(rnull, rlog_level_debug, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define rinfo(format, ...) rlog_printf(rnull, rlog_level_info, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define rwarn(format, ...) rlog_printf(rnull, rlog_level_warn, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define rerror(format, ...) rlog_printf(rnull, rlog_level_error, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define rfatal(format, ...) \
 do { \
-	rlog_printf(NULL, rlog_level_fatal, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__); \
+	rlog_printf(rnull, rlog_level_fatal, "[%ld] %s:%s:%d "format"\n", rthread_cur_id(), get_filename(__FILE__), __FUNCTION__, __LINE__, ##__VA_ARGS__); \
 	abort(); \
 } while (0)
 
@@ -137,23 +143,23 @@ typedef enum {
 #define rdata_type_string_inner_type char*
 #define rdata_type_ptr_inner_type void**
 
-#define rdata_type_unknown_copy_func NULL
-#define rdata_type_bool_copy_func NULL
-#define rdata_type_char_copy_func NULL
-#define rdata_type_uchar_copy_func NULL
-#define rdata_type_short_copy_func NULL
-#define rdata_type_ushort_copy_func NULL
-#define rdata_type_int_copy_func NULL
-#define rdata_type_uint_copy_func NULL
-#define rdata_type_long_copy_func NULL
-#define rdata_type_ulong_copy_func NULL
-#define rdata_type_int64_copy_func NULL
-#define rdata_type_uint64_copy_func NULL
-#define rdata_type_float_copy_func NULL
-#define rdata_type_double_copy_func NULL
-#define rdata_type_long_double_copy_func NULL
+#define rdata_type_unknown_copy_func rnull
+#define rdata_type_bool_copy_func rnull
+#define rdata_type_char_copy_func rnull
+#define rdata_type_uchar_copy_func rnull
+#define rdata_type_short_copy_func rnull
+#define rdata_type_ushort_copy_func rnull
+#define rdata_type_int_copy_func rnull
+#define rdata_type_uint_copy_func rnull
+#define rdata_type_long_copy_func rnull
+#define rdata_type_ulong_copy_func rnull
+#define rdata_type_int64_copy_func rnull
+#define rdata_type_uint64_copy_func rnull
+#define rdata_type_float_copy_func rnull
+#define rdata_type_double_copy_func rnull
+#define rdata_type_long_double_copy_func rnull
 #define rdata_type_string_copy_func rstr_cpy_full
-#define rdata_type_ptr_copy_func NULL
+#define rdata_type_ptr_copy_func rnull
 
 #define rdata_type_unknown_copy(val)
 #define rdata_type_bool_copy(val) (val)
@@ -173,23 +179,23 @@ typedef enum {
 #define rdata_type_string_copy(val) rstr_cpy_full(val)
 #define rdata_type_ptr_copy(val) (val)
 
-#define rdata_type_unknown_free_func NULL
-#define rdata_type_bool_free_func NULL
-#define rdata_type_char_free_func NULL
-#define rdata_type_uchar_free_func NULL
-#define rdata_type_short_free_func NULL
-#define rdata_type_ushort_free_func NULL
-#define rdata_type_int_free_func NULL
-#define rdata_type_uint_free_func NULL
-#define rdata_type_long_free_func NULL
-#define rdata_type_ulong_free_func NULL
-#define rdata_type_int64_free_func NULL
-#define rdata_type_uint64_free_func NULL
-#define rdata_type_float_free_func NULL
-#define rdata_type_double_free_func NULL
-#define rdata_type_long_double_free_func NULL
+#define rdata_type_unknown_free_func rnull
+#define rdata_type_bool_free_func rnull
+#define rdata_type_char_free_func rnull
+#define rdata_type_uchar_free_func rnull
+#define rdata_type_short_free_func rnull
+#define rdata_type_ushort_free_func rnull
+#define rdata_type_int_free_func rnull
+#define rdata_type_uint_free_func rnull
+#define rdata_type_long_free_func rnull
+#define rdata_type_ulong_free_func rnull
+#define rdata_type_int64_free_func rnull
+#define rdata_type_uint64_free_func rnull
+#define rdata_type_float_free_func rnull
+#define rdata_type_double_free_func rnull
+#define rdata_type_long_double_free_func rnull
 #define rdata_type_string_free_func rstr_free_func
-#define rdata_type_ptr_free_func NULL
+#define rdata_type_ptr_free_func rnull
 
 #define rdata_type_unknown_free(val)
 #define rdata_type_bool_free(val)
@@ -209,23 +215,23 @@ typedef enum {
 #define rdata_type_string_free(val) rstr_free_func(val)
 #define rdata_type_ptr_free(val)
 
-#define rdata_type_unknown_compare_func NULL
-#define rdata_type_bool_compare_func NULL
-#define rdata_type_char_compare_func NULL
-#define rdata_type_uchar_compare_func NULL
-#define rdata_type_short_compare_func NULL
-#define rdata_type_ushort_compare_func NULL
-#define rdata_type_int_compare_func NULL
-#define rdata_type_uint_compare_func NULL
-#define rdata_type_long_compare_func NULL
-#define rdata_type_ulong_compare_func NULL
-#define rdata_type_int64_compare_func NULL
-#define rdata_type_uint64_compare_func NULL
-#define rdata_type_float_compare_func NULL
-#define rdata_type_double_compare_func NULL
-#define rdata_type_long_double_compare_func NULL
+#define rdata_type_unknown_compare_func rnull
+#define rdata_type_bool_compare_func rnull
+#define rdata_type_char_compare_func rnull
+#define rdata_type_uchar_compare_func rnull
+#define rdata_type_short_compare_func rnull
+#define rdata_type_ushort_compare_func rnull
+#define rdata_type_int_compare_func rnull
+#define rdata_type_uint_compare_func rnull
+#define rdata_type_long_compare_func rnull
+#define rdata_type_ulong_compare_func rnull
+#define rdata_type_int64_compare_func rnull
+#define rdata_type_uint64_compare_func rnull
+#define rdata_type_float_compare_func rnull
+#define rdata_type_double_compare_func rnull
+#define rdata_type_long_double_compare_func rnull
 #define rdata_type_string_compare_func rstr_compare_func
-#define rdata_type_ptr_compare_func NULL
+#define rdata_type_ptr_compare_func rnull
 
 #define rdata_type_unknown_compare(val1, val2) rcode_eq
 #define rdata_type_bool_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
@@ -245,23 +251,23 @@ typedef enum {
 #define rdata_type_string_compare(val1, val2) rstr_compare_func(val1, val2)
 #define rdata_type_ptr_compare(val1, val2) (val1) == (val2) ? rcode_eq : ((val1) < (val2) ? rcode_lt : rcode_gt)
 
-#define rdata_type_unknown_hash_func NULL
-#define rdata_type_bool_hash_func NULL
-#define rdata_type_char_hash_func NULL
-#define rdata_type_uchar_hash_func NULL
-#define rdata_type_short_hash_func NULL
-#define rdata_type_ushort_hash_func NULL
-#define rdata_type_int_hash_func NULL
-#define rdata_type_uint_hash_func NULL
-#define rdata_type_long_hash_func NULL
-#define rdata_type_ulong_hash_func NULL
-#define rdata_type_int64_hash_func NULL
-#define rdata_type_uint64_hash_func NULL
-#define rdata_type_float_hash_func NULL
-#define rdata_type_double_hash_func NULL
-#define rdata_type_long_double_hash_func NULL
+#define rdata_type_unknown_hash_func rnull
+#define rdata_type_bool_hash_func rnull
+#define rdata_type_char_hash_func rnull
+#define rdata_type_uchar_hash_func rnull
+#define rdata_type_short_hash_func rnull
+#define rdata_type_ushort_hash_func rnull
+#define rdata_type_int_hash_func rnull
+#define rdata_type_uint_hash_func rnull
+#define rdata_type_long_hash_func rnull
+#define rdata_type_ulong_hash_func rnull
+#define rdata_type_int64_hash_func rnull
+#define rdata_type_uint64_hash_func rnull
+#define rdata_type_float_hash_func rnull
+#define rdata_type_double_hash_func rnull
+#define rdata_type_long_double_hash_func rnull
 #define rdata_type_string_hash_func rhash_func_murmur
-#define rdata_type_ptr_hash_func NULL
+#define rdata_type_ptr_hash_func rnull
 
 #define rdata_type_unknown_hash(val)
 #define rdata_type_bool_hash(val) (val)

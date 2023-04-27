@@ -74,7 +74,7 @@ static void* run_server(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_decode_default.on_before;
     handler->process = rcodec_decode_default.process;
-    handler->on_error = rcodec_decode_default.on_error;
+    handler->on_code = rcodec_decode_default.on_code;
     handler->on_after = rcodec_decode_default.on_after;
     handler->on_next = rcodec_decode_default.on_next;
     handler->on_notify = rcodec_decode_default.on_notify;
@@ -86,7 +86,7 @@ static void* run_server(void* arg) {
     handler->next = NULL;
     handler->on_before = rcodec_encode_default.on_before;
     handler->process = rcodec_encode_default.process;
-    handler->on_error = rcodec_encode_default.on_error;
+    handler->on_code = rcodec_encode_default.on_code;
     handler->on_after = rcodec_encode_default.on_after;
     handler->on_next = rcodec_encode_default.on_next;
     handler->on_notify = rcodec_encode_default.on_notify;

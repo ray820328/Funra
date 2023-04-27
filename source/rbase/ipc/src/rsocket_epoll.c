@@ -485,7 +485,7 @@ static int ripc_on_error_c(ripc_data_source_t* ds, void* data) {
     rsocket_ctx_t* rsocket_ctx = ds->ctx;
 
     if (rsocket_ctx->in_handler) {
-        ret_code = rsocket_ctx->in_handler->on_error(rsocket_ctx->in_handler, ds, data);
+        ret_code = rsocket_ctx->in_handler->on_code(rsocket_ctx->in_handler, ds, data, 1);
         if (ret_code != ripc_code_success) {
             rerror("error on handle error, code: %d", ret_code);
             rgoto(0);
@@ -1157,7 +1157,7 @@ static int ripc_on_error_server(ripc_data_source_t* ds_client, void* data) {
     // }
     
     if (rsocket_ctx->in_handler) {
-        // ret_code = rsocket_ctx->in_handler->on_error(rsocket_ctx->out_handler, ds_client, data);
+        // ret_code = rsocket_ctx->in_handler->on_code(rsocket_ctx->out_handler, ds_client, data, 0);
         // if (ret_code != ripc_code_success) {
         //     rerror("error on handler error, code: %d", ret_code);
         //     return ret_code;

@@ -553,7 +553,7 @@ int rsocket_gethostbyname(const char* addr, struct hostent **hp) {
 char* rsocket_hoststrerror(int err) {
     if (err <= 0) return rio_strerror(err);
     switch (err) {
-        case HOST_NOT_FOUND: return PIE_HOST_NOT_FOUND;
+        case HOST_NOT_FOUND: return rtext_sock_host_not_found;
         default: return (char*)hstrerror(err);
     }
 }
@@ -563,13 +563,13 @@ char* rsocket_strerror(int err) {
         return rio_strerror(err);
     }
     switch (err) {
-        case EADDRINUSE: return PIE_ADDRINUSE;
-        case EISCONN: return PIE_ISCONN;
-        case EACCES: return PIE_ACCESS;
-        case ECONNREFUSED: return PIE_CONNREFUSED;
-        case ECONNABORTED: return PIE_CONNABORTED;
-        case ECONNRESET: return PIE_CONNRESET;
-        case ETIMEDOUT: return PIE_TIMEDOUT;
+        case EADDRINUSE: return rtext_sock_address_in_use;
+        case EISCONN: return rtext_sock_connected;
+        case EACCES: return rtext_sock_access_denied;
+        case ECONNREFUSED: return rtext_sock_conn_refused;
+        case ECONNABORTED: return rtext_sock_conn_abort;
+        case ECONNRESET: return rtext_sock_conn_reset;
+        case ETIMEDOUT: return rtext_sock_conn_timeout;
         default: {
             return (char*)strerror(err);
         }
@@ -584,23 +584,23 @@ char* rsocket_ioerror(rsocket_t* rsock_item, int err) {
 char* rsocket_gaistrerror(int err) {
     if (err == 0) return rstr_null;
     switch (err) {
-        case EAI_AGAIN: return PIE_AGAIN;
-        case EAI_BADFLAGS: return PIE_BADFLAGS;
+        case EAI_AGAIN: return rtext_sock_again;
+        case EAI_BADFLAGS: return rtext_sock_bad_flags;
 #ifdef EAI_BADHINTS
-        case EAI_BADHINTS: return PIE_BADHINTS;
+        case EAI_BADHINTS: return rtext_sock_bad_hints;
 #endif
-        case EAI_FAIL: return PIE_FAIL;
-        case EAI_FAMILY: return PIE_FAMILY;
-        case EAI_MEMORY: return PIE_MEMORY;
-        case EAI_NONAME: return PIE_NONAME;
+        case EAI_FAIL: return rtext_sock_recovery;
+        case EAI_FAMILY: return rtext_sock_unknown_family;
+        case EAI_MEMORY: return rtext_sock_memory_failed;
+        case EAI_NONAME: return rtext_sock_no_name;
 #ifdef EAI_OVERFLOW
-        case EAI_OVERFLOW: return PIE_OVERFLOW;
+        case EAI_OVERFLOW: return rtext_sock_buffer_overflow;
 #endif
 #ifdef EAI_PROTOCOL
-        case EAI_PROTOCOL: return PIE_PROTOCOL;
+        case EAI_PROTOCOL: return rtext_sock_unknown_protocol;
 #endif
-        case EAI_SERVICE: return PIE_SERVICE;
-        case EAI_SOCKTYPE: return PIE_SOCKTYPE;
+        case EAI_SERVICE: return rtext_sock_service_unsupport;
+        case EAI_SOCKTYPE: return rtext_sock_type_unsupport;
         case EAI_SYSTEM: return (char*)strerror(err);
         default: return (char*)gai_strerror(err);
     }
@@ -1185,7 +1185,7 @@ int rsocket_recvfrom(rsocket_t* rsock_item, char *data, int count, int *got,
 static char* wstrerror(int ret_code) {
     switch (ret_code) {
         case WSAEINTR: return "Interrupted function call";
-        case WSAEACCES: return PIE_ACCESS; // "Permission denied";
+        case WSAEACCES: return rtext_sock_access_denied; // "Permission denied";
         case WSAEFAULT: return "Bad address";
         case WSAEINVAL: return "Invalid argument";
         case WSAEMFILE: return "Too many open files";
@@ -1198,23 +1198,23 @@ static char* wstrerror(int ret_code) {
         case WSAEPROTOTYPE: return "Protocol wrong type for socket";
         case WSAENOPROTOOPT: return "Bad protocol option";
         case WSAEPROTONOSUPPORT: return "Protocol not supported";
-        case WSAESOCKTNOSUPPORT: return PIE_SOCKTYPE; // "Socket type not supported";
+        case WSAESOCKTNOSUPPORT: return rtext_sock_type_unsupport; // "Socket type not supported";
         case WSAEOPNOTSUPP: return "Operation not supported";
         case WSAEPFNOSUPPORT: return "Protocol family not supported";
-        case WSAEAFNOSUPPORT: return PIE_FAMILY; // "Address family not supported by protocol family";
-        case WSAEADDRINUSE: return PIE_ADDRINUSE; // "Address already in use";
+        case WSAEAFNOSUPPORT: return rtext_sock_unknown_family;
+        case WSAEADDRINUSE: return rtext_sock_address_in_use; // "Address already in use";
         case WSAEADDRNOTAVAIL: return "Cannot assign requested address";
         case WSAENETDOWN: return "Network is down";
         case WSAENETUNREACH: return "Network is unreachable";
         case WSAENETRESET: return "Network dropped connection on reset";
         case WSAECONNABORTED: return "Software caused connection abort";
-        case WSAECONNRESET: return PIE_CONNRESET; // "Connection reset by peer";
+        case WSAECONNRESET: return rtext_sock_conn_reset; // "Connection reset by peer";
         case WSAENOBUFS: return "No buffer space available";
-        case WSAEISCONN: return PIE_ISCONN; // "Socket is already connected";
+        case WSAEISCONN: return rtext_sock_connected; // "Socket is already connected";
         case WSAENOTCONN: return "Socket is not connected";
         case WSAESHUTDOWN: return "Cannot send after socket shutdown";
-        case WSAETIMEDOUT: return PIE_TIMEDOUT; // "Connection timed out";
-        case WSAECONNREFUSED: return PIE_CONNREFUSED; // "Connection refused";
+        case WSAETIMEDOUT: return rtext_sock_conn_timeout; // "Connection timed out";
+        case WSAECONNREFUSED: return rtext_sock_conn_refused; // "Connection refused";
         case WSAEHOSTDOWN: return "Host is down";
         case WSAEHOSTUNREACH: return "No route to host";
         case WSAEPROCLIM: return "Too many processes";
@@ -1223,9 +1223,9 @@ static char* wstrerror(int ret_code) {
         case WSANOTINITIALISED:
             return "Successful WSAStartup not yet performed";
         case WSAEDISCON: return "Graceful shutdown in progress";
-        case WSAHOST_NOT_FOUND: return PIE_HOST_NOT_FOUND; // "Host not found";
+        case WSAHOST_NOT_FOUND: return rtext_sock_host_not_found; // "Host not found";
         case WSATRY_AGAIN: return "Non authoritative host not found";
-        case WSANO_RECOVERY: return PIE_FAIL; // "Nonrecoverable name lookup error";
+        case WSANO_RECOVERY: return rtext_sock_recovery; // "Nonrecoverable name lookup error";
         case WSANO_DATA: return "Valid name, no data record of requested type";
         default: return "Unknown error";
     }
@@ -1256,7 +1256,7 @@ char* rsocket_hoststrerror(int ret_code) {
 
     switch (ret_code) {
         case WSAHOST_NOT_FOUND: 
-            return PIE_HOST_NOT_FOUND;
+            return rtext_sock_host_not_found;
         default: 
             return wstrerror(ret_code);
     }
@@ -1265,13 +1265,13 @@ char* rsocket_hoststrerror(int ret_code) {
 char* rsocket_strerror(int ret_code) {
     if (ret_code <= 0) return rio_strerror(ret_code);
     switch (ret_code) {
-        case WSAEADDRINUSE: return PIE_ADDRINUSE;
-        case WSAECONNREFUSED : return PIE_CONNREFUSED;
-        case WSAEISCONN: return PIE_ISCONN;
-        case WSAEACCES: return PIE_ACCESS;
-        case WSAECONNABORTED: return PIE_CONNABORTED;
-        case WSAECONNRESET: return PIE_CONNRESET;
-        case WSAETIMEDOUT: return PIE_TIMEDOUT;
+        case WSAEADDRINUSE: return rtext_sock_address_in_use;
+        case WSAECONNREFUSED : return rtext_sock_conn_refused;
+        case WSAEISCONN: return rtext_sock_connected;
+        case WSAEACCES: return rtext_sock_access_denied;
+        case WSAECONNABORTED: return rtext_sock_conn_abort;
+        case WSAECONNRESET: return rtext_sock_conn_reset;
+        case WSAETIMEDOUT: return rtext_sock_conn_timeout;
         default: return wstrerror(ret_code);
     }
 }
@@ -1284,23 +1284,23 @@ char* rsocket_ioerror(rsocket_t* rsock_item, int ret_code) {
 char* rsocket_gaistrerror(int ret_code) {
     if (ret_code == 0) return NULL;
     switch (ret_code) {
-        case EAI_AGAIN: return PIE_AGAIN;
-        case EAI_BADFLAGS: return PIE_BADFLAGS;
+        case EAI_AGAIN: return rtext_sock_again;
+        case EAI_BADFLAGS: return rtext_sock_bad_flags;
 #ifdef EAI_BADHINTS
-        case EAI_BADHINTS: return PIE_BADHINTS;
+        case EAI_BADHINTS: return rtext_sock_bad_hints;
 #endif
-        case EAI_FAIL: return PIE_FAIL;
-        case EAI_FAMILY: return PIE_FAMILY;
-        case EAI_MEMORY: return PIE_MEMORY;
-        case EAI_NONAME: return PIE_NONAME;
+        case EAI_FAIL: return rtext_sock_recovery;
+        case EAI_FAMILY: return rtext_sock_unknown_family;
+        case EAI_MEMORY: return rtext_sock_memory_failed;
+        case EAI_NONAME: return rtext_sock_no_name;
 #ifdef EAI_OVERFLOW
-        case EAI_OVERFLOW: return PIE_OVERFLOW;
+        case EAI_OVERFLOW: return rtext_sock_buffer_overflow;
 #endif
 #ifdef EAI_PROTOCOL
-        case EAI_PROTOCOL: return PIE_PROTOCOL;
+        case EAI_PROTOCOL: return rtext_sock_unknown_protocol;
 #endif
-        case EAI_SERVICE: return PIE_SERVICE;
-        case EAI_SOCKTYPE: return PIE_SOCKTYPE;
+        case EAI_SERVICE: return rtext_sock_service_unsupport;
+        case EAI_SOCKTYPE: return rtext_sock_type_unsupport;
 #ifdef EAI_SYSTEM
         case EAI_SYSTEM: return (char*)strerror(rerror_get_os_err());
 #endif
