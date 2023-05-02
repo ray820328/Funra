@@ -22,20 +22,37 @@ typedef enum {
     rcode_err_ok = 0,
     rcode_err_unknown = 1,
 
-    //系统接口部分 10000 - 19999
-    rcode_err_os_unknown = 10000,
+    //系统接口部分 10000 - 11999
+    rcode_err_os_begin = 10000,
+    rcode_err_os_unknown = 10001,
+    rcode_err_os_end = 11999,
 
-    //套接字部分 10500 - 10600
-    rcode_err_sock_unknown = 10500,
-    rcode_err_sock_timeout,
-    rcode_err_sock_disconnect,
+    //ipc部分 12000 - 12199
+    rcode_err_ipc_begin = 12000,
+    rcode_err_ipc_unknown = 12001,
+    rcode_err_ipc_end = 12199,
 
-    //逻辑部分 20000 - 50000
-    rcode_err_logic_unknown = 20000,
-    rcode_err_logic_encode,
-    rcode_err_logic_decode,
+    //rpc部分 12200 - 12399
+    rcode_err_rpc_begin = 12200,
+    rcode_err_rpc_unknown = 12201,
+    rcode_err_rpc_end = 12399,
 
-} rcode_err;
+    //ecs部分 12400 - 12599
+    rcode_err_ecs_begin = 12400,
+    rcode_err_ecs_unknown = 12401,
+    rcode_err_ecs_end = 12599,
+
+    //script部分 12600 - 12799
+    rcode_err_script_begin = 12600,
+    rcode_err_script_unknown = 12601,
+    rcode_err_script_end = 12799,
+
+    //逻辑部分 20000 - 49999
+    rcode_err_logic_begin = 20000,
+    rcode_err_logic_unknown = 20001,
+    rcode_err_logic_end = 49999,
+
+} rcode_err_t;
 
 struct rerror_jump_s;
 typedef struct rerror_jump_s rerror_jump_t;

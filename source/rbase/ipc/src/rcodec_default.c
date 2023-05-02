@@ -29,14 +29,14 @@ static int encode_on_before(rdata_handler_t* handler, void* ds, void* data) {
     
     if (rbuffer_left(datasource->write_buff) < (ipc_data->len + header_len)) {
         rerror("error on handler before, is full, left: %d", rbuffer_left(datasource->write_buff));
-        return ripc_code_cache_full;
+        return rcode_err_ipc_cache_full;
     }
 
-    return ripc_code_success;
+    return rcode_err_ok;
 }
 
 static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
-    int ret_code = ripc_code_success;
+    int ret_code = rcode_err_ok;
     int payload_len = 0;
     int write_len = 0;
     // int require_len = 0;
@@ -45,7 +45,7 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
         + ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
 	
     ret_code = handler->on_before(handler, ds, data);
-    if (ret_code != ripc_code_success) {
+    if (ret_code != rcode_err_ok) {
         rerror("error on handler before, code: %d", ret_code);
         return ret_code;
     }
@@ -72,18 +72,18 @@ static int encode_process(rdata_handler_t* handler, void* ds, void* data) {
         ipc_data->crc = (int32_t)ntohl(ipc_data->crc);
         ipc_data->reserve0 = (uint64_t)ntohll(ipc_data->reserve0);
         rerror("error on handler process head: %d", write_len);
-        return ripc_code_cache_full;
+        return rcode_err_ipc_cache_full;
     }
 
     write_len = rbuffer_write(buffer, (char*)(ipc_data->data), payload_len);//data部分逻辑保证字节序，比如pb
     if (write_len != payload_len) {
         rbuffer_read_ext(buffer, -write_len - header_len);
         rerror("error on handler process payload: %d", write_len);
-        return ripc_code_cache_full;
+        return rcode_err_ipc_cache_full;
     }
 
     ret_code = handler->on_after(handler, ds, data);
-    if (ret_code != ripc_code_success) {
+    if (ret_code != rcode_err_ok) {
         rbuffer_read_ext(buffer, -write_len - header_len);
         rerror("error on handler after, code: %d", ret_code);
         return ret_code;
@@ -100,12 +100,14 @@ static int encode_on_after(rdata_handler_t* handler, void* ds, void* data) {
         return handler->next->process(handler->next, ds, data);
     }
 
-    return ripc_code_success;
+    return rcode_err_ok;
 }
 
 static int encode_on_code(rdata_handler_t* handler, void* ds, void* data, int code) {
-    rerror("on error. code = %d", code);
-    return ripc_code_success;
+    rdebug("on code. code = %d", code);
+    
+    int code_ret = ripc_on_code(handler, ds, data, code);
+    return code_ret;
 }
 
 static void encode_on_next(rdata_handler_t* handler, void* ds, void* data) {
@@ -129,11 +131,11 @@ static int decode_on_before(rdata_handler_t* handler, void* ds, void* data) {
 
     rbuffer_write_ext(datasource->read_cache, data_raw->len);//数据已经写进去了，设置正确的pos即可
 
-    return ripc_code_success;
+    return rcode_err_ok;
 }
 
 static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
-    int ret_code = ripc_code_success;
+    int ret_code = rcode_err_ok;
     int read_len = 0;
     int require_len = 0;
 	static int full_head_len = ripc_head_default_version_len + ripc_head_default_magic_len + ripc_head_default_len_len
@@ -142,7 +144,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		ripc_head_default_cmd_len + ripc_head_default_sid_len + ripc_head_default_crc_len + ripc_head_default_reserve0_len;
 	
     ret_code = handler->on_before(handler, ds, data);
-    if (ret_code != ripc_code_success) {
+    if (ret_code != rcode_err_ok) {
         rerror("error on handler before, code: %d", ret_code);
         return ret_code;
     }
@@ -170,9 +172,9 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 		}
 
 		if (!rmem_eq(ipc_data.magic, ripc_head_default_magic, ripc_head_default_magic_len)) {
-			rerror("error on handler process, magic error: %d", ripc_code_error_magic);
+			rerror("error on handler process, magic error: %d", rcode_err_ipc_magic);
 			rbuffer_clear(buffer);
-			return ripc_code_error_magic;
+			return rcode_err_ipc_magic;
 		}
 
         ipc_data.len = (uint32_t)ntohl(ipc_data.len);
@@ -212,7 +214,7 @@ static int decode_process(rdata_handler_t* handler, void* ds, void* data) {
 	}
 
     ret_code = handler->on_after(handler, ds, data);
-    if (ret_code != ripc_code_success) {
+    if (ret_code != rcode_err_ok) {
         rerror("error on handler after, code: %d", ret_code);
         return ret_code;
     }
@@ -231,7 +233,7 @@ static int decode_on_after(rdata_handler_t* handler, void* ds, void* data) {
 
     left_size = rbuffer_left(buffer);
     if (left_size < 1 || left_size > rbuffer_capacity(buffer)) {
-        return ripc_code_cache_full;
+        return rcode_err_ipc_cache_full;
     }
 
     //下一个handler处理
@@ -239,13 +241,15 @@ static int decode_on_after(rdata_handler_t* handler, void* ds, void* data) {
         return handler->next->process(handler->next, datasource, data);
     }
 
-    return ripc_code_success;
+    return rcode_err_ok;
 }
 
 
 static int decode_on_code(rdata_handler_t* handler, void* ds, void* data, int code) {
-    rerror("on error. code = %d", code);
-    return ripc_code_success;
+    rdebug("on code. code = %d", code);
+    
+    int code_ret = ripc_on_code(handler, ds, data, code);
+    return code_ret;
 }
 
 static void decode_on_next(rdata_handler_t* handler, void* ds, void* data) {

@@ -67,7 +67,7 @@ static int send_data(ripc_data_source_t* ds_client, void* data) {
 
     if (ctx->out_handler) {
         ret_code = ctx->out_handler->process(ctx->out_handler, ds_client, data);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
             return ret_code;
         }
@@ -159,7 +159,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         //}
 
         ret_code = ctx->in_handler->process(ctx->in_handler, ds_client, &data_raw);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
             return;
         }

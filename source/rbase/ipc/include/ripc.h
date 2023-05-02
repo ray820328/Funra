@@ -18,9 +18,10 @@
 extern "C" {
 #endif
 
-#ifndef ripc_code_ext
-#define ripc_code_ext
-#endif //ripc_code_ext 给外部定义逻辑类型
+/* ------------------------------- Macros ------------------------------------*/
+
+
+/* ------------------------------- Structs ------------------------------------*/
 
 typedef enum {
     ripc_data_source_type_unknown = 0,
@@ -55,16 +56,21 @@ typedef enum {
 } ripc_state_t;
 
 typedef enum {
-    ripc_code_unknown = 0,
-    ripc_code_success = 1,
-    ripc_code_error = 2,
-    ripc_code_error_version,
-    ripc_code_error_magic,
-    ripc_code_cache_full,
-    ripc_code_cache_null,
+    
+    //ipc部分 12000 - 12199
+    // rcode_err_ipc_begin = 12000,
+    // rcode_err_ipc_unknown = 12001,
+    rcode_err_ipc_timeout = 12002,
+    rcode_err_ipc_disconnect,
+    rcode_err_ipc_encode,
+    rcode_err_ipc_decode,
+    rcode_err_ipc_version,
+    rcode_err_ipc_magic,
+    rcode_err_ipc_cache_full,
+    rcode_err_ipc_cache_null,
+    // rcode_err_ipc_end = 12199,
 
-    ripc_code_ext
-} ripc_code_t;
+} rcode_err_t;
 
 typedef struct ripc_data_raw_s {
     uint32_t len;
@@ -104,6 +110,11 @@ typedef struct ripc_entry_s {
     ripc_receive_func receive;
     ripc_error_func error;
 } ripc_entry_t;
+
+
+/* ------------------------------- APIs ------------------------------------*/
+
+int ripc_on_code(rdata_handler_t* handler, void* ds, void* data, int code);
 
 #ifdef __cplusplus
 }

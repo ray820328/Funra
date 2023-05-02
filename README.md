@@ -44,6 +44,9 @@
 
 # 编译和运行
 支持Windows环境和Linux环境，编译后可执行文件位于目录 build/bin 下
+## 编译参数
+- rbuild_as_cplusplus
+  使部分代码使用部分C++特性
 ## Windows（测试环境为Win 10）
 ### 打开 VS 工程编译
 - 工程位于目录 proj\vs2017 下

@@ -312,12 +312,12 @@ static int ripc_send_data_2buffer_c(ripc_data_source_t* ds_client, void* data) {
 
     if (rsock_item == NULL || ds_client->state != ripc_state_start) {
         rinfo("sock not ready, state: %d", ds_client->state);
-        return rcode_err_sock_disconnect;
+        return rcode_err_ipc_disconnect;
     }
 
     if (rsocket_ctx->out_handler) {
         ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, ds_client, data);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
             return ret_code;
         }
@@ -388,7 +388,7 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
 
     if (ds_client->state != ripc_state_start) {
         rinfo("sock not ready, state: %d", ds_client->state);
-        return rcode_err_sock_disconnect;
+        return rcode_err_ipc_disconnect;
     }
     
     char* data_buff = rbuffer_write_start_dest(ds_client->read_cache);
@@ -418,9 +418,9 @@ static int ripc_receive_data_c(ripc_data_source_t* ds_client, void* data) {
         data_raw.len = received_len;
 
         ret_code = rsocket_ctx->in_handler->process(rsocket_ctx->in_handler, ds_client, &data_raw);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
-            return rcode_err_logic_decode;
+            return rcode_err_ipc_decode;
         }
         ret_code = rcode_io_done;
     }
@@ -486,7 +486,7 @@ static int ripc_on_error_c(ripc_data_source_t* ds, void* data) {
 
     if (rsocket_ctx->in_handler) {
         ret_code = rsocket_ctx->in_handler->on_code(rsocket_ctx->in_handler, ds, data, 1);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handle error, code: %d", ret_code);
             rgoto(0);
         }
@@ -794,12 +794,12 @@ static int ripc_send_data_2buffer_server(ripc_data_source_t* ds_client, void* da
 
     if (rsock_item != NULL && ds_client->state != ripc_state_start) {
         rinfo("sock not ready, state = %d", ds_client->state);
-        return rcode_err_sock_disconnect;
+        return rcode_err_ipc_disconnect;
     }
 
     if (rsocket_ctx->out_handler) {
         ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, ds_client, data);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
             return ret_code;
         }
@@ -843,10 +843,10 @@ static int ripc_send_data_server(ripc_data_source_t* ds_client, void* data) {
         rwarn("end send_data, code: %d, sent_len: %d, buff_size: %d", ret_code, sent_len, count);
 
         if (ret_code == rcode_io_timeout) {
-            return rcode_err_sock_timeout;
+            return rcode_err_ipc_timeout;
         }
         else {
-            return rcode_err_sock_disconnect;//所有未知错误都断开
+            return rcode_err_ipc_disconnect;//所有未知错误都断开
         }
     }
 
@@ -876,7 +876,7 @@ static int ripc_receive_data_server(ripc_data_source_t* ds_client, void* data) {
 
     if (ds_client->state != ripc_state_start) {
         rinfo("sock not ready, state: %d", ds_client->state);
-        return rcode_err_sock_disconnect;
+        return rcode_err_ipc_disconnect;
     }
     
     char* data_buff = rbuffer_write_start_dest(ds_client->read_cache);
@@ -906,9 +906,9 @@ static int ripc_receive_data_server(ripc_data_source_t* ds_client, void* data) {
         data_raw.len = received_len;
 
         ret_code = rsocket_ctx->in_handler->process(rsocket_ctx->in_handler, ds_client, &data_raw);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
-            return rcode_err_logic_decode;
+            return rcode_err_ipc_decode;
         }
         ret_code = rcode_io_done;
     }
@@ -1158,7 +1158,7 @@ static int ripc_on_error_server(ripc_data_source_t* ds_client, void* data) {
     
     if (rsocket_ctx->in_handler) {
         // ret_code = rsocket_ctx->in_handler->on_code(rsocket_ctx->out_handler, ds_client, data, 0);
-        // if (ret_code != ripc_code_success) {
+        // if (ret_code != rcode_err_ok) {
         //     rerror("error on handler error, code: %d", ret_code);
         //     return ret_code;
         // }

@@ -60,6 +60,9 @@ typedef struct sockaddr_storage rsockaddr_storage_t;
 #if defined(_WIN32) || defined(_WIN64)
 
  /* POSIX defines 1024 for the FD_SETSIZE，必须在winsock2.h之前定义，默认64 */
+#if defined(FD_SETSIZE)
+#undef FD_SETSIZE
+#endif
 #define FD_SETSIZE 1024
 
 #include <winsock2.h>

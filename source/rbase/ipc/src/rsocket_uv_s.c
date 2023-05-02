@@ -252,7 +252,7 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
         //}
 
         ret_code = rsocket_ctx->in_handler->process(rsocket_ctx->in_handler, ds, &data_raw);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
             return;
         }
@@ -286,7 +286,7 @@ static int send_data(ripc_data_source_t* ds, void* data) {
 
     if (rsocket_ctx->out_handler) {
         ret_code = rsocket_ctx->out_handler->process(rsocket_ctx->out_handler, ds, data);
-        if (ret_code != ripc_code_success) {
+        if (ret_code != rcode_err_ok) {
             rerror("error on handler process, code: %d", ret_code);
             return ret_code;
         }
@@ -324,6 +324,10 @@ static void on_session_close(uv_handle_t* peer) {
     rinfo("on session close, id = %"PRIu64", peer = %p", ds->ds_id, peer);
 
     if (ds->ds_type == ripc_data_source_type_session && rdict_exists(rsocket_ctx->map_clients, (const void*)ds->ds_id)) {
+        if (rsocket_ctx->in_handler) {
+            rsocket_ctx->in_handler->on_code(rsocket_ctx->in_handler, ds, NULL, rcode_err_ipc_disconnect);
+        }
+
         rdict_remove(rsocket_ctx->map_clients, (const void*)ds->ds_id);
 
         rbuffer_release(ds->read_cache);
