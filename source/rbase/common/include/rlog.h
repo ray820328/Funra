@@ -30,17 +30,6 @@ extern "C" {
 #define print2file
 #define print2stdout
 
-#define rlog_level_2str(log_level)    \
-	((log_level) == rlog_level_verb ? "VEBR" : \
-	((log_level) == rlog_level_trace ? "TRACE" : \
-	((log_level) == rlog_level_debug ? "DEBUG" : \
-	((log_level) == rlog_level_info ? "INFO" : \
-	((log_level) == rlog_level_warn ? "WARN" : \
-	((log_level) == rlog_level_error ? "ERROR" : \
-	((log_level) == rlog_level_fatal ? "FATAL" : \
-	((log_level) == rlog_level_all ? "ALL" : \
-	"UNDEFINED"))))))))
-
 #define rlog_declare_global() \
 extern rlog_t** rlog_all
 

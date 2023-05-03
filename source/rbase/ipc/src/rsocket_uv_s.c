@@ -157,6 +157,10 @@ static int on_connection(uv_stream_t* server, int status) {
     rinfo("on_connection accept success, peer = %p", ds_client->stream);
 // exit0:
 
+    if (rsocket_ctx->in_handler) {
+        rsocket_ctx->in_handler->on_code(rsocket_ctx->in_handler, ds_client, NULL, rcode_err_ipc_connect);
+    }
+
     return rcode_ok;
 
 exit1:
@@ -263,12 +267,18 @@ static void after_read(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) 
 static void after_write(uv_write_t *req, int status) {
     rinfo("end after_write state: %d", status);
 
-    if (status != 0) {
-        rerror("write error, code = %d, err = %s", status, uv_err_name(status));
-    }
-
     local_write_req_t* wr = (local_write_req_t*)req->data;
     ripc_data_source_t* ds = wr->ds;
+    if (status != 0) {
+        rerror("write error, code = %d, err = %s", status, uv_err_name(status));
+
+        rsocket_ctx_uv_t* rsocket_ctx = (rsocket_ctx_uv_t*)(ds->ctx);
+        rassert(rsocket_ctx != NULL, "");
+        if (rsocket_ctx->out_handler) {
+            rsocket_ctx->out_handler->on_code(rsocket_ctx->out_handler, ds, NULL, rcode_err_ipc_broken_pipe_out);
+        }
+    }
+
     rbuffer_skip(ds->write_buff, wr->write_size);
     rdata_free(local_write_req_t, wr);
     rdata_free(uv_write_t, req);

@@ -48,12 +48,6 @@ extern "C" {
 
 #define rvoid(x) (void)(x)
 
-    //#define rassert(expr, rv) 
-    //	if(!(expr)) { 
-    //		rerror(#expr" is null or 0"); 
-    //		return rv; 
-    //	}
-
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4319 4819)
@@ -170,19 +164,16 @@ extern "C" {
 #define rdata_clear_array(data, size_block) memset((data), 0, (size_block))
 #define rdata_free_array(data) rayfree(data)
 
-#define rmin(a, b) ((a)<(b)?(a):(b))
-#define rmax(a, b) ((a)>(b)?(a):(b))
+#define rmacro_min(a, b) ((a)<(b)?(a):(b))
+#define rmacro_max(a, b) ((a)>(b)?(a):(b))
 
 /** 只支持带显式类型的原生数组，如：int[] **/
 #define rcount_array(ptr, count) \
-          do { \
-            if ((ptr) != NULL) \
-                (count) = sizeof((ptr)) / sizeof((ptr)[0]); \
-            else \
-                (count) = 0; \
-          } while(0)
+  (count) = ((ptr) != NULL) ? (sizeof((ptr)) / sizeof((ptr)[0])) : 0
 
-
+#if defined(rbuild_as_release)
+#define rassert(expr, msg) //
+#else          
 #define rassert(expr, msg)                                \
  do {                                                     \
   if (!(expr)) {                                          \
@@ -195,6 +186,7 @@ extern "C" {
     abort();                                              \
   }                                                       \
  } while (0)
+#endif //rbuild_as_release & rassert
 
 //rerror(msg, __VA_ARGS__); //linux编译错误，win正常
 #define rassert_goto(expr, msg, code_int, ...)            \

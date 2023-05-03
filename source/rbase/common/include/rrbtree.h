@@ -7,8 +7,8 @@
  * @author: Ray
  */
 
-#ifndef RTOOLS_H
-#define RTOOLS_H
+#ifndef RRBTREE_H
+#define RRBTREE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,4 +25,4 @@ extern "C" {
 }
 #endif
 
-#endif //RTOOLS_H
+#endif //RRBTREE_H

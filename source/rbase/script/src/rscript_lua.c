@@ -162,9 +162,24 @@ static int lua_get_exe_root(lua_State* L) {
     return ret_code;
 }
 
+// 获取微秒值
+static int rtime_micros(lua_State *L) {
+    int64_t n = rtime_microsec();
+    lua_pushnumber(L, n);
+    return 1;
+}
+// 获取毫秒时间戳
+static int rtime_mills(lua_State *L) {
+     int64_t n = rtime_millisec();
+     lua_pushnumber(L, n);
+     return 1;
+}
+
 const struct luaL_Reg funra_funcs[] = {
     {"Log", lua_log},
     {"GetWorkRoot", lua_get_exe_root},
+    {"GetTimeMicroS", rtime_micros},
+    {"GetTimeMS", rtime_mills},
     {NULL, NULL},
 };
 

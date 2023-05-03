@@ -143,6 +143,26 @@ R_API int64_t rtime_millisec() {
 #endif
 }
 
+//todo Ray 多线程
+static int64_t _inc_millisec;
+static int64_t _inc_microsec;
+static int64_t _inc_nanosec;
+R_API void rtime_set_inc(int64_t millisec, int64_t microsec, int64_t nanosec) {
+    _inc_millisec = millisec > 0 ? millisec : _inc_millisec;
+    _inc_microsec = microsec > 0 ? microsec : _inc_microsec;
+    _inc_nanosec = nanosec > 0 ? nanosec : _inc_nanosec;
+}
+R_API int64_t rtime_nanosec_inc() {
+    return _inc_millisec++;
+}
+R_API int64_t rtime_microsec_inc() {
+    return _inc_microsec++;
+}
+R_API int64_t rtime_millisec_inc() {
+    return _inc_nanosec++;
+}
+
+
 //void rtime_2metis(time_t t, char *pcTime) {
 //    struct tm *tm_t;
 //    tm_t = localtime(&t);
@@ -199,16 +219,16 @@ static unsigned char rlib_last_day_of_mon(unsigned char month, unsigned short ye
 
 
 static int rtime_zone_int = 8;
-R_API void rtime_set_time_zone(int timeZone) {
-    rtime_zone_int = timeZone;
+R_API void rtime_set_time_zone(int time_zone) {
+    rtime_zone_int = time_zone;
 }
 R_API int rtime_get_time_zone() {
     return rtime_zone_int;
 }
 
 R_API int* rtime_from_time_millis_security(int64_t time_millis, int* datas) {
-	static int rtime_datas[7] = { 0 ,0, 0, 0, 0, 0, 0 };
-    if (!datas) {
+	static int rtime_datas[7] = { 0 ,0, 0, 0, 0, 0, 0 };//todo Ray多线程 ThreadLocale
+    if (datas == NULL) {
         datas = rtime_datas;
     }
     int year = 0;
@@ -282,12 +302,12 @@ R_API int64_t rtimeout_get_block(rtimeout_t* tm) {
         return -1;
     } else if (tm->block < 0) {//total > 0，计算total剩余时间
         int64_t t = tm->total + tm->start - rtime_microsec();
-        return rmax(t, 0);
+        return rmacro_max(t, 0);
     } else if (tm->total < 0) {//直接返回block时间
         return tm->block;
     } else {// block & total，返回block，total剩余 的极小值
         int64_t t = tm->total + tm->start - rtime_microsec();
-        return rmin(tm->block, rmax(t, 0));
+        return rmacro_min(tm->block, rmacro_max(t, 0));
     }
 }
 
@@ -296,43 +316,13 @@ R_API int64_t rtimeout_get_total(rtimeout_t* tm) {
         return -1;
     } else if (tm->block < 0) {
         int64_t t = tm->total + tm->start - rtime_microsec();
-        return rmax(t, 0);
+        return rmacro_max(t, 0);
     } else if (tm->total < 0) {
         int64_t t = tm->block + tm->start - rtime_microsec();
-        return rmax(t, 0);
+        return rmacro_max(t, 0);
     } else {
         int64_t t = tm->total + tm->start - rtime_microsec();
-        return rmin(tm->block, rmax(t, 0));
+        return rmacro_min(tm->block, rmacro_max(t, 0));
     }
 }
 
-
-// // 获取微秒值
-// static int microsecTimestamp(lua_State *L)
-// {
-//     struct timeval tv;
-//     gettimeofday(&tv, NULL);
-//     int64_t n = tv.tv_sec * 1000000 + tv.tv_usec;
-
-//     lua_pushnumber(L, n);
-//     return 1;
-// }
-
-// // 获取毫秒时间戳
-// static int millisecTimestamp(lua_State *L) {
-//      int64_t n = millisec_r();
-
-//      lua_pushnumber(L, n);
-//      return 1;
-// }
-
-// static const struct luaL_Reg rtime_lib[] = {
-//     {"microsecTimestamp", microsecTimestamp},
-//     {"millisecTimestamp", millisecTimestamp},
-//     {NULL, NULL}};
-
-// int luaopen_rtimelib(lua_State *L)
-// {
-//     luaL_newlib(L, rtime_lib);
-//     return 1;
-// }

@@ -8,10 +8,12 @@
  */
 
 #ifdef _MSC_VER
-# define _CRT_SECURE_NO_WARNINGS
-# define _CRT_NONSTDC_NO_WARNINGS
-# pragma warning(disable: 4244) /* int -> char */
-# pragma warning(disable: 4127) /* const in if condition */
+#if !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#define _CRT_NONSTDC_NO_WARNINGS
+#pragma warning(disable: 4244) /* int -> char */
+#pragma warning(disable: 4127) /* const in if condition */
 #endif
 
 #include "rtime.h"

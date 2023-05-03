@@ -56,12 +56,15 @@ typedef enum {
 } ripc_state_t;
 
 typedef enum {
-    
+
     //ipc部分 12000 - 12199
     // rcode_err_ipc_begin = 12000,
     // rcode_err_ipc_unknown = 12001,
-    rcode_err_ipc_timeout = 12002,
+    rcode_err_ipc_connect = 12002,
+    rcode_err_ipc_timeout,
     rcode_err_ipc_disconnect,
+    rcode_err_ipc_broken_pipe_in,
+    rcode_err_ipc_broken_pipe_out,
     rcode_err_ipc_encode,
     rcode_err_ipc_decode,
     rcode_err_ipc_version,

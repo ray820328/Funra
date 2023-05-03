@@ -20,7 +20,21 @@
 
 #define file_serail_num_len 20
 
+// #define rlog_level_2str(log_level)    \
+//     ((log_level) == rlog_level_verb ? "VEBR" : \
+//     ((log_level) == rlog_level_trace ? "TRACE" : \
+//     ((log_level) == rlog_level_debug ? "DEBUG" : \
+//     ((log_level) == rlog_level_info ? "INFO" : \
+//     ((log_level) == rlog_level_warn ? "WARN" : \
+//     ((log_level) == rlog_level_error ? "ERROR" : \
+//     ((log_level) == rlog_level_fatal ? "FATAL" : \
+//     ((log_level) == rlog_level_all ? "ALL" : \
+//     "UNDEFINED"))))))))
+#define rlog_level_2str(log_level) rlog_strs[(log_level)]
+
 rattribute_unused(static volatile int64_t time_last = 0);
+
+static char* rlog_strs[] = { "VEBR", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "ALL" };
 
 static rmutex_t rlog_mutex;
 static rlog_t** rlog_all = NULL;
@@ -270,7 +284,7 @@ int rlog_uninit() {
     rlog_t* rlog = NULL;
 
     if (rlog_all == NULL) {
-        return;
+        return rcode_invalid;
     }
 
 	for (int i = 0; rlog_all[i] != NULL; i++) {
@@ -668,6 +682,13 @@ int rlog_printf(rlog_t* rlog, rlog_level_t level, const char* fmt, ...) {
     rmutex_lock(rlog->mutex);
 
 #ifdef ros_windows
+    if (level < rlog_level_warn) { //system("color 5");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+    } else if (level == rlog_level_warn) { //system("color 5");
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_BLUE);
+    } else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+    }
     //WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), item_buffer, (DWORD)convert_str), NULL, NULL);
     printf(item_fmt, item_buffer);
 #else

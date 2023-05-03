@@ -28,10 +28,15 @@ R_API int64_t rtime_nanosec();
 R_API int64_t rtime_microsec();
 R_API int64_t rtime_millisec();
 
-R_API void rtime_set_time_zone(int timeZone);
+R_API void rtime_set_inc(int64_t millisec, int64_t microsec, int64_t nanosec);
+R_API int64_t rtime_nanosec_inc();
+R_API int64_t rtime_microsec_inc();
+R_API int64_t rtime_millisec_inc();
+
+R_API void rtime_set_time_zone(int time_zone);
 R_API int rtime_get_time_zone();
-R_API int* rtime_from_time_millis(int64_t timeMillis);
-R_API int* rtime_from_time_millis_security(int64_t timeMillis, int* datas);
+R_API int* rtime_from_time_millis(int64_t time_millis);
+R_API int* rtime_from_time_millis_security(int64_t time_millis, int* datas);
 
 
 /***************************** timeout ****************************/
